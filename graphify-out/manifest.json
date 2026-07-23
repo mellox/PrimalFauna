@@ -40,8 +40,8 @@
     "semantic_hash": ""
   },
   "docs/07-technical-architecture.md": {
-    "mtime": 1784822196.3037162,
-    "ast_hash": "14f088542f572c0dfcc1cf335aab7ca5",
+    "mtime": 1784825415.864586,
+    "ast_hash": "f9c0bb9e1e1f304e267bdc150110b4e8",
     "semantic_hash": ""
   },
   "docs/08-implementation-plan.md": {
@@ -50,8 +50,8 @@
     "semantic_hash": ""
   },
   "Source/PrimalFauna/PrimalFauna.Build.cs": {
-    "mtime": 1784819964.3635387,
-    "ast_hash": "67d7540446c59997c2ec00968836baf5",
+    "mtime": 1784823657.3720598,
+    "ast_hash": "89bdedbadb703f3ebc22c9cf232c634c",
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Private/PFAConfig.cpp": {
@@ -70,13 +70,13 @@
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Private/PFASubsystem.cpp": {
-    "mtime": 1784816603.869665,
-    "ast_hash": "4addbfe22c17e44ce87c3cf3a16d5147",
+    "mtime": 1784825398.2158697,
+    "ast_hash": "a28a1f13cf9d241ae79a6dcc45f5c880",
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Private/PrimalFauna.cpp": {
-    "mtime": 1784822182.8746176,
-    "ast_hash": "2a81521b3ddf4258cf8c64056c1e0dc3",
+    "mtime": 1784825399.480685,
+    "ast_hash": "24fe19bcc79ff1c12bf6dd71e91dbb02",
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Public/PFAConfig.h": {
@@ -95,8 +95,8 @@
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Public/PFASubsystem.h": {
-    "mtime": 1784816586.418808,
-    "ast_hash": "ecadfe2f2fb3708ed85d5034391cc013",
+    "mtime": 1784825385.974798,
+    "ast_hash": "3b66552f41e5f361bdb80f6cf4c23e6d",
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Public/PrimalFauna.h": {
@@ -235,8 +235,8 @@
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Private/PFACheats.cpp": {
-    "mtime": 1784818127.3685622,
-    "ast_hash": "f45d65a027cd7582420549a49b8a1043",
+    "mtime": 1784822432.2045557,
+    "ast_hash": "583b40d1f331cc2ada59d97d8857d1bf",
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Public/PFACheats.h": {
@@ -245,8 +245,8 @@
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Private/PFACreatureBase.cpp": {
-    "mtime": 1784822357.3576558,
-    "ast_hash": "fb59dfb3aaa1aff0e8df3abe2f602fbf",
+    "mtime": 1784823586.1711335,
+    "ast_hash": "fbe3a56f693b87592f57a5cca03a736f",
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Private/PFACreatureController.cpp": {
@@ -255,13 +255,13 @@
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp": {
-    "mtime": 1784822181.6264272,
-    "ast_hash": "badf20ca2df2984409634a4183f98a3a",
+    "mtime": 1784823647.2250845,
+    "ast_hash": "7655c835273b4a25467bf9b877da9eb0",
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Public/PFACreatureBase.h": {
-    "mtime": 1784820642.9974587,
-    "ast_hash": "9260fdffe7cbf8a865ebe219cf917f56",
+    "mtime": 1784823568.9008088,
+    "ast_hash": "5e9142368db35dfed962c50a3fe1ab97",
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Public/PFACreatureController.h": {
@@ -270,8 +270,8 @@
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Public/Species/PFASicklejaw.h": {
-    "mtime": 1784819806.0499148,
-    "ast_hash": "76ae19fd366543526e6438e5673b02ba",
+    "mtime": 1784823682.746409,
+    "ast_hash": "ec47c3742d7712d6ace4865df44a19d5",
     "semantic_hash": ""
   },
   "tools/import_placeholder_ue.py": {
@@ -282,6 +282,31 @@
   "docs/CENSUS.md": {
     "mtime": 1784822326.4990225,
     "ast_hash": "4f05e7bc9839e2ca562ec72275f71c9e",
+    "semantic_hash": ""
+  },
+  "Source/PrimalFauna/Private/Actions/PFACreatureActionMelee.cpp": {
+    "mtime": 1784825382.2132113,
+    "ast_hash": "1cac98050f40b00ba49de30b13fc2358",
+    "semantic_hash": ""
+  },
+  "Source/PrimalFauna/Private/PFABehaviorBorrower.cpp": {
+    "mtime": 1784823555.2239573,
+    "ast_hash": "dab1d67f6d621391a6af8da84d609339",
+    "semantic_hash": ""
+  },
+  "Source/PrimalFauna/Public/Actions/PFACreatureActionMelee.h": {
+    "mtime": 1784825378.9402955,
+    "ast_hash": "3dbf782f75b6d8ce2e3dc7b47dc6a89d",
+    "semantic_hash": ""
+  },
+  "Source/PrimalFauna/Public/PFABehaviorBorrower.h": {
+    "mtime": 1784823512.698448,
+    "ast_hash": "3bc9714f4e09ed76ccfcde4621b50183",
+    "semantic_hash": ""
+  },
+  "docs/BT-FALLBACK-RECIPE.md": {
+    "mtime": 1784823735.7838657,
+    "ast_hash": "f78aa55149d48945d3fb9327237d4709",
     "semantic_hash": ""
   }
 }

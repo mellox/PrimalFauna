@@ -3,14 +3,62 @@
 #include "CoreMinimal.h"
 #include "Subsystem/ModSubsystem.h"
 #include "FGSaveInterface.h"
+#include "UObject/SoftObjectPath.h"
 #include "PFASubsystem.generated.h"
 
-// Server-side subsystem for the Primal Fauna mod. This packet (W0.1) only
-// ships the skeleton: a save-interface stub and a 10s heartbeat/config-echo
-// timer, so the mod's presence and config wiring are verifiable from the
-// log alone before any creature gameplay exists. Later packets add the
-// nest registry, census, and worm director state described in
-// docs/07-technical-architecture.md §2.
+// Doc 03 §3 nest registry record / doc 06 S1-S4. One entry per territory
+// nest, independent of whether a live APFANestSpawner currently backs it --
+// the registry is the durable truth; APFASubsystem::ReconcileNests() adopts
+// or materializes a live spawner to match it every refresh tick. FSoftClassPath
+// (not TSubclassOf<AFGCreature>) so this struct carries no hard class
+// reference -- resolved via FSoftClassPath::TryLoadClass<AFGCreature>() only
+// at materialization time (PFASubsystem.cpp), matching the pattern content-and-
+// assets.md recommends for save-stable species references.
+USTRUCT()
+struct FPFANestRecord
+{
+    GENERATED_BODY()
+
+    UPROPERTY(SaveGame)
+    FName NestId;
+
+    UPROPERTY(SaveGame)
+    FName RegionId;
+
+    UPROPERTY(SaveGame)
+    FVector Location = FVector::ZeroVector;
+
+    UPROPERTY(SaveGame)
+    FSoftClassPath SpeciesClass;
+
+    UPROPERTY(SaveGame)
+    int32 CreaturesMin = 1;
+
+    UPROPERTY(SaveGame)
+    int32 CreaturesMax = 1;
+
+    UPROPERTY(SaveGame)
+    float SpawnRadius = 1000.0f;
+
+    UPROPERTY(SaveGame)
+    int32 RespawnDays = 1;
+
+    // Doc 03 §3 step 3 deactivation flag. Nothing in W1.5 ever sets this true
+    // -- StopSpawning()/DestroyCreatures()-driven deactivation is a later
+    // packet (W2.3 wires config per the doc08 packet note). The field exists
+    // now purely so the registry's SAVE FORMAT doesn't need to change shape
+    // later (doc 07 §10's mPlanVersion bump is for region-TABLE shape changes,
+    // not this).
+    UPROPERTY(SaveGame)
+    bool bDormant = false;
+};
+
+// Server-side subsystem for the Primal Fauna mod. W0.1 shipped the skeleton
+// (save-interface stub + 10s heartbeat/config-echo timer). W1.5 adds the
+// nest registry + adopt/materialize reconciliation described in
+// docs/03-spawning-and-territories.md §3 and docs/06-integration-and-compat.md
+// §3 (contract items S1-S4). Census and worm director state described in
+// docs/07-technical-architecture.md §2 remain later packets.
 UCLASS()
 class PRIMALFAUNA_API APFASubsystem : public AModSubsystem, public IFGSaveInterface
 {
@@ -30,16 +78,47 @@ public:
     FORCEINLINE int32 GetBTDiscoveredCount() const { return BTDiscoveredCount; }
     FORCEINLINE const FString& GetBTSearchRoot() const { return BTSearchRoot; }
 
-    // IFGSaveInterface -- no savegame data yet in this packet, so every
-    // hook is an empty stub; ShouldSave still returns true so the actor is
-    // already registered with the save system once fields are added later.
+    // IFGSaveInterface. NestRegistry (below) is SaveGame as of W1.5, so
+    // ShouldSave's "true" now actually matters; every hook besides
+    // PostLoadGame_Implementation is still an empty stub -- W1.5 has nothing
+    // that needs Pre/PostSaveGame or PreLoadGame specifically (the registry
+    // array serializes on its own via ordinary SaveGame reflection).
     virtual bool ShouldSave_Implementation() const override { return true; }
     virtual bool NeedTransform_Implementation() override { return false; }
     virtual void PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion) override {}
     virtual void PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion) override {}
     virtual void PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion) override {}
-    virtual void PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion) override {}
+
+    // Doc 03 §4 [assumption -> slice test] instrumentation: logs
+    // "[PFA] Nest persistence: records=<n> preexisting-live=<m>" -- the raw
+    // evidence the Phase-1 gate reads to verdict "dynamic APFANestSpawners
+    // persist natively" vs "fall back to the transient model" (doc 03 §4).
+    // See PFASubsystem.cpp for what "preexisting-live" can and cannot prove.
+    virtual void PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion) override;
+
     virtual void GatherDependencies_Implementation(TArray<UObject*>& out_dependentObjects) override {}
+
+    // ---- Nest registry public API (docs/03 §3, docs/06 S1-S4) ----
+
+    // Server-only. Ground-projects the local player's location (simple
+    // downward line trace -- no water/candidate sampling, that is W2.1's
+    // PFA.DumpCandidates), appends ONE new record to NestRegistry with
+    // RegionId "Test" and the next free index for that region, then triggers
+    // an immediate ReconcileNests() so PFA.SpawnNest (PFACheats.cpp) doesn't
+    // make the tester wait for the next 10s tick. Deliberately reuses the
+    // SAME reconciliation RefreshTick calls every 10s -- doc 03 §3 is
+    // explicit that materialization must be ONE code path, not a direct-spawn
+    // special case. Returns false (OutDetail explains why) if there is no
+    // world/player pawn to spawn near, or if this instance has no authority.
+    bool SpawnNestAtPlayer(FString& OutDetail);
+
+    // Read-only registry consistency check for the NestRegistryConsistent
+    // self-test (PFASubsystem.cpp): every record should resolve to either a
+    // live matching APFANestSpawner or the (currently always-false) dormant
+    // flag, and every live APFANestSpawner found in the world should match
+    // some record. Never mutates; safe to call at any tick, including before
+    // the first reconcile has ever run (0 records is a trivial PASS).
+    bool CheckNestRegistryConsistency(FString& OutDetail) const;
 
 protected:
     virtual void BeginPlay() override;
@@ -84,4 +163,29 @@ private:
     // on DiscoveredCount == 0 -- a heuristic miss over a full census will not
     // improve by retrying.
     int32 BTBorrowAttempts = 0;
+
+    // ---- W1.5 nest registry (docs/03 §3, docs/06 S1-S4) ----
+
+    // The durable truth. RefreshTick (every 10s) and SpawnNestAtPlayer (on
+    // demand, immediately) both funnel through the SAME ReconcileNests() to
+    // adopt-or-materialize a live APFANestSpawner per record -- see that
+    // function for why there is deliberately only one path.
+    UPROPERTY(SaveGame)
+    TArray<FPFANestRecord> NestRegistry;
+
+    // Doc 03 §3: scans the world for live APFANestSpawners, adopts any that
+    // match a record's NestId, and materializes (SpawnActor, deterministic
+    // name, ConfigureNest, RegisterAsNavigationInvoker, PopulateSpawnData) any
+    // record with no live match. Never destroys a spawner (S4 is out of scope
+    // for W1.5 -- no dormancy/deactivation logic beyond the bDormant flag
+    // existing). HasAuthority()-guarded even though both call sites already
+    // are, for the same "no-op safety belt" reason PFA_RunSelfTests documents.
+    void ReconcileNests();
+
+    // Set after ReconcileNests() has run at least once, so the
+    // "[PFA] Nests: ..." census line logs unconditionally that first time
+    // (doc 08 packet spec: "Display, once per change + on load") even when
+    // there happen to be zero adopted/materialized changes that pass (e.g. an
+    // empty registry on a fresh save).
+    bool bHasReconciledNestsOnce = false;
 };

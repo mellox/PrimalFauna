@@ -18,7 +18,8 @@ class UWorld;
 //   PFA.SelfTest          runs every registered self-test (see below)
 //   PFA.DumpCreature       census-dumps the creature the player is looking at
 //   PFA.DumpAllCreatures   per-class census of every live AFGCreature
-//   PFA.SpawnNest          stub -- arrives in W1.5
+//   PFA.SpawnNest          W1.5: spawns a real territory nest at the player's
+//                          ground position (APFASubsystem::SpawnNestAtPlayer)
 //   PFA.WormForceEvent     stub -- arrives in W4
 //   pfa.Diag   (CVar, int) 1 = force verbose [PFA] diagnostics on
 //   pfa.AutoTest (CVar, int) 1 = auto-run PFA.SelfTest on first refresh tick

@@ -346,6 +346,38 @@ namespace
 				Pair.Key ? *Pair.Key->GetName() : TEXT("<null class>"), Pair.Value, CdoMaxHealth);
 		}
 	}
+
+	// ---- PFA.SpawnNest (W1.5): thin console-command wrapper. All the real
+	// work (ground trace, registry append, immediate reconcile) lives on
+	// APFASubsystem::SpawnNestAtPlayer (PFASubsystem.cpp) -- this function
+	// only does the standard world/authority guard (matching PFA.SpawnTest's
+	// pattern, Species/PFASicklejaw.cpp) and finds the live subsystem
+	// instance, the same way the SubsystemAlive self-test does. ----
+	void SpawnNestCommand(UWorld* World)
+	{
+		if (!World)
+		{
+			UE_LOG(LogPrimalFauna, Warning, TEXT("[PFA] PFA.SpawnNest aborted: no world context."));
+			return;
+		}
+		if (World->GetNetMode() == NM_Client)
+		{
+			UE_LOG(LogPrimalFauna, Warning,
+				TEXT("[PFA] PFA.SpawnNest aborted: this is a network client with no authority. Run PFA.SpawnNest from the host/server."));
+			return;
+		}
+
+		for (TActorIterator<APFASubsystem> It(World); It; ++It)
+		{
+			FString Detail;
+			const bool bSuccess = It->SpawnNestAtPlayer(Detail);
+			UE_LOG(LogPrimalFauna, Display, TEXT("[PFA] PFA.SpawnNest: %s (%s)"),
+				bSuccess ? TEXT("OK") : TEXT("FAIL"), *Detail);
+			return;
+		}
+
+		UE_LOG(LogPrimalFauna, Error, TEXT("[PFA] PFA.SpawnNest FAIL: no APFASubsystem in this world."));
+	}
 }
 
 // ---- Console commands: plain IConsoleManager registrations (not UFUNCTION(exec)
@@ -381,10 +413,10 @@ namespace
 
 	FAutoConsoleCommandWithWorldAndArgs CCmdPFASpawnNest(
 		TEXT("PFA.SpawnNest"),
-		TEXT("Primal Fauna: spawn a territory nest near the player. NOT YET IMPLEMENTED (arrives in W1.5)."),
-		FConsoleCommandWithWorldAndArgsDelegate::CreateLambda([](const TArray<FString>& /*Args*/, UWorld* /*World*/)
+		TEXT("Primal Fauna: spawn a territory nest at the player's ground position (region 'Test') and reconcile immediately. Server-side only."),
+		FConsoleCommandWithWorldAndArgsDelegate::CreateLambda([](const TArray<FString>& /*Args*/, UWorld* World)
 		{
-			UE_LOG(LogPrimalFauna, Display, TEXT("[PFA] PFA.SpawnNest not available until W1.5 ships (APFANestSpawner does not exist yet)."));
+			SpawnNestCommand(World);
 		}));
 
 	FAutoConsoleCommandWithWorldAndArgs CCmdPFAWormForceEvent(
