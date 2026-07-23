@@ -2,6 +2,7 @@
 #include "PrimalFauna.h"
 #include "PFACheats.h"
 #include "PFACreatureBase.h"
+#include "PFASubsystem.h"
 #include "Species/PFASicklejaw.h"
 
 #include "Creature/FGCreature.h"
@@ -11,6 +12,7 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardData.h"
 #include "BrainComponent.h"
+#include "EngineUtils.h"
 
 namespace
 {
@@ -121,10 +123,39 @@ void APFACreatureController::OnPossess(APawn* InPawn)
 	}
 
 	UBehaviorTree* BTAsset = PossessedCreature->GetBehaviorTreeAsset();
+	const TCHAR* BTSource = TEXT("instance");
+
+	// W1.7 (Section-B re-test, 2026-07-23): CDO->instance propagation of the
+	// borrowed tree provably does NOT happen through the closed-source spawn
+	// path -- EVERY instance read null here, including ones spawned ~5 min
+	// after a verified CDO write. Root cause is in unreadable spawn internals;
+	// the robust fix is to stop depending on propagation entirely: fall back
+	// to the subsystem's GC-rooted borrowed tree and write it onto THIS
+	// INSTANCE (so any downstream native read of mBehaviorTree also sees it).
+	if (!BTAsset)
+	{
+		for (TActorIterator<APFASubsystem> It(GetWorld()); It; ++It)
+		{
+			if (*It)
+			{
+				BTAsset = It->GetBorrowedBehaviorTree();
+				break;
+			}
+		}
+		if (BTAsset)
+		{
+			BTSource = TEXT("subsystem-fallback");
+			if (APFACreatureBase* PFACreature = Cast<APFACreatureBase>(PossessedCreature))
+			{
+				PFACreature->SetBorrowedBehaviorTree(BTAsset);
+			}
+		}
+	}
+
 	if (!BTAsset)
 	{
 		UE_LOG(LogPrimalFauna, Error,
-			TEXT("[PFA] %s: OnPossess %s -> BT <none> RunBehaviorTree=SKIPPED blackboard=n/a (GetBehaviorTreeAsset() returned null -- the CDO borrow (docs/07 §4) may not have propagated to this instance; check the [PFA] BT borrow/census lines from world load)."),
+			TEXT("[PFA] %s: OnPossess %s -> BT <none> RunBehaviorTree=SKIPPED blackboard=n/a (instance null AND subsystem fallback empty -- check the [PFA] BT borrow/census lines from world load; discovery may have found nothing)."),
 			*GetName(), *PossessedCreature->GetName());
 		return;
 	}
@@ -152,8 +183,8 @@ void APFACreatureController::OnPossess(APawn* InPawn)
 		// Success chain -- Display, always on (not diagnostics-gated): this is
 		// the ONE line the W1.6 re-test greps for to confirm the fix landed.
 		UE_LOG(LogPrimalFauna, Display,
-			TEXT("[PFA] %s: OnPossess %s -> BT %s RunBehaviorTree=true blackboard=%s (btBlackboardAsset=%s)"),
-			*GetName(), *PossessedCreature->GetName(), *BTAsset->GetName(), BlackboardState, *BTBlackboardAssetName);
+			TEXT("[PFA] %s: OnPossess %s -> BT %s (source=%s) RunBehaviorTree=true blackboard=%s (btBlackboardAsset=%s)"),
+			*GetName(), *PossessedCreature->GetName(), *BTAsset->GetName(), BTSource, BlackboardState, *BTBlackboardAssetName);
 	}
 	else
 	{

@@ -78,6 +78,13 @@ public:
     FORCEINLINE int32 GetBTDiscoveredCount() const { return BTDiscoveredCount; }
     FORCEINLINE const FString& GetBTSearchRoot() const { return BTSearchRoot; }
 
+    // W1.7: the Section-B re-test proved CDO->instance propagation of the
+    // borrowed BT does NOT happen through the closed-source spawn path
+    // (GetBehaviorTreeAsset() null on EVERY instance, even ones spawned
+    // minutes after a verified CDO write). APFACreatureController::OnPossess
+    // falls back to this rooted reference and writes it onto the INSTANCE.
+    FORCEINLINE class UBehaviorTree* GetBorrowedBehaviorTree() const { return mBorrowedBehaviorTree; }
+
     // IFGSaveInterface. NestRegistry (below) is SaveGame as of W1.5, so
     // ShouldSave's "true" now actually matters; every hook besides
     // PostLoadGame_Implementation is still an empty stub -- W1.5 has nothing

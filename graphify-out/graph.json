@@ -4,154 +4,164 @@
   "graph": {},
   "nodes": [
     {
-      "label": "03-spawning-and-territories.md",
-      "file_type": "document",
-      "source_file": "docs/03-spawning-and-territories.md",
+      "label": "PFACheats.cpp",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "docs_03_spawning_and_territories",
-      "community": 4,
-      "norm_label": "03-spawning-and-territories.md"
+      "id": "private_pfacheats",
+      "community": 11,
+      "norm_label": "pfacheats.cpp"
     },
     {
-      "label": "03 \u2014 Spawning & Territories",
-      "file_type": "document",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L1",
+      "label": "IsEnabled()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L39",
       "_origin": "ast",
-      "id": "docs_03_spawning_and_territories_03_spawning_territories",
-      "community": 4,
-      "norm_label": "03 \u2014 spawning & territories"
+      "id": "private_pfacheats_isenabled",
+      "community": 11,
+      "norm_label": "isenabled()"
     },
     {
-      "label": "1. Why real `AFGCreatureSpawner`s (not a custom spawn loop)",
-      "file_type": "document",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L6",
+      "label": "SetConfigDiagnostics()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L44",
       "_origin": "ast",
-      "id": "docs_03_spawning_and_territories_1_why_real_afgcreaturespawner_s_not_a_custom_spawn_loop",
-      "community": 4,
-      "norm_label": "1. why real `afgcreaturespawner`s (not a custom spawn loop)"
+      "id": "private_pfacheats_setconfigdiagnostics",
+      "community": 11,
+      "norm_label": "setconfigdiagnostics()"
     },
     {
-      "label": "2. Territory data (authored, seeded, curated)",
-      "file_type": "document",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L36",
+      "label": "IsAutoTestRequested()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L49",
       "_origin": "ast",
-      "id": "docs_03_spawning_and_territories_2_territory_data_authored_seeded_curated",
-      "community": 4,
-      "norm_label": "2. territory data (authored, seeded, curated)"
+      "id": "private_pfacheats_isautotestrequested",
+      "community": 11,
+      "norm_label": "isautotestrequested()"
     },
     {
-      "label": "3. Injection & idempotence (the subsystem's job)",
-      "file_type": "document",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L62",
+      "label": "RegisterPFASelfTest()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L66",
       "_origin": "ast",
-      "id": "docs_03_spawning_and_territories_3_injection_idempotence_the_subsystem_s_job",
-      "community": 4,
-      "norm_label": "3. injection & idempotence (the subsystem's job)"
+      "id": "private_pfacheats_registerpfaselftest",
+      "community": 11,
+      "norm_label": "registerpfaselftest()"
     },
     {
-      "label": "4. Persistence model \u2014 \u2705 RESOLVED: OUTCOME A (native persistence), gate re-run 2026-07-23",
-      "file_type": "document",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L86",
+      "label": "FPFASelfTest",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L66",
       "_origin": "ast",
-      "id": "docs_03_spawning_and_territories_4_persistence_model_resolved_outcome_a_native_persistence_gate_re_run_2026_07_23",
-      "community": 4,
-      "norm_label": "4. persistence model \u2014 \u2705 resolved: outcome a (native persistence), gate re-run 2026-07-23"
+      "id": "fpfaselftest",
+      "community": 11,
+      "norm_label": "fpfaselftest"
     },
     {
-      "label": "(original assumption text, superseded)",
-      "file_type": "document",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L94",
+      "label": "PFA_RunSelfTests()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L71",
       "_origin": "ast",
-      "id": "docs_03_spawning_and_territories_original_assumption_text_superseded",
-      "community": 4,
-      "norm_label": "(original assumption text, superseded)"
+      "id": "private_pfacheats_pfa_runselftests",
+      "community": 11,
+      "norm_label": "pfa_runselftests()"
     },
     {
-      "label": "5. Density semantics (compose with HostileScaling, don't fight it)",
-      "file_type": "document",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L113",
+      "label": "UWorld",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L71",
       "_origin": "ast",
-      "id": "docs_03_spawning_and_territories_5_density_semantics_compose_with_hostilescaling_don_t_fight_it",
-      "community": 4,
-      "norm_label": "5. density semantics (compose with hostilescaling, don't fight it)"
+      "id": "source_primalfauna_private_pfacheats_cpp_uworld",
+      "community": 11,
+      "norm_label": "uworld"
     },
     {
-      "label": "6. Live creature lifecycle rules",
-      "file_type": "document",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L122",
+      "label": "FindLookedAtOrNearestCreature()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L124",
       "_origin": "ast",
-      "id": "docs_03_spawning_and_territories_6_live_creature_lifecycle_rules",
-      "community": 4,
-      "norm_label": "6. live creature lifecycle rules"
+      "id": "private_pfacheats_findlookedatornearestcreature",
+      "community": 11,
+      "norm_label": "findlookedatornearestcreature()"
     },
     {
-      "label": "7. Sandwyrm event system (its own phase \u2014 no nests)",
-      "file_type": "document",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L129",
+      "label": "AFGCreature",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L124",
       "_origin": "ast",
-      "id": "docs_03_spawning_and_territories_7_sandwyrm_event_system_its_own_phase_no_nests",
-      "community": 4,
-      "norm_label": "7. sandwyrm event system (its own phase \u2014 no nests)"
+      "id": "source_primalfauna_private_pfacheats_cpp_afgcreature",
+      "community": 11,
+      "norm_label": "afgcreature"
     },
     {
-      "label": "8. Multiplayer",
-      "file_type": "document",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L158",
+      "label": "LogActionReflection()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L195",
       "_origin": "ast",
-      "id": "docs_03_spawning_and_territories_8_multiplayer",
-      "community": 4,
-      "norm_label": "8. multiplayer"
+      "id": "private_pfacheats_logactionreflection",
+      "community": 11,
+      "norm_label": "logactionreflection()"
     },
     {
-      "label": "CENSUS.md",
-      "file_type": "document",
-      "source_file": "docs/CENSUS.md",
-      "source_location": "L1",
+      "label": "UFGAction",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L195",
       "_origin": "ast",
-      "id": "docs_census",
-      "community": 25,
-      "norm_label": "census.md"
+      "id": "ufgaction",
+      "community": 11,
+      "norm_label": "ufgaction"
     },
     {
-      "label": "CENSUS \u2014 live vanilla creature data (feeds doc 01 anchors)",
-      "file_type": "document",
-      "source_file": "docs/CENSUS.md",
-      "source_location": "L1",
+      "label": "DumpCreatureCommand()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L229",
       "_origin": "ast",
-      "id": "docs_census_census_live_vanilla_creature_data_feeds_doc_01_anchors",
-      "community": 25,
-      "norm_label": "census \u2014 live vanilla creature data (feeds doc 01 anchors)"
+      "id": "private_pfacheats_dumpcreaturecommand",
+      "community": 11,
+      "norm_label": "dumpcreaturecommand()"
     },
     {
-      "label": "2026-07-23 \u2014 smoke session (Grass Fields spawn, build w11-2, 113-mod profile incl. SF+)",
-      "file_type": "document",
-      "source_file": "docs/CENSUS.md",
-      "source_location": "L6",
+      "label": "DumpAllCreaturesCommand()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L316",
       "_origin": "ast",
-      "id": "docs_census_2026_07_23_smoke_session_grass_fields_spawn_build_w11_2_113_mod_profile_incl_sf",
-      "community": 25,
-      "norm_label": "2026-07-23 \u2014 smoke session (grass fields spawn, build w11-2, 113-mod profile incl. sf+)"
+      "id": "private_pfacheats_dumpallcreaturescommand",
+      "community": 11,
+      "norm_label": "dumpallcreaturescommand()"
     },
     {
-      "label": "2026-07-23 \u2014 Phase-1 gate re-run: THE BT CENSUS (build w15-3, full profile)",
-      "file_type": "document",
-      "source_file": "docs/CENSUS.md",
-      "source_location": "L19",
+      "label": "SpawnNestCommand()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L357",
       "_origin": "ast",
-      "id": "docs_census_2026_07_23_phase_1_gate_re_run_the_bt_census_build_w15_3_full_profile",
-      "community": 25,
-      "norm_label": "2026-07-23 \u2014 phase-1 gate re-run: the bt census (build w15-3, full profile)"
+      "id": "private_pfacheats_spawnnestcommand",
+      "community": 11,
+      "norm_label": "spawnnestcommand()"
+    },
+    {
+      "label": "KillAllCommand()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L401",
+      "_origin": "ast",
+      "id": "private_pfacheats_killallcommand",
+      "community": 11,
+      "norm_label": "killallcommand()"
     },
     {
       "label": "PFACreatureBase.cpp",
@@ -159,9 +169,9 @@
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
       "source_location": "L1",
       "_origin": "ast",
+      "id": "private_pfacreaturebase",
       "community": 22,
-      "norm_label": "pfacreaturebase.cpp",
-      "id": "private_pfacreaturebase"
+      "norm_label": "pfacreaturebase.cpp"
     },
     {
       "label": "AggressionModeToString()",
@@ -169,9 +179,9 @@
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
       "source_location": "L14",
       "_origin": "ast",
+      "id": "private_pfacreaturebase_aggressionmodetostring",
       "community": 22,
-      "norm_label": "aggressionmodetostring()",
-      "id": "private_pfacreaturebase_aggressionmodetostring"
+      "norm_label": "aggressionmodetostring()"
     },
     {
       "label": "TCHAR",
@@ -179,9 +189,9 @@
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
       "source_location": "L14",
       "_origin": "ast",
+      "id": "tchar",
       "community": 22,
-      "norm_label": "tchar",
-      "id": "tchar"
+      "norm_label": "tchar"
     },
     {
       "label": "EPFAAggression",
@@ -189,9 +199,9 @@
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
       "source_location": "L14",
       "_origin": "ast",
+      "id": "epfaaggression",
       "community": 22,
-      "norm_label": "epfaaggression",
-      "id": "epfaaggression"
+      "norm_label": "epfaaggression"
     },
     {
       "label": "APFACreatureBase()",
@@ -199,9 +209,9 @@
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
       "source_location": "L44",
       "_origin": "ast",
+      "id": "private_pfacreaturebase_apfacreaturebase",
       "community": 22,
-      "norm_label": "apfacreaturebase()",
-      "id": "private_pfacreaturebase_apfacreaturebase"
+      "norm_label": "apfacreaturebase()"
     },
     {
       "label": "FObjectInitializer",
@@ -209,109 +219,259 @@
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
       "source_location": "L44",
       "_origin": "ast",
+      "id": "source_primalfauna_private_pfacreaturebase_cpp_fobjectinitializer",
       "community": 22,
-      "norm_label": "fobjectinitializer",
-      "id": "source_primalfauna_private_pfacreaturebase_cpp_fobjectinitializer"
+      "norm_label": "fobjectinitializer"
+    },
+    {
+      "label": "BeginPlay()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
+      "source_location": "L52",
+      "_origin": "ast",
+      "id": "private_pfacreaturebase_beginplay",
+      "community": 22,
+      "norm_label": "beginplay()"
     },
     {
       "label": "GetLifetimeReplicatedProps()",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
-      "source_location": "L52",
+      "source_location": "L106",
       "_origin": "ast",
+      "id": "private_pfacreaturebase_getlifetimereplicatedprops",
       "community": 22,
-      "norm_label": "getlifetimereplicatedprops()",
-      "id": "private_pfacreaturebase_getlifetimereplicatedprops"
+      "norm_label": "getlifetimereplicatedprops()"
     },
     {
       "label": "TArray",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
-      "source_location": "L52",
+      "source_location": "L106",
       "_origin": "ast",
+      "id": "tarray",
       "community": 22,
-      "norm_label": "tarray",
-      "id": "tarray"
+      "norm_label": "tarray"
     },
     {
       "label": "FLifetimeProperty",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
-      "source_location": "L52",
+      "source_location": "L106",
       "_origin": "ast",
+      "id": "flifetimeproperty",
       "community": 22,
-      "norm_label": "flifetimeproperty",
-      "id": "flifetimeproperty"
+      "norm_label": "flifetimeproperty"
     },
     {
       "label": "SetAggressionMode()",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
-      "source_location": "L58",
+      "source_location": "L112",
       "_origin": "ast",
+      "id": "private_pfacreaturebase_setaggressionmode",
       "community": 22,
-      "norm_label": "setaggressionmode()",
-      "id": "private_pfacreaturebase_setaggressionmode"
+      "norm_label": "setaggressionmode()"
     },
     {
       "label": "SetBaseHealth()",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
-      "source_location": "L96",
+      "source_location": "L150",
       "_origin": "ast",
+      "id": "private_pfacreaturebase_setbasehealth",
       "community": 22,
-      "norm_label": "setbasehealth()",
-      "id": "private_pfacreaturebase_setbasehealth"
+      "norm_label": "setbasehealth()"
     },
     {
       "label": "SetSpawnDespawnDistance()",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
-      "source_location": "L113",
+      "source_location": "L167",
       "_origin": "ast",
+      "id": "private_pfacreaturebase_setspawndespawndistance",
       "community": 22,
-      "norm_label": "setspawndespawndistance()",
-      "id": "private_pfacreaturebase_setspawndespawndistance"
+      "norm_label": "setspawndespawndistance()"
     },
     {
       "label": "SetBorrowedBehaviorTree()",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
-      "source_location": "L127",
+      "source_location": "L181",
       "_origin": "ast",
+      "id": "private_pfacreaturebase_setborrowedbehaviortree",
       "community": 22,
-      "norm_label": "setborrowedbehaviortree()",
-      "id": "private_pfacreaturebase_setborrowedbehaviortree"
+      "norm_label": "setborrowedbehaviortree()"
     },
     {
       "label": "UBehaviorTree",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
-      "source_location": "L127",
+      "source_location": "L181",
       "_origin": "ast",
+      "id": "ubehaviortree",
       "community": 22,
-      "norm_label": "ubehaviortree",
-      "id": "ubehaviortree"
+      "norm_label": "ubehaviortree"
     },
     {
       "label": "ClearNativeOrphanTimer()",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
-      "source_location": "L144",
+      "source_location": "L198",
       "_origin": "ast",
+      "id": "private_pfacreaturebase_clearnativeorphantimer",
       "community": 22,
-      "norm_label": "clearnativeorphantimer()",
-      "id": "private_pfacreaturebase_clearnativeorphantimer"
+      "norm_label": "clearnativeorphantimer()"
     },
     {
       "label": "SpawnDeathItem_Implementation()",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
-      "source_location": "L154",
+      "source_location": "L208",
       "_origin": "ast",
+      "id": "private_pfacreaturebase_spawndeathitem_implementation",
       "community": 22,
-      "norm_label": "spawndeathitem_implementation()",
-      "id": "private_pfacreaturebase_spawndeathitem_implementation"
+      "norm_label": "spawndeathitem_implementation()"
+    },
+    {
+      "label": "PFACreatureController.cpp",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "private_pfacreaturecontroller",
+      "community": 23,
+      "norm_label": "pfacreaturecontroller.cpp"
+    },
+    {
+      "label": "LogRuleVerdict()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L17",
+      "_origin": "ast",
+      "id": "private_pfacreaturecontroller_logruleverdict",
+      "community": 23,
+      "norm_label": "logruleverdict()"
+    },
+    {
+      "label": "AFGCreature",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L17",
+      "_origin": "ast",
+      "id": "source_primalfauna_private_pfacreaturecontroller_cpp_afgcreature",
+      "community": 23,
+      "norm_label": "afgcreature"
+    },
+    {
+      "label": "AActor",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L17",
+      "_origin": "ast",
+      "id": "aactor",
+      "community": 23,
+      "norm_label": "aactor"
+    },
+    {
+      "label": "int32",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L17",
+      "_origin": "ast",
+      "id": "int32",
+      "community": 9,
+      "norm_label": "int32"
+    },
+    {
+      "label": "APFACreatureController()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L33",
+      "_origin": "ast",
+      "id": "private_pfacreaturecontroller_apfacreaturecontroller",
+      "community": 23,
+      "norm_label": "apfacreaturecontroller()"
+    },
+    {
+      "label": "FObjectInitializer",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L33",
+      "_origin": "ast",
+      "id": "source_primalfauna_private_pfacreaturecontroller_cpp_fobjectinitializer",
+      "community": 23,
+      "norm_label": "fobjectinitializer"
+    },
+    {
+      "label": "OnPossess()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L103",
+      "_origin": "ast",
+      "id": "private_pfacreaturecontroller_onpossess",
+      "community": 23,
+      "norm_label": "onpossess()"
+    },
+    {
+      "label": "APawn",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L103",
+      "_origin": "ast",
+      "id": "apawn",
+      "community": 23,
+      "norm_label": "apawn"
+    },
+    {
+      "label": "CanBeHostileTowards()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L171",
+      "_origin": "ast",
+      "id": "private_pfacreaturecontroller_canbehostiletowards",
+      "community": 23,
+      "norm_label": "canbehostiletowards()"
+    },
+    {
+      "label": "IsValidTarget()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L266",
+      "_origin": "ast",
+      "id": "private_pfacreaturecontroller_isvalidtarget",
+      "community": 23,
+      "norm_label": "isvalidtarget()"
+    },
+    {
+      "label": "CanBeAlertedByTarget_Implementation()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L271",
+      "_origin": "ast",
+      "id": "private_pfacreaturecontroller_canbealertedbytarget_implementation",
+      "community": 23,
+      "norm_label": "canbealertedbytarget_implementation()"
+    },
+    {
+      "label": "PassesAggressionModeGate()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L276",
+      "_origin": "ast",
+      "id": "private_pfacreaturecontroller_passesaggressionmodegate",
+      "community": 23,
+      "norm_label": "passesaggressionmodegate()"
+    },
+    {
+      "label": "WasRecentlyDamagedBy()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L326",
+      "_origin": "ast",
+      "id": "private_pfacreaturecontroller_wasrecentlydamagedby",
+      "community": 23,
+      "norm_label": "wasrecentlydamagedby()"
     },
     {
       "label": "PrimalFauna.cpp",
@@ -319,9 +479,9 @@
       "source_file": "Source/PrimalFauna/Private/PrimalFauna.cpp",
       "source_location": "L1",
       "_origin": "ast",
+      "id": "private_primalfauna",
       "community": 19,
-      "norm_label": "primalfauna.cpp",
-      "id": "private_primalfauna"
+      "norm_label": "primalfauna.cpp"
     },
     {
       "label": "StartupModule()",
@@ -329,9 +489,9 @@
       "source_file": "Source/PrimalFauna/Private/PrimalFauna.cpp",
       "source_location": "L5",
       "_origin": "ast",
+      "id": "private_primalfauna_startupmodule",
       "community": 19,
-      "norm_label": "startupmodule()",
-      "id": "private_primalfauna_startupmodule"
+      "norm_label": "startupmodule()"
     },
     {
       "label": "PFASicklejaw.cpp",
@@ -339,9 +499,9 @@
       "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
       "source_location": "L1",
       "_origin": "ast",
+      "id": "species_pfasicklejaw",
       "community": 22,
-      "norm_label": "pfasicklejaw.cpp",
-      "id": "species_pfasicklejaw"
+      "norm_label": "pfasicklejaw.cpp"
     },
     {
       "label": "APFASicklejaw()",
@@ -349,9 +509,9 @@
       "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
       "source_location": "L51",
       "_origin": "ast",
+      "id": "species_pfasicklejaw_apfasicklejaw",
       "community": 22,
-      "norm_label": "apfasicklejaw()",
-      "id": "species_pfasicklejaw_apfasicklejaw"
+      "norm_label": "apfasicklejaw()"
     },
     {
       "label": "FObjectInitializer",
@@ -359,9 +519,9 @@
       "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
       "source_location": "L51",
       "_origin": "ast",
+      "id": "source_primalfauna_private_species_pfasicklejaw_cpp_fobjectinitializer",
       "community": 22,
-      "norm_label": "fobjectinitializer",
-      "id": "source_primalfauna_private_species_pfasicklejaw_cpp_fobjectinitializer"
+      "norm_label": "fobjectinitializer"
     },
     {
       "label": "BeginPlay()",
@@ -369,9 +529,9 @@
       "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
       "source_location": "L113",
       "_origin": "ast",
+      "id": "species_pfasicklejaw_beginplay",
       "community": 22,
-      "norm_label": "beginplay()",
-      "id": "species_pfasicklejaw_beginplay"
+      "norm_label": "beginplay()"
     },
     {
       "label": "SpawnTestCommand()",
@@ -379,9 +539,9 @@
       "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
       "source_location": "L164",
       "_origin": "ast",
+      "id": "species_pfasicklejaw_spawntestcommand",
       "community": 22,
-      "norm_label": "spawntestcommand()",
-      "id": "species_pfasicklejaw_spawntestcommand"
+      "norm_label": "spawntestcommand()"
     },
     {
       "label": "UWorld",
@@ -389,9 +549,49 @@
       "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
       "source_location": "L164",
       "_origin": "ast",
-      "community": 11,
-      "norm_label": "uworld",
-      "id": "uworld"
+      "id": "source_primalfauna_private_species_pfasicklejaw_cpp_uworld",
+      "community": 22,
+      "norm_label": "uworld"
+    },
+    {
+      "label": "PFACheats.h",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Public/PFACheats.h",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "public_pfacheats",
+      "community": 21,
+      "norm_label": "pfacheats.h"
+    },
+    {
+      "label": "PFADiag()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Public/PFACheats.h",
+      "source_location": "L55",
+      "_origin": "ast",
+      "id": "public_pfacheats_pfadiag",
+      "community": 21,
+      "norm_label": "pfadiag()"
+    },
+    {
+      "label": "namespace",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Public/PFACheats.h",
+      "source_location": "L55",
+      "_origin": "ast",
+      "id": "namespace",
+      "community": 21,
+      "norm_label": "namespace"
+    },
+    {
+      "label": "FPFASelfTest()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Public/PFACheats.h",
+      "source_location": "L97",
+      "_origin": "ast",
+      "id": "public_pfacheats_fpfaselftest",
+      "community": 21,
+      "norm_label": "fpfaselftest()"
     },
     {
       "label": "PFACreatureBase.h",
@@ -399,9 +599,9 @@
       "source_file": "Source/PrimalFauna/Public/PFACreatureBase.h",
       "source_location": "L1",
       "_origin": "ast",
+      "id": "public_pfacreaturebase",
       "community": 12,
-      "norm_label": "pfacreaturebase.h",
-      "id": "public_pfacreaturebase"
+      "norm_label": "pfacreaturebase.h"
     },
     {
       "label": "EPFAAggression()",
@@ -409,9 +609,9 @@
       "source_file": "Source/PrimalFauna/Public/PFACreatureBase.h",
       "source_location": "L12",
       "_origin": "ast",
+      "id": "public_pfacreaturebase_epfaaggression",
       "community": 12,
-      "norm_label": "epfaaggression()",
-      "id": "public_pfacreaturebase_epfaaggression"
+      "norm_label": "epfaaggression()"
     },
     {
       "label": "class",
@@ -419,9 +619,189 @@
       "source_file": "Source/PrimalFauna/Public/PFACreatureBase.h",
       "source_location": "L12",
       "_origin": "ast",
+      "id": "class",
       "community": 12,
-      "norm_label": "class",
-      "id": "class"
+      "norm_label": "class"
+    },
+    {
+      "label": "PFACreatureController.h",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Public/PFACreatureController.h",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "public_pfacreaturecontroller",
+      "community": 33,
+      "norm_label": "pfacreaturecontroller.h"
+    },
+    {
+      "label": "APFACreatureController()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Public/PFACreatureController.h",
+      "source_location": "L23",
+      "_origin": "ast",
+      "id": "public_pfacreaturecontroller_apfacreaturecontroller",
+      "community": 33,
+      "norm_label": "apfacreaturecontroller()"
+    },
+    {
+      "label": "PRIMALFAUNA_API",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Public/PFACreatureController.h",
+      "source_location": "L23",
+      "_origin": "ast",
+      "id": "primalfauna_api",
+      "community": 33,
+      "norm_label": "primalfauna_api"
+    },
+    {
+      "label": "03-spawning-and-territories.md",
+      "file_type": "document",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 4,
+      "norm_label": "03-spawning-and-territories.md",
+      "id": "docs_03_spawning_and_territories"
+    },
+    {
+      "label": "03 \u2014 Spawning & Territories",
+      "file_type": "document",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 4,
+      "norm_label": "03 \u2014 spawning & territories",
+      "id": "docs_03_spawning_and_territories_03_spawning_territories"
+    },
+    {
+      "label": "1. Why real `AFGCreatureSpawner`s (not a custom spawn loop)",
+      "file_type": "document",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L6",
+      "_origin": "ast",
+      "community": 4,
+      "norm_label": "1. why real `afgcreaturespawner`s (not a custom spawn loop)",
+      "id": "docs_03_spawning_and_territories_1_why_real_afgcreaturespawner_s_not_a_custom_spawn_loop"
+    },
+    {
+      "label": "2. Territory data (authored, seeded, curated)",
+      "file_type": "document",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L36",
+      "_origin": "ast",
+      "community": 4,
+      "norm_label": "2. territory data (authored, seeded, curated)",
+      "id": "docs_03_spawning_and_territories_2_territory_data_authored_seeded_curated"
+    },
+    {
+      "label": "3. Injection & idempotence (the subsystem's job)",
+      "file_type": "document",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L62",
+      "_origin": "ast",
+      "community": 4,
+      "norm_label": "3. injection & idempotence (the subsystem's job)",
+      "id": "docs_03_spawning_and_territories_3_injection_idempotence_the_subsystem_s_job"
+    },
+    {
+      "label": "4. Persistence model \u2014 \u2705 RESOLVED: OUTCOME A (native persistence), gate re-run 2026-07-23",
+      "file_type": "document",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L86",
+      "_origin": "ast",
+      "community": 4,
+      "norm_label": "4. persistence model \u2014 \u2705 resolved: outcome a (native persistence), gate re-run 2026-07-23",
+      "id": "docs_03_spawning_and_territories_4_persistence_model_resolved_outcome_a_native_persistence_gate_re_run_2026_07_23"
+    },
+    {
+      "label": "(original assumption text, superseded)",
+      "file_type": "document",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L94",
+      "_origin": "ast",
+      "community": 4,
+      "norm_label": "(original assumption text, superseded)",
+      "id": "docs_03_spawning_and_territories_original_assumption_text_superseded"
+    },
+    {
+      "label": "5. Density semantics (compose with HostileScaling, don't fight it)",
+      "file_type": "document",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L113",
+      "_origin": "ast",
+      "community": 4,
+      "norm_label": "5. density semantics (compose with hostilescaling, don't fight it)",
+      "id": "docs_03_spawning_and_territories_5_density_semantics_compose_with_hostilescaling_don_t_fight_it"
+    },
+    {
+      "label": "6. Live creature lifecycle rules",
+      "file_type": "document",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L122",
+      "_origin": "ast",
+      "community": 4,
+      "norm_label": "6. live creature lifecycle rules",
+      "id": "docs_03_spawning_and_territories_6_live_creature_lifecycle_rules"
+    },
+    {
+      "label": "7. Sandwyrm event system (its own phase \u2014 no nests)",
+      "file_type": "document",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L129",
+      "_origin": "ast",
+      "community": 4,
+      "norm_label": "7. sandwyrm event system (its own phase \u2014 no nests)",
+      "id": "docs_03_spawning_and_territories_7_sandwyrm_event_system_its_own_phase_no_nests"
+    },
+    {
+      "label": "8. Multiplayer",
+      "file_type": "document",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L158",
+      "_origin": "ast",
+      "community": 4,
+      "norm_label": "8. multiplayer",
+      "id": "docs_03_spawning_and_territories_8_multiplayer"
+    },
+    {
+      "label": "CENSUS.md",
+      "file_type": "document",
+      "source_file": "docs/CENSUS.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 25,
+      "norm_label": "census.md",
+      "id": "docs_census"
+    },
+    {
+      "label": "CENSUS \u2014 live vanilla creature data (feeds doc 01 anchors)",
+      "file_type": "document",
+      "source_file": "docs/CENSUS.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 25,
+      "norm_label": "census \u2014 live vanilla creature data (feeds doc 01 anchors)",
+      "id": "docs_census_census_live_vanilla_creature_data_feeds_doc_01_anchors"
+    },
+    {
+      "label": "2026-07-23 \u2014 smoke session (Grass Fields spawn, build w11-2, 113-mod profile incl. SF+)",
+      "file_type": "document",
+      "source_file": "docs/CENSUS.md",
+      "source_location": "L6",
+      "_origin": "ast",
+      "community": 25,
+      "norm_label": "2026-07-23 \u2014 smoke session (grass fields spawn, build w11-2, 113-mod profile incl. sf+)",
+      "id": "docs_census_2026_07_23_smoke_session_grass_fields_spawn_build_w11_2_113_mod_profile_incl_sf"
+    },
+    {
+      "label": "2026-07-23 \u2014 Phase-1 gate re-run: THE BT CENSUS (build w15-3, full profile)",
+      "file_type": "document",
+      "source_file": "docs/CENSUS.md",
+      "source_location": "L19",
+      "_origin": "ast",
+      "community": 25,
+      "norm_label": "2026-07-23 \u2014 phase-1 gate re-run: the bt census (build w15-3, full profile)",
+      "id": "docs_census_2026_07_23_phase_1_gate_re_run_the_bt_census_build_w15_3_full_profile"
     },
     {
       "label": "07-technical-architecture.md",
@@ -552,146 +932,6 @@
       "community": 34,
       "norm_label": "check_imports.ps1",
       "id": "tools_check_imports"
-    },
-    {
-      "label": "PFACheats.cpp",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
-      "source_location": "L1",
-      "_origin": "ast",
-      "community": 11,
-      "norm_label": "pfacheats.cpp",
-      "id": "private_pfacheats"
-    },
-    {
-      "label": "IsEnabled()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
-      "source_location": "L38",
-      "_origin": "ast",
-      "community": 11,
-      "norm_label": "isenabled()",
-      "id": "private_pfacheats_isenabled"
-    },
-    {
-      "label": "SetConfigDiagnostics()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
-      "source_location": "L43",
-      "_origin": "ast",
-      "community": 11,
-      "norm_label": "setconfigdiagnostics()",
-      "id": "private_pfacheats_setconfigdiagnostics"
-    },
-    {
-      "label": "IsAutoTestRequested()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
-      "source_location": "L48",
-      "_origin": "ast",
-      "community": 11,
-      "norm_label": "isautotestrequested()",
-      "id": "private_pfacheats_isautotestrequested"
-    },
-    {
-      "label": "RegisterPFASelfTest()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
-      "source_location": "L65",
-      "_origin": "ast",
-      "community": 11,
-      "norm_label": "registerpfaselftest()",
-      "id": "private_pfacheats_registerpfaselftest"
-    },
-    {
-      "label": "FPFASelfTest",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
-      "source_location": "L65",
-      "_origin": "ast",
-      "community": 11,
-      "norm_label": "fpfaselftest",
-      "id": "fpfaselftest"
-    },
-    {
-      "label": "PFA_RunSelfTests()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
-      "source_location": "L70",
-      "_origin": "ast",
-      "community": 11,
-      "norm_label": "pfa_runselftests()",
-      "id": "private_pfacheats_pfa_runselftests"
-    },
-    {
-      "label": "FindLookedAtOrNearestCreature()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
-      "source_location": "L123",
-      "_origin": "ast",
-      "community": 11,
-      "norm_label": "findlookedatornearestcreature()",
-      "id": "private_pfacheats_findlookedatornearestcreature"
-    },
-    {
-      "label": "AFGCreature",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
-      "source_location": "L123",
-      "_origin": "ast",
-      "community": 11,
-      "norm_label": "afgcreature",
-      "id": "source_primalfauna_private_pfacheats_cpp_afgcreature"
-    },
-    {
-      "label": "LogActionReflection()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
-      "source_location": "L194",
-      "_origin": "ast",
-      "community": 11,
-      "norm_label": "logactionreflection()",
-      "id": "private_pfacheats_logactionreflection"
-    },
-    {
-      "label": "UFGAction",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
-      "source_location": "L194",
-      "_origin": "ast",
-      "community": 11,
-      "norm_label": "ufgaction",
-      "id": "ufgaction"
-    },
-    {
-      "label": "DumpCreatureCommand()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
-      "source_location": "L228",
-      "_origin": "ast",
-      "community": 11,
-      "norm_label": "dumpcreaturecommand()",
-      "id": "private_pfacheats_dumpcreaturecommand"
-    },
-    {
-      "label": "DumpAllCreaturesCommand()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
-      "source_location": "L315",
-      "_origin": "ast",
-      "community": 11,
-      "norm_label": "dumpallcreaturescommand()",
-      "id": "private_pfacheats_dumpallcreaturescommand"
-    },
-    {
-      "label": "SpawnNestCommand()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
-      "source_location": "L356",
-      "_origin": "ast",
-      "community": 11,
-      "norm_label": "spawnnestcommand()",
-      "id": "private_pfacheats_spawnnestcommand"
     },
     {
       "label": "PFANestSpawner.cpp",
@@ -864,46 +1104,6 @@
       "id": "private_pfasubsystem_checknestregistryconsistency"
     },
     {
-      "label": "PFACheats.h",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Public/PFACheats.h",
-      "source_location": "L1",
-      "_origin": "ast",
-      "community": 21,
-      "norm_label": "pfacheats.h",
-      "id": "public_pfacheats"
-    },
-    {
-      "label": "PFADiag()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Public/PFACheats.h",
-      "source_location": "L53",
-      "_origin": "ast",
-      "community": 21,
-      "norm_label": "pfadiag()",
-      "id": "public_pfacheats_pfadiag"
-    },
-    {
-      "label": "namespace",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Public/PFACheats.h",
-      "source_location": "L53",
-      "_origin": "ast",
-      "community": 21,
-      "norm_label": "namespace",
-      "id": "namespace"
-    },
-    {
-      "label": "FPFASelfTest()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Public/PFACheats.h",
-      "source_location": "L95",
-      "_origin": "ast",
-      "community": 21,
-      "norm_label": "fpfaselftest()",
-      "id": "public_pfacheats_fpfaselftest"
-    },
-    {
       "label": "PFANestSpawner.h",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Public/PFANestSpawner.h",
@@ -922,16 +1122,6 @@
       "community": 33,
       "norm_label": "afgcreaturespawner()",
       "id": "public_pfanestspawner_afgcreaturespawner"
-    },
-    {
-      "label": "PRIMALFAUNA_API",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Public/PFANestSpawner.h",
-      "source_location": "L28",
-      "_origin": "ast",
-      "community": 33,
-      "norm_label": "primalfauna_api",
-      "id": "primalfauna_api"
     },
     {
       "label": "PFASubsystem.h",
@@ -1422,146 +1612,6 @@
       "community": 30,
       "norm_label": "after either path \u2014 re-verify",
       "id": "docs_bt_fallback_recipe_after_either_path_re_verify"
-    },
-    {
-      "label": "PFACreatureController.cpp",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
-      "source_location": "L1",
-      "_origin": "ast",
-      "community": 23,
-      "norm_label": "pfacreaturecontroller.cpp",
-      "id": "private_pfacreaturecontroller"
-    },
-    {
-      "label": "LogRuleVerdict()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
-      "source_location": "L14",
-      "_origin": "ast",
-      "community": 23,
-      "norm_label": "logruleverdict()",
-      "id": "private_pfacreaturecontroller_logruleverdict"
-    },
-    {
-      "label": "AActor",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
-      "source_location": "L14",
-      "_origin": "ast",
-      "community": 23,
-      "norm_label": "aactor",
-      "id": "aactor"
-    },
-    {
-      "label": "int32",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
-      "source_location": "L14",
-      "_origin": "ast",
-      "community": 9,
-      "norm_label": "int32",
-      "id": "int32"
-    },
-    {
-      "label": "APFACreatureController()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
-      "source_location": "L30",
-      "_origin": "ast",
-      "community": 23,
-      "norm_label": "apfacreaturecontroller()",
-      "id": "private_pfacreaturecontroller_apfacreaturecontroller"
-    },
-    {
-      "label": "FObjectInitializer",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
-      "source_location": "L30",
-      "_origin": "ast",
-      "community": 23,
-      "norm_label": "fobjectinitializer",
-      "id": "source_primalfauna_private_pfacreaturecontroller_cpp_fobjectinitializer"
-    },
-    {
-      "label": "CanBeHostileTowards()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
-      "source_location": "L35",
-      "_origin": "ast",
-      "community": 23,
-      "norm_label": "canbehostiletowards()",
-      "id": "private_pfacreaturecontroller_canbehostiletowards"
-    },
-    {
-      "label": "IsValidTarget()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
-      "source_location": "L130",
-      "_origin": "ast",
-      "community": 23,
-      "norm_label": "isvalidtarget()",
-      "id": "private_pfacreaturecontroller_isvalidtarget"
-    },
-    {
-      "label": "CanBeAlertedByTarget_Implementation()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
-      "source_location": "L135",
-      "_origin": "ast",
-      "community": 23,
-      "norm_label": "canbealertedbytarget_implementation()",
-      "id": "private_pfacreaturecontroller_canbealertedbytarget_implementation"
-    },
-    {
-      "label": "PassesAggressionModeGate()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
-      "source_location": "L140",
-      "_origin": "ast",
-      "community": 23,
-      "norm_label": "passesaggressionmodegate()",
-      "id": "private_pfacreaturecontroller_passesaggressionmodegate"
-    },
-    {
-      "label": "WasRecentlyDamagedBy()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
-      "source_location": "L190",
-      "_origin": "ast",
-      "community": 23,
-      "norm_label": "wasrecentlydamagedby()",
-      "id": "private_pfacreaturecontroller_wasrecentlydamagedby"
-    },
-    {
-      "label": "PFACreatureController.h",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Public/PFACreatureController.h",
-      "source_location": "L1",
-      "_origin": "ast",
-      "community": 26,
-      "norm_label": "pfacreaturecontroller.h",
-      "id": "public_pfacreaturecontroller"
-    },
-    {
-      "label": "APFACreatureController()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Public/PFACreatureController.h",
-      "source_location": "L23",
-      "_origin": "ast",
-      "community": 26,
-      "norm_label": "apfacreaturecontroller()",
-      "id": "public_pfacreaturecontroller_apfacreaturecontroller"
-    },
-    {
-      "label": "PRIMALFAUNA_API",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Public/PFACreatureController.h",
-      "source_location": "L23",
-      "_origin": "ast",
-      "community": 26,
-      "norm_label": "primalfauna_api",
-      "id": "source_primalfauna_public_pfacreaturecontroller_h_primalfauna_api"
     },
     {
       "label": "import_placeholder_ue.py",
@@ -2458,132 +2508,255 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L1",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L315",
       "weight": 1.0,
       "confidence_score": 1.0,
-      "source": "docs_03_spawning_and_territories",
-      "target": "docs_03_spawning_and_territories_03_spawning_territories"
+      "source": "private_pfacheats",
+      "target": "private_pfacheats_dumpallcreaturescommand"
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L6",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L228",
       "weight": 1.0,
       "confidence_score": 1.0,
-      "source": "docs_03_spawning_and_territories_03_spawning_territories",
-      "target": "docs_03_spawning_and_territories_1_why_real_afgcreaturespawner_s_not_a_custom_spawn_loop"
+      "source": "private_pfacheats",
+      "target": "private_pfacheats_dumpcreaturecommand"
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L36",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L123",
       "weight": 1.0,
       "confidence_score": 1.0,
-      "source": "docs_03_spawning_and_territories_03_spawning_territories",
-      "target": "docs_03_spawning_and_territories_2_territory_data_authored_seeded_curated"
+      "source": "private_pfacheats",
+      "target": "private_pfacheats_findlookedatornearestcreature"
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L62",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L48",
       "weight": 1.0,
       "confidence_score": 1.0,
-      "source": "docs_03_spawning_and_territories_03_spawning_territories",
-      "target": "docs_03_spawning_and_territories_3_injection_idempotence_the_subsystem_s_job"
+      "source": "private_pfacheats",
+      "target": "private_pfacheats_isautotestrequested"
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L86",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L38",
       "weight": 1.0,
-      "source": "docs_03_spawning_and_territories_03_spawning_territories",
-      "target": "docs_03_spawning_and_territories_4_persistence_model_resolved_outcome_a_native_persistence_gate_re_run_2026_07_23",
+      "confidence_score": 1.0,
+      "source": "private_pfacheats",
+      "target": "private_pfacheats_isenabled"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L401",
+      "weight": 1.0,
+      "source": "private_pfacheats",
+      "target": "private_pfacheats_killallcommand",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L105",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L194",
       "weight": 1.0,
       "confidence_score": 1.0,
-      "source": "docs_03_spawning_and_territories_03_spawning_territories",
-      "target": "docs_03_spawning_and_territories_5_density_semantics_compose_with_hostilescaling_don_t_fight_it"
+      "source": "private_pfacheats",
+      "target": "private_pfacheats_logactionreflection"
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L114",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L70",
       "weight": 1.0,
       "confidence_score": 1.0,
-      "source": "docs_03_spawning_and_territories_03_spawning_territories",
-      "target": "docs_03_spawning_and_territories_6_live_creature_lifecycle_rules"
+      "source": "private_pfacheats",
+      "target": "private_pfacheats_pfa_runselftests"
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L121",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L65",
       "weight": 1.0,
       "confidence_score": 1.0,
-      "source": "docs_03_spawning_and_territories_03_spawning_territories",
-      "target": "docs_03_spawning_and_territories_7_sandwyrm_event_system_its_own_phase_no_nests"
+      "source": "private_pfacheats",
+      "target": "private_pfacheats_registerpfaselftest"
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L150",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L43",
       "weight": 1.0,
       "confidence_score": 1.0,
-      "source": "docs_03_spawning_and_territories_03_spawning_territories",
-      "target": "docs_03_spawning_and_territories_8_multiplayer"
+      "source": "private_pfacheats",
+      "target": "private_pfacheats_setconfigdiagnostics"
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L94",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L356",
       "weight": 1.0,
-      "source": "docs_03_spawning_and_territories_4_persistence_model_resolved_outcome_a_native_persistence_gate_re_run_2026_07_23",
-      "target": "docs_03_spawning_and_territories_original_assumption_text_superseded",
+      "confidence_score": 1.0,
+      "source": "private_pfacheats",
+      "target": "private_pfacheats_spawnnestcommand"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L294",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "private_pfacheats_dumpcreaturecommand",
+      "target": "private_pfacheats_isenabled"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L65",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "confidence_score": 1.0,
+      "source": "private_pfacheats_registerpfaselftest",
+      "target": "fpfaselftest"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L71",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "private_pfacheats_pfa_runselftests",
+      "target": "source_primalfauna_private_pfacheats_cpp_uworld",
       "confidence_score": 1.0
     },
     {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/CENSUS.md",
-      "source_location": "L1",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "Source/PrimalFauna/Private/PFASubsystem.cpp",
+      "source_location": "L66",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_census",
-      "target": "docs_census_census_live_vanilla_creature_data_feeds_doc_01_anchors"
+      "source": "private_pfasubsystem_refreshtick",
+      "target": "private_pfacheats_pfa_runselftests"
     },
     {
-      "relation": "contains",
+      "relation": "references",
       "confidence": "EXTRACTED",
-      "source_file": "docs/CENSUS.md",
-      "source_location": "L19",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L316",
       "weight": 1.0,
-      "source": "docs_census_census_live_vanilla_creature_data_feeds_doc_01_anchors",
-      "target": "docs_census_2026_07_23_phase_1_gate_re_run_the_bt_census_build_w15_3_full_profile",
+      "context": "parameter_type",
+      "source": "private_pfacheats_dumpallcreaturescommand",
+      "target": "source_primalfauna_private_pfacheats_cpp_uworld",
       "confidence_score": 1.0
     },
     {
-      "relation": "contains",
+      "relation": "references",
       "confidence": "EXTRACTED",
-      "source_file": "docs/CENSUS.md",
-      "source_location": "L6",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L229",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "private_pfacheats_dumpcreaturecommand",
+      "target": "source_primalfauna_private_pfacheats_cpp_uworld",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L124",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "private_pfacheats_findlookedatornearestcreature",
+      "target": "source_primalfauna_private_pfacheats_cpp_uworld",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L401",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "private_pfacheats_killallcommand",
+      "target": "source_primalfauna_private_pfacheats_cpp_uworld",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L357",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "private_pfacheats_spawnnestcommand",
+      "target": "source_primalfauna_private_pfacheats_cpp_uworld",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L238",
       "weight": 1.0,
       "confidence_score": 1.0,
-      "source": "docs_census_census_live_vanilla_creature_data_feeds_doc_01_anchors",
-      "target": "docs_census_2026_07_23_smoke_session_grass_fields_spawn_build_w11_2_113_mod_profile_incl_sf"
+      "source": "private_pfacheats_dumpcreaturecommand",
+      "target": "private_pfacheats_findlookedatornearestcreature"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L123",
+      "weight": 1.0,
+      "context": "return_type",
+      "confidence_score": 1.0,
+      "source": "private_pfacheats_findlookedatornearestcreature",
+      "target": "source_primalfauna_private_pfacheats_cpp_afgcreature"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L306",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "private_pfacheats_dumpcreaturecommand",
+      "target": "private_pfacheats_logactionreflection"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L194",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "confidence_score": 1.0,
+      "source": "private_pfacheats_logactionreflection",
+      "target": "ufgaction"
     },
     {
       "relation": "contains",
@@ -2604,6 +2777,16 @@
       "confidence_score": 1.0,
       "source": "private_pfacreaturebase",
       "target": "private_pfacreaturebase_apfacreaturebase"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
+      "source_location": "L52",
+      "weight": 1.0,
+      "source": "private_pfacreaturebase",
+      "target": "private_pfacreaturebase_beginplay",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -2788,6 +2971,284 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L30",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "private_pfacreaturecontroller",
+      "target": "private_pfacreaturecontroller_apfacreaturecontroller"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L135",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "private_pfacreaturecontroller",
+      "target": "private_pfacreaturecontroller_canbealertedbytarget_implementation"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L35",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "private_pfacreaturecontroller",
+      "target": "private_pfacreaturecontroller_canbehostiletowards"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L130",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "private_pfacreaturecontroller",
+      "target": "private_pfacreaturecontroller_isvalidtarget"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L14",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "private_pfacreaturecontroller",
+      "target": "private_pfacreaturecontroller_logruleverdict"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L103",
+      "weight": 1.0,
+      "source": "private_pfacreaturecontroller",
+      "target": "private_pfacreaturecontroller_onpossess",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L140",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "private_pfacreaturecontroller",
+      "target": "private_pfacreaturecontroller_passesaggressionmodegate"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L190",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "private_pfacreaturecontroller",
+      "target": "private_pfacreaturecontroller_wasrecentlydamagedby"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L57",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "private_pfacreaturecontroller_canbehostiletowards",
+      "target": "private_pfacreaturecontroller_logruleverdict"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L14",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "confidence_score": 1.0,
+      "source": "private_pfacreaturecontroller_logruleverdict",
+      "target": "aactor"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L14",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "confidence_score": 1.0,
+      "source": "private_pfacreaturecontroller_logruleverdict",
+      "target": "int32"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L17",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "private_pfacreaturecontroller_logruleverdict",
+      "target": "source_primalfauna_private_pfacreaturecontroller_cpp_afgcreature",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L135",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "confidence_score": 1.0,
+      "source": "private_pfacreaturecontroller_canbealertedbytarget_implementation",
+      "target": "aactor"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L35",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "confidence_score": 1.0,
+      "source": "private_pfacreaturecontroller_canbehostiletowards",
+      "target": "aactor"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L130",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "confidence_score": 1.0,
+      "source": "private_pfacreaturecontroller_isvalidtarget",
+      "target": "aactor"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L140",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "confidence_score": 1.0,
+      "source": "private_pfacreaturecontroller_passesaggressionmodegate",
+      "target": "aactor"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L190",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "confidence_score": 1.0,
+      "source": "private_pfacreaturecontroller_wasrecentlydamagedby",
+      "target": "aactor"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
+      "source_location": "L28",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "confidence_score": 1.0,
+      "source": "public_pfasubsystem_postsavegame_implementation",
+      "target": "int32"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
+      "source_location": "L29",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "confidence_score": 1.0,
+      "source": "public_pfasubsystem_preloadgame_implementation",
+      "target": "int32"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
+      "source_location": "L27",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "confidence_score": 1.0,
+      "source": "public_pfasubsystem_presavegame_implementation",
+      "target": "int32"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L30",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "confidence_score": 1.0,
+      "source": "private_pfacreaturecontroller_apfacreaturecontroller",
+      "target": "source_primalfauna_private_pfacreaturecontroller_cpp_fobjectinitializer"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L103",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "private_pfacreaturecontroller_onpossess",
+      "target": "apawn",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L137",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "private_pfacreaturecontroller_canbealertedbytarget_implementation",
+      "target": "private_pfacreaturecontroller_canbehostiletowards"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L100",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "private_pfacreaturecontroller_canbehostiletowards",
+      "target": "private_pfacreaturecontroller_passesaggressionmodegate"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L132",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "private_pfacreaturecontroller_isvalidtarget",
+      "target": "private_pfacreaturecontroller_canbehostiletowards"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L162",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "private_pfacreaturecontroller_passesaggressionmodegate",
+      "target": "private_pfacreaturecontroller_wasrecentlydamagedby"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "Source/PrimalFauna/Private/PrimalFauna.cpp",
       "source_location": "L5",
       "weight": 1.0,
@@ -2843,64 +3304,51 @@
       "source_location": "L164",
       "weight": 1.0,
       "context": "parameter_type",
-      "confidence_score": 1.0,
       "source": "species_pfasicklejaw_spawntestcommand",
-      "target": "uworld"
+      "target": "source_primalfauna_private_species_pfasicklejaw_cpp_uworld",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Public/PFACheats.h",
+      "source_location": "L94",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "public_pfacheats",
+      "target": "public_pfacheats_fpfaselftest"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Public/PFACheats.h",
+      "source_location": "L52",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "public_pfacheats",
+      "target": "public_pfacheats_pfadiag"
     },
     {
       "relation": "references",
       "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
-      "source_location": "L315",
+      "source_file": "Source/PrimalFauna/Public/PFACheats.h",
+      "source_location": "L52",
       "weight": 1.0,
-      "context": "parameter_type",
+      "context": "return_type",
       "confidence_score": 1.0,
-      "source": "private_pfacheats_dumpallcreaturescommand",
-      "target": "uworld"
+      "source": "public_pfacheats_pfadiag",
+      "target": "namespace"
     },
     {
       "relation": "references",
       "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
-      "source_location": "L228",
+      "source_file": "Source/PrimalFauna/Public/PFABehaviorBorrower.h",
+      "source_location": "L29",
       "weight": 1.0,
-      "context": "parameter_type",
+      "context": "return_type",
       "confidence_score": 1.0,
-      "source": "private_pfacheats_dumpcreaturecommand",
-      "target": "uworld"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
-      "source_location": "L123",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "confidence_score": 1.0,
-      "source": "private_pfacheats_findlookedatornearestcreature",
-      "target": "uworld"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
-      "source_location": "L70",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "confidence_score": 1.0,
-      "source": "private_pfacheats_pfa_runselftests",
-      "target": "uworld"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
-      "source_location": "L356",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "confidence_score": 1.0,
-      "source": "private_pfacheats_spawnnestcommand",
-      "target": "uworld"
+      "source": "public_pfabehaviorborrower_pfabehaviorborrower",
+      "target": "namespace"
     },
     {
       "relation": "contains",
@@ -2933,6 +3381,168 @@
       "confidence_score": 1.0,
       "source": "public_primalfauna_fdefaultgamemoduleimpl",
       "target": "class"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Public/PFACreatureController.h",
+      "source_location": "L23",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "public_pfacreaturecontroller",
+      "target": "public_pfacreaturecontroller_apfacreaturecontroller"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Public/PFACreatureController.h",
+      "source_location": "L23",
+      "weight": 1.0,
+      "context": "return_type",
+      "source": "public_pfacreaturecontroller_apfacreaturecontroller",
+      "target": "primalfauna_api",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Public/PFANestSpawner.h",
+      "source_location": "L28",
+      "weight": 1.0,
+      "context": "return_type",
+      "confidence_score": 1.0,
+      "source": "public_pfanestspawner_afgcreaturespawner",
+      "target": "primalfauna_api"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_03_spawning_and_territories",
+      "target": "docs_03_spawning_and_territories_03_spawning_territories"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_03_spawning_and_territories_03_spawning_territories",
+      "target": "docs_03_spawning_and_territories_1_why_real_afgcreaturespawner_s_not_a_custom_spawn_loop"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L36",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_03_spawning_and_territories_03_spawning_territories",
+      "target": "docs_03_spawning_and_territories_2_territory_data_authored_seeded_curated"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L62",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_03_spawning_and_territories_03_spawning_territories",
+      "target": "docs_03_spawning_and_territories_3_injection_idempotence_the_subsystem_s_job"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L86",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_03_spawning_and_territories_03_spawning_territories",
+      "target": "docs_03_spawning_and_territories_4_persistence_model_resolved_outcome_a_native_persistence_gate_re_run_2026_07_23"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L105",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_03_spawning_and_territories_03_spawning_territories",
+      "target": "docs_03_spawning_and_territories_5_density_semantics_compose_with_hostilescaling_don_t_fight_it"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L114",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_03_spawning_and_territories_03_spawning_territories",
+      "target": "docs_03_spawning_and_territories_6_live_creature_lifecycle_rules"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L121",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_03_spawning_and_territories_03_spawning_territories",
+      "target": "docs_03_spawning_and_territories_7_sandwyrm_event_system_its_own_phase_no_nests"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L150",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_03_spawning_and_territories_03_spawning_territories",
+      "target": "docs_03_spawning_and_territories_8_multiplayer"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L94",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_03_spawning_and_territories_4_persistence_model_resolved_outcome_a_native_persistence_gate_re_run_2026_07_23",
+      "target": "docs_03_spawning_and_territories_original_assumption_text_superseded"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/CENSUS.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_census",
+      "target": "docs_census_census_live_vanilla_creature_data_feeds_doc_01_anchors"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/CENSUS.md",
+      "source_location": "L19",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_census_census_live_vanilla_creature_data_feeds_doc_01_anchors",
+      "target": "docs_census_2026_07_23_phase_1_gate_re_run_the_bt_census_build_w15_3_full_profile"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/CENSUS.md",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_census_census_live_vanilla_creature_data_feeds_doc_01_anchors",
+      "target": "docs_census_2026_07_23_smoke_session_grass_fields_spawn_build_w11_2_113_mod_profile_incl_sf"
     },
     {
       "relation": "contains",
@@ -3043,183 +3653,6 @@
       "confidence_score": 1.0,
       "source": "docs_07_technical_architecture_07_technical_architecture",
       "target": "docs_07_technical_architecture_9_diagnostics_contract_logprimalfauna_pfa"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
-      "source_location": "L315",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "private_pfacheats",
-      "target": "private_pfacheats_dumpallcreaturescommand"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
-      "source_location": "L228",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "private_pfacheats",
-      "target": "private_pfacheats_dumpcreaturecommand"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
-      "source_location": "L123",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "private_pfacheats",
-      "target": "private_pfacheats_findlookedatornearestcreature"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
-      "source_location": "L48",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "private_pfacheats",
-      "target": "private_pfacheats_isautotestrequested"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
-      "source_location": "L38",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "private_pfacheats",
-      "target": "private_pfacheats_isenabled"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
-      "source_location": "L194",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "private_pfacheats",
-      "target": "private_pfacheats_logactionreflection"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
-      "source_location": "L70",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "private_pfacheats",
-      "target": "private_pfacheats_pfa_runselftests"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
-      "source_location": "L65",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "private_pfacheats",
-      "target": "private_pfacheats_registerpfaselftest"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
-      "source_location": "L43",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "private_pfacheats",
-      "target": "private_pfacheats_setconfigdiagnostics"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
-      "source_location": "L356",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "private_pfacheats",
-      "target": "private_pfacheats_spawnnestcommand"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
-      "source_location": "L294",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "private_pfacheats_dumpcreaturecommand",
-      "target": "private_pfacheats_isenabled"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
-      "source_location": "L65",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "confidence_score": 1.0,
-      "source": "private_pfacheats_registerpfaselftest",
-      "target": "fpfaselftest"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "INFERRED",
-      "confidence_score": 0.8,
-      "source_file": "Source/PrimalFauna/Private/PFASubsystem.cpp",
-      "source_location": "L66",
-      "weight": 1.0,
-      "source": "private_pfasubsystem_refreshtick",
-      "target": "private_pfacheats_pfa_runselftests"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
-      "source_location": "L238",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "private_pfacheats_dumpcreaturecommand",
-      "target": "private_pfacheats_findlookedatornearestcreature"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
-      "source_location": "L123",
-      "weight": 1.0,
-      "context": "return_type",
-      "confidence_score": 1.0,
-      "source": "private_pfacheats_findlookedatornearestcreature",
-      "target": "source_primalfauna_private_pfacheats_cpp_afgcreature"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
-      "source_location": "L306",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "private_pfacheats_dumpcreaturecommand",
-      "target": "private_pfacheats_logactionreflection"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
-      "source_location": "L194",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "confidence_score": 1.0,
-      "source": "private_pfacheats_logactionreflection",
-      "target": "ufgaction"
     },
     {
       "relation": "contains",
@@ -3435,65 +3868,12 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Public/PFACheats.h",
-      "source_location": "L94",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "public_pfacheats",
-      "target": "public_pfacheats_fpfaselftest"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Public/PFACheats.h",
-      "source_location": "L52",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "public_pfacheats",
-      "target": "public_pfacheats_pfadiag"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Public/PFACheats.h",
-      "source_location": "L52",
-      "weight": 1.0,
-      "context": "return_type",
-      "confidence_score": 1.0,
-      "source": "public_pfacheats_pfadiag",
-      "target": "namespace"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Public/PFABehaviorBorrower.h",
-      "source_location": "L29",
-      "weight": 1.0,
-      "context": "return_type",
-      "confidence_score": 1.0,
-      "source": "public_pfabehaviorborrower_pfabehaviorborrower",
-      "target": "namespace"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
       "source_file": "Source/PrimalFauna/Public/PFANestSpawner.h",
       "source_location": "L28",
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "public_pfanestspawner",
       "target": "public_pfanestspawner_afgcreaturespawner"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Public/PFANestSpawner.h",
-      "source_location": "L28",
-      "weight": 1.0,
-      "context": "return_type",
-      "confidence_score": 1.0,
-      "source": "public_pfanestspawner_afgcreaturespawner",
-      "target": "primalfauna_api"
     },
     {
       "relation": "contains",
@@ -3583,17 +3963,6 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
-      "source_location": "L27",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "confidence_score": 1.0,
-      "source": "public_pfasubsystem_presavegame_implementation",
-      "target": "int32"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
       "source_location": "L38",
       "weight": 1.0,
       "context": "parameter_type",
@@ -3622,28 +3991,6 @@
       "confidence_score": 1.0,
       "source": "public_pfasubsystem_preloadgame_implementation",
       "target": "source_primalfauna_public_pfasubsystem_h_int32"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
-      "source_location": "L28",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "confidence_score": 1.0,
-      "source": "public_pfasubsystem_postsavegame_implementation",
-      "target": "int32"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
-      "source_location": "L29",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "confidence_score": 1.0,
-      "source": "public_pfasubsystem_preloadgame_implementation",
-      "target": "int32"
     },
     {
       "relation": "contains",
@@ -4072,240 +4419,6 @@
       "confidence_score": 1.0,
       "source": "docs_bt_fallback_recipe_path_b_author_bt_pfageneric_from_scratch",
       "target": "docs_bt_fallback_recipe_the_structure_best_effort_verify_against_a_census_bt"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
-      "source_location": "L30",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "private_pfacreaturecontroller",
-      "target": "private_pfacreaturecontroller_apfacreaturecontroller"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
-      "source_location": "L135",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "private_pfacreaturecontroller",
-      "target": "private_pfacreaturecontroller_canbealertedbytarget_implementation"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
-      "source_location": "L35",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "private_pfacreaturecontroller",
-      "target": "private_pfacreaturecontroller_canbehostiletowards"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
-      "source_location": "L130",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "private_pfacreaturecontroller",
-      "target": "private_pfacreaturecontroller_isvalidtarget"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
-      "source_location": "L14",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "private_pfacreaturecontroller",
-      "target": "private_pfacreaturecontroller_logruleverdict"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
-      "source_location": "L140",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "private_pfacreaturecontroller",
-      "target": "private_pfacreaturecontroller_passesaggressionmodegate"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
-      "source_location": "L190",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "private_pfacreaturecontroller",
-      "target": "private_pfacreaturecontroller_wasrecentlydamagedby"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
-      "source_location": "L57",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "private_pfacreaturecontroller_canbehostiletowards",
-      "target": "private_pfacreaturecontroller_logruleverdict"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
-      "source_location": "L14",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "confidence_score": 1.0,
-      "source": "private_pfacreaturecontroller_logruleverdict",
-      "target": "aactor"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
-      "source_location": "L14",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "confidence_score": 1.0,
-      "source": "private_pfacreaturecontroller_logruleverdict",
-      "target": "int32"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
-      "source_location": "L135",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "confidence_score": 1.0,
-      "source": "private_pfacreaturecontroller_canbealertedbytarget_implementation",
-      "target": "aactor"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
-      "source_location": "L35",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "confidence_score": 1.0,
-      "source": "private_pfacreaturecontroller_canbehostiletowards",
-      "target": "aactor"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
-      "source_location": "L130",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "confidence_score": 1.0,
-      "source": "private_pfacreaturecontroller_isvalidtarget",
-      "target": "aactor"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
-      "source_location": "L140",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "confidence_score": 1.0,
-      "source": "private_pfacreaturecontroller_passesaggressionmodegate",
-      "target": "aactor"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
-      "source_location": "L190",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "confidence_score": 1.0,
-      "source": "private_pfacreaturecontroller_wasrecentlydamagedby",
-      "target": "aactor"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
-      "source_location": "L30",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "confidence_score": 1.0,
-      "source": "private_pfacreaturecontroller_apfacreaturecontroller",
-      "target": "source_primalfauna_private_pfacreaturecontroller_cpp_fobjectinitializer"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
-      "source_location": "L137",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "private_pfacreaturecontroller_canbealertedbytarget_implementation",
-      "target": "private_pfacreaturecontroller_canbehostiletowards"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
-      "source_location": "L100",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "private_pfacreaturecontroller_canbehostiletowards",
-      "target": "private_pfacreaturecontroller_passesaggressionmodegate"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
-      "source_location": "L132",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "private_pfacreaturecontroller_isvalidtarget",
-      "target": "private_pfacreaturecontroller_canbehostiletowards"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
-      "source_location": "L162",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "private_pfacreaturecontroller_passesaggressionmodegate",
-      "target": "private_pfacreaturecontroller_wasrecentlydamagedby"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Public/PFACreatureController.h",
-      "source_location": "L23",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "public_pfacreaturecontroller",
-      "target": "public_pfacreaturecontroller_apfacreaturecontroller"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Public/PFACreatureController.h",
-      "source_location": "L23",
-      "weight": 1.0,
-      "context": "return_type",
-      "confidence_score": 1.0,
-      "source": "public_pfacreaturecontroller_apfacreaturecontroller",
-      "target": "source_primalfauna_public_pfacreaturecontroller_h_primalfauna_api"
     },
     {
       "relation": "contains",
@@ -5087,5 +5200,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "7da1e27b6ce9395e967c1f7555640ffc18839456"
+  "built_at_commit": "15bf4060000b8d839890dfdd52cb227d1266882b"
 }
