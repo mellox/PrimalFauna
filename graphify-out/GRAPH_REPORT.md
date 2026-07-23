@@ -1,7 +1,7 @@
 # Graph Report - PrimalFauna  (2026-07-23)
 
 ## Corpus Check
-- 10 files · ~11,850 words
+- 10 files · ~11,983 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `6754bf90`
+- Built from commit: `0e719583`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -29,8 +29,8 @@
 1. `07 — Technical Architecture` - 11 edges
 2. `03 — Spawning & Territories` - 9 edges
 3. `05 — Asset Pipeline` - 9 edges
-4. `02 — Hostility & Factions` - 8 edges
-5. `08 — Implementation Plan (team execution)` - 8 edges
+4. `08 — Implementation Plan (team execution)` - 8 edges
+5. `02 — Hostility & Factions` - 8 edges
 6. `00 — Vision & Pillars` - 6 edges
 7. `04 — Config & UI` - 6 edges
 8. `06 — Integration & Compatibility` - 6 edges
@@ -82,11 +82,11 @@ Cohesion: 0.50
 Nodes (3): Headline design facts (why this plan is buildable), PrimalFauna — hostile megafauna for Satisfactory, The plan
 
 ## Knowledge Gaps
-- **60 isolated node(s):** `The plan`, `Headline design facts (why this plan is buildable)`, `1. Locked decisions (user-approved 2026-07-11)`, `2. Pillars (tie-breakers for every design argument)`, `3. V1.0 definition (ship gate)` (+55 more)
+- **60 isolated node(s):** `Packet handoff contract`, `2. Packet families`, `3. Phases`, `4. In-game test checklists (owner: user; orchestrator writes per-build)`, `5. Packet-family inputs (load ONLY these + doc 07)` (+55 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **What connects `The plan`, `Headline design facts (why this plan is buildable)`, `1. Locked decisions (user-approved 2026-07-11)` to the rest of the system?**
+- **What connects `Packet handoff contract`, `2. Packet families`, `3. Phases` to the rest of the system?**
   _60 weakly-connected nodes found - possible documentation gaps or missing edges._

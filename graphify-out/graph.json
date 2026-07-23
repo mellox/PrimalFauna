@@ -4,706 +4,6 @@
   "graph": {},
   "nodes": [
     {
-      "label": "README.md",
-      "file_type": "document",
-      "source_file": "README.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "readme",
-      "community": 8,
-      "norm_label": "readme.md"
-    },
-    {
-      "label": "PrimalFauna \u2014 hostile megafauna for Satisfactory",
-      "file_type": "document",
-      "source_file": "README.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "readme_primalfauna_hostile_megafauna_for_satisfactory",
-      "community": 8,
-      "norm_label": "primalfauna \u2014 hostile megafauna for satisfactory"
-    },
-    {
-      "label": "The plan",
-      "file_type": "document",
-      "source_file": "README.md",
-      "source_location": "L12",
-      "_origin": "ast",
-      "id": "readme_the_plan",
-      "community": 8,
-      "norm_label": "the plan"
-    },
-    {
-      "label": "Headline design facts (why this plan is buildable)",
-      "file_type": "document",
-      "source_file": "README.md",
-      "source_location": "L28",
-      "_origin": "ast",
-      "id": "readme_headline_design_facts_why_this_plan_is_buildable",
-      "community": 8,
-      "norm_label": "headline design facts (why this plan is buildable)"
-    },
-    {
-      "label": "00-vision-and-pillars.md",
-      "file_type": "document",
-      "source_file": "docs/00-vision-and-pillars.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "docs_00_vision_and_pillars",
-      "community": 6,
-      "norm_label": "00-vision-and-pillars.md"
-    },
-    {
-      "label": "00 \u2014 Vision & Pillars",
-      "file_type": "document",
-      "source_file": "docs/00-vision-and-pillars.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "docs_00_vision_and_pillars_00_vision_pillars",
-      "community": 6,
-      "norm_label": "00 \u2014 vision & pillars"
-    },
-    {
-      "label": "1. Locked decisions (user-approved 2026-07-11)",
-      "file_type": "document",
-      "source_file": "docs/00-vision-and-pillars.md",
-      "source_location": "L12",
-      "_origin": "ast",
-      "id": "docs_00_vision_and_pillars_1_locked_decisions_user_approved_2026_07_11",
-      "community": 6,
-      "norm_label": "1. locked decisions (user-approved 2026-07-11)"
-    },
-    {
-      "label": "2. Pillars (tie-breakers for every design argument)",
-      "file_type": "document",
-      "source_file": "docs/00-vision-and-pillars.md",
-      "source_location": "L23",
-      "_origin": "ast",
-      "id": "docs_00_vision_and_pillars_2_pillars_tie_breakers_for_every_design_argument",
-      "community": 6,
-      "norm_label": "2. pillars (tie-breakers for every design argument)"
-    },
-    {
-      "label": "3. V1.0 definition (ship gate)",
-      "file_type": "document",
-      "source_file": "docs/00-vision-and-pillars.md",
-      "source_location": "L49",
-      "_origin": "ast",
-      "id": "docs_00_vision_and_pillars_3_v1_0_definition_ship_gate",
-      "community": 6,
-      "norm_label": "3. v1.0 definition (ship gate)"
-    },
-    {
-      "label": "4. Non-goals (v1) \u2014 the parking lot",
-      "file_type": "document",
-      "source_file": "docs/00-vision-and-pillars.md",
-      "source_location": "L60",
-      "_origin": "ast",
-      "id": "docs_00_vision_and_pillars_4_non_goals_v1_the_parking_lot",
-      "community": 6,
-      "norm_label": "4. non-goals (v1) \u2014 the parking lot"
-    },
-    {
-      "label": "5. Reading order",
-      "file_type": "document",
-      "source_file": "docs/00-vision-and-pillars.md",
-      "source_location": "L72",
-      "_origin": "ast",
-      "id": "docs_00_vision_and_pillars_5_reading_order",
-      "community": 6,
-      "norm_label": "5. reading order"
-    },
-    {
-      "label": "02-hostility-and-factions.md",
-      "file_type": "document",
-      "source_file": "docs/02-hostility-and-factions.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "docs_02_hostility_and_factions",
-      "community": 5,
-      "norm_label": "02-hostility-and-factions.md"
-    },
-    {
-      "label": "02 \u2014 Hostility & Factions",
-      "file_type": "document",
-      "source_file": "docs/02-hostility-and-factions.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "docs_02_hostility_and_factions_02_hostility_factions",
-      "community": 5,
-      "norm_label": "02 \u2014 hostility & factions"
-    },
-    {
-      "label": "1. The machinery we build on (verified)",
-      "file_type": "document",
-      "source_file": "docs/02-hostility-and-factions.md",
-      "source_location": "L7",
-      "_origin": "ast",
-      "id": "docs_02_hostility_and_factions_1_the_machinery_we_build_on_verified",
-      "community": 5,
-      "norm_label": "1. the machinery we build on (verified)"
-    },
-    {
-      "label": "2. The target policy (decision table)",
-      "file_type": "document",
-      "source_file": "docs/02-hostility-and-factions.md",
-      "source_location": "L34",
-      "_origin": "ast",
-      "id": "docs_02_hostility_and_factions_2_the_target_policy_decision_table",
-      "community": 5,
-      "norm_label": "2. the target policy (decision table)"
-    },
-    {
-      "label": "3. Species aggression modes (config `Aggression`, doc 04)",
-      "file_type": "document",
-      "source_file": "docs/02-hostility-and-factions.md",
-      "source_location": "L54",
-      "_origin": "ast",
-      "id": "docs_02_hostility_and_factions_3_species_aggression_modes_config_aggression_doc_04",
-      "community": 5,
-      "norm_label": "3. species aggression modes (config `aggression`, doc 04)"
-    },
-    {
-      "label": "4. Pack behavior (Sicklejaw showcase; config `PackAssist`)",
-      "file_type": "document",
-      "source_file": "docs/02-hostility-and-factions.md",
-      "source_location": "L68",
-      "_origin": "ast",
-      "id": "docs_02_hostility_and_factions_4_pack_behavior_sicklejaw_showcase_config_packassist",
-      "community": 5,
-      "norm_label": "4. pack behavior (sicklejaw showcase; config `packassist`)"
-    },
-    {
-      "label": "5. Perception tuning",
-      "file_type": "document",
-      "source_file": "docs/02-hostility-and-factions.md",
-      "source_location": "L77",
-      "_origin": "ast",
-      "id": "docs_02_hostility_and_factions_5_perception_tuning",
-      "community": 5,
-      "norm_label": "5. perception tuning"
-    },
-    {
-      "label": "6. Sandwyrm targeting \u2014 disturbance, not perception",
-      "file_type": "document",
-      "source_file": "docs/02-hostility-and-factions.md",
-      "source_location": "L87",
-      "_origin": "ast",
-      "id": "docs_02_hostility_and_factions_6_sandwyrm_targeting_disturbance_not_perception",
-      "community": 5,
-      "norm_label": "6. sandwyrm targeting \u2014 disturbance, not perception"
-    },
-    {
-      "label": "7. Statically unverifiable items (differential-review carryover \u2192 in-game checklist)",
-      "file_type": "document",
-      "source_file": "docs/02-hostility-and-factions.md",
-      "source_location": "L99",
-      "_origin": "ast",
-      "id": "docs_02_hostility_and_factions_7_statically_unverifiable_items_differential_review_carryover_in_game_checklist",
-      "community": 5,
-      "norm_label": "7. statically unverifiable items (differential-review carryover \u2192 in-game checklist)"
-    },
-    {
-      "label": "03-spawning-and-territories.md",
-      "file_type": "document",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "docs_03_spawning_and_territories",
-      "community": 4,
-      "norm_label": "03-spawning-and-territories.md"
-    },
-    {
-      "label": "03 \u2014 Spawning & Territories",
-      "file_type": "document",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "docs_03_spawning_and_territories_03_spawning_territories",
-      "community": 4,
-      "norm_label": "03 \u2014 spawning & territories"
-    },
-    {
-      "label": "1. Why real `AFGCreatureSpawner`s (not a custom spawn loop)",
-      "file_type": "document",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L6",
-      "_origin": "ast",
-      "id": "docs_03_spawning_and_territories_1_why_real_afgcreaturespawner_s_not_a_custom_spawn_loop",
-      "community": 4,
-      "norm_label": "1. why real `afgcreaturespawner`s (not a custom spawn loop)"
-    },
-    {
-      "label": "2. Territory data (authored, seeded, curated)",
-      "file_type": "document",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L36",
-      "_origin": "ast",
-      "id": "docs_03_spawning_and_territories_2_territory_data_authored_seeded_curated",
-      "community": 4,
-      "norm_label": "2. territory data (authored, seeded, curated)"
-    },
-    {
-      "label": "3. Injection & idempotence (the subsystem's job)",
-      "file_type": "document",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L62",
-      "_origin": "ast",
-      "id": "docs_03_spawning_and_territories_3_injection_idempotence_the_subsystem_s_job",
-      "community": 4,
-      "norm_label": "3. injection & idempotence (the subsystem's job)"
-    },
-    {
-      "label": "4. Persistence model \u26a0 [assumption \u2192 slice test]",
-      "file_type": "document",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L86",
-      "_origin": "ast",
-      "id": "docs_03_spawning_and_territories_4_persistence_model_assumption_slice_test",
-      "community": 4,
-      "norm_label": "4. persistence model \u26a0 [assumption \u2192 slice test]"
-    },
-    {
-      "label": "5. Density semantics (compose with HostileScaling, don't fight it)",
-      "file_type": "document",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L105",
-      "_origin": "ast",
-      "id": "docs_03_spawning_and_territories_5_density_semantics_compose_with_hostilescaling_don_t_fight_it",
-      "community": 4,
-      "norm_label": "5. density semantics (compose with hostilescaling, don't fight it)"
-    },
-    {
-      "label": "6. Live creature lifecycle rules",
-      "file_type": "document",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L114",
-      "_origin": "ast",
-      "id": "docs_03_spawning_and_territories_6_live_creature_lifecycle_rules",
-      "community": 4,
-      "norm_label": "6. live creature lifecycle rules"
-    },
-    {
-      "label": "7. Sandwyrm event system (its own phase \u2014 no nests)",
-      "file_type": "document",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L121",
-      "_origin": "ast",
-      "id": "docs_03_spawning_and_territories_7_sandwyrm_event_system_its_own_phase_no_nests",
-      "community": 4,
-      "norm_label": "7. sandwyrm event system (its own phase \u2014 no nests)"
-    },
-    {
-      "label": "8. Multiplayer",
-      "file_type": "document",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L150",
-      "_origin": "ast",
-      "id": "docs_03_spawning_and_territories_8_multiplayer",
-      "community": 4,
-      "norm_label": "8. multiplayer"
-    },
-    {
-      "label": "04-config-and-ui.md",
-      "file_type": "document",
-      "source_file": "docs/04-config-and-ui.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "docs_04_config_and_ui",
-      "community": 3,
-      "norm_label": "04-config-and-ui.md"
-    },
-    {
-      "label": "04 \u2014 Config & UI",
-      "file_type": "document",
-      "source_file": "docs/04-config-and-ui.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "docs_04_config_and_ui_04_config_ui",
-      "community": 3,
-      "norm_label": "04 \u2014 config & ui"
-    },
-    {
-      "label": "1. The config tree (v1)",
-      "file_type": "document",
-      "source_file": "docs/04-config-and-ui.md",
-      "source_location": "L7",
-      "_origin": "ast",
-      "id": "docs_04_config_and_ui_1_the_config_tree_v1",
-      "community": 3,
-      "norm_label": "1. the config tree (v1)"
-    },
-    {
-      "label": "Section: General",
-      "file_type": "document",
-      "source_file": "docs/04-config-and-ui.md",
-      "source_location": "L14",
-      "_origin": "ast",
-      "id": "docs_04_config_and_ui_section_general",
-      "community": 3,
-      "norm_label": "section: general"
-    },
-    {
-      "label": "Sections: per land species (Sicklejaw / Crestback / Duskstalker)",
-      "file_type": "document",
-      "source_file": "docs/04-config-and-ui.md",
-      "source_location": "L22",
-      "_origin": "ast",
-      "id": "docs_04_config_and_ui_sections_per_land_species_sicklejaw_crestback_duskstalker",
-      "community": 3,
-      "norm_label": "sections: per land species (sicklejaw / crestback / duskstalker)"
-    },
-    {
-      "label": "Section: Factions (doc 02)",
-      "file_type": "document",
-      "source_file": "docs/04-config-and-ui.md",
-      "source_location": "L29",
-      "_origin": "ast",
-      "id": "docs_04_config_and_ui_section_factions_doc_02",
-      "community": 3,
-      "norm_label": "section: factions (doc 02)"
-    },
-    {
-      "label": "Section: Sandwyrm (added in its phase; section present-but-minimal before that)",
-      "file_type": "document",
-      "source_file": "docs/04-config-and-ui.md",
-      "source_location": "L36",
-      "_origin": "ast",
-      "id": "docs_04_config_and_ui_section_sandwyrm_added_in_its_phase_section_present_but_minimal_before_that",
-      "community": 3,
-      "norm_label": "section: sandwyrm (added in its phase; section present-but-minimal before that)"
-    },
-    {
-      "label": "2. Multiplayer semantics (must be logged + tested, not assumed)",
-      "file_type": "document",
-      "source_file": "docs/04-config-and-ui.md",
-      "source_location": "L44",
-      "_origin": "ast",
-      "id": "docs_04_config_and_ui_2_multiplayer_semantics_must_be_logged_tested_not_assumed",
-      "community": 3,
-      "norm_label": "2. multiplayer semantics (must be logged + tested, not assumed)"
-    },
-    {
-      "label": "3. Config \u2194 world-reload interactions",
-      "file_type": "document",
-      "source_file": "docs/04-config-and-ui.md",
-      "source_location": "L53",
-      "_origin": "ast",
-      "id": "docs_04_config_and_ui_3_config_world_reload_interactions",
-      "community": 3,
-      "norm_label": "3. config \u2194 world-reload interactions"
-    },
-    {
-      "label": "4. Why ModConfiguration (and the alternative considered)",
-      "file_type": "document",
-      "source_file": "docs/04-config-and-ui.md",
-      "source_location": "L61",
-      "_origin": "ast",
-      "id": "docs_04_config_and_ui_4_why_modconfiguration_and_the_alternative_considered",
-      "community": 3,
-      "norm_label": "4. why modconfiguration (and the alternative considered)"
-    },
-    {
-      "label": "5. UI copy standards",
-      "file_type": "document",
-      "source_file": "docs/04-config-and-ui.md",
-      "source_location": "L80",
-      "_origin": "ast",
-      "id": "docs_04_config_and_ui_5_ui_copy_standards",
-      "community": 3,
-      "norm_label": "5. ui copy standards"
-    },
-    {
-      "label": "05-asset-pipeline.md",
-      "file_type": "document",
-      "source_file": "docs/05-asset-pipeline.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "docs_05_asset_pipeline",
-      "community": 2,
-      "norm_label": "05-asset-pipeline.md"
-    },
-    {
-      "label": "05 \u2014 Asset Pipeline",
-      "file_type": "document",
-      "source_file": "docs/05-asset-pipeline.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "docs_05_asset_pipeline_05_asset_pipeline",
-      "community": 2,
-      "norm_label": "05 \u2014 asset pipeline"
-    },
-    {
-      "label": "1. Art direction & generation briefs",
-      "file_type": "document",
-      "source_file": "docs/05-asset-pipeline.md",
-      "source_location": "L12",
-      "_origin": "ast",
-      "id": "docs_05_asset_pipeline_1_art_direction_generation_briefs",
-      "community": 2,
-      "norm_label": "1. art direction & generation briefs"
-    },
-    {
-      "label": "2. Per-creature pipeline (stage gates in order)",
-      "file_type": "document",
-      "source_file": "docs/05-asset-pipeline.md",
-      "source_location": "L25",
-      "_origin": "ast",
-      "id": "docs_05_asset_pipeline_2_per_creature_pipeline_stage_gates_in_order",
-      "community": 2,
-      "norm_label": "2. per-creature pipeline (stage gates in order)"
-    },
-    {
-      "label": "3. Animation \u2014 the honest plan (verified Tripo facts)",
-      "file_type": "document",
-      "source_file": "docs/05-asset-pipeline.md",
-      "source_location": "L39",
-      "_origin": "ast",
-      "id": "docs_05_asset_pipeline_3_animation_the_honest_plan_verified_tripo_facts",
-      "community": 2,
-      "norm_label": "3. animation \u2014 the honest plan (verified tripo facts)"
-    },
-    {
-      "label": "4. Texturing & the aggro-glow telegraph",
-      "file_type": "document",
-      "source_file": "docs/05-asset-pipeline.md",
-      "source_location": "L73",
-      "_origin": "ast",
-      "id": "docs_05_asset_pipeline_4_texturing_the_aggro_glow_telegraph",
-      "community": 2,
-      "norm_label": "4. texturing & the aggro-glow telegraph"
-    },
-    {
-      "label": "5. Fab/Sketchfab licensing rules (for rungs 3\u20134 and the worm fallback)",
-      "file_type": "document",
-      "source_file": "docs/05-asset-pipeline.md",
-      "source_location": "L87",
-      "_origin": "ast",
-      "id": "docs_05_asset_pipeline_5_fab_sketchfab_licensing_rules_for_rungs_3_4_and_the_worm_fallback",
-      "community": 2,
-      "norm_label": "5. fab/sketchfab licensing rules (for rungs 3\u20134 and the worm fallback)"
-    },
-    {
-      "label": "6. UE import & wiring (headless-first)",
-      "file_type": "document",
-      "source_file": "docs/05-asset-pipeline.md",
-      "source_location": "L99",
-      "_origin": "ast",
-      "id": "docs_05_asset_pipeline_6_ue_import_wiring_headless_first",
-      "community": 2,
-      "norm_label": "6. ue import & wiring (headless-first)"
-    },
-    {
-      "label": "7. Sandwyrm assets \u2014 procedural by design",
-      "file_type": "document",
-      "source_file": "docs/05-asset-pipeline.md",
-      "source_location": "L122",
-      "_origin": "ast",
-      "id": "docs_05_asset_pipeline_7_sandwyrm_assets_procedural_by_design",
-      "community": 2,
-      "norm_label": "7. sandwyrm assets \u2014 procedural by design"
-    },
-    {
-      "label": "8. GPU & credit discipline",
-      "file_type": "document",
-      "source_file": "docs/05-asset-pipeline.md",
-      "source_location": "L140",
-      "_origin": "ast",
-      "id": "docs_05_asset_pipeline_8_gpu_credit_discipline",
-      "community": 2,
-      "norm_label": "8. gpu & credit discipline"
-    },
-    {
-      "label": "06-integration-and-compat.md",
-      "file_type": "document",
-      "source_file": "docs/06-integration-and-compat.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "docs_06_integration_and_compat",
-      "community": 7,
-      "norm_label": "06-integration-and-compat.md"
-    },
-    {
-      "label": "06 \u2014 Integration & Compatibility",
-      "file_type": "document",
-      "source_file": "docs/06-integration-and-compat.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "docs_06_integration_and_compat_06_integration_compatibility",
-      "community": 7,
-      "norm_label": "06 \u2014 integration & compatibility"
-    },
-    {
-      "label": "1. How HostileScaling discovers and scales creatures (verified, not assumed)",
-      "file_type": "document",
-      "source_file": "docs/06-integration-and-compat.md",
-      "source_location": "L8",
-      "_origin": "ast",
-      "id": "docs_06_integration_and_compat_1_how_hostilescaling_discovers_and_scales_creatures_verified_not_assumed",
-      "community": 7,
-      "norm_label": "1. how hostilescaling discovers and scales creatures (verified, not assumed)"
-    },
-    {
-      "label": "2. Our obligations \u2014 the creature contract",
-      "file_type": "document",
-      "source_file": "docs/06-integration-and-compat.md",
-      "source_location": "L24",
-      "_origin": "ast",
-      "id": "docs_06_integration_and_compat_2_our_obligations_the_creature_contract",
-      "community": 7,
-      "norm_label": "2. our obligations \u2014 the creature contract"
-    },
-    {
-      "label": "3. Our obligations \u2014 the spawner contract",
-      "file_type": "document",
-      "source_file": "docs/06-integration-and-compat.md",
-      "source_location": "L35",
-      "_origin": "ast",
-      "id": "docs_06_integration_and_compat_3_our_obligations_the_spawner_contract",
-      "community": 7,
-      "norm_label": "3. our obligations \u2014 the spawner contract"
-    },
-    {
-      "label": "4. Verification matrix (both-ways, in-game \u2014 doc 08 gates)",
-      "file_type": "document",
-      "source_file": "docs/06-integration-and-compat.md",
-      "source_location": "L44",
-      "_origin": "ast",
-      "id": "docs_06_integration_and_compat_4_verification_matrix_both_ways_in_game_doc_08_gates",
-      "community": 7,
-      "norm_label": "4. verification matrix (both-ways, in-game \u2014 doc 08 gates)"
-    },
-    {
-      "label": "5. Broader compatibility notes",
-      "file_type": "document",
-      "source_file": "docs/06-integration-and-compat.md",
-      "source_location": "L61",
-      "_origin": "ast",
-      "id": "docs_06_integration_and_compat_5_broader_compatibility_notes",
-      "community": 7,
-      "norm_label": "5. broader compatibility notes"
-    },
-    {
-      "label": "07-technical-architecture.md",
-      "file_type": "document",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "docs_07_technical_architecture",
-      "community": 1,
-      "norm_label": "07-technical-architecture.md"
-    },
-    {
-      "label": "07 \u2014 Technical Architecture",
-      "file_type": "document",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "docs_07_technical_architecture_07_technical_architecture",
-      "community": 1,
-      "norm_label": "07 \u2014 technical architecture"
-    },
-    {
-      "label": "1. Architecture principle: own every class you change",
-      "file_type": "document",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L7",
-      "_origin": "ast",
-      "id": "docs_07_technical_architecture_1_architecture_principle_own_every_class_you_change",
-      "community": 1,
-      "norm_label": "1. architecture principle: own every class you change"
-    },
-    {
-      "label": "2. Class map",
-      "file_type": "document",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L25",
-      "_origin": "ast",
-      "id": "docs_07_technical_architecture_2_class_map",
-      "community": 1,
-      "norm_label": "2. class map"
-    },
-    {
-      "label": "3. Species authoring \u2014 everything on the CDO, in C++",
-      "file_type": "document",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L54",
-      "_origin": "ast",
-      "id": "docs_07_technical_architecture_3_species_authoring_everything_on_the_cdo_in_c",
-      "community": 1,
-      "norm_label": "3. species authoring \u2014 everything on the cdo, in c++"
-    },
-    {
-      "label": "4. Behavior: borrow the vanilla Behavior Tree, own the actions",
-      "file_type": "document",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L83",
-      "_origin": "ast",
-      "id": "docs_07_technical_architecture_4_behavior_borrow_the_vanilla_behavior_tree_own_the_actions",
-      "community": 1,
-      "norm_label": "4. behavior: borrow the vanilla behavior tree, own the actions"
-    },
-    {
-      "label": "5. Attacks = native `UFGCreatureAction` classes (no custom combat code)",
-      "file_type": "document",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L104",
-      "_origin": "ast",
-      "id": "docs_07_technical_architecture_5_attacks_native_ufgcreatureaction_classes_no_custom_combat_code",
-      "community": 1,
-      "norm_label": "5. attacks = native `ufgcreatureaction` classes (no custom combat code)"
-    },
-    {
-      "label": "6. Loot & death",
-      "file_type": "document",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L127",
-      "_origin": "ast",
-      "id": "docs_07_technical_architecture_6_loot_death",
-      "community": 1,
-      "norm_label": "6. loot & death"
-    },
-    {
-      "label": "7. Sandwyrm movement (the one custom-movement quarantine)",
-      "file_type": "document",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L137",
-      "_origin": "ast",
-      "id": "docs_07_technical_architecture_7_sandwyrm_movement_the_one_custom_movement_quarantine",
-      "community": 1,
-      "norm_label": "7. sandwyrm movement (the one custom-movement quarantine)"
-    },
-    {
-      "label": "8. Scanner / radar / bestiary surface (polish tier)",
-      "file_type": "document",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L149",
-      "_origin": "ast",
-      "id": "docs_07_technical_architecture_8_scanner_radar_bestiary_surface_polish_tier",
-      "community": 1,
-      "norm_label": "8. scanner / radar / bestiary surface (polish tier)"
-    },
-    {
-      "label": "9. Diagnostics contract (`LogPrimalFauna`, `[PFA]`)",
-      "file_type": "document",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L160",
-      "_origin": "ast",
-      "id": "docs_07_technical_architecture_9_diagnostics_contract_logprimalfauna_pfa",
-      "community": 1,
-      "norm_label": "9. diagnostics contract (`logprimalfauna`, `[pfa]`)"
-    },
-    {
-      "label": "10. Save-plan versioning",
-      "file_type": "document",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L180",
-      "_origin": "ast",
-      "id": "docs_07_technical_architecture_10_save_plan_versioning",
-      "community": 1,
-      "norm_label": "10. save-plan versioning"
-    },
-    {
       "label": "08-implementation-plan.md",
       "file_type": "document",
       "source_file": "docs/08-implementation-plan.md",
@@ -737,7 +37,7 @@
       "label": "Packet handoff contract",
       "file_type": "document",
       "source_file": "docs/08-implementation-plan.md",
-      "source_location": "L38",
+      "source_location": "L39",
       "_origin": "ast",
       "id": "docs_08_implementation_plan_packet_handoff_contract",
       "community": 0,
@@ -747,7 +47,7 @@
       "label": "2. Packet families",
       "file_type": "document",
       "source_file": "docs/08-implementation-plan.md",
-      "source_location": "L48",
+      "source_location": "L49",
       "_origin": "ast",
       "id": "docs_08_implementation_plan_2_packet_families",
       "community": 0,
@@ -757,7 +57,7 @@
       "label": "3. Phases",
       "file_type": "document",
       "source_file": "docs/08-implementation-plan.md",
-      "source_location": "L111",
+      "source_location": "L120",
       "_origin": "ast",
       "id": "docs_08_implementation_plan_3_phases",
       "community": 0,
@@ -767,7 +67,7 @@
       "label": "4. In-game test checklists (owner: user; orchestrator writes per-build)",
       "file_type": "document",
       "source_file": "docs/08-implementation-plan.md",
-      "source_location": "L127",
+      "source_location": "L136",
       "_origin": "ast",
       "id": "docs_08_implementation_plan_4_in_game_test_checklists_owner_user_orchestrator_writes_per_build",
       "community": 0,
@@ -777,7 +77,7 @@
       "label": "5. Packet-family inputs (load ONLY these + doc 07)",
       "file_type": "document",
       "source_file": "docs/08-implementation-plan.md",
-      "source_location": "L146",
+      "source_location": "L155",
       "_origin": "ast",
       "id": "docs_08_implementation_plan_5_packet_family_inputs_load_only_these_doc_07",
       "community": 0,
@@ -787,7 +87,7 @@
       "label": "6. Risk register",
       "file_type": "document",
       "source_file": "docs/08-implementation-plan.md",
-      "source_location": "L158",
+      "source_location": "L167",
       "_origin": "ast",
       "id": "docs_08_implementation_plan_6_risk_register",
       "community": 0,
@@ -797,23 +97,813 @@
       "label": "7. Definition of v1.0",
       "file_type": "document",
       "source_file": "docs/08-implementation-plan.md",
-      "source_location": "L173",
+      "source_location": "L182",
       "_origin": "ast",
       "id": "docs_08_implementation_plan_7_definition_of_v1_0",
       "community": 0,
       "norm_label": "7. definition of v1.0"
+    },
+    {
+      "label": "README.md",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 8,
+      "norm_label": "readme.md",
+      "id": "readme"
+    },
+    {
+      "label": "PrimalFauna \u2014 hostile megafauna for Satisfactory",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 8,
+      "norm_label": "primalfauna \u2014 hostile megafauna for satisfactory",
+      "id": "readme_primalfauna_hostile_megafauna_for_satisfactory"
+    },
+    {
+      "label": "The plan",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L12",
+      "_origin": "ast",
+      "community": 8,
+      "norm_label": "the plan",
+      "id": "readme_the_plan"
+    },
+    {
+      "label": "Headline design facts (why this plan is buildable)",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "L28",
+      "_origin": "ast",
+      "community": 8,
+      "norm_label": "headline design facts (why this plan is buildable)",
+      "id": "readme_headline_design_facts_why_this_plan_is_buildable"
+    },
+    {
+      "label": "00-vision-and-pillars.md",
+      "file_type": "document",
+      "source_file": "docs/00-vision-and-pillars.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 6,
+      "norm_label": "00-vision-and-pillars.md",
+      "id": "docs_00_vision_and_pillars"
+    },
+    {
+      "label": "00 \u2014 Vision & Pillars",
+      "file_type": "document",
+      "source_file": "docs/00-vision-and-pillars.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 6,
+      "norm_label": "00 \u2014 vision & pillars",
+      "id": "docs_00_vision_and_pillars_00_vision_pillars"
+    },
+    {
+      "label": "1. Locked decisions (user-approved 2026-07-11)",
+      "file_type": "document",
+      "source_file": "docs/00-vision-and-pillars.md",
+      "source_location": "L12",
+      "_origin": "ast",
+      "community": 6,
+      "norm_label": "1. locked decisions (user-approved 2026-07-11)",
+      "id": "docs_00_vision_and_pillars_1_locked_decisions_user_approved_2026_07_11"
+    },
+    {
+      "label": "2. Pillars (tie-breakers for every design argument)",
+      "file_type": "document",
+      "source_file": "docs/00-vision-and-pillars.md",
+      "source_location": "L23",
+      "_origin": "ast",
+      "community": 6,
+      "norm_label": "2. pillars (tie-breakers for every design argument)",
+      "id": "docs_00_vision_and_pillars_2_pillars_tie_breakers_for_every_design_argument"
+    },
+    {
+      "label": "3. V1.0 definition (ship gate)",
+      "file_type": "document",
+      "source_file": "docs/00-vision-and-pillars.md",
+      "source_location": "L49",
+      "_origin": "ast",
+      "community": 6,
+      "norm_label": "3. v1.0 definition (ship gate)",
+      "id": "docs_00_vision_and_pillars_3_v1_0_definition_ship_gate"
+    },
+    {
+      "label": "4. Non-goals (v1) \u2014 the parking lot",
+      "file_type": "document",
+      "source_file": "docs/00-vision-and-pillars.md",
+      "source_location": "L60",
+      "_origin": "ast",
+      "community": 6,
+      "norm_label": "4. non-goals (v1) \u2014 the parking lot",
+      "id": "docs_00_vision_and_pillars_4_non_goals_v1_the_parking_lot"
+    },
+    {
+      "label": "5. Reading order",
+      "file_type": "document",
+      "source_file": "docs/00-vision-and-pillars.md",
+      "source_location": "L72",
+      "_origin": "ast",
+      "community": 6,
+      "norm_label": "5. reading order",
+      "id": "docs_00_vision_and_pillars_5_reading_order"
+    },
+    {
+      "label": "02-hostility-and-factions.md",
+      "file_type": "document",
+      "source_file": "docs/02-hostility-and-factions.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 5,
+      "norm_label": "02-hostility-and-factions.md",
+      "id": "docs_02_hostility_and_factions"
+    },
+    {
+      "label": "02 \u2014 Hostility & Factions",
+      "file_type": "document",
+      "source_file": "docs/02-hostility-and-factions.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 5,
+      "norm_label": "02 \u2014 hostility & factions",
+      "id": "docs_02_hostility_and_factions_02_hostility_factions"
+    },
+    {
+      "label": "1. The machinery we build on (verified)",
+      "file_type": "document",
+      "source_file": "docs/02-hostility-and-factions.md",
+      "source_location": "L7",
+      "_origin": "ast",
+      "community": 5,
+      "norm_label": "1. the machinery we build on (verified)",
+      "id": "docs_02_hostility_and_factions_1_the_machinery_we_build_on_verified"
+    },
+    {
+      "label": "2. The target policy (decision table)",
+      "file_type": "document",
+      "source_file": "docs/02-hostility-and-factions.md",
+      "source_location": "L34",
+      "_origin": "ast",
+      "community": 5,
+      "norm_label": "2. the target policy (decision table)",
+      "id": "docs_02_hostility_and_factions_2_the_target_policy_decision_table"
+    },
+    {
+      "label": "3. Species aggression modes (config `Aggression`, doc 04)",
+      "file_type": "document",
+      "source_file": "docs/02-hostility-and-factions.md",
+      "source_location": "L54",
+      "_origin": "ast",
+      "community": 5,
+      "norm_label": "3. species aggression modes (config `aggression`, doc 04)",
+      "id": "docs_02_hostility_and_factions_3_species_aggression_modes_config_aggression_doc_04"
+    },
+    {
+      "label": "4. Pack behavior (Sicklejaw showcase; config `PackAssist`)",
+      "file_type": "document",
+      "source_file": "docs/02-hostility-and-factions.md",
+      "source_location": "L68",
+      "_origin": "ast",
+      "community": 5,
+      "norm_label": "4. pack behavior (sicklejaw showcase; config `packassist`)",
+      "id": "docs_02_hostility_and_factions_4_pack_behavior_sicklejaw_showcase_config_packassist"
+    },
+    {
+      "label": "5. Perception tuning",
+      "file_type": "document",
+      "source_file": "docs/02-hostility-and-factions.md",
+      "source_location": "L77",
+      "_origin": "ast",
+      "community": 5,
+      "norm_label": "5. perception tuning",
+      "id": "docs_02_hostility_and_factions_5_perception_tuning"
+    },
+    {
+      "label": "6. Sandwyrm targeting \u2014 disturbance, not perception",
+      "file_type": "document",
+      "source_file": "docs/02-hostility-and-factions.md",
+      "source_location": "L87",
+      "_origin": "ast",
+      "community": 5,
+      "norm_label": "6. sandwyrm targeting \u2014 disturbance, not perception",
+      "id": "docs_02_hostility_and_factions_6_sandwyrm_targeting_disturbance_not_perception"
+    },
+    {
+      "label": "7. Statically unverifiable items (differential-review carryover \u2192 in-game checklist)",
+      "file_type": "document",
+      "source_file": "docs/02-hostility-and-factions.md",
+      "source_location": "L99",
+      "_origin": "ast",
+      "community": 5,
+      "norm_label": "7. statically unverifiable items (differential-review carryover \u2192 in-game checklist)",
+      "id": "docs_02_hostility_and_factions_7_statically_unverifiable_items_differential_review_carryover_in_game_checklist"
+    },
+    {
+      "label": "03-spawning-and-territories.md",
+      "file_type": "document",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 4,
+      "norm_label": "03-spawning-and-territories.md",
+      "id": "docs_03_spawning_and_territories"
+    },
+    {
+      "label": "03 \u2014 Spawning & Territories",
+      "file_type": "document",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 4,
+      "norm_label": "03 \u2014 spawning & territories",
+      "id": "docs_03_spawning_and_territories_03_spawning_territories"
+    },
+    {
+      "label": "1. Why real `AFGCreatureSpawner`s (not a custom spawn loop)",
+      "file_type": "document",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L6",
+      "_origin": "ast",
+      "community": 4,
+      "norm_label": "1. why real `afgcreaturespawner`s (not a custom spawn loop)",
+      "id": "docs_03_spawning_and_territories_1_why_real_afgcreaturespawner_s_not_a_custom_spawn_loop"
+    },
+    {
+      "label": "2. Territory data (authored, seeded, curated)",
+      "file_type": "document",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L36",
+      "_origin": "ast",
+      "community": 4,
+      "norm_label": "2. territory data (authored, seeded, curated)",
+      "id": "docs_03_spawning_and_territories_2_territory_data_authored_seeded_curated"
+    },
+    {
+      "label": "3. Injection & idempotence (the subsystem's job)",
+      "file_type": "document",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L62",
+      "_origin": "ast",
+      "community": 4,
+      "norm_label": "3. injection & idempotence (the subsystem's job)",
+      "id": "docs_03_spawning_and_territories_3_injection_idempotence_the_subsystem_s_job"
+    },
+    {
+      "label": "4. Persistence model \u26a0 [assumption \u2192 slice test]",
+      "file_type": "document",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L86",
+      "_origin": "ast",
+      "community": 4,
+      "norm_label": "4. persistence model \u26a0 [assumption \u2192 slice test]",
+      "id": "docs_03_spawning_and_territories_4_persistence_model_assumption_slice_test"
+    },
+    {
+      "label": "5. Density semantics (compose with HostileScaling, don't fight it)",
+      "file_type": "document",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L105",
+      "_origin": "ast",
+      "community": 4,
+      "norm_label": "5. density semantics (compose with hostilescaling, don't fight it)",
+      "id": "docs_03_spawning_and_territories_5_density_semantics_compose_with_hostilescaling_don_t_fight_it"
+    },
+    {
+      "label": "6. Live creature lifecycle rules",
+      "file_type": "document",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L114",
+      "_origin": "ast",
+      "community": 4,
+      "norm_label": "6. live creature lifecycle rules",
+      "id": "docs_03_spawning_and_territories_6_live_creature_lifecycle_rules"
+    },
+    {
+      "label": "7. Sandwyrm event system (its own phase \u2014 no nests)",
+      "file_type": "document",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L121",
+      "_origin": "ast",
+      "community": 4,
+      "norm_label": "7. sandwyrm event system (its own phase \u2014 no nests)",
+      "id": "docs_03_spawning_and_territories_7_sandwyrm_event_system_its_own_phase_no_nests"
+    },
+    {
+      "label": "8. Multiplayer",
+      "file_type": "document",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L150",
+      "_origin": "ast",
+      "community": 4,
+      "norm_label": "8. multiplayer",
+      "id": "docs_03_spawning_and_territories_8_multiplayer"
+    },
+    {
+      "label": "04-config-and-ui.md",
+      "file_type": "document",
+      "source_file": "docs/04-config-and-ui.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 3,
+      "norm_label": "04-config-and-ui.md",
+      "id": "docs_04_config_and_ui"
+    },
+    {
+      "label": "04 \u2014 Config & UI",
+      "file_type": "document",
+      "source_file": "docs/04-config-and-ui.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 3,
+      "norm_label": "04 \u2014 config & ui",
+      "id": "docs_04_config_and_ui_04_config_ui"
+    },
+    {
+      "label": "1. The config tree (v1)",
+      "file_type": "document",
+      "source_file": "docs/04-config-and-ui.md",
+      "source_location": "L7",
+      "_origin": "ast",
+      "community": 3,
+      "norm_label": "1. the config tree (v1)",
+      "id": "docs_04_config_and_ui_1_the_config_tree_v1"
+    },
+    {
+      "label": "Section: General",
+      "file_type": "document",
+      "source_file": "docs/04-config-and-ui.md",
+      "source_location": "L14",
+      "_origin": "ast",
+      "community": 3,
+      "norm_label": "section: general",
+      "id": "docs_04_config_and_ui_section_general"
+    },
+    {
+      "label": "Sections: per land species (Sicklejaw / Crestback / Duskstalker)",
+      "file_type": "document",
+      "source_file": "docs/04-config-and-ui.md",
+      "source_location": "L22",
+      "_origin": "ast",
+      "community": 3,
+      "norm_label": "sections: per land species (sicklejaw / crestback / duskstalker)",
+      "id": "docs_04_config_and_ui_sections_per_land_species_sicklejaw_crestback_duskstalker"
+    },
+    {
+      "label": "Section: Factions (doc 02)",
+      "file_type": "document",
+      "source_file": "docs/04-config-and-ui.md",
+      "source_location": "L29",
+      "_origin": "ast",
+      "community": 3,
+      "norm_label": "section: factions (doc 02)",
+      "id": "docs_04_config_and_ui_section_factions_doc_02"
+    },
+    {
+      "label": "Section: Sandwyrm (added in its phase; section present-but-minimal before that)",
+      "file_type": "document",
+      "source_file": "docs/04-config-and-ui.md",
+      "source_location": "L36",
+      "_origin": "ast",
+      "community": 3,
+      "norm_label": "section: sandwyrm (added in its phase; section present-but-minimal before that)",
+      "id": "docs_04_config_and_ui_section_sandwyrm_added_in_its_phase_section_present_but_minimal_before_that"
+    },
+    {
+      "label": "2. Multiplayer semantics (must be logged + tested, not assumed)",
+      "file_type": "document",
+      "source_file": "docs/04-config-and-ui.md",
+      "source_location": "L44",
+      "_origin": "ast",
+      "community": 3,
+      "norm_label": "2. multiplayer semantics (must be logged + tested, not assumed)",
+      "id": "docs_04_config_and_ui_2_multiplayer_semantics_must_be_logged_tested_not_assumed"
+    },
+    {
+      "label": "3. Config \u2194 world-reload interactions",
+      "file_type": "document",
+      "source_file": "docs/04-config-and-ui.md",
+      "source_location": "L53",
+      "_origin": "ast",
+      "community": 3,
+      "norm_label": "3. config \u2194 world-reload interactions",
+      "id": "docs_04_config_and_ui_3_config_world_reload_interactions"
+    },
+    {
+      "label": "4. Why ModConfiguration (and the alternative considered)",
+      "file_type": "document",
+      "source_file": "docs/04-config-and-ui.md",
+      "source_location": "L61",
+      "_origin": "ast",
+      "community": 3,
+      "norm_label": "4. why modconfiguration (and the alternative considered)",
+      "id": "docs_04_config_and_ui_4_why_modconfiguration_and_the_alternative_considered"
+    },
+    {
+      "label": "5. UI copy standards",
+      "file_type": "document",
+      "source_file": "docs/04-config-and-ui.md",
+      "source_location": "L80",
+      "_origin": "ast",
+      "community": 3,
+      "norm_label": "5. ui copy standards",
+      "id": "docs_04_config_and_ui_5_ui_copy_standards"
+    },
+    {
+      "label": "05-asset-pipeline.md",
+      "file_type": "document",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 2,
+      "norm_label": "05-asset-pipeline.md",
+      "id": "docs_05_asset_pipeline"
+    },
+    {
+      "label": "05 \u2014 Asset Pipeline",
+      "file_type": "document",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 2,
+      "norm_label": "05 \u2014 asset pipeline",
+      "id": "docs_05_asset_pipeline_05_asset_pipeline"
+    },
+    {
+      "label": "1. Art direction & generation briefs",
+      "file_type": "document",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L12",
+      "_origin": "ast",
+      "community": 2,
+      "norm_label": "1. art direction & generation briefs",
+      "id": "docs_05_asset_pipeline_1_art_direction_generation_briefs"
+    },
+    {
+      "label": "2. Per-creature pipeline (stage gates in order)",
+      "file_type": "document",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L25",
+      "_origin": "ast",
+      "community": 2,
+      "norm_label": "2. per-creature pipeline (stage gates in order)",
+      "id": "docs_05_asset_pipeline_2_per_creature_pipeline_stage_gates_in_order"
+    },
+    {
+      "label": "3. Animation \u2014 the honest plan (verified Tripo facts)",
+      "file_type": "document",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L39",
+      "_origin": "ast",
+      "community": 2,
+      "norm_label": "3. animation \u2014 the honest plan (verified tripo facts)",
+      "id": "docs_05_asset_pipeline_3_animation_the_honest_plan_verified_tripo_facts"
+    },
+    {
+      "label": "4. Texturing & the aggro-glow telegraph",
+      "file_type": "document",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L73",
+      "_origin": "ast",
+      "community": 2,
+      "norm_label": "4. texturing & the aggro-glow telegraph",
+      "id": "docs_05_asset_pipeline_4_texturing_the_aggro_glow_telegraph"
+    },
+    {
+      "label": "5. Fab/Sketchfab licensing rules (for rungs 3\u20134 and the worm fallback)",
+      "file_type": "document",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L87",
+      "_origin": "ast",
+      "community": 2,
+      "norm_label": "5. fab/sketchfab licensing rules (for rungs 3\u20134 and the worm fallback)",
+      "id": "docs_05_asset_pipeline_5_fab_sketchfab_licensing_rules_for_rungs_3_4_and_the_worm_fallback"
+    },
+    {
+      "label": "6. UE import & wiring (headless-first)",
+      "file_type": "document",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L99",
+      "_origin": "ast",
+      "community": 2,
+      "norm_label": "6. ue import & wiring (headless-first)",
+      "id": "docs_05_asset_pipeline_6_ue_import_wiring_headless_first"
+    },
+    {
+      "label": "7. Sandwyrm assets \u2014 procedural by design",
+      "file_type": "document",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L122",
+      "_origin": "ast",
+      "community": 2,
+      "norm_label": "7. sandwyrm assets \u2014 procedural by design",
+      "id": "docs_05_asset_pipeline_7_sandwyrm_assets_procedural_by_design"
+    },
+    {
+      "label": "8. GPU & credit discipline",
+      "file_type": "document",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L140",
+      "_origin": "ast",
+      "community": 2,
+      "norm_label": "8. gpu & credit discipline",
+      "id": "docs_05_asset_pipeline_8_gpu_credit_discipline"
+    },
+    {
+      "label": "06-integration-and-compat.md",
+      "file_type": "document",
+      "source_file": "docs/06-integration-and-compat.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 7,
+      "norm_label": "06-integration-and-compat.md",
+      "id": "docs_06_integration_and_compat"
+    },
+    {
+      "label": "06 \u2014 Integration & Compatibility",
+      "file_type": "document",
+      "source_file": "docs/06-integration-and-compat.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 7,
+      "norm_label": "06 \u2014 integration & compatibility",
+      "id": "docs_06_integration_and_compat_06_integration_compatibility"
+    },
+    {
+      "label": "1. How HostileScaling discovers and scales creatures (verified, not assumed)",
+      "file_type": "document",
+      "source_file": "docs/06-integration-and-compat.md",
+      "source_location": "L8",
+      "_origin": "ast",
+      "community": 7,
+      "norm_label": "1. how hostilescaling discovers and scales creatures (verified, not assumed)",
+      "id": "docs_06_integration_and_compat_1_how_hostilescaling_discovers_and_scales_creatures_verified_not_assumed"
+    },
+    {
+      "label": "2. Our obligations \u2014 the creature contract",
+      "file_type": "document",
+      "source_file": "docs/06-integration-and-compat.md",
+      "source_location": "L24",
+      "_origin": "ast",
+      "community": 7,
+      "norm_label": "2. our obligations \u2014 the creature contract",
+      "id": "docs_06_integration_and_compat_2_our_obligations_the_creature_contract"
+    },
+    {
+      "label": "3. Our obligations \u2014 the spawner contract",
+      "file_type": "document",
+      "source_file": "docs/06-integration-and-compat.md",
+      "source_location": "L35",
+      "_origin": "ast",
+      "community": 7,
+      "norm_label": "3. our obligations \u2014 the spawner contract",
+      "id": "docs_06_integration_and_compat_3_our_obligations_the_spawner_contract"
+    },
+    {
+      "label": "4. Verification matrix (both-ways, in-game \u2014 doc 08 gates)",
+      "file_type": "document",
+      "source_file": "docs/06-integration-and-compat.md",
+      "source_location": "L44",
+      "_origin": "ast",
+      "community": 7,
+      "norm_label": "4. verification matrix (both-ways, in-game \u2014 doc 08 gates)",
+      "id": "docs_06_integration_and_compat_4_verification_matrix_both_ways_in_game_doc_08_gates"
+    },
+    {
+      "label": "5. Broader compatibility notes",
+      "file_type": "document",
+      "source_file": "docs/06-integration-and-compat.md",
+      "source_location": "L61",
+      "_origin": "ast",
+      "community": 7,
+      "norm_label": "5. broader compatibility notes",
+      "id": "docs_06_integration_and_compat_5_broader_compatibility_notes"
+    },
+    {
+      "label": "07-technical-architecture.md",
+      "file_type": "document",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 1,
+      "norm_label": "07-technical-architecture.md",
+      "id": "docs_07_technical_architecture"
+    },
+    {
+      "label": "07 \u2014 Technical Architecture",
+      "file_type": "document",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 1,
+      "norm_label": "07 \u2014 technical architecture",
+      "id": "docs_07_technical_architecture_07_technical_architecture"
+    },
+    {
+      "label": "1. Architecture principle: own every class you change",
+      "file_type": "document",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L7",
+      "_origin": "ast",
+      "community": 1,
+      "norm_label": "1. architecture principle: own every class you change",
+      "id": "docs_07_technical_architecture_1_architecture_principle_own_every_class_you_change"
+    },
+    {
+      "label": "2. Class map",
+      "file_type": "document",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L25",
+      "_origin": "ast",
+      "community": 1,
+      "norm_label": "2. class map",
+      "id": "docs_07_technical_architecture_2_class_map"
+    },
+    {
+      "label": "3. Species authoring \u2014 everything on the CDO, in C++",
+      "file_type": "document",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L54",
+      "_origin": "ast",
+      "community": 1,
+      "norm_label": "3. species authoring \u2014 everything on the cdo, in c++",
+      "id": "docs_07_technical_architecture_3_species_authoring_everything_on_the_cdo_in_c"
+    },
+    {
+      "label": "4. Behavior: borrow the vanilla Behavior Tree, own the actions",
+      "file_type": "document",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L83",
+      "_origin": "ast",
+      "community": 1,
+      "norm_label": "4. behavior: borrow the vanilla behavior tree, own the actions",
+      "id": "docs_07_technical_architecture_4_behavior_borrow_the_vanilla_behavior_tree_own_the_actions"
+    },
+    {
+      "label": "5. Attacks = native `UFGCreatureAction` classes (no custom combat code)",
+      "file_type": "document",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L104",
+      "_origin": "ast",
+      "community": 1,
+      "norm_label": "5. attacks = native `ufgcreatureaction` classes (no custom combat code)",
+      "id": "docs_07_technical_architecture_5_attacks_native_ufgcreatureaction_classes_no_custom_combat_code"
+    },
+    {
+      "label": "6. Loot & death",
+      "file_type": "document",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L127",
+      "_origin": "ast",
+      "community": 1,
+      "norm_label": "6. loot & death",
+      "id": "docs_07_technical_architecture_6_loot_death"
+    },
+    {
+      "label": "7. Sandwyrm movement (the one custom-movement quarantine)",
+      "file_type": "document",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L137",
+      "_origin": "ast",
+      "community": 1,
+      "norm_label": "7. sandwyrm movement (the one custom-movement quarantine)",
+      "id": "docs_07_technical_architecture_7_sandwyrm_movement_the_one_custom_movement_quarantine"
+    },
+    {
+      "label": "8. Scanner / radar / bestiary surface (polish tier)",
+      "file_type": "document",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L149",
+      "_origin": "ast",
+      "community": 1,
+      "norm_label": "8. scanner / radar / bestiary surface (polish tier)",
+      "id": "docs_07_technical_architecture_8_scanner_radar_bestiary_surface_polish_tier"
+    },
+    {
+      "label": "9. Diagnostics contract (`LogPrimalFauna`, `[PFA]`)",
+      "file_type": "document",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L160",
+      "_origin": "ast",
+      "community": 1,
+      "norm_label": "9. diagnostics contract (`logprimalfauna`, `[pfa]`)",
+      "id": "docs_07_technical_architecture_9_diagnostics_contract_logprimalfauna_pfa"
+    },
+    {
+      "label": "10. Save-plan versioning",
+      "file_type": "document",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L180",
+      "_origin": "ast",
+      "community": 1,
+      "norm_label": "10. save-plan versioning",
+      "id": "docs_07_technical_architecture_10_save_plan_versioning"
     }
   ],
   "links": [
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "docs/08-implementation-plan.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_08_implementation_plan",
+      "target": "docs_08_implementation_plan_08_implementation_plan_team_execution"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/08-implementation-plan.md",
+      "source_location": "L8",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_08_implementation_plan_08_implementation_plan_team_execution",
+      "target": "docs_08_implementation_plan_1_orchestration_model"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/08-implementation-plan.md",
+      "source_location": "L46",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_08_implementation_plan_08_implementation_plan_team_execution",
+      "target": "docs_08_implementation_plan_2_packet_families"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/08-implementation-plan.md",
+      "source_location": "L109",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_08_implementation_plan_08_implementation_plan_team_execution",
+      "target": "docs_08_implementation_plan_3_phases"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/08-implementation-plan.md",
+      "source_location": "L125",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_08_implementation_plan_08_implementation_plan_team_execution",
+      "target": "docs_08_implementation_plan_4_in_game_test_checklists_owner_user_orchestrator_writes_per_build"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/08-implementation-plan.md",
+      "source_location": "L144",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_08_implementation_plan_08_implementation_plan_team_execution",
+      "target": "docs_08_implementation_plan_5_packet_family_inputs_load_only_these_doc_07"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/08-implementation-plan.md",
+      "source_location": "L156",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_08_implementation_plan_08_implementation_plan_team_execution",
+      "target": "docs_08_implementation_plan_6_risk_register"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/08-implementation-plan.md",
+      "source_location": "L171",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_08_implementation_plan_08_implementation_plan_team_execution",
+      "target": "docs_08_implementation_plan_7_definition_of_v1_0"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/08-implementation-plan.md",
+      "source_location": "L36",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_08_implementation_plan_1_orchestration_model",
+      "target": "docs_08_implementation_plan_packet_handoff_contract"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "README.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "readme",
-      "target": "readme_primalfauna_hostile_megafauna_for_satisfactory",
-      "confidence_score": 1.0
+      "target": "readme_primalfauna_hostile_megafauna_for_satisfactory"
     },
     {
       "relation": "contains",
@@ -821,9 +911,9 @@
       "source_file": "README.md",
       "source_location": "L28",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "readme_primalfauna_hostile_megafauna_for_satisfactory",
-      "target": "readme_headline_design_facts_why_this_plan_is_buildable",
-      "confidence_score": 1.0
+      "target": "readme_headline_design_facts_why_this_plan_is_buildable"
     },
     {
       "relation": "contains",
@@ -831,9 +921,9 @@
       "source_file": "README.md",
       "source_location": "L12",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "readme_primalfauna_hostile_megafauna_for_satisfactory",
-      "target": "readme_the_plan",
-      "confidence_score": 1.0
+      "target": "readme_the_plan"
     },
     {
       "relation": "contains",
@@ -841,9 +931,9 @@
       "source_file": "docs/00-vision-and-pillars.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_00_vision_and_pillars",
-      "target": "docs_00_vision_and_pillars_00_vision_pillars",
-      "confidence_score": 1.0
+      "target": "docs_00_vision_and_pillars_00_vision_pillars"
     },
     {
       "relation": "contains",
@@ -851,9 +941,9 @@
       "source_file": "docs/00-vision-and-pillars.md",
       "source_location": "L12",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_00_vision_and_pillars_00_vision_pillars",
-      "target": "docs_00_vision_and_pillars_1_locked_decisions_user_approved_2026_07_11",
-      "confidence_score": 1.0
+      "target": "docs_00_vision_and_pillars_1_locked_decisions_user_approved_2026_07_11"
     },
     {
       "relation": "contains",
@@ -861,9 +951,9 @@
       "source_file": "docs/00-vision-and-pillars.md",
       "source_location": "L23",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_00_vision_and_pillars_00_vision_pillars",
-      "target": "docs_00_vision_and_pillars_2_pillars_tie_breakers_for_every_design_argument",
-      "confidence_score": 1.0
+      "target": "docs_00_vision_and_pillars_2_pillars_tie_breakers_for_every_design_argument"
     },
     {
       "relation": "contains",
@@ -871,9 +961,9 @@
       "source_file": "docs/00-vision-and-pillars.md",
       "source_location": "L49",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_00_vision_and_pillars_00_vision_pillars",
-      "target": "docs_00_vision_and_pillars_3_v1_0_definition_ship_gate",
-      "confidence_score": 1.0
+      "target": "docs_00_vision_and_pillars_3_v1_0_definition_ship_gate"
     },
     {
       "relation": "contains",
@@ -881,9 +971,9 @@
       "source_file": "docs/00-vision-and-pillars.md",
       "source_location": "L60",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_00_vision_and_pillars_00_vision_pillars",
-      "target": "docs_00_vision_and_pillars_4_non_goals_v1_the_parking_lot",
-      "confidence_score": 1.0
+      "target": "docs_00_vision_and_pillars_4_non_goals_v1_the_parking_lot"
     },
     {
       "relation": "contains",
@@ -891,9 +981,9 @@
       "source_file": "docs/00-vision-and-pillars.md",
       "source_location": "L72",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_00_vision_and_pillars_00_vision_pillars",
-      "target": "docs_00_vision_and_pillars_5_reading_order",
-      "confidence_score": 1.0
+      "target": "docs_00_vision_and_pillars_5_reading_order"
     },
     {
       "relation": "contains",
@@ -901,9 +991,9 @@
       "source_file": "docs/02-hostility-and-factions.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_02_hostility_and_factions",
-      "target": "docs_02_hostility_and_factions_02_hostility_factions",
-      "confidence_score": 1.0
+      "target": "docs_02_hostility_and_factions_02_hostility_factions"
     },
     {
       "relation": "contains",
@@ -911,9 +1001,9 @@
       "source_file": "docs/02-hostility-and-factions.md",
       "source_location": "L7",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_02_hostility_and_factions_02_hostility_factions",
-      "target": "docs_02_hostility_and_factions_1_the_machinery_we_build_on_verified",
-      "confidence_score": 1.0
+      "target": "docs_02_hostility_and_factions_1_the_machinery_we_build_on_verified"
     },
     {
       "relation": "contains",
@@ -921,9 +1011,9 @@
       "source_file": "docs/02-hostility-and-factions.md",
       "source_location": "L34",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_02_hostility_and_factions_02_hostility_factions",
-      "target": "docs_02_hostility_and_factions_2_the_target_policy_decision_table",
-      "confidence_score": 1.0
+      "target": "docs_02_hostility_and_factions_2_the_target_policy_decision_table"
     },
     {
       "relation": "contains",
@@ -931,9 +1021,9 @@
       "source_file": "docs/02-hostility-and-factions.md",
       "source_location": "L54",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_02_hostility_and_factions_02_hostility_factions",
-      "target": "docs_02_hostility_and_factions_3_species_aggression_modes_config_aggression_doc_04",
-      "confidence_score": 1.0
+      "target": "docs_02_hostility_and_factions_3_species_aggression_modes_config_aggression_doc_04"
     },
     {
       "relation": "contains",
@@ -941,9 +1031,9 @@
       "source_file": "docs/02-hostility-and-factions.md",
       "source_location": "L68",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_02_hostility_and_factions_02_hostility_factions",
-      "target": "docs_02_hostility_and_factions_4_pack_behavior_sicklejaw_showcase_config_packassist",
-      "confidence_score": 1.0
+      "target": "docs_02_hostility_and_factions_4_pack_behavior_sicklejaw_showcase_config_packassist"
     },
     {
       "relation": "contains",
@@ -951,9 +1041,9 @@
       "source_file": "docs/02-hostility-and-factions.md",
       "source_location": "L77",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_02_hostility_and_factions_02_hostility_factions",
-      "target": "docs_02_hostility_and_factions_5_perception_tuning",
-      "confidence_score": 1.0
+      "target": "docs_02_hostility_and_factions_5_perception_tuning"
     },
     {
       "relation": "contains",
@@ -961,9 +1051,9 @@
       "source_file": "docs/02-hostility-and-factions.md",
       "source_location": "L87",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_02_hostility_and_factions_02_hostility_factions",
-      "target": "docs_02_hostility_and_factions_6_sandwyrm_targeting_disturbance_not_perception",
-      "confidence_score": 1.0
+      "target": "docs_02_hostility_and_factions_6_sandwyrm_targeting_disturbance_not_perception"
     },
     {
       "relation": "contains",
@@ -971,9 +1061,9 @@
       "source_file": "docs/02-hostility-and-factions.md",
       "source_location": "L99",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_02_hostility_and_factions_02_hostility_factions",
-      "target": "docs_02_hostility_and_factions_7_statically_unverifiable_items_differential_review_carryover_in_game_checklist",
-      "confidence_score": 1.0
+      "target": "docs_02_hostility_and_factions_7_statically_unverifiable_items_differential_review_carryover_in_game_checklist"
     },
     {
       "relation": "contains",
@@ -981,9 +1071,9 @@
       "source_file": "docs/03-spawning-and-territories.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_03_spawning_and_territories",
-      "target": "docs_03_spawning_and_territories_03_spawning_territories",
-      "confidence_score": 1.0
+      "target": "docs_03_spawning_and_territories_03_spawning_territories"
     },
     {
       "relation": "contains",
@@ -991,9 +1081,9 @@
       "source_file": "docs/03-spawning-and-territories.md",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_03_spawning_and_territories_03_spawning_territories",
-      "target": "docs_03_spawning_and_territories_1_why_real_afgcreaturespawner_s_not_a_custom_spawn_loop",
-      "confidence_score": 1.0
+      "target": "docs_03_spawning_and_territories_1_why_real_afgcreaturespawner_s_not_a_custom_spawn_loop"
     },
     {
       "relation": "contains",
@@ -1001,9 +1091,9 @@
       "source_file": "docs/03-spawning-and-territories.md",
       "source_location": "L36",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_03_spawning_and_territories_03_spawning_territories",
-      "target": "docs_03_spawning_and_territories_2_territory_data_authored_seeded_curated",
-      "confidence_score": 1.0
+      "target": "docs_03_spawning_and_territories_2_territory_data_authored_seeded_curated"
     },
     {
       "relation": "contains",
@@ -1011,9 +1101,9 @@
       "source_file": "docs/03-spawning-and-territories.md",
       "source_location": "L62",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_03_spawning_and_territories_03_spawning_territories",
-      "target": "docs_03_spawning_and_territories_3_injection_idempotence_the_subsystem_s_job",
-      "confidence_score": 1.0
+      "target": "docs_03_spawning_and_territories_3_injection_idempotence_the_subsystem_s_job"
     },
     {
       "relation": "contains",
@@ -1021,9 +1111,9 @@
       "source_file": "docs/03-spawning-and-territories.md",
       "source_location": "L86",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_03_spawning_and_territories_03_spawning_territories",
-      "target": "docs_03_spawning_and_territories_4_persistence_model_assumption_slice_test",
-      "confidence_score": 1.0
+      "target": "docs_03_spawning_and_territories_4_persistence_model_assumption_slice_test"
     },
     {
       "relation": "contains",
@@ -1031,9 +1121,9 @@
       "source_file": "docs/03-spawning-and-territories.md",
       "source_location": "L105",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_03_spawning_and_territories_03_spawning_territories",
-      "target": "docs_03_spawning_and_territories_5_density_semantics_compose_with_hostilescaling_don_t_fight_it",
-      "confidence_score": 1.0
+      "target": "docs_03_spawning_and_territories_5_density_semantics_compose_with_hostilescaling_don_t_fight_it"
     },
     {
       "relation": "contains",
@@ -1041,9 +1131,9 @@
       "source_file": "docs/03-spawning-and-territories.md",
       "source_location": "L114",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_03_spawning_and_territories_03_spawning_territories",
-      "target": "docs_03_spawning_and_territories_6_live_creature_lifecycle_rules",
-      "confidence_score": 1.0
+      "target": "docs_03_spawning_and_territories_6_live_creature_lifecycle_rules"
     },
     {
       "relation": "contains",
@@ -1051,9 +1141,9 @@
       "source_file": "docs/03-spawning-and-territories.md",
       "source_location": "L121",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_03_spawning_and_territories_03_spawning_territories",
-      "target": "docs_03_spawning_and_territories_7_sandwyrm_event_system_its_own_phase_no_nests",
-      "confidence_score": 1.0
+      "target": "docs_03_spawning_and_territories_7_sandwyrm_event_system_its_own_phase_no_nests"
     },
     {
       "relation": "contains",
@@ -1061,9 +1151,9 @@
       "source_file": "docs/03-spawning-and-territories.md",
       "source_location": "L150",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_03_spawning_and_territories_03_spawning_territories",
-      "target": "docs_03_spawning_and_territories_8_multiplayer",
-      "confidence_score": 1.0
+      "target": "docs_03_spawning_and_territories_8_multiplayer"
     },
     {
       "relation": "contains",
@@ -1071,9 +1161,9 @@
       "source_file": "docs/04-config-and-ui.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_04_config_and_ui",
-      "target": "docs_04_config_and_ui_04_config_ui",
-      "confidence_score": 1.0
+      "target": "docs_04_config_and_ui_04_config_ui"
     },
     {
       "relation": "contains",
@@ -1081,9 +1171,9 @@
       "source_file": "docs/04-config-and-ui.md",
       "source_location": "L7",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_04_config_and_ui_04_config_ui",
-      "target": "docs_04_config_and_ui_1_the_config_tree_v1",
-      "confidence_score": 1.0
+      "target": "docs_04_config_and_ui_1_the_config_tree_v1"
     },
     {
       "relation": "contains",
@@ -1091,9 +1181,9 @@
       "source_file": "docs/04-config-and-ui.md",
       "source_location": "L44",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_04_config_and_ui_04_config_ui",
-      "target": "docs_04_config_and_ui_2_multiplayer_semantics_must_be_logged_tested_not_assumed",
-      "confidence_score": 1.0
+      "target": "docs_04_config_and_ui_2_multiplayer_semantics_must_be_logged_tested_not_assumed"
     },
     {
       "relation": "contains",
@@ -1101,9 +1191,9 @@
       "source_file": "docs/04-config-and-ui.md",
       "source_location": "L53",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_04_config_and_ui_04_config_ui",
-      "target": "docs_04_config_and_ui_3_config_world_reload_interactions",
-      "confidence_score": 1.0
+      "target": "docs_04_config_and_ui_3_config_world_reload_interactions"
     },
     {
       "relation": "contains",
@@ -1111,9 +1201,9 @@
       "source_file": "docs/04-config-and-ui.md",
       "source_location": "L61",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_04_config_and_ui_04_config_ui",
-      "target": "docs_04_config_and_ui_4_why_modconfiguration_and_the_alternative_considered",
-      "confidence_score": 1.0
+      "target": "docs_04_config_and_ui_4_why_modconfiguration_and_the_alternative_considered"
     },
     {
       "relation": "contains",
@@ -1121,9 +1211,9 @@
       "source_file": "docs/04-config-and-ui.md",
       "source_location": "L80",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_04_config_and_ui_04_config_ui",
-      "target": "docs_04_config_and_ui_5_ui_copy_standards",
-      "confidence_score": 1.0
+      "target": "docs_04_config_and_ui_5_ui_copy_standards"
     },
     {
       "relation": "contains",
@@ -1131,9 +1221,9 @@
       "source_file": "docs/04-config-and-ui.md",
       "source_location": "L29",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_04_config_and_ui_1_the_config_tree_v1",
-      "target": "docs_04_config_and_ui_section_factions_doc_02",
-      "confidence_score": 1.0
+      "target": "docs_04_config_and_ui_section_factions_doc_02"
     },
     {
       "relation": "contains",
@@ -1141,9 +1231,9 @@
       "source_file": "docs/04-config-and-ui.md",
       "source_location": "L14",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_04_config_and_ui_1_the_config_tree_v1",
-      "target": "docs_04_config_and_ui_section_general",
-      "confidence_score": 1.0
+      "target": "docs_04_config_and_ui_section_general"
     },
     {
       "relation": "contains",
@@ -1151,9 +1241,9 @@
       "source_file": "docs/04-config-and-ui.md",
       "source_location": "L36",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_04_config_and_ui_1_the_config_tree_v1",
-      "target": "docs_04_config_and_ui_section_sandwyrm_added_in_its_phase_section_present_but_minimal_before_that",
-      "confidence_score": 1.0
+      "target": "docs_04_config_and_ui_section_sandwyrm_added_in_its_phase_section_present_but_minimal_before_that"
     },
     {
       "relation": "contains",
@@ -1161,9 +1251,9 @@
       "source_file": "docs/04-config-and-ui.md",
       "source_location": "L22",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_04_config_and_ui_1_the_config_tree_v1",
-      "target": "docs_04_config_and_ui_sections_per_land_species_sicklejaw_crestback_duskstalker",
-      "confidence_score": 1.0
+      "target": "docs_04_config_and_ui_sections_per_land_species_sicklejaw_crestback_duskstalker"
     },
     {
       "relation": "contains",
@@ -1261,9 +1351,9 @@
       "source_file": "docs/06-integration-and-compat.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_06_integration_and_compat",
-      "target": "docs_06_integration_and_compat_06_integration_compatibility",
-      "confidence_score": 1.0
+      "target": "docs_06_integration_and_compat_06_integration_compatibility"
     },
     {
       "relation": "contains",
@@ -1271,9 +1361,9 @@
       "source_file": "docs/06-integration-and-compat.md",
       "source_location": "L8",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_06_integration_and_compat_06_integration_compatibility",
-      "target": "docs_06_integration_and_compat_1_how_hostilescaling_discovers_and_scales_creatures_verified_not_assumed",
-      "confidence_score": 1.0
+      "target": "docs_06_integration_and_compat_1_how_hostilescaling_discovers_and_scales_creatures_verified_not_assumed"
     },
     {
       "relation": "contains",
@@ -1281,9 +1371,9 @@
       "source_file": "docs/06-integration-and-compat.md",
       "source_location": "L24",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_06_integration_and_compat_06_integration_compatibility",
-      "target": "docs_06_integration_and_compat_2_our_obligations_the_creature_contract",
-      "confidence_score": 1.0
+      "target": "docs_06_integration_and_compat_2_our_obligations_the_creature_contract"
     },
     {
       "relation": "contains",
@@ -1291,9 +1381,9 @@
       "source_file": "docs/06-integration-and-compat.md",
       "source_location": "L35",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_06_integration_and_compat_06_integration_compatibility",
-      "target": "docs_06_integration_and_compat_3_our_obligations_the_spawner_contract",
-      "confidence_score": 1.0
+      "target": "docs_06_integration_and_compat_3_our_obligations_the_spawner_contract"
     },
     {
       "relation": "contains",
@@ -1301,9 +1391,9 @@
       "source_file": "docs/06-integration-and-compat.md",
       "source_location": "L44",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_06_integration_and_compat_06_integration_compatibility",
-      "target": "docs_06_integration_and_compat_4_verification_matrix_both_ways_in_game_doc_08_gates",
-      "confidence_score": 1.0
+      "target": "docs_06_integration_and_compat_4_verification_matrix_both_ways_in_game_doc_08_gates"
     },
     {
       "relation": "contains",
@@ -1311,9 +1401,9 @@
       "source_file": "docs/06-integration-and-compat.md",
       "source_location": "L61",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_06_integration_and_compat_06_integration_compatibility",
-      "target": "docs_06_integration_and_compat_5_broader_compatibility_notes",
-      "confidence_score": 1.0
+      "target": "docs_06_integration_and_compat_5_broader_compatibility_notes"
     },
     {
       "relation": "contains",
@@ -1321,9 +1411,9 @@
       "source_file": "docs/07-technical-architecture.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_07_technical_architecture",
-      "target": "docs_07_technical_architecture_07_technical_architecture",
-      "confidence_score": 1.0
+      "target": "docs_07_technical_architecture_07_technical_architecture"
     },
     {
       "relation": "contains",
@@ -1331,9 +1421,9 @@
       "source_file": "docs/07-technical-architecture.md",
       "source_location": "L180",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_07_technical_architecture_07_technical_architecture",
-      "target": "docs_07_technical_architecture_10_save_plan_versioning",
-      "confidence_score": 1.0
+      "target": "docs_07_technical_architecture_10_save_plan_versioning"
     },
     {
       "relation": "contains",
@@ -1341,9 +1431,9 @@
       "source_file": "docs/07-technical-architecture.md",
       "source_location": "L7",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_07_technical_architecture_07_technical_architecture",
-      "target": "docs_07_technical_architecture_1_architecture_principle_own_every_class_you_change",
-      "confidence_score": 1.0
+      "target": "docs_07_technical_architecture_1_architecture_principle_own_every_class_you_change"
     },
     {
       "relation": "contains",
@@ -1351,9 +1441,9 @@
       "source_file": "docs/07-technical-architecture.md",
       "source_location": "L25",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_07_technical_architecture_07_technical_architecture",
-      "target": "docs_07_technical_architecture_2_class_map",
-      "confidence_score": 1.0
+      "target": "docs_07_technical_architecture_2_class_map"
     },
     {
       "relation": "contains",
@@ -1361,9 +1451,9 @@
       "source_file": "docs/07-technical-architecture.md",
       "source_location": "L54",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_07_technical_architecture_07_technical_architecture",
-      "target": "docs_07_technical_architecture_3_species_authoring_everything_on_the_cdo_in_c",
-      "confidence_score": 1.0
+      "target": "docs_07_technical_architecture_3_species_authoring_everything_on_the_cdo_in_c"
     },
     {
       "relation": "contains",
@@ -1371,9 +1461,9 @@
       "source_file": "docs/07-technical-architecture.md",
       "source_location": "L83",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_07_technical_architecture_07_technical_architecture",
-      "target": "docs_07_technical_architecture_4_behavior_borrow_the_vanilla_behavior_tree_own_the_actions",
-      "confidence_score": 1.0
+      "target": "docs_07_technical_architecture_4_behavior_borrow_the_vanilla_behavior_tree_own_the_actions"
     },
     {
       "relation": "contains",
@@ -1381,9 +1471,9 @@
       "source_file": "docs/07-technical-architecture.md",
       "source_location": "L104",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_07_technical_architecture_07_technical_architecture",
-      "target": "docs_07_technical_architecture_5_attacks_native_ufgcreatureaction_classes_no_custom_combat_code",
-      "confidence_score": 1.0
+      "target": "docs_07_technical_architecture_5_attacks_native_ufgcreatureaction_classes_no_custom_combat_code"
     },
     {
       "relation": "contains",
@@ -1391,9 +1481,9 @@
       "source_file": "docs/07-technical-architecture.md",
       "source_location": "L127",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_07_technical_architecture_07_technical_architecture",
-      "target": "docs_07_technical_architecture_6_loot_death",
-      "confidence_score": 1.0
+      "target": "docs_07_technical_architecture_6_loot_death"
     },
     {
       "relation": "contains",
@@ -1401,9 +1491,9 @@
       "source_file": "docs/07-technical-architecture.md",
       "source_location": "L137",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_07_technical_architecture_07_technical_architecture",
-      "target": "docs_07_technical_architecture_7_sandwyrm_movement_the_one_custom_movement_quarantine",
-      "confidence_score": 1.0
+      "target": "docs_07_technical_architecture_7_sandwyrm_movement_the_one_custom_movement_quarantine"
     },
     {
       "relation": "contains",
@@ -1411,9 +1501,9 @@
       "source_file": "docs/07-technical-architecture.md",
       "source_location": "L149",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_07_technical_architecture_07_technical_architecture",
-      "target": "docs_07_technical_architecture_8_scanner_radar_bestiary_surface_polish_tier",
-      "confidence_score": 1.0
+      "target": "docs_07_technical_architecture_8_scanner_radar_bestiary_surface_polish_tier"
     },
     {
       "relation": "contains",
@@ -1421,101 +1511,11 @@
       "source_file": "docs/07-technical-architecture.md",
       "source_location": "L160",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_07_technical_architecture_07_technical_architecture",
-      "target": "docs_07_technical_architecture_9_diagnostics_contract_logprimalfauna_pfa",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/08-implementation-plan.md",
-      "source_location": "L1",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_08_implementation_plan",
-      "target": "docs_08_implementation_plan_08_implementation_plan_team_execution"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/08-implementation-plan.md",
-      "source_location": "L8",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_08_implementation_plan_08_implementation_plan_team_execution",
-      "target": "docs_08_implementation_plan_1_orchestration_model"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/08-implementation-plan.md",
-      "source_location": "L46",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_08_implementation_plan_08_implementation_plan_team_execution",
-      "target": "docs_08_implementation_plan_2_packet_families"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/08-implementation-plan.md",
-      "source_location": "L109",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_08_implementation_plan_08_implementation_plan_team_execution",
-      "target": "docs_08_implementation_plan_3_phases"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/08-implementation-plan.md",
-      "source_location": "L125",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_08_implementation_plan_08_implementation_plan_team_execution",
-      "target": "docs_08_implementation_plan_4_in_game_test_checklists_owner_user_orchestrator_writes_per_build"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/08-implementation-plan.md",
-      "source_location": "L144",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_08_implementation_plan_08_implementation_plan_team_execution",
-      "target": "docs_08_implementation_plan_5_packet_family_inputs_load_only_these_doc_07"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/08-implementation-plan.md",
-      "source_location": "L156",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_08_implementation_plan_08_implementation_plan_team_execution",
-      "target": "docs_08_implementation_plan_6_risk_register"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/08-implementation-plan.md",
-      "source_location": "L171",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_08_implementation_plan_08_implementation_plan_team_execution",
-      "target": "docs_08_implementation_plan_7_definition_of_v1_0"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/08-implementation-plan.md",
-      "source_location": "L36",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_08_implementation_plan_1_orchestration_model",
-      "target": "docs_08_implementation_plan_packet_handoff_contract"
+      "target": "docs_07_technical_architecture_9_diagnostics_contract_logprimalfauna_pfa"
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "6754bf90aa68baeb3c0a69fd655f436ffd855cb1"
+  "built_at_commit": "0e719583652c7e3666d405982cebaec850625872"
 }
