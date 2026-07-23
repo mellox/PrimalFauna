@@ -57,7 +57,8 @@ Done when:  compiles in orchestrator build + cold review SHIP + in-game checklis
 
 **W1 — Systems slice (placeholder assets; parallel with W2 asset track)**
 - **W1.1** Dev commands + census (`PFACheats`): `PFA.DumpCreature` (class/BT path/actions/health/
-  aggro), `PFA.DumpCandidates`, `PFA.SpawnNest`, `PFA.KillAll`; anchor dump (doc 07 §9). Also
+  aggro), `PFA.SpawnNest`, `PFA.KillAll` (stubs until their systems ship); anchor dump (doc 07
+  §9). `PFA.DumpCandidates` is DEFERRED to W2.5 — region data doesn't exist before then. Also
   exercise SML's built-in `ForceSpawnCreatures` cheat as the spawner test accelerator.
   **Plus the self-test harness (user directive 2026-07-11 — automate in-game verification):**
   `PFA.SelfTest` runs a scripted server-side sequence (spawn test nest at player → force-spawn →

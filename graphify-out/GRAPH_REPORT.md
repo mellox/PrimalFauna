@@ -1,7 +1,7 @@
 # Graph Report - PrimalFauna  (2026-07-23)
 
 ## Corpus Check
-- 22 files · ~240,021 words
+- 22 files · ~775,648 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `822b029f`
+- Built from commit: `dfbf7cc1`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -34,8 +34,8 @@
 
 ## God Nodes (most connected - your core abstractions)
 1. `07 — Technical Architecture` - 11 edges
-2. `03 — Spawning & Territories` - 9 edges
-3. `05 — Asset Pipeline` - 9 edges
+2. `05 — Asset Pipeline` - 9 edges
+3. `03 — Spawning & Territories` - 9 edges
 4. `08 — Implementation Plan (team execution)` - 8 edges
 5. `02 — Hostility & Factions` - 8 edges
 6. `00 — Vision & Pillars` - 6 edges
@@ -97,12 +97,12 @@ Cohesion: 0.33
 Nodes (3): FPFAConfigStruct, GetActiveConfig(), UObject
 
 ## Knowledge Gaps
-- **66 isolated node(s):** `FPFAConfigStruct`, `UObject`, `PRIMALFAUNA_API`, `PRIMALFAUNA_API`, `class` (+61 more)
+- **66 isolated node(s):** `1. Art direction & generation briefs`, `2. Per-creature pipeline (stage gates in order)`, `3. Animation — the honest plan (verified Tripo facts)`, `4. Texturing & the aggro-glow telegraph`, `5. Fab/Sketchfab licensing rules (for rungs 3–4 and the worm fallback)` (+61 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **5 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **What connects `FPFAConfigStruct`, `UObject`, `PRIMALFAUNA_API` to the rest of the system?**
+- **What connects `1. Art direction & generation briefs`, `2. Per-creature pipeline (stage gates in order)`, `3. Animation — the honest plan (verified Tripo facts)` to the rest of the system?**
   _66 weakly-connected nodes found - possible documentation gaps or missing edges._

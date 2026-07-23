@@ -30,8 +30,8 @@
     "semantic_hash": ""
   },
   "docs/05-asset-pipeline.md": {
-    "mtime": 1784811969.4426215,
-    "ast_hash": "4be2afb50df2f056b3534d0a35dff814",
+    "mtime": 1784815894.442453,
+    "ast_hash": "941ff119dc82d004728e03b1ed016db5",
     "semantic_hash": ""
   },
   "docs/06-integration-and-compat.md": {
@@ -105,8 +105,8 @@
     "semantic_hash": ""
   },
   "docs/ASSET-LEDGER.md": {
-    "mtime": 1784813951.7531264,
-    "ast_hash": "0aa18e3b0da27dd0e318cf7fa63770a5",
+    "mtime": 1784815783.2351387,
+    "ast_hash": "8dc371c850cc5ae8e982e0621c640cc0",
     "semantic_hash": ""
   },
   "art/wip/placeholder/preview_BLOCKOUT_bindpose.png": {
@@ -147,6 +147,91 @@
   "art/wip/sicklejaw/candidates/rigged_D_alien_bind.png": {
     "mtime": 1784814705.4169052,
     "ast_hash": "8112a4b62d9e5943ba7d3b412932431c",
+    "semantic_hash": ""
+  },
+  "art/review/2026-07-11-sicklejaw/review-board.html": {
+    "mtime": 1784815758.2868555,
+    "ast_hash": "6364fa229e63675c621213fbf92f89fc",
+    "semantic_hash": ""
+  },
+  "art/review/2026-07-11-sicklejaw/aggro_ON_hero.png": {
+    "mtime": 1784815440.9023476,
+    "ast_hash": "a2a6512ddde22d2035f59e89aea38690",
+    "semantic_hash": ""
+  },
+  "art/review/2026-07-11-sicklejaw/anim_run.png": {
+    "mtime": 1784815623.8821988,
+    "ast_hash": "1734afb1a543580a031f2c57ebe42aba",
+    "semantic_hash": ""
+  },
+  "art/review/2026-07-11-sicklejaw/anim_slash.png": {
+    "mtime": 1784815623.5201168,
+    "ast_hash": "82aeb5dd741dbea811852ca93a2d7e47",
+    "semantic_hash": ""
+  },
+  "art/review/2026-07-11-sicklejaw/candidate_A.png": {
+    "mtime": 1784815695.3000052,
+    "ast_hash": "65d381d69ed2b8fda4a01ffcfcc12e78",
+    "semantic_hash": ""
+  },
+  "art/review/2026-07-11-sicklejaw/candidate_B.png": {
+    "mtime": 1784815695.3234947,
+    "ast_hash": "cb3f6bf488c710cac6011d243a0ef22a",
+    "semantic_hash": ""
+  },
+  "art/review/2026-07-11-sicklejaw/candidate_C.png": {
+    "mtime": 1784815695.3465233,
+    "ast_hash": "4a02abf0c043776455f4cf568a4cd52f",
+    "semantic_hash": ""
+  },
+  "art/review/2026-07-11-sicklejaw/candidate_D.png": {
+    "mtime": 1784815695.367659,
+    "ast_hash": "8329c3b32897c1774ed74e19b1aa0da1",
+    "semantic_hash": ""
+  },
+  "art/review/2026-07-11-sicklejaw/silhouette_black.png": {
+    "mtime": 1784815474.0944874,
+    "ast_hash": "c5d1a5f156d4af6cf72d9b08bd5c7b95",
+    "semantic_hash": ""
+  },
+  "art/review/2026-07-11-sicklejaw/turntable_000.png": {
+    "mtime": 1784815371.4310749,
+    "ast_hash": "a32be4ca4f3b8f7f60ceb6cfd35aa6a2",
+    "semantic_hash": ""
+  },
+  "art/review/2026-07-11-sicklejaw/turntable_045.png": {
+    "mtime": 1784815371.602724,
+    "ast_hash": "77c511f4703a05712b81b0cdd71eefa4",
+    "semantic_hash": ""
+  },
+  "art/review/2026-07-11-sicklejaw/turntable_090.png": {
+    "mtime": 1784815371.7793043,
+    "ast_hash": "57c246e7572e82e9a3589492656bf887",
+    "semantic_hash": ""
+  },
+  "art/review/2026-07-11-sicklejaw/turntable_135.png": {
+    "mtime": 1784815371.9519925,
+    "ast_hash": "270dfb90e13ea59b38c4e6b4027f6c9f",
+    "semantic_hash": ""
+  },
+  "art/review/2026-07-11-sicklejaw/turntable_180.png": {
+    "mtime": 1784815372.1232123,
+    "ast_hash": "e052e4d3b58a0b95f726175423f8c0cd",
+    "semantic_hash": ""
+  },
+  "art/review/2026-07-11-sicklejaw/turntable_225.png": {
+    "mtime": 1784815372.3010678,
+    "ast_hash": "700956e71ca56cd96d464044da14a8dc",
+    "semantic_hash": ""
+  },
+  "art/review/2026-07-11-sicklejaw/turntable_270.png": {
+    "mtime": 1784815372.4673147,
+    "ast_hash": "e4cbff1947abd128874726f5548bea31",
+    "semantic_hash": ""
+  },
+  "art/review/2026-07-11-sicklejaw/turntable_315.png": {
+    "mtime": 1784815372.6463034,
+    "ast_hash": "cea5cb345c87239b0c468897acca4ce5",
     "semantic_hash": ""
   }
 }

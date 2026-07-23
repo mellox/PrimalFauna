@@ -19,6 +19,11 @@ class PRIMALFAUNA_API APFASubsystem : public AModSubsystem, public IFGSaveInterf
 public:
     APFASubsystem();
 
+    // Cross-translation-unit accessor for the SubsystemAlive self-test
+    // (PFACheats.cpp), which iterates the world for this actor and needs to
+    // read its heartbeat without a Friend/AccessTransformer grant.
+    FORCEINLINE int32 GetTickCount() const { return TickCount; }
+
     // IFGSaveInterface -- no savegame data yet in this packet, so every
     // hook is an empty stub; ShouldSave still returns true so the actor is
     // already registered with the save system once fields are added later.
@@ -49,4 +54,9 @@ private:
     // actually running with is visible from a single log read (doc 04 §2:
     // MP diagnosability -- only the server's config affects gameplay).
     bool bLoggedConfigSnapshot = false;
+
+    // Set once the pfa.AutoTest self-test run has fired, so it runs at most
+    // once per world (docs/08 W1.1: "hook via the subsystem's first
+    // RefreshTick, NOT a new engine hook").
+    bool bRanAutoTest = false;
 };

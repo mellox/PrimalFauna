@@ -159,6 +159,12 @@ with `DamageCauser = worm`, `Instigator = worm controller` → flows through
 
 ## 9. Diagnostics contract (`LogPrimalFauna`, `[PFA]`)
 
+**Severity convention (settled in W1.1 review):** "Verbose" labels below mean *gated detail* —
+logged at **Display severity inside the `pfa.Diag`/config gate** (the sml-gotchas §3 body-gate
+pattern). Do NOT use literal `UE_LOG(..., Verbose, ...)` for gated content: the category's default
+runtime verbosity (Log) silently drops it and makes the flag look broken. True Verbose severity is
+reserved for always-compiled lines users raise via `Log LogPrimalFauna Verbose`.
+
 Per workspace law + the skill's diagnostics-first rules; Verbose per-entity, Display summaries:
 
 - **Build marker** in `StartupModule`: `===== PrimalFauna BUILD <tag> LOADED =====` (bump every build).

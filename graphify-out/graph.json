@@ -4,384 +4,104 @@
   "graph": {},
   "nodes": [
     {
-      "label": "PrimalFauna.Build.cs",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/PrimalFauna.Build.cs",
+      "label": "05-asset-pipeline.md",
+      "file_type": "document",
+      "source_file": "docs/05-asset-pipeline.md",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "primalfauna_primalfauna_build",
-      "community": 14,
-      "norm_label": "primalfauna.build.cs"
+      "id": "docs_05_asset_pipeline",
+      "community": 2,
+      "norm_label": "05-asset-pipeline.md"
     },
     {
-      "label": "PrimalFauna",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/PrimalFauna.Build.cs",
-      "source_location": "L3",
-      "_origin": "ast",
-      "id": "primalfauna_primalfauna_build_primalfauna",
-      "community": 14,
-      "norm_label": "primalfauna"
-    },
-    {
-      "label": "ModuleRules",
-      "file_type": "code",
-      "source_file": "",
-      "source_location": "",
-      "_origin": "ast",
-      "id": "modulerules",
-      "community": 14,
-      "norm_label": "modulerules"
-    },
-    {
-      "label": "PFAConfig.cpp",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFAConfig.cpp",
+      "label": "05 \u2014 Asset Pipeline",
+      "file_type": "document",
+      "source_file": "docs/05-asset-pipeline.md",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "private_pfaconfig",
-      "community": 10,
-      "norm_label": "pfaconfig.cpp"
+      "id": "docs_05_asset_pipeline_05_asset_pipeline",
+      "community": 2,
+      "norm_label": "05 \u2014 asset pipeline"
     },
     {
-      "label": "GetActiveConfig()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFAConfig.cpp",
+      "label": "1. Art direction & generation briefs",
+      "file_type": "document",
+      "source_file": "docs/05-asset-pipeline.md",
       "source_location": "L12",
       "_origin": "ast",
-      "id": "private_pfaconfig_getactiveconfig",
-      "community": 10,
-      "norm_label": "getactiveconfig()"
+      "id": "docs_05_asset_pipeline_1_art_direction_generation_briefs",
+      "community": 2,
+      "norm_label": "1. art direction & generation briefs"
     },
     {
-      "label": "FPFAConfigStruct",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFAConfig.cpp",
-      "source_location": "L12",
+      "label": "2. Per-creature pipeline (stage gates in order)",
+      "file_type": "document",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L25",
       "_origin": "ast",
-      "id": "fpfaconfigstruct",
-      "community": 10,
-      "norm_label": "fpfaconfigstruct"
+      "id": "docs_05_asset_pipeline_2_per_creature_pipeline_stage_gates_in_order",
+      "community": 2,
+      "norm_label": "2. per-creature pipeline (stage gates in order)"
     },
     {
-      "label": "UObject",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFAConfig.cpp",
-      "source_location": "L12",
+      "label": "3. Animation \u2014 the honest plan (verified Tripo facts)",
+      "file_type": "document",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L39",
       "_origin": "ast",
-      "id": "uobject",
-      "community": 10,
-      "norm_label": "uobject"
+      "id": "docs_05_asset_pipeline_3_animation_the_honest_plan_verified_tripo_facts",
+      "community": 2,
+      "norm_label": "3. animation \u2014 the honest plan (verified tripo facts)"
     },
     {
-      "label": "UPFAConfig()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFAConfig.cpp",
-      "source_location": "L24",
+      "label": "4. Texturing & the aggro-glow telegraph",
+      "file_type": "document",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L73",
       "_origin": "ast",
-      "id": "private_pfaconfig_upfaconfig",
-      "community": 10,
-      "norm_label": "upfaconfig()"
+      "id": "docs_05_asset_pipeline_4_texturing_the_aggro_glow_telegraph",
+      "community": 2,
+      "norm_label": "4. texturing & the aggro-glow telegraph"
     },
     {
-      "label": "PostInitProperties()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFAConfig.cpp",
-      "source_location": "L31",
+      "label": "5. Fab/Sketchfab licensing rules (for rungs 3\u20134 and the worm fallback)",
+      "file_type": "document",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L87",
       "_origin": "ast",
-      "id": "private_pfaconfig_postinitproperties",
-      "community": 10,
-      "norm_label": "postinitproperties()"
+      "id": "docs_05_asset_pipeline_5_fab_sketchfab_licensing_rules_for_rungs_3_4_and_the_worm_fallback",
+      "community": 2,
+      "norm_label": "5. fab/sketchfab licensing rules (for rungs 3\u20134 and the worm fallback)"
     },
     {
-      "label": "PFARootInstance.cpp",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFARootInstance.cpp",
-      "source_location": "L1",
+      "label": "6. UE import & wiring (headless-first)",
+      "file_type": "document",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L99",
       "_origin": "ast",
-      "id": "private_pfarootinstance",
-      "community": 17,
-      "norm_label": "pfarootinstance.cpp"
+      "id": "docs_05_asset_pipeline_6_ue_import_wiring_headless_first",
+      "community": 2,
+      "norm_label": "6. ue import & wiring (headless-first)"
     },
     {
-      "label": "URootInstance_PrimalFauna()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFARootInstance.cpp",
-      "source_location": "L4",
+      "label": "7. Sandwyrm assets \u2014 procedural by design",
+      "file_type": "document",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L122",
       "_origin": "ast",
-      "id": "private_pfarootinstance_urootinstance_primalfauna",
-      "community": 17,
-      "norm_label": "urootinstance_primalfauna()"
+      "id": "docs_05_asset_pipeline_7_sandwyrm_assets_procedural_by_design",
+      "community": 2,
+      "norm_label": "7. sandwyrm assets \u2014 procedural by design"
     },
     {
-      "label": "PFARootWorld.cpp",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFARootWorld.cpp",
-      "source_location": "L1",
+      "label": "8. GPU & credit discipline",
+      "file_type": "document",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L140",
       "_origin": "ast",
-      "id": "private_pfarootworld",
-      "community": 18,
-      "norm_label": "pfarootworld.cpp"
-    },
-    {
-      "label": "URootGameWorld_PrimalFauna()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFARootWorld.cpp",
-      "source_location": "L4",
-      "_origin": "ast",
-      "id": "private_pfarootworld_urootgameworld_primalfauna",
-      "community": 18,
-      "norm_label": "urootgameworld_primalfauna()"
-    },
-    {
-      "label": "PFASubsystem.cpp",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFASubsystem.cpp",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "private_pfasubsystem",
-      "community": 11,
-      "norm_label": "pfasubsystem.cpp"
-    },
-    {
-      "label": "APFASubsystem()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFASubsystem.cpp",
-      "source_location": "L13",
-      "_origin": "ast",
-      "id": "private_pfasubsystem_apfasubsystem",
-      "community": 11,
-      "norm_label": "apfasubsystem()"
-    },
-    {
-      "label": "BeginPlay()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFASubsystem.cpp",
-      "source_location": "L18",
-      "_origin": "ast",
-      "id": "private_pfasubsystem_beginplay",
-      "community": 11,
-      "norm_label": "beginplay()"
-    },
-    {
-      "label": "RefreshTick()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFASubsystem.cpp",
-      "source_location": "L34",
-      "_origin": "ast",
-      "id": "private_pfasubsystem_refreshtick",
-      "community": 11,
-      "norm_label": "refreshtick()"
-    },
-    {
-      "label": "PrimalFauna.cpp",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PrimalFauna.cpp",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "private_primalfauna",
-      "community": 19,
-      "norm_label": "primalfauna.cpp"
-    },
-    {
-      "label": "StartupModule()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PrimalFauna.cpp",
-      "source_location": "L5",
-      "_origin": "ast",
-      "id": "private_primalfauna_startupmodule",
-      "community": 19,
-      "norm_label": "startupmodule()"
-    },
-    {
-      "label": "PFAConfig.h",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Public/PFAConfig.h",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "public_pfaconfig",
-      "community": 20,
-      "norm_label": "pfaconfig.h"
-    },
-    {
-      "label": "EnableDiagnostics()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Public/PFAConfig.h",
-      "source_location": "L30",
-      "_origin": "ast",
-      "id": "public_pfaconfig_enablediagnostics",
-      "community": 20,
-      "norm_label": "enablediagnostics()"
-    },
-    {
-      "label": "PFARootInstance.h",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Public/PFARootInstance.h",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "public_pfarootinstance",
-      "community": 15,
-      "norm_label": "pfarootinstance.h"
-    },
-    {
-      "label": "URootInstance_PrimalFauna()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Public/PFARootInstance.h",
-      "source_location": "L10",
-      "_origin": "ast",
-      "id": "public_pfarootinstance_urootinstance_primalfauna",
-      "community": 15,
-      "norm_label": "urootinstance_primalfauna()"
-    },
-    {
-      "label": "PRIMALFAUNA_API",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Public/PFARootInstance.h",
-      "source_location": "L10",
-      "_origin": "ast",
-      "id": "source_primalfauna_public_pfarootinstance_h_primalfauna_api",
-      "community": 15,
-      "norm_label": "primalfauna_api"
-    },
-    {
-      "label": "PFARootWorld.h",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Public/PFARootWorld.h",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "public_pfarootworld",
-      "community": 16,
-      "norm_label": "pfarootworld.h"
-    },
-    {
-      "label": "URootGameWorld_PrimalFauna()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Public/PFARootWorld.h",
-      "source_location": "L9",
-      "_origin": "ast",
-      "id": "public_pfarootworld_urootgameworld_primalfauna",
-      "community": 16,
-      "norm_label": "urootgameworld_primalfauna()"
-    },
-    {
-      "label": "PRIMALFAUNA_API",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Public/PFARootWorld.h",
-      "source_location": "L9",
-      "_origin": "ast",
-      "id": "source_primalfauna_public_pfarootworld_h_primalfauna_api",
-      "community": 16,
-      "norm_label": "primalfauna_api"
-    },
-    {
-      "label": "PFASubsystem.h",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "public_pfasubsystem",
-      "community": 9,
-      "norm_label": "pfasubsystem.h"
-    },
-    {
-      "label": "NeedTransform_Implementation()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
-      "source_location": "L26",
-      "_origin": "ast",
-      "id": "public_pfasubsystem_needtransform_implementation",
-      "community": 9,
-      "norm_label": "needtransform_implementation()"
-    },
-    {
-      "label": "virtual",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
-      "source_location": "L26",
-      "_origin": "ast",
-      "id": "virtual",
-      "community": 9,
-      "norm_label": "virtual"
-    },
-    {
-      "label": "PreSaveGame_Implementation()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
-      "source_location": "L27",
-      "_origin": "ast",
-      "id": "public_pfasubsystem_presavegame_implementation",
-      "community": 9,
-      "norm_label": "presavegame_implementation()"
-    },
-    {
-      "label": "int32",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
-      "source_location": "L27",
-      "_origin": "ast",
-      "id": "int32",
-      "community": 9,
-      "norm_label": "int32"
-    },
-    {
-      "label": "PostSaveGame_Implementation()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
-      "source_location": "L28",
-      "_origin": "ast",
-      "id": "public_pfasubsystem_postsavegame_implementation",
-      "community": 9,
-      "norm_label": "postsavegame_implementation()"
-    },
-    {
-      "label": "PreLoadGame_Implementation()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
-      "source_location": "L29",
-      "_origin": "ast",
-      "id": "public_pfasubsystem_preloadgame_implementation",
-      "community": 9,
-      "norm_label": "preloadgame_implementation()"
-    },
-    {
-      "label": "PostLoadGame_Implementation()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
-      "source_location": "L30",
-      "_origin": "ast",
-      "id": "public_pfasubsystem_postloadgame_implementation",
-      "community": 9,
-      "norm_label": "postloadgame_implementation()"
-    },
-    {
-      "label": "PrimalFauna.h",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Public/PrimalFauna.h",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "public_primalfauna",
-      "community": 12,
-      "norm_label": "primalfauna.h"
-    },
-    {
-      "label": "FDefaultGameModuleImpl()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Public/PrimalFauna.h",
-      "source_location": "L16",
-      "_origin": "ast",
-      "id": "public_primalfauna_fdefaultgamemoduleimpl",
-      "community": 12,
-      "norm_label": "fdefaultgamemoduleimpl()"
-    },
-    {
-      "label": "class",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Public/PrimalFauna.h",
-      "source_location": "L16",
-      "_origin": "ast",
-      "id": "class",
-      "community": 12,
-      "norm_label": "class"
+      "id": "docs_05_asset_pipeline_8_gpu_credit_discipline",
+      "community": 2,
+      "norm_label": "8. gpu & credit discipline"
     },
     {
       "label": "ASSET-LEDGER.md",
@@ -407,11 +127,391 @@
       "label": "Placeholder rig \u2014 technical notes (for the systems lane)",
       "file_type": "document",
       "source_file": "docs/ASSET-LEDGER.md",
-      "source_location": "L16",
+      "source_location": "L20",
       "_origin": "ast",
       "id": "docs_asset_ledger_placeholder_rig_technical_notes_for_the_systems_lane",
       "community": 13,
       "norm_label": "placeholder rig \u2014 technical notes (for the systems lane)"
+    },
+    {
+      "label": "PrimalFauna.Build.cs",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/PrimalFauna.Build.cs",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 14,
+      "norm_label": "primalfauna.build.cs",
+      "id": "primalfauna_primalfauna_build"
+    },
+    {
+      "label": "PrimalFauna",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/PrimalFauna.Build.cs",
+      "source_location": "L3",
+      "_origin": "ast",
+      "community": 14,
+      "norm_label": "primalfauna",
+      "id": "primalfauna_primalfauna_build_primalfauna"
+    },
+    {
+      "label": "ModuleRules",
+      "file_type": "code",
+      "source_file": "",
+      "source_location": "",
+      "_origin": "ast",
+      "community": 14,
+      "norm_label": "modulerules",
+      "id": "modulerules"
+    },
+    {
+      "label": "PFAConfig.cpp",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFAConfig.cpp",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 10,
+      "norm_label": "pfaconfig.cpp",
+      "id": "private_pfaconfig"
+    },
+    {
+      "label": "GetActiveConfig()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFAConfig.cpp",
+      "source_location": "L12",
+      "_origin": "ast",
+      "community": 10,
+      "norm_label": "getactiveconfig()",
+      "id": "private_pfaconfig_getactiveconfig"
+    },
+    {
+      "label": "FPFAConfigStruct",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFAConfig.cpp",
+      "source_location": "L12",
+      "_origin": "ast",
+      "community": 10,
+      "norm_label": "fpfaconfigstruct",
+      "id": "fpfaconfigstruct"
+    },
+    {
+      "label": "UObject",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFAConfig.cpp",
+      "source_location": "L12",
+      "_origin": "ast",
+      "community": 10,
+      "norm_label": "uobject",
+      "id": "uobject"
+    },
+    {
+      "label": "UPFAConfig()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFAConfig.cpp",
+      "source_location": "L24",
+      "_origin": "ast",
+      "community": 10,
+      "norm_label": "upfaconfig()",
+      "id": "private_pfaconfig_upfaconfig"
+    },
+    {
+      "label": "PostInitProperties()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFAConfig.cpp",
+      "source_location": "L31",
+      "_origin": "ast",
+      "community": 10,
+      "norm_label": "postinitproperties()",
+      "id": "private_pfaconfig_postinitproperties"
+    },
+    {
+      "label": "PFARootInstance.cpp",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFARootInstance.cpp",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 17,
+      "norm_label": "pfarootinstance.cpp",
+      "id": "private_pfarootinstance"
+    },
+    {
+      "label": "URootInstance_PrimalFauna()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFARootInstance.cpp",
+      "source_location": "L4",
+      "_origin": "ast",
+      "community": 17,
+      "norm_label": "urootinstance_primalfauna()",
+      "id": "private_pfarootinstance_urootinstance_primalfauna"
+    },
+    {
+      "label": "PFARootWorld.cpp",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFARootWorld.cpp",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 18,
+      "norm_label": "pfarootworld.cpp",
+      "id": "private_pfarootworld"
+    },
+    {
+      "label": "URootGameWorld_PrimalFauna()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFARootWorld.cpp",
+      "source_location": "L4",
+      "_origin": "ast",
+      "community": 18,
+      "norm_label": "urootgameworld_primalfauna()",
+      "id": "private_pfarootworld_urootgameworld_primalfauna"
+    },
+    {
+      "label": "PFASubsystem.cpp",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFASubsystem.cpp",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 11,
+      "norm_label": "pfasubsystem.cpp",
+      "id": "private_pfasubsystem"
+    },
+    {
+      "label": "APFASubsystem()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFASubsystem.cpp",
+      "source_location": "L13",
+      "_origin": "ast",
+      "community": 11,
+      "norm_label": "apfasubsystem()",
+      "id": "private_pfasubsystem_apfasubsystem"
+    },
+    {
+      "label": "BeginPlay()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFASubsystem.cpp",
+      "source_location": "L18",
+      "_origin": "ast",
+      "community": 11,
+      "norm_label": "beginplay()",
+      "id": "private_pfasubsystem_beginplay"
+    },
+    {
+      "label": "RefreshTick()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFASubsystem.cpp",
+      "source_location": "L34",
+      "_origin": "ast",
+      "community": 11,
+      "norm_label": "refreshtick()",
+      "id": "private_pfasubsystem_refreshtick"
+    },
+    {
+      "label": "PrimalFauna.cpp",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PrimalFauna.cpp",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 19,
+      "norm_label": "primalfauna.cpp",
+      "id": "private_primalfauna"
+    },
+    {
+      "label": "StartupModule()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PrimalFauna.cpp",
+      "source_location": "L5",
+      "_origin": "ast",
+      "community": 19,
+      "norm_label": "startupmodule()",
+      "id": "private_primalfauna_startupmodule"
+    },
+    {
+      "label": "PFAConfig.h",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Public/PFAConfig.h",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 20,
+      "norm_label": "pfaconfig.h",
+      "id": "public_pfaconfig"
+    },
+    {
+      "label": "EnableDiagnostics()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Public/PFAConfig.h",
+      "source_location": "L30",
+      "_origin": "ast",
+      "community": 20,
+      "norm_label": "enablediagnostics()",
+      "id": "public_pfaconfig_enablediagnostics"
+    },
+    {
+      "label": "PFARootInstance.h",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Public/PFARootInstance.h",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 15,
+      "norm_label": "pfarootinstance.h",
+      "id": "public_pfarootinstance"
+    },
+    {
+      "label": "URootInstance_PrimalFauna()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Public/PFARootInstance.h",
+      "source_location": "L10",
+      "_origin": "ast",
+      "community": 15,
+      "norm_label": "urootinstance_primalfauna()",
+      "id": "public_pfarootinstance_urootinstance_primalfauna"
+    },
+    {
+      "label": "PRIMALFAUNA_API",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Public/PFARootInstance.h",
+      "source_location": "L10",
+      "_origin": "ast",
+      "community": 15,
+      "norm_label": "primalfauna_api",
+      "id": "source_primalfauna_public_pfarootinstance_h_primalfauna_api"
+    },
+    {
+      "label": "PFARootWorld.h",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Public/PFARootWorld.h",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 16,
+      "norm_label": "pfarootworld.h",
+      "id": "public_pfarootworld"
+    },
+    {
+      "label": "URootGameWorld_PrimalFauna()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Public/PFARootWorld.h",
+      "source_location": "L9",
+      "_origin": "ast",
+      "community": 16,
+      "norm_label": "urootgameworld_primalfauna()",
+      "id": "public_pfarootworld_urootgameworld_primalfauna"
+    },
+    {
+      "label": "PRIMALFAUNA_API",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Public/PFARootWorld.h",
+      "source_location": "L9",
+      "_origin": "ast",
+      "community": 16,
+      "norm_label": "primalfauna_api",
+      "id": "source_primalfauna_public_pfarootworld_h_primalfauna_api"
+    },
+    {
+      "label": "PFASubsystem.h",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 9,
+      "norm_label": "pfasubsystem.h",
+      "id": "public_pfasubsystem"
+    },
+    {
+      "label": "NeedTransform_Implementation()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
+      "source_location": "L26",
+      "_origin": "ast",
+      "community": 9,
+      "norm_label": "needtransform_implementation()",
+      "id": "public_pfasubsystem_needtransform_implementation"
+    },
+    {
+      "label": "virtual",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
+      "source_location": "L26",
+      "_origin": "ast",
+      "community": 9,
+      "norm_label": "virtual",
+      "id": "virtual"
+    },
+    {
+      "label": "PreSaveGame_Implementation()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
+      "source_location": "L27",
+      "_origin": "ast",
+      "community": 9,
+      "norm_label": "presavegame_implementation()",
+      "id": "public_pfasubsystem_presavegame_implementation"
+    },
+    {
+      "label": "int32",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
+      "source_location": "L27",
+      "_origin": "ast",
+      "community": 9,
+      "norm_label": "int32",
+      "id": "int32"
+    },
+    {
+      "label": "PostSaveGame_Implementation()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
+      "source_location": "L28",
+      "_origin": "ast",
+      "community": 9,
+      "norm_label": "postsavegame_implementation()",
+      "id": "public_pfasubsystem_postsavegame_implementation"
+    },
+    {
+      "label": "PreLoadGame_Implementation()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
+      "source_location": "L29",
+      "_origin": "ast",
+      "community": 9,
+      "norm_label": "preloadgame_implementation()",
+      "id": "public_pfasubsystem_preloadgame_implementation"
+    },
+    {
+      "label": "PostLoadGame_Implementation()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
+      "source_location": "L30",
+      "_origin": "ast",
+      "community": 9,
+      "norm_label": "postloadgame_implementation()",
+      "id": "public_pfasubsystem_postloadgame_implementation"
+    },
+    {
+      "label": "PrimalFauna.h",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Public/PrimalFauna.h",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 12,
+      "norm_label": "primalfauna.h",
+      "id": "public_primalfauna"
+    },
+    {
+      "label": "FDefaultGameModuleImpl()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Public/PrimalFauna.h",
+      "source_location": "L16",
+      "_origin": "ast",
+      "community": 12,
+      "norm_label": "fdefaultgamemoduleimpl()",
+      "id": "public_primalfauna_fdefaultgamemoduleimpl"
+    },
+    {
+      "label": "class",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Public/PrimalFauna.h",
+      "source_location": "L16",
+      "_origin": "ast",
+      "community": 12,
+      "norm_label": "class",
+      "id": "class"
     },
     {
       "label": "08-implementation-plan.md",
@@ -924,106 +1024,6 @@
       "id": "docs_04_config_and_ui_5_ui_copy_standards"
     },
     {
-      "label": "05-asset-pipeline.md",
-      "file_type": "document",
-      "source_file": "docs/05-asset-pipeline.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "community": 2,
-      "norm_label": "05-asset-pipeline.md",
-      "id": "docs_05_asset_pipeline"
-    },
-    {
-      "label": "05 \u2014 Asset Pipeline",
-      "file_type": "document",
-      "source_file": "docs/05-asset-pipeline.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "community": 2,
-      "norm_label": "05 \u2014 asset pipeline",
-      "id": "docs_05_asset_pipeline_05_asset_pipeline"
-    },
-    {
-      "label": "1. Art direction & generation briefs",
-      "file_type": "document",
-      "source_file": "docs/05-asset-pipeline.md",
-      "source_location": "L12",
-      "_origin": "ast",
-      "community": 2,
-      "norm_label": "1. art direction & generation briefs",
-      "id": "docs_05_asset_pipeline_1_art_direction_generation_briefs"
-    },
-    {
-      "label": "2. Per-creature pipeline (stage gates in order)",
-      "file_type": "document",
-      "source_file": "docs/05-asset-pipeline.md",
-      "source_location": "L25",
-      "_origin": "ast",
-      "community": 2,
-      "norm_label": "2. per-creature pipeline (stage gates in order)",
-      "id": "docs_05_asset_pipeline_2_per_creature_pipeline_stage_gates_in_order"
-    },
-    {
-      "label": "3. Animation \u2014 the honest plan (verified Tripo facts)",
-      "file_type": "document",
-      "source_file": "docs/05-asset-pipeline.md",
-      "source_location": "L39",
-      "_origin": "ast",
-      "community": 2,
-      "norm_label": "3. animation \u2014 the honest plan (verified tripo facts)",
-      "id": "docs_05_asset_pipeline_3_animation_the_honest_plan_verified_tripo_facts"
-    },
-    {
-      "label": "4. Texturing & the aggro-glow telegraph",
-      "file_type": "document",
-      "source_file": "docs/05-asset-pipeline.md",
-      "source_location": "L73",
-      "_origin": "ast",
-      "community": 2,
-      "norm_label": "4. texturing & the aggro-glow telegraph",
-      "id": "docs_05_asset_pipeline_4_texturing_the_aggro_glow_telegraph"
-    },
-    {
-      "label": "5. Fab/Sketchfab licensing rules (for rungs 3\u20134 and the worm fallback)",
-      "file_type": "document",
-      "source_file": "docs/05-asset-pipeline.md",
-      "source_location": "L87",
-      "_origin": "ast",
-      "community": 2,
-      "norm_label": "5. fab/sketchfab licensing rules (for rungs 3\u20134 and the worm fallback)",
-      "id": "docs_05_asset_pipeline_5_fab_sketchfab_licensing_rules_for_rungs_3_4_and_the_worm_fallback"
-    },
-    {
-      "label": "6. UE import & wiring (headless-first)",
-      "file_type": "document",
-      "source_file": "docs/05-asset-pipeline.md",
-      "source_location": "L99",
-      "_origin": "ast",
-      "community": 2,
-      "norm_label": "6. ue import & wiring (headless-first)",
-      "id": "docs_05_asset_pipeline_6_ue_import_wiring_headless_first"
-    },
-    {
-      "label": "7. Sandwyrm assets \u2014 procedural by design",
-      "file_type": "document",
-      "source_file": "docs/05-asset-pipeline.md",
-      "source_location": "L122",
-      "_origin": "ast",
-      "community": 2,
-      "norm_label": "7. sandwyrm assets \u2014 procedural by design",
-      "id": "docs_05_asset_pipeline_7_sandwyrm_assets_procedural_by_design"
-    },
-    {
-      "label": "8. GPU & credit discipline",
-      "file_type": "document",
-      "source_file": "docs/05-asset-pipeline.md",
-      "source_location": "L140",
-      "_origin": "ast",
-      "community": 2,
-      "norm_label": "8. gpu & credit discipline",
-      "id": "docs_05_asset_pipeline_8_gpu_credit_discipline"
-    },
-    {
       "label": "06-integration-and-compat.md",
       "file_type": "document",
       "source_file": "docs/06-integration-and-compat.md",
@@ -1218,356 +1218,92 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/PrimalFauna.Build.cs",
-      "source_location": "L3",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L1",
       "weight": 1.0,
-      "source": "primalfauna_primalfauna_build",
-      "target": "primalfauna_primalfauna_build_primalfauna",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/PrimalFauna.Build.cs",
-      "source_location": "L3",
-      "weight": 1.0,
-      "source": "primalfauna_primalfauna_build_primalfauna",
-      "target": "modulerules",
-      "confidence_score": 1.0
+      "confidence_score": 1.0,
+      "source": "docs_05_asset_pipeline",
+      "target": "docs_05_asset_pipeline_05_asset_pipeline"
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFAConfig.cpp",
+      "source_file": "docs/05-asset-pipeline.md",
       "source_location": "L12",
       "weight": 1.0,
-      "source": "private_pfaconfig",
-      "target": "private_pfaconfig_getactiveconfig",
-      "confidence_score": 1.0
+      "confidence_score": 1.0,
+      "source": "docs_05_asset_pipeline_05_asset_pipeline",
+      "target": "docs_05_asset_pipeline_1_art_direction_generation_briefs"
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFAConfig.cpp",
-      "source_location": "L31",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L25",
       "weight": 1.0,
-      "source": "private_pfaconfig",
-      "target": "private_pfaconfig_postinitproperties",
-      "confidence_score": 1.0
+      "confidence_score": 1.0,
+      "source": "docs_05_asset_pipeline_05_asset_pipeline",
+      "target": "docs_05_asset_pipeline_2_per_creature_pipeline_stage_gates_in_order"
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFAConfig.cpp",
-      "source_location": "L24",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L39",
       "weight": 1.0,
-      "source": "private_pfaconfig",
-      "target": "private_pfaconfig_upfaconfig",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFAConfig.cpp",
-      "source_location": "L12",
-      "weight": 1.0,
-      "context": "return_type",
-      "source": "private_pfaconfig_getactiveconfig",
-      "target": "fpfaconfigstruct",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFAConfig.cpp",
-      "source_location": "L12",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "source": "private_pfaconfig_getactiveconfig",
-      "target": "uobject",
-      "confidence_score": 1.0
+      "confidence_score": 1.0,
+      "source": "docs_05_asset_pipeline_05_asset_pipeline",
+      "target": "docs_05_asset_pipeline_3_animation_the_honest_plan_verified_tripo_facts"
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFARootInstance.cpp",
-      "source_location": "L4",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L73",
       "weight": 1.0,
-      "source": "private_pfarootinstance",
-      "target": "private_pfarootinstance_urootinstance_primalfauna",
-      "confidence_score": 1.0
+      "confidence_score": 1.0,
+      "source": "docs_05_asset_pipeline_05_asset_pipeline",
+      "target": "docs_05_asset_pipeline_4_texturing_the_aggro_glow_telegraph"
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFARootWorld.cpp",
-      "source_location": "L4",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L87",
       "weight": 1.0,
-      "source": "private_pfarootworld",
-      "target": "private_pfarootworld_urootgameworld_primalfauna",
-      "confidence_score": 1.0
+      "confidence_score": 1.0,
+      "source": "docs_05_asset_pipeline_05_asset_pipeline",
+      "target": "docs_05_asset_pipeline_5_fab_sketchfab_licensing_rules_for_rungs_3_4_and_the_worm_fallback"
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFASubsystem.cpp",
-      "source_location": "L13",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L99",
       "weight": 1.0,
-      "source": "private_pfasubsystem",
-      "target": "private_pfasubsystem_apfasubsystem",
-      "confidence_score": 1.0
+      "confidence_score": 1.0,
+      "source": "docs_05_asset_pipeline_05_asset_pipeline",
+      "target": "docs_05_asset_pipeline_6_ue_import_wiring_headless_first"
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFASubsystem.cpp",
-      "source_location": "L18",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L122",
       "weight": 1.0,
-      "source": "private_pfasubsystem",
-      "target": "private_pfasubsystem_beginplay",
-      "confidence_score": 1.0
+      "confidence_score": 1.0,
+      "source": "docs_05_asset_pipeline_05_asset_pipeline",
+      "target": "docs_05_asset_pipeline_7_sandwyrm_assets_procedural_by_design"
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFASubsystem.cpp",
-      "source_location": "L34",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L140",
       "weight": 1.0,
-      "source": "private_pfasubsystem",
-      "target": "private_pfasubsystem_refreshtick",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PrimalFauna.cpp",
-      "source_location": "L5",
-      "weight": 1.0,
-      "source": "private_primalfauna",
-      "target": "private_primalfauna_startupmodule",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Public/PFAConfig.h",
-      "source_location": "L30",
-      "weight": 1.0,
-      "source": "public_pfaconfig",
-      "target": "public_pfaconfig_enablediagnostics",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Public/PFARootInstance.h",
-      "source_location": "L10",
-      "weight": 1.0,
-      "source": "public_pfarootinstance",
-      "target": "public_pfarootinstance_urootinstance_primalfauna",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Public/PFARootInstance.h",
-      "source_location": "L10",
-      "weight": 1.0,
-      "context": "return_type",
-      "source": "public_pfarootinstance_urootinstance_primalfauna",
-      "target": "source_primalfauna_public_pfarootinstance_h_primalfauna_api",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Public/PFARootWorld.h",
-      "source_location": "L9",
-      "weight": 1.0,
-      "source": "public_pfarootworld",
-      "target": "public_pfarootworld_urootgameworld_primalfauna",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Public/PFARootWorld.h",
-      "source_location": "L9",
-      "weight": 1.0,
-      "context": "return_type",
-      "source": "public_pfarootworld_urootgameworld_primalfauna",
-      "target": "source_primalfauna_public_pfarootworld_h_primalfauna_api",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
-      "source_location": "L26",
-      "weight": 1.0,
-      "source": "public_pfasubsystem",
-      "target": "public_pfasubsystem_needtransform_implementation",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
-      "source_location": "L30",
-      "weight": 1.0,
-      "source": "public_pfasubsystem",
-      "target": "public_pfasubsystem_postloadgame_implementation",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
-      "source_location": "L28",
-      "weight": 1.0,
-      "source": "public_pfasubsystem",
-      "target": "public_pfasubsystem_postsavegame_implementation",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
-      "source_location": "L29",
-      "weight": 1.0,
-      "source": "public_pfasubsystem",
-      "target": "public_pfasubsystem_preloadgame_implementation",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
-      "source_location": "L27",
-      "weight": 1.0,
-      "source": "public_pfasubsystem",
-      "target": "public_pfasubsystem_presavegame_implementation",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
-      "source_location": "L26",
-      "weight": 1.0,
-      "context": "return_type",
-      "source": "public_pfasubsystem_needtransform_implementation",
-      "target": "virtual",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
-      "source_location": "L30",
-      "weight": 1.0,
-      "context": "return_type",
-      "source": "public_pfasubsystem_postloadgame_implementation",
-      "target": "virtual",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
-      "source_location": "L28",
-      "weight": 1.0,
-      "context": "return_type",
-      "source": "public_pfasubsystem_postsavegame_implementation",
-      "target": "virtual",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
-      "source_location": "L29",
-      "weight": 1.0,
-      "context": "return_type",
-      "source": "public_pfasubsystem_preloadgame_implementation",
-      "target": "virtual",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
-      "source_location": "L27",
-      "weight": 1.0,
-      "context": "return_type",
-      "source": "public_pfasubsystem_presavegame_implementation",
-      "target": "virtual",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
-      "source_location": "L27",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "source": "public_pfasubsystem_presavegame_implementation",
-      "target": "int32",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
-      "source_location": "L30",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "source": "public_pfasubsystem_postloadgame_implementation",
-      "target": "int32",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
-      "source_location": "L28",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "source": "public_pfasubsystem_postsavegame_implementation",
-      "target": "int32",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
-      "source_location": "L29",
-      "weight": 1.0,
-      "context": "parameter_type",
-      "source": "public_pfasubsystem_preloadgame_implementation",
-      "target": "int32",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Public/PrimalFauna.h",
-      "source_location": "L16",
-      "weight": 1.0,
-      "source": "public_primalfauna",
-      "target": "public_primalfauna_fdefaultgamemoduleimpl",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Public/PrimalFauna.h",
-      "source_location": "L16",
-      "weight": 1.0,
-      "context": "return_type",
-      "source": "public_primalfauna_fdefaultgamemoduleimpl",
-      "target": "class",
-      "confidence_score": 1.0
+      "confidence_score": 1.0,
+      "source": "docs_05_asset_pipeline_05_asset_pipeline",
+      "target": "docs_05_asset_pipeline_8_gpu_credit_discipline"
     },
     {
       "relation": "contains",
@@ -1575,9 +1311,9 @@
       "source_file": "docs/ASSET-LEDGER.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_asset_ledger",
-      "target": "docs_asset_ledger_primalfauna_asset_ledger",
-      "confidence_score": 1.0
+      "target": "docs_asset_ledger_primalfauna_asset_ledger"
     },
     {
       "relation": "contains",
@@ -1585,9 +1321,363 @@
       "source_file": "docs/ASSET-LEDGER.md",
       "source_location": "L16",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_asset_ledger_primalfauna_asset_ledger",
-      "target": "docs_asset_ledger_placeholder_rig_technical_notes_for_the_systems_lane",
-      "confidence_score": 1.0
+      "target": "docs_asset_ledger_placeholder_rig_technical_notes_for_the_systems_lane"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/PrimalFauna.Build.cs",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "primalfauna_primalfauna_build",
+      "target": "primalfauna_primalfauna_build_primalfauna"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/PrimalFauna.Build.cs",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "primalfauna_primalfauna_build_primalfauna",
+      "target": "modulerules"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFAConfig.cpp",
+      "source_location": "L12",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "private_pfaconfig",
+      "target": "private_pfaconfig_getactiveconfig"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFAConfig.cpp",
+      "source_location": "L31",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "private_pfaconfig",
+      "target": "private_pfaconfig_postinitproperties"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFAConfig.cpp",
+      "source_location": "L24",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "private_pfaconfig",
+      "target": "private_pfaconfig_upfaconfig"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFAConfig.cpp",
+      "source_location": "L12",
+      "weight": 1.0,
+      "context": "return_type",
+      "confidence_score": 1.0,
+      "source": "private_pfaconfig_getactiveconfig",
+      "target": "fpfaconfigstruct"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFAConfig.cpp",
+      "source_location": "L12",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "confidence_score": 1.0,
+      "source": "private_pfaconfig_getactiveconfig",
+      "target": "uobject"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFARootInstance.cpp",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "private_pfarootinstance",
+      "target": "private_pfarootinstance_urootinstance_primalfauna"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFARootWorld.cpp",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "private_pfarootworld",
+      "target": "private_pfarootworld_urootgameworld_primalfauna"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFASubsystem.cpp",
+      "source_location": "L13",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "private_pfasubsystem",
+      "target": "private_pfasubsystem_apfasubsystem"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFASubsystem.cpp",
+      "source_location": "L18",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "private_pfasubsystem",
+      "target": "private_pfasubsystem_beginplay"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFASubsystem.cpp",
+      "source_location": "L34",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "private_pfasubsystem",
+      "target": "private_pfasubsystem_refreshtick"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PrimalFauna.cpp",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "private_primalfauna",
+      "target": "private_primalfauna_startupmodule"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Public/PFAConfig.h",
+      "source_location": "L30",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "public_pfaconfig",
+      "target": "public_pfaconfig_enablediagnostics"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Public/PFARootInstance.h",
+      "source_location": "L10",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "public_pfarootinstance",
+      "target": "public_pfarootinstance_urootinstance_primalfauna"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Public/PFARootInstance.h",
+      "source_location": "L10",
+      "weight": 1.0,
+      "context": "return_type",
+      "confidence_score": 1.0,
+      "source": "public_pfarootinstance_urootinstance_primalfauna",
+      "target": "source_primalfauna_public_pfarootinstance_h_primalfauna_api"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Public/PFARootWorld.h",
+      "source_location": "L9",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "public_pfarootworld",
+      "target": "public_pfarootworld_urootgameworld_primalfauna"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Public/PFARootWorld.h",
+      "source_location": "L9",
+      "weight": 1.0,
+      "context": "return_type",
+      "confidence_score": 1.0,
+      "source": "public_pfarootworld_urootgameworld_primalfauna",
+      "target": "source_primalfauna_public_pfarootworld_h_primalfauna_api"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
+      "source_location": "L26",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "public_pfasubsystem",
+      "target": "public_pfasubsystem_needtransform_implementation"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
+      "source_location": "L30",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "public_pfasubsystem",
+      "target": "public_pfasubsystem_postloadgame_implementation"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
+      "source_location": "L28",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "public_pfasubsystem",
+      "target": "public_pfasubsystem_postsavegame_implementation"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
+      "source_location": "L29",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "public_pfasubsystem",
+      "target": "public_pfasubsystem_preloadgame_implementation"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
+      "source_location": "L27",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "public_pfasubsystem",
+      "target": "public_pfasubsystem_presavegame_implementation"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
+      "source_location": "L26",
+      "weight": 1.0,
+      "context": "return_type",
+      "confidence_score": 1.0,
+      "source": "public_pfasubsystem_needtransform_implementation",
+      "target": "virtual"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
+      "source_location": "L30",
+      "weight": 1.0,
+      "context": "return_type",
+      "confidence_score": 1.0,
+      "source": "public_pfasubsystem_postloadgame_implementation",
+      "target": "virtual"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
+      "source_location": "L28",
+      "weight": 1.0,
+      "context": "return_type",
+      "confidence_score": 1.0,
+      "source": "public_pfasubsystem_postsavegame_implementation",
+      "target": "virtual"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
+      "source_location": "L29",
+      "weight": 1.0,
+      "context": "return_type",
+      "confidence_score": 1.0,
+      "source": "public_pfasubsystem_preloadgame_implementation",
+      "target": "virtual"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
+      "source_location": "L27",
+      "weight": 1.0,
+      "context": "return_type",
+      "confidence_score": 1.0,
+      "source": "public_pfasubsystem_presavegame_implementation",
+      "target": "virtual"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
+      "source_location": "L27",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "confidence_score": 1.0,
+      "source": "public_pfasubsystem_presavegame_implementation",
+      "target": "int32"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
+      "source_location": "L30",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "confidence_score": 1.0,
+      "source": "public_pfasubsystem_postloadgame_implementation",
+      "target": "int32"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
+      "source_location": "L28",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "confidence_score": 1.0,
+      "source": "public_pfasubsystem_postsavegame_implementation",
+      "target": "int32"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
+      "source_location": "L29",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "confidence_score": 1.0,
+      "source": "public_pfasubsystem_preloadgame_implementation",
+      "target": "int32"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Public/PrimalFauna.h",
+      "source_location": "L16",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "public_primalfauna",
+      "target": "public_primalfauna_fdefaultgamemoduleimpl"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Public/PrimalFauna.h",
+      "source_location": "L16",
+      "weight": 1.0,
+      "context": "return_type",
+      "confidence_score": 1.0,
+      "source": "public_primalfauna_fdefaultgamemoduleimpl",
+      "target": "class"
     },
     {
       "relation": "contains",
@@ -2042,96 +2132,6 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "docs/05-asset-pipeline.md",
-      "source_location": "L1",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_05_asset_pipeline",
-      "target": "docs_05_asset_pipeline_05_asset_pipeline"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/05-asset-pipeline.md",
-      "source_location": "L12",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_05_asset_pipeline_05_asset_pipeline",
-      "target": "docs_05_asset_pipeline_1_art_direction_generation_briefs"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/05-asset-pipeline.md",
-      "source_location": "L25",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_05_asset_pipeline_05_asset_pipeline",
-      "target": "docs_05_asset_pipeline_2_per_creature_pipeline_stage_gates_in_order"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/05-asset-pipeline.md",
-      "source_location": "L39",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_05_asset_pipeline_05_asset_pipeline",
-      "target": "docs_05_asset_pipeline_3_animation_the_honest_plan_verified_tripo_facts"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/05-asset-pipeline.md",
-      "source_location": "L73",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_05_asset_pipeline_05_asset_pipeline",
-      "target": "docs_05_asset_pipeline_4_texturing_the_aggro_glow_telegraph"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/05-asset-pipeline.md",
-      "source_location": "L87",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_05_asset_pipeline_05_asset_pipeline",
-      "target": "docs_05_asset_pipeline_5_fab_sketchfab_licensing_rules_for_rungs_3_4_and_the_worm_fallback"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/05-asset-pipeline.md",
-      "source_location": "L99",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_05_asset_pipeline_05_asset_pipeline",
-      "target": "docs_05_asset_pipeline_6_ue_import_wiring_headless_first"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/05-asset-pipeline.md",
-      "source_location": "L122",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_05_asset_pipeline_05_asset_pipeline",
-      "target": "docs_05_asset_pipeline_7_sandwyrm_assets_procedural_by_design"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/05-asset-pipeline.md",
-      "source_location": "L140",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_05_asset_pipeline_05_asset_pipeline",
-      "target": "docs_05_asset_pipeline_8_gpu_credit_discipline"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
       "source_file": "docs/06-integration-and-compat.md",
       "source_location": "L1",
       "weight": 1.0,
@@ -2301,5 +2301,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "822b029f581bf3a825d0c70bc33c257f708061b3"
+  "built_at_commit": "dfbf7cc1f7eeae57d239afbf6331e5faf7c2dbe5"
 }

@@ -15,8 +15,15 @@ FPFAConfigStruct FPFAConfigStruct::GetActiveConfig(UObject* WorldContext)
     const FConfigId ConfigId{"PrimalFauna", ""};
     if (const UWorld* World = GEngine->GetWorldFromContextObject(WorldContext, EGetWorldErrorMode::ReturnNull))
     {
-        UConfigManager* ConfigManager = World->GetGameInstance()->GetSubsystem<UConfigManager>();
-        ConfigManager->FillConfigurationStruct(ConfigId, FDynamicStructInfo{FPFAConfigStruct::StaticStruct(), &ConfigStruct});
+        // Null-guarded: called every RefreshTick for the subsystem's lifetime, so
+        // world-teardown edges (no GameInstance / subsystem already gone) must
+        // degrade to returning defaults instead of dereferencing null.
+        UGameInstance* GameInstance = World->GetGameInstance();
+        UConfigManager* ConfigManager = GameInstance ? GameInstance->GetSubsystem<UConfigManager>() : nullptr;
+        if (ConfigManager)
+        {
+            ConfigManager->FillConfigurationStruct(ConfigId, FDynamicStructInfo{FPFAConfigStruct::StaticStruct(), &ConfigStruct});
+        }
     }
     return ConfigStruct;
 }
@@ -129,7 +136,7 @@ void UPFAConfig::PostInitProperties()
 
     AddBool(TEXT("EnableDiagnostics"), false,
         TEXT("Enable Diagnostics"),
-        TEXT("Writes verbose [PFA] diagnostic logging (per-entity/decision detail) to the game log. Leave off for clean logs during normal play. Takes effect within ~10s, no reload. (This scaffold build has no gated diagnostics yet - the switch becomes active as creature systems ship.)"));
+        TEXT("Writes verbose [PFA] diagnostic logging (per-entity/decision detail) to the game log. Currently gates PFA.DumpCreature's per-action detail; more diagnostic paths join as creature systems ship. Leave off for clean logs during normal play. Takes effect within ~10s, no reload."));
 
     RootSection = Root;
 }
