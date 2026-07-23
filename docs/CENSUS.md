@@ -16,6 +16,18 @@ Action-config sample (`PFA.DumpCreature`, pfa.Diag=1): `Char_NonFlyingBird_C` ca
 vanilla creatures configure native action subclasses exactly as doc 07 §5 assumes, and the
 reflection dump reads them.
 
+## 2026-07-23 — Phase-1 gate re-run: THE BT CENSUS (build w15-3, full profile)
+
+Only **3 BehaviorTree assets exist under /Game/FactoryGame** (even with 113 mods + SF+ loaded):
+- `/Game/FactoryGame/Prototype/Exploration/Creatures/BT_CreatureBehavior.BT_CreatureBehavior` ← **the shared hostile tree** (hogs/stingers; SpaceGiraffe verified running it live); borrow chose + assigned this one.
+- `/Game/FactoryGame/Character/Creature/Wildlife/SpaceRabbit/BT_SpaceRabbit.BT_SpaceRabbit`
+- `/Game/FactoryGame/Character/Creature/Wildlife/NonFlyingBird/BT_NonFlyingBird.BT_NonFlyingBird`
+
+Gate finding: the borrow WORKS (asset valid, CDO assignment + readback OK) but a creature's
+controller must START the tree — vanilla `BP_CreatureController_C` does it in its BP graph;
+`APFACreatureController` must do it in C++ (W1.6). Also: fresh nest Sicklejaws read
+`Health=0.0/200.0` (current-health init gap; vanilla reads 200/200) — W1.6 fixup.
+
 **Still needed (Phase-1 gate or later):** hog family (`Char_Hog_C`, alpha variant), stinger
 adults/elites, spitter — the doc 01 anchor species (Sicklejaw ≈ Alpha Hog HP, etc.). Also
 `GetBehaviorTreeAsset()` paths per class (W1.4 needs the hog/stinger BT paths — none captured yet;

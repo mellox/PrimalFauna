@@ -40,8 +40,8 @@
     "semantic_hash": ""
   },
   "docs/07-technical-architecture.md": {
-    "mtime": 1784825415.864586,
-    "ast_hash": "f9c0bb9e1e1f304e267bdc150110b4e8",
+    "mtime": 1784829649.6694512,
+    "ast_hash": "aae254586f2b72bb289a00a958e3da01",
     "semantic_hash": ""
   },
   "docs/08-implementation-plan.md": {
@@ -75,8 +75,8 @@
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Private/PrimalFauna.cpp": {
-    "mtime": 1784828258.7721982,
-    "ast_hash": "f8b5da6241ad64338d122d3fe3b5f1cf",
+    "mtime": 1784829581.894489,
+    "ast_hash": "71d8ec0f309b841418b8aa85b13135bd",
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Public/PFAConfig.h": {
@@ -245,8 +245,8 @@
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Private/PFACreatureBase.cpp": {
-    "mtime": 1784823586.1711335,
-    "ast_hash": "fbe3a56f693b87592f57a5cca03a736f",
+    "mtime": 1784829576.5042489,
+    "ast_hash": "52eb0a198636d71e7e9b1b5f5cfb1d15",
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Private/PFACreatureController.cpp": {
@@ -255,13 +255,13 @@
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp": {
-    "mtime": 1784823647.2250845,
-    "ast_hash": "7655c835273b4a25467bf9b877da9eb0",
+    "mtime": 1784829580.2510097,
+    "ast_hash": "8e1a747c3f8ea1ed5b79b5a2460c4b2a",
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Public/PFACreatureBase.h": {
-    "mtime": 1784823568.9008088,
-    "ast_hash": "5e9142368db35dfed962c50a3fe1ab97",
+    "mtime": 1784829600.4672484,
+    "ast_hash": "a886680534681468bd252b4631809a92",
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Public/PFACreatureController.h": {
@@ -317,6 +317,11 @@
   "Source/PrimalFauna/Public/PFANestSpawner.h": {
     "mtime": 1784826277.8623784,
     "ast_hash": "9389bf234961f678b231c5e4a401a8e6",
+    "semantic_hash": ""
+  },
+  "tools/check_imports.ps1": {
+    "mtime": 1784829643.556988,
+    "ast_hash": "0e7b700715217c740b09f8faa007bfa4",
     "semantic_hash": ""
   }
 }

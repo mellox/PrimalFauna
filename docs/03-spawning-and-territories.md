@@ -83,7 +83,15 @@ FPFARegion { FName RegionId; FString Label;            // "DuneDesert_Fringe"
 5. **Log census every load (Display):** `[PFA] Regions: N, nests live: X (by species: …), suppressed: Y`.
    Per-nest lines at Verbose.
 
-## 4. Persistence model ⚠ [assumption → slice test]
+## 4. Persistence model — ✅ RESOLVED: OUTCOME A (native persistence), gate re-run 2026-07-23
+
+**Verdict from the Phase-1 gate (build w15-3, two save/reload cycles):** dynamically spawned
+`APFANestSpawner`s persist natively (`records=4 preexisting-live=4`, census `adopted=4
+materialized=0`, both cycles), no duplicates, no name collisions, no count compounding, and
+HostileScaling processed the nests generically by stable name. The transient fallback below is
+NOT needed — retained for reference only.
+
+### (original assumption text, superseded)
 
 **Intended:** runtime-spawned `APFANestSpawner`s are SAVED by the game (the class implements
 `IFGSaveInterface`; dynamically spawned save-interface actors persist like buildings do), so
