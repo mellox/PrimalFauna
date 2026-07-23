@@ -95,6 +95,17 @@ public:
 	// tree is GC-rooted by the world subsystem, not here.
 	void SetBorrowedBehaviorTree(class UBehaviorTree* BehaviorTree);
 
+	// Clears AFGCreature's private kill-orphan timer (mKillOrphanHandle,
+	// FGCreature.h:663) DIRECTLY via the timer manager, under the existing
+	// Friend grant. Exists because the obvious call --
+	// AFGCreature::ClearKillOrphanTimer() -- is a SHIPPING-EXPORT TRAP: the
+	// method is declared in the SML headers (FGCreature.h:438) and links
+	// against the stubs, but the shipping FactoryGame DLL does NOT export it
+	// (0/51719 exports; plain non-UFUNCTION method) -> the whole module fails
+	// to load with GetLastError=127. Root-caused at the 2026-07-23 Phase-1
+	// gate (see _team/test-logs/2026-07-23-phase1-gate/ROOTCAUSE-*.txt).
+	void ClearNativeOrphanTimer();
+
 protected:
 	// Species ctors call this instead of GetHealthComponent()->SetMaxHealth()
 	// directly. GetHealthComponent() is public (FGCharacterBase.h:210) so

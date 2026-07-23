@@ -141,6 +141,16 @@ void APFACreatureBase::SetBorrowedBehaviorTree(UBehaviorTree* BehaviorTree)
 	}
 }
 
+void APFACreatureBase::ClearNativeOrphanTimer()
+{
+	// Direct private-handle clear under the Friend grant -- see the header
+	// comment for the shipping-export trap that forbids calling the game's
+	// own ClearKillOrphanTimer(). FTimerManager::ClearTimer is a header-inline
+	// wrapper over the EXPORTED InternalClearTimer, so this binds cleanly
+	// (verified against the shipping export table, gate session 2026-07-23).
+	GetWorldTimerManager().ClearTimer(mKillOrphanHandle);
+}
+
 void APFACreatureBase::SpawnDeathItem_Implementation()
 {
 	// Preserve whatever the base class's own default does (unknown --

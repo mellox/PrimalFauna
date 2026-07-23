@@ -70,13 +70,13 @@
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Private/PFASubsystem.cpp": {
-    "mtime": 1784825398.2158697,
-    "ast_hash": "a28a1f13cf9d241ae79a6dcc45f5c880",
+    "mtime": 1784828257.0235715,
+    "ast_hash": "8803248c2d7dc90c660695c21d6e6e00",
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Private/PrimalFauna.cpp": {
-    "mtime": 1784825399.480685,
-    "ast_hash": "24fe19bcc79ff1c12bf6dd71e91dbb02",
+    "mtime": 1784828258.7721982,
+    "ast_hash": "f8b5da6241ad64338d122d3fe3b5f1cf",
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Public/PFAConfig.h": {
@@ -95,8 +95,8 @@
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Public/PFASubsystem.h": {
-    "mtime": 1784825385.974798,
-    "ast_hash": "3b66552f41e5f361bdb80f6cf4c23e6d",
+    "mtime": 1784826887.3958287,
+    "ast_hash": "b4d7c1f802d25396b401c9cb1f01f977",
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Public/PrimalFauna.h": {
@@ -235,13 +235,13 @@
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Private/PFACheats.cpp": {
-    "mtime": 1784822432.2045557,
-    "ast_hash": "583b40d1f331cc2ada59d97d8857d1bf",
+    "mtime": 1784826549.5194867,
+    "ast_hash": "f2fa2931e2b93e46de9dec977d74d2b0",
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Public/PFACheats.h": {
-    "mtime": 1784816297.4016912,
-    "ast_hash": "4005054bfeb72f3a244b8310f9e1f3a5",
+    "mtime": 1784826558.1732376,
+    "ast_hash": "b79a67ff447ac8f09607fe6a9164320a",
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Private/PFACreatureBase.cpp": {
@@ -307,6 +307,16 @@
   "docs/BT-FALLBACK-RECIPE.md": {
     "mtime": 1784823735.7838657,
     "ast_hash": "f78aa55149d48945d3fb9327237d4709",
+    "semantic_hash": ""
+  },
+  "Source/PrimalFauna/Private/PFANestSpawner.cpp": {
+    "mtime": 1784826289.1279006,
+    "ast_hash": "f2f613b2d0cea33caa402b79c55d0db6",
+    "semantic_hash": ""
+  },
+  "Source/PrimalFauna/Public/PFANestSpawner.h": {
+    "mtime": 1784826277.8623784,
+    "ast_hash": "9389bf234961f678b231c5e4a401a8e6",
     "semantic_hash": ""
   }
 }

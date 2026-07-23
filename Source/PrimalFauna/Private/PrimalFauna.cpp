@@ -4,7 +4,7 @@ DEFINE_LOG_CATEGORY(LogPrimalFauna);
 
 void FPrimalFaunaModule::StartupModule()
 {
-    UE_LOG(LogPrimalFauna, Display, TEXT("===== PrimalFauna BUILD 2026-07-23-w15-2 LOADED ====="));
+    UE_LOG(LogPrimalFauna, Display, TEXT("===== PrimalFauna BUILD 2026-07-23-w15-3 LOADED ====="));
 
     // Deliberately no SUBSCRIBE_METHOD / SUBSCRIBE_UOBJECT_METHOD hooks here.
     // PrimalFauna's entire gameplay surface lives in our own subclasses of

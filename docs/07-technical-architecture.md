@@ -27,6 +27,13 @@ Consequences (verify at every review):
 - Vanilla content is referenced (borrowed BT asset §4, Wwise events, remains recipes as templates)
   — never edited. No CDO writes to vanilla classes in v1 except the possible scanner registration
   (§8, quarantined + experimental-flagged).
+- **SHIPPING-EXPORT TRAP (found at the 2026-07-23 Phase-1 gate):** a FactoryGame method can be
+  declared in the SML headers and link against the stub .cpps yet be ABSENT from the shipping
+  DLL's export table (plain non-UFUNCTION methods are the risk class; e.g.
+  `AFGCreature::ClearKillOrphanTimer`) → the entire module fails to load at boot (error 127).
+  Compile+cook cannot catch it. Rules: prefer UFUNCTION/inline/getter paths for novel calls;
+  after EVERY package that adds a new game-API call, run `tools/check_imports.ps1` (verifies every
+  FactoryGame import against the real export table) before any game session.
 
 ## 2. Class map
 

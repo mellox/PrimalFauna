@@ -1,16 +1,16 @@
 # Graph Report - PrimalFauna  (2026-07-23)
 
 ## Corpus Check
-- 37 files · ~788,503 words
+- 39 files · ~791,871 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 227 nodes · 236 edges · 32 communities (24 shown, 8 thin omitted)
-- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 3 edges (avg confidence: 0.8)
+- 242 nodes · 251 edges · 34 communities (25 shown, 9 thin omitted)
+- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 4 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `295432ae`
+- Built from commit: `04c526ec`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -43,6 +43,8 @@
 - [[_COMMUNITY_Community 29|Community 29]]
 - [[_COMMUNITY_Community 30|Community 30]]
 - [[_COMMUNITY_Community 31|Community 31]]
+- [[_COMMUNITY_Community 32|Community 32]]
+- [[_COMMUNITY_Community 33|Community 33]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `07 — Technical Architecture` - 11 edges
@@ -57,21 +59,21 @@
 10. `00 — Vision & Pillars` - 6 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `LogRuleVerdict()` --references--> `AFGCreature`  [EXTRACTED]
-  Source/PrimalFauna/Private/PFACreatureController.cpp → Source/PrimalFauna/Private/PFACheats.cpp
 - `RefreshTick()` --calls--> `PFA_RunSelfTests()`  [INFERRED]
   Source/PrimalFauna/Private/PFASubsystem.cpp → Source/PrimalFauna/Private/PFACheats.cpp
+- `SpawnNestAtPlayer()` --calls--> `FName`  [INFERRED]
+  Source/PrimalFauna/Private/PFASubsystem.cpp → Source/PrimalFauna/Private/PFANestSpawner.cpp
+- `PickCandidate()` --references--> `FString`  [EXTRACTED]
+  Source/PrimalFauna/Private/PFABehaviorBorrower.cpp → Source/PrimalFauna/Private/PFASubsystem.cpp
 - `APFASicklejaw()` --calls--> `SetBaseHealth()`  [INFERRED]
   Source/PrimalFauna/Private/Species/PFASicklejaw.cpp → Source/PrimalFauna/Private/PFACreatureBase.cpp
 - `APFASicklejaw()` --calls--> `SetSpawnDespawnDistance()`  [INFERRED]
   Source/PrimalFauna/Private/Species/PFASicklejaw.cpp → Source/PrimalFauna/Private/PFACreatureBase.cpp
-- `PFADiag()` --references--> `namespace`  [EXTRACTED]
-  Source/PrimalFauna/Public/PFACheats.h → Source/PrimalFauna/Public/PFABehaviorBorrower.h
 
 ## Import Cycles
 - None detected.
 
-## Communities (32 total, 8 thin omitted)
+## Communities (34 total, 9 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.20
@@ -111,15 +113,15 @@ Nodes (3): Headline design facts (why this plan is buildable), PrimalFauna — h
 
 ### Community 9 - "Community 9"
 Cohesion: 0.50
-Nodes (8): int32, NeedTransform_Implementation(), PostLoadGame_Implementation(), PostSaveGame_Implementation(), PreLoadGame_Implementation(), PreSaveGame_Implementation(), int32, virtual
+Nodes (7): int32, NeedTransform_Implementation(), PostSaveGame_Implementation(), PreLoadGame_Implementation(), PreSaveGame_Implementation(), int32, virtual
 
 ### Community 10 - "Community 10"
 Cohesion: 0.33
 Nodes (3): FPFAConfigStruct, GetActiveConfig(), UObject
 
 ### Community 11 - "Community 11"
-Cohesion: 0.15
-Nodes (12): AFGCreature, FPFASelfTest, DumpAllCreaturesCommand(), DumpCreatureCommand(), FindLookedAtOrNearestCreature(), IsEnabled(), LogActionReflection(), PFA_RunSelfTests() (+4 more)
+Cohesion: 0.21
+Nodes (11): FPFASelfTest, DumpAllCreaturesCommand(), DumpCreatureCommand(), FindLookedAtOrNearestCreature(), IsEnabled(), LogActionReflection(), RegisterPFASelfTest(), SpawnNestCommand() (+3 more)
 
 ### Community 12 - "Community 12"
 Cohesion: 0.40
@@ -142,8 +144,8 @@ Cohesion: 0.39
 Nodes (7): disk_verify(), log(), make_anim_task(), make_sk_task(), r""" import_placeholder_ue.py -- import the W1.3 placeholder creature rig (a ske, set_editor_property that logs-and-continues instead of aborting the     whole sc, safe_set()
 
 ### Community 28 - "Community 28"
-Cohesion: 0.24
-Nodes (11): FAssetData, FResult, FString, IAssetRegistry, DiscoverAndBorrow(), PickCandidate(), QueryBehaviorTrees(), int32 (+3 more)
+Cohesion: 0.27
+Nodes (10): FAssetData, FResult, IAssetRegistry, DiscoverAndBorrow(), PickCandidate(), QueryBehaviorTrees(), int32, TArray (+2 more)
 
 ### Community 29 - "Community 29"
 Cohesion: 0.20
@@ -153,19 +155,23 @@ Nodes (6): GetConfiguredBiteDamage(), ProcessHit_Implementation(), UPFACreatureA
 Cohesion: 0.22
 Nodes (8): After either path — re-verify, Assigning `BT_PFAGeneric` to our creatures, BT-FALLBACK-RECIPE — authoring `BT_PFAGeneric`, Path A — hardcode a discovered vanilla path (try this before Path B), Path B — author `BT_PFAGeneric` from scratch, Prerequisites, Step 0 — read the census the borrower already logged (do this first), The structure (best-effort — verify against a census BT)
 
+### Community 32 - "Community 32"
+Cohesion: 0.13
+Nodes (13): FName, FString, PFA_RunSelfTests(), ConfigureNest(), CheckNestRegistryConsistency(), PostLoadGame_Implementation(), ReconcileNests(), RefreshTick() (+5 more)
+
 ## Knowledge Gaps
-- **93 isolated node(s):** `FObjectInitializer`, `AFGCharacterBase`, `FHitResult`, `TCHAR`, `int32` (+88 more)
+- **98 isolated node(s):** `FPFASelfTest`, `AFGCreature`, `UFGAction`, `TSubclassOf`, `AFGCreature` (+93 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **8 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **9 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `LogRuleVerdict()` connect `Community 23` to `Community 9`, `Community 11`?**
-  _High betweenness centrality (0.016) - this node is a cross-community bridge._
-- **Why does `AFGCreature` connect `Community 11` to `Community 23`?**
-  _High betweenness centrality (0.013) - this node is a cross-community bridge._
-- **What connects `FObjectInitializer`, `AFGCharacterBase`, `FHitResult` to the rest of the system?**
-  _95 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Why does `PFA_RunSelfTests()` connect `Community 32` to `Community 11`?**
+  _High betweenness centrality (0.014) - this node is a cross-community bridge._
+- **What connects `FPFASelfTest`, `AFGCreature`, `UFGAction` to the rest of the system?**
+  _100 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 22` be split into smaller, more focused modules?**
   _Cohesion score 0.10952380952380952 - nodes in this community are weakly interconnected._
+- **Should `Community 32` be split into smaller, more focused modules?**
+  _Cohesion score 0.13071895424836602 - nodes in this community are weakly interconnected._

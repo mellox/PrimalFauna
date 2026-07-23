@@ -200,10 +200,14 @@ namespace
 			return;
 		}
 
-		// Recouples the spawner<->creature link so the native kill-orphan
-		// timer doesn't fire on a creature spawned without a real spawner
-		// (AFGCreature::ClearKillOrphanTimer, FGCreature.h:438).
-		SpawnedCreature->ClearKillOrphanTimer();
+		// Stops the native kill-orphan timer from destroying a creature spawned
+		// without a real spawner. NOT via AFGCreature::ClearKillOrphanTimer()
+		// -- that symbol is a shipping-export trap (module-load error 127; see
+		// PFACreatureBase.h) -- but via our Friend-granted direct handle clear.
+		if (APFACreatureBase* AsPFACreature = Cast<APFACreatureBase>(SpawnedCreature))
+		{
+			AsPFACreature->ClearNativeOrphanTimer();
+		}
 
 		// W1.3 review add-on: assert the Friend-granted private writes took
 		// hold on a REAL spawned instance (spawn/despawn distances are set in
