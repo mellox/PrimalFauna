@@ -29,6 +29,7 @@ review on ⚠ packets, diagnostics everywhere.
   | Mechanical passes: CENSUS.md transcription, region-table data entry, anim import batches, ASSET-LEDGER | `haiku` (`effort: low`) | Verify/extract work, cheap to check |
   | Cold review, ordinary packets | `sonnet` (fresh `ruflo-core:reviewer`) | Independent eyes ≫ tier here |
   | Cold review, ⚠ packets (W1.4, W1.5, W2.5, W3.4) + anything touching doc 06 contract items | **top-tier** differential/parity review | The regression class that slips past local review |
+  | In-game verification gates | **`sf-game-tester` agent** (`C:\Claude\Projects\.claude\agents\sf-game-tester.md`, `opus`) | Computer-use game driving is perception-heavy; TEST saves only; asserts `[PFA][TEST]` log lines from the self-test harness (W1.1) instead of manual play wherever possible |
   | Local LLM (LM Studio) | log/dump summarization during test sessions ONLY | Never implementation (correctness-critical), never during builds (VRAM) |
 
   State agent counts before fan-outs >10; one implementation packet in flight regardless of tier.
@@ -58,6 +59,14 @@ Done when:  compiles in orchestrator build + cold review SHIP + in-game checklis
 - **W1.1** Dev commands + census (`PFACheats`): `PFA.DumpCreature` (class/BT path/actions/health/
   aggro), `PFA.DumpCandidates`, `PFA.SpawnNest`, `PFA.KillAll`; anchor dump (doc 07 §9). Also
   exercise SML's built-in `ForceSpawnCreatures` cheat as the spawner test accelerator.
+  **Plus the self-test harness (user directive 2026-07-11 — automate in-game verification):**
+  `PFA.SelfTest` runs a scripted server-side sequence (spawn test nest at player → force-spawn →
+  targeting-gate probes vs a spawned dummy target set → damage/death/loot roundtrip → anchor +
+  HostileScaling-math dump) emitting machine-readable `[PFA][TEST] <item> PASS|FAIL <detail>`
+  lines; CVar `pfa.AutoTest 1` auto-runs it on world load; ALL verbose tracing CVar-gated
+  (`pfa.Diag`). Every later packet that adds a runtime behavior ALSO adds its self-test item —
+  the `sf-game-tester` agent asserts the log, so in-game gates don't need a human. Feel/visual
+  items (anim quality, VFX readability) stay on the user's checklist.
 - **W1.2** Census run (user session): dump hog/stinger/spitter — vanilla BT asset paths, action
   configs, anchor stats, remains→protein recipe shape. Output: `docs/CENSUS.md` (data, not prose).
 - **W1.3** `APFACreatureBase` + `APFACreatureController` (full doc 02 §2 policy + Verbose verdicts) +

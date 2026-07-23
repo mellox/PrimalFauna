@@ -1,12 +1,12 @@
 {
   "README.md": {
-    "mtime": 1783822590.555491,
-    "ast_hash": "3dacdfaf9cf748edbee492fec29cf4df",
+    "mtime": 1784812028.0032156,
+    "ast_hash": "061183179b6769a2ad37aeabc620fc29",
     "semantic_hash": ""
   },
   "docs/00-vision-and-pillars.md": {
-    "mtime": 1783821991.6243248,
-    "ast_hash": "26ab334cdbe7ae8c27cdef6b279bad3f",
+    "mtime": 1784812027.9828649,
+    "ast_hash": "44a64d40bb979d4e01f12fab79d634e7",
     "semantic_hash": ""
   },
   "docs/01-creature-roster.md": {
@@ -15,38 +15,38 @@
     "semantic_hash": ""
   },
   "docs/02-hostility-and-factions.md": {
-    "mtime": 1783822287.2437544,
-    "ast_hash": "86509690bf71fdcb8912a7ca1bce6eec",
+    "mtime": 1784812027.9970667,
+    "ast_hash": "2cdc05b3fb8302a8d507694df4bc476b",
     "semantic_hash": ""
   },
   "docs/03-spawning-and-territories.md": {
-    "mtime": 1783822358.1873395,
-    "ast_hash": "45b9ec4372241c409d6ebffb47064498",
+    "mtime": 1784812027.9990754,
+    "ast_hash": "5d7eda8cc37bcbc5676681b20d43196e",
     "semantic_hash": ""
   },
   "docs/04-config-and-ui.md": {
-    "mtime": 1783822121.3993552,
-    "ast_hash": "88fdd1535382c565b246190435e6d3d1",
+    "mtime": 1784812027.9990754,
+    "ast_hash": "4beabe19f9efe5988cbde786e668806f",
     "semantic_hash": ""
   },
   "docs/05-asset-pipeline.md": {
-    "mtime": 1784810983.5893948,
-    "ast_hash": "8727f9067a8e68e586ebaf24d8f2aae7",
+    "mtime": 1784811969.4426215,
+    "ast_hash": "4be2afb50df2f056b3534d0a35dff814",
     "semantic_hash": ""
   },
   "docs/06-integration-and-compat.md": {
-    "mtime": 1783822565.65465,
-    "ast_hash": "682ee6c1266f191ba2278bf03fe4a167",
+    "mtime": 1784812028.001067,
+    "ast_hash": "5b501f7004f51248dc62726493055f53",
     "semantic_hash": ""
   },
   "docs/07-technical-architecture.md": {
-    "mtime": 1783822496.7398584,
-    "ast_hash": "64d0f9b2b0e3706e5cf932bf329d3df1",
+    "mtime": 1784812028.001067,
+    "ast_hash": "b65e1254555bf814ea5f0538d02ca307",
     "semantic_hash": ""
   },
   "docs/08-implementation-plan.md": {
-    "mtime": 1784810980.9146478,
-    "ast_hash": "a05613379622bbb32482ce5dda3955d7",
+    "mtime": 1784812028.0024812,
+    "ast_hash": "a4fd30bf59a4450e932ecc00f59604a8",
     "semantic_hash": ""
   }
 }
