@@ -95,6 +95,17 @@ defaults so the CDO remains the single source of truth.
 
 ## 4. Behavior: borrow the vanilla Behavior Tree, own the actions
 
+**STATUS AFTER DAY-1 IN-GAME RUNS (2026-07-23):** the borrow WORKS with two corrections shipped:
+(1) CDO→instance propagation does NOT survive the closed-source spawn path — the controller's
+OnPossess writes the subsystem's GC-rooted tree onto the INSTANCE (`source=subsystem-fallback`,
+W1.7); (2) launching is OUR job — vanilla launches the tree from its BP controller graph
+(`RunBehaviorTree` in OnPossess, W1.6). PROVEN: 7/7 creatures run BT_CreatureBehavior with
+blackboard. **OPEN (W1.8): the tree runs but perception/targeting never evaluates candidates** —
+the BP controller layer evidently also wires the creature's perception settings into the
+controller's perception component (or starts the stimuli listener/state machine). Investigation
+recipe: dump the controller-side perception component on ours vs a live vanilla creature, diff,
+wire the gap. Until then creatures are alive-but-pacifist.
+
 The gamble that makes creature AI cheap — staged so it degrades gracefully:
 
 1. **Census first (W1.2):** `PFA.DumpCreature` on a live hog/stinger logs
