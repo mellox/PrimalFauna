@@ -27,24 +27,24 @@ Consequences (verify at every review):
 ```
 Source/PrimalFauna/
 ├─ PrimalFauna.{h,cpp}                 FPrimalFaunaModule — log category, build marker; NO hooks
-├─ PFConfig.{h,cpp}                    UPFConfig : UModConfiguration + FPFConfigStruct mirror (doc 04)
-├─ PFRootInstance.{h,cpp}              UGameInstanceModule: ModConfigurations += UPFConfig
-├─ PFRootWorld.{h,cpp}                 UGameWorldModule: ModSubsystems += APFSubsystem;
+├─ PFAConfig.{h,cpp}                    UPFAConfig : UModConfiguration + FPFAConfigStruct mirror (doc 04)
+├─ PFARootInstance.{h,cpp}              UGameInstanceModule: ModConfigurations += UPFAConfig
+├─ PFARootWorld.{h,cpp}                 UGameWorldModule: ModSubsystems += APFASubsystem;
 │                                        mSchematics += loot schematic (doc 01 §5)
-├─ PFSubsystem.{h,cpp}                 APFSubsystem : AModSubsystem, IFGSaveInterface
+├─ PFASubsystem.{h,cpp}                 APFASubsystem : AModSubsystem, IFGSaveInterface
 │                                        nest registry+injection (doc 03), config push, census,
 │                                        worm director states, refresh tick "RefreshTick" (never `Tick` —
 │                                        clang name-hiding hazard, world-modification.md §7)
-├─ PFNestSpawner.{h,cpp}               APFNestSpawner : AFGCreatureSpawner (NestId/RegionId SaveGame)
-├─ PFCreatureBase.{h,cpp}              APFCreatureBase : AFGEnemy — shared species base (§3)
-├─ PFCreatureController.{h,cpp}        APFCreatureController : AFGCreatureController (doc 02 policy)
-├─ Species/PFSicklejaw.{h,cpp}         + PFCrestback, PFDuskstalker (per-species ctor data, §3)
-├─ Worm/PFSandwyrm.{h,cpp}             APFSandwyrm : APFCreatureBase (custom movement §7)
-├─ Worm/PFWormMovement.{h,cpp}         UPFWormMovement : UFGCreatureMovementComponent
-├─ Worm/PFWormActions.{h,cpp}          emergence/lunge as UFGCreatureAction subclasses (§5)
-├─ PFRegions.{h,cpp}                   static territory table + FPFRegion structs (doc 03 §2)
-├─ PFLoot.{h,cpp}                      UFGItemDescriptor subclasses (remains/trophies) + recipes (§6)
-└─ PFCheats.{h,cpp}                    dev console commands (§9)
+├─ PFANestSpawner.{h,cpp}               APFANestSpawner : AFGCreatureSpawner (NestId/RegionId SaveGame)
+├─ PFACreatureBase.{h,cpp}              APFACreatureBase : AFGEnemy — shared species base (§3)
+├─ PFACreatureController.{h,cpp}        APFACreatureController : AFGCreatureController (doc 02 policy)
+├─ Species/PFASicklejaw.{h,cpp}         + PFACrestback, PFADuskstalker (per-species ctor data, §3)
+├─ Worm/PFASandwyrm.{h,cpp}             APFASandwyrm : APFACreatureBase (custom movement §7)
+├─ Worm/PFAWormMovement.{h,cpp}         UPFAWormMovement : UFGCreatureMovementComponent
+├─ Worm/PFAWormActions.{h,cpp}          emergence/lunge as UFGCreatureAction subclasses (§5)
+├─ PFARegions.{h,cpp}                   static territory table + FPFARegion structs (doc 03 §2)
+├─ PFALoot.{h,cpp}                      UFGItemDescriptor subclasses (remains/trophies) + recipes (§6)
+└─ PFACheats.{h,cpp}                    dev console commands (§9)
 Content/PrimalFauna/                    meshes, materials, anims, montages, icons, (maybe) 1 BT + AnimBPs
 ```
 
@@ -62,7 +62,7 @@ Per-species constructors set (all fields verified in `FGCreature.h` / base class
 - **Perception:** `mPerceptionSettings` (`FFGCreaturePerceptionSettings` :560 — instanced
   `UAISenseConfig_Sight/Hearing`, `ImmediateVisibilityRadius`) built with `CreateDefaultSubobject`.
   Aggro pacing: `mMaximumAggroLevel`/`mAggroFightThreshold`/`mAggroGainRate` (:595-615).
-- **Controller:** `AIControllerClass = APFCreatureController::StaticClass()`.
+- **Controller:** `AIControllerClass = APFACreatureController::StaticClass()`.
 - **Actions (§5)** into `mCreatureActionsSetup` (:584, `FCreatureAction{RequiredStates, Action,
   StartsWithCooldown}` :148).
 - **Spawn/despawn:** `mSpawnDistance`/`mDespawnDistance` (:691-695) per species.
@@ -71,7 +71,7 @@ Per-species constructors set (all fields verified in `FGCreature.h` / base class
   the cooked mesh crashes on equip-class bugs; assign mesh defensively (a broken skeleton degrades,
   never crashes — same guard philosophy).
 - **Flags:** `mIsPassiveCreature` stays FALSE on the CDO (authored-hostile; per-instance writes
-  implement config mode 0, doc 02 §3 — self-access from `APFCreatureBase::SetPFAggression`).
+  implement config mode 0, doc 02 §3 — self-access from `APFACreatureBase::SetAggressionMode`).
   `mIsArachnid` false. `mCreatureFamily` (:623): create one `UFGCreatureFamily` asset/class for
   PrimalFauna if the family system needs it for creature-vs-creature — resolve during W1
   ([assumption]: family's exact role is binary-side; the census dump logs vanilla families).
@@ -84,7 +84,7 @@ defaults so the CDO remains the single source of truth.
 
 The gamble that makes creature AI cheap — staged so it degrades gracefully:
 
-1. **Census first (W1.2):** `PF.DumpCreature` on a live hog/stinger logs
+1. **Census first (W1.2):** `PFA.DumpCreature` on a live hog/stinger logs
    `GetBehaviorTreeAsset()->GetPathName()` (`FGCreature.h:355`), controller class, and each
    `mCreatureActionsSetup` entry's class + key values (reflection dump). Now we know the exact
    vanilla BT paths and real action tuning as templates.
@@ -94,7 +94,7 @@ The gamble that makes creature AI cheap — staged so it degrades gracefully:
    generic executors (roam/alert/fight loops that score and run whatever `mCreatureActionsSetup`
    provides — strongly implied by the action-scoring architecture, `FGAction.h:77`
    `ScoreAction`, and per-state override list `FCreatureBehaviorOverride` `FGCreature.h:208`).
-3. **Fallback (one editor-manual step, once, reused by all species):** author `BT_PFGeneric` in the
+3. **Fallback (one editor-manual step, once, reused by all species):** author `BT_PFAGeneric` in the
    editor mirroring the census-dumped structure. The packet carries a click-path recipe; this is
    the ONLY unavoidable editor step in the whole mod if the borrow fails.
 4. **Actions are ALWAYS ours** (borrowed or authored BT): native subclasses configured in C++ —
@@ -112,7 +112,7 @@ Verified classes with the fields we set (all under `Creature/Actions/`):
 | Crestback charge | `UFGCreatureActionCharge` (`FGCreatureActionCharge.h:15`) | `mDamageTypes:87`, start/charge/hit montages `:95-103` |
 | Warning display | `UFGCreatureActionRoar` (`FGCreatureActionRoar.h:14`) | `mRoarNoiseTickrate:63` |
 | Duskstalker pounce | LeapAttack again (slam radius 0) | |
-| Worm attacks | custom `UFGCreatureAction` subclasses (Worm/PFWormActions) — the action SYSTEM is native, the motion is ours | base lifecycle `FGAction.h:59-105` |
+| Worm attacks | custom `UFGCreatureAction` subclasses (Worm/PFAWormActions) — the action SYSTEM is native, the motion is ours | base lifecycle `FGAction.h:59-105` |
 
 Actions are instanced UObjects: `CreateDefaultSubobject<UFGCreatureActionMeleeAttack>` in the
 species ctor, tune fields, wrap in `FCreatureAction{RequiredStates = Fight}`. Target selection per
@@ -126,7 +126,7 @@ polish anim); otherwise the slice ships with the imported bite anim from day one
 
 ## 6. Loot & death
 
-Override `SpawnDeathItem_Implementation` (BNE, `FGCreature.h:344`) in `APFCreatureBase`: spawn
+Override `SpawnDeathItem_Implementation` (BNE, `FGCreature.h:344`) in `APFACreatureBase`: spawn
 item-drop pickup(s) for `Desc_<Species>Remains` (+ trophy rolls per doc 01). Items =
 `UFGItemDescriptor` C++ subclasses (stack size/category/mesh/icon on CDO); recipes mirror the
 vanilla remains→protein constructor recipes (census dumps the exact vanilla recipe shape);
@@ -136,7 +136,7 @@ rule [[feedback-render-textured-for-review]] applies to icons too.
 
 ## 7. Sandwyrm movement (the one custom-movement quarantine)
 
-`UPFWormMovement : UFGCreatureMovementComponent` (`Creature/FGCreatureMovementComponent.h:14`),
+`UPFAWormMovement : UFGCreatureMovementComponent` (`Creature/FGCreatureMovementComponent.h:14`),
 `SetMovementMode(MOVE_Custom)`; `PhysCustom` implements kinematic motion along director-provided
 curves (burrow depth, emergence arc, surface lunge). Override `ShouldRemainVertical()` (:25) →
 false. Navmesh never consulted; the FlyingBabyCrab precedent (plain actor + custom steering,
@@ -157,7 +157,7 @@ with `DamageCauser = worm`, `Instigator = worm controller` → flows through
   Quarantine: experimental-flag gated, own packet, differential-reviewed (it's our only vanilla CDO
   write). If it fights back, ship without scanner support (radar listing still works).
 
-## 9. Diagnostics contract (`LogPrimalFauna`, `[PF]`)
+## 9. Diagnostics contract (`LogPrimalFauna`, `[PFA]`)
 
 Per workspace law + the skill's diagnostics-first rules; Verbose per-entity, Display summaries:
 
@@ -165,21 +165,21 @@ Per workspace law + the skill's diagnostics-first rules; Verbose per-entity, Dis
 - **Config snapshot** at world load + on change (doc 04 §2).
 - **Census (Display, every load):** regions/nests/creature counts; per-nest Verbose.
 - **Target policy (Verbose):** every `CanBeHostileTowards` verdict with rule number (doc 02 §2).
-- **Actions (Verbose):** action start/score/hit lines (`[PF] Sicklejaw action=Melee target=… dmg=…`).
+- **Actions (Verbose):** action start/score/hit lines (`[PFA] Sicklejaw action=Melee target=… dmg=…`).
 - **Worm (Display):** every state transition with scores (doc 03 §7).
 - **Heartbeat:** refresh tick counter every 6th tick (~60 s) — distinguishes "stopped" from "idle"
   (WeaponUpgrades lesson).
 - **Anchor dump (Display, once):** the vanilla-stat census + our derived stats:
-  `[PF] Anchors: AlphaHog HP=… -> Sicklejaw HP=…` — this line is how in-game HostileScaling
+  `[PFA] Anchors: AlphaHog HP=… -> Sicklejaw HP=…` — this line is how in-game HostileScaling
   verification works (doc 06 §4: expected scaled value visible in ONE log read).
-- **Dev commands (`PFCheats`, shipped but cheat-gated):** `PF.DumpCreature` (census a look-at
-  creature), `PF.DumpCandidates <region>`, `PF.SpawnNest <region> <species>`, `PF.WormForceEvent`,
-  `PF.KillAllPF`. Console commands are the in-game test accelerators — they exist from the FIRST
+- **Dev commands (`PFACheats`, shipped but cheat-gated):** `PFA.DumpCreature` (census a look-at
+  creature), `PFA.DumpCandidates <region>`, `PFA.SpawnNest <region> <species>`, `PFA.WormForceEvent`,
+  `PFA.KillAll`. Console commands are the in-game test accelerators — they exist from the FIRST
   slice build.
 
 ## 10. Save-plan versioning
 
-`APFSubsystem` SaveGame fields: `mNestSeed`, `mPlanVersion` (int, bump when the region table
+`APFASubsystem` SaveGame fields: `mNestSeed`, `mPlanVersion` (int, bump when the region table
 changes shape), nest registry map, worm states. On version mismatch: adopt-what-matches, deactivate
 orphaned nests (log at Display), materialize new. Mod-removed saves must load vanilla-clean
 (everything we add is our classes + save-interface actors — the game drops unknown classes; test

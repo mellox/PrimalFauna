@@ -17,7 +17,7 @@ world-reload flags, `DefaultValue` mirrors) apply verbatim.
 | `Enabled` | Bool | true | Master switch. Off = no nests injected, existing PrimalFauna creatures despawned on next refresh, worm events suppressed. Must be safe to toggle mid-save both ways. |
 | `NestDensity` | Float (0.25–3.0, spinbox) | 1.0 | Scales HOW MANY territory nests materialize (doc 03 §5). Deliberately does NOT touch per-spawner creature counts — that is HostileScaling's lane (doc 06 §3). |
 | `EnableExperimentalFeatures` | Bool | false | Workspace convention flag (see skill SKILL.md). V1 candidate occupant: Duskstalker flashlight-flee rule. If empty at release, description must say so. |
-| `EnableDiagnostics` | Bool | false | Verbose `[PF]` logging gate (sml-gotchas §3 config-gated-diagnostics pattern: hooks installed unconditionally, bodies gated on a file-static bool pushed from the refresh tick). |
+| `EnableDiagnostics` | Bool | false | Verbose `[PFA]` logging gate (sml-gotchas §3 config-gated-diagnostics pattern: hooks installed unconditionally, bodies gated on a file-static bool pushed from the refresh tick). |
 
 ### Sections: per land species (Sicklejaw / Crestback / Duskstalker)
 | Key | Type | Default | Meaning |
@@ -46,7 +46,7 @@ world-reload flags, `DefaultValue` mirrors) apply verbatim.
 All gameplay decisions execute **server-side** (subsystem + controllers run with `HasAuthority()`),
 reading the **server's/host's** config — a client's local .cfg has no gameplay effect. That is the
 same contract HostileScaling ships with, so users already understand it. Log the active config
-snapshot at world load (`[PF] Config: Enabled=… NestDensity=…`) so MP misconfiguration is
+snapshot at world load (`[PFA] Config: Enabled=… NestDensity=…`) so MP misconfiguration is
 diagnosable from one log. In-game test item: client edits config → nothing changes; host edits →
 applies within one refresh tick.
 

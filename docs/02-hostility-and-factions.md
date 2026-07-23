@@ -15,7 +15,7 @@ real 5.6.1-CSS headers on 2026-07-11 (`Source/FactoryGame/Public/…`); re-verif
   - `virtual bool IsValidTarget(const AActor*) const` :204
   - `CanBeAlertedByTarget(const AActor*)` :387 (BNE, "runs CanBeHostileTowards by default")
 - **We own our creatures' controller class**, so the entire faction policy is plain C++ virtual
-  overrides in `APFCreatureController` — **no SML hooks needed for our own creatures.** Hooks would
+  overrides in `APFACreatureController` — **no SML hooks needed for our own creatures.** Hooks would
   only enter if we wanted to change *vanilla* creatures' targeting (we don't, v1).
 - Native adjacent systems we must respect:
   - Per-player passivity (the vanilla "creature hostility" advanced setting):
@@ -33,15 +33,15 @@ real 5.6.1-CSS headers on 2026-07-11 (`Source/FactoryGame/Public/…`); re-verif
 
 ## 2. The target policy (decision table)
 
-`APFCreatureController::CanBeHostileTowards(Target)` evaluates in order; first match wins.
-Every evaluation logs at Verbose: `[PF] <creature> vs <target>: <rule> -> <verdict>`.
+`APFACreatureController::CanBeHostileTowards(Target)` evaluates in order; first match wins.
+Every evaluation logs at Verbose: `[PFA] <creature> vs <target>: <rule> -> <verdict>`.
 
 | # | Target is… | Verdict | Notes |
 |---|---|---|---|
 | 1 | A tamed creature (`IsTamed()`) | **never** | Hardcoded. Not config. |
 | 2 | A protected class (`IsProtectedCreature(...)`) | **never** | Respect the game's list — covers doggos regardless of our config. |
 | 3 | Our own species (same class) | **never** | Packmates. |
-| 4 | Another PrimalFauna species | **never (v1)** | Cross-species PF conflict is a post-1.0 flavor option; keep the matrix trivial first. |
+| 4 | Another PrimalFauna species | **never (v1)** | Cross-species PrimalFauna conflict is a post-1.0 flavor option; keep the matrix trivial first. |
 | 5 | A player (`AFGCharacterPlayer`) | **defer to `Super::CanBeHostileTowards`**, then apply our species gate (§3) | Super preserves the vanilla per-player Passive/Retaliate setting and any binary-side rules we can't see. We only ever make the result MORE restrictive, never less. |
 | 6 | A vanilla creature, `IsPassiveCreature()` false | config `HuntVanillaHostiles` (default true) | The infighting spectacle: dinos vs hogs/stingers. |
 | 7 | A vanilla creature, passive | config `HuntPassiveFauna` (default false) | Off by default; rule 2 still shields protected species even when on. |
@@ -71,7 +71,7 @@ When a pack member enters Fight state (override `OnCreatureStateChanged`, `FGCre
 BNE, or bind `mOnCreatureStateChanged` :443), notify same-spawner packmates: for each living
 `FSpawnData::Creature` of the shared `mOwningSpawner`, if idle/roaming, `SetAggroForTarget(target,
 aggro ≥ mAggroFightThreshold)` (:273) so they join. Log one Display line per assist:
-`[PF] PackAssist: <n> Sicklejaws join vs <target>`. No hooks — all our classes and public/UFUNCTION
+`[PFA] PackAssist: <n> Sicklejaws join vs <target>`. No hooks — all our classes and public/UFUNCTION
 API on packmates' controllers.
 
 ## 5. Perception tuning
@@ -87,7 +87,7 @@ cut-eligible). Aggro pacing via the creature's native `mAggroGainRate`/curves (`
 ## 6. Sandwyrm targeting — disturbance, not perception
 
 The worm doesn't use controller perception at range (it's underground; sight is meaningless).
-`APFWormDirector` (per-region manager inside our subsystem, doc 03 §7) scores **disturbance** in
+`APFAWormDirector` (per-region manager inside our subsystem, doc 03 §7) scores **disturbance** in
 the region: players sprinting/driving (weight high), operating buildings (weight per building,
 capped), explosions (spike). Highest-scoring cluster wins; the emergence point is the target's
 predicted position. Config `EventFrequency` scales score accumulation. During the surface window
@@ -106,7 +106,7 @@ the slice phase (doc 08 test checklists):
    Fallback if vetoed: call `SetCreaturesCanAttackEachother(true)` while `HuntVanillaHostiles` is
    on (side effect: vanilla infighting also enabled — acceptable, document in tooltip) — or
    drive aggro directly via `SetAggroForTarget` which may bypass the gate. Instrument BOTH paths
-   from the first build ([PF] logs on gate evaluation + target acquisition).
+   from the first build ([PFA] logs on gate evaluation + target acquisition).
 2. **Do vanilla creatures retaliate against ours** (their aggro-on-damage picking our creature as
    target)? Expected yes (plain-AActor aggro data). If not: acceptable v1 degradation (one-sided
    hunts), log it, revisit.

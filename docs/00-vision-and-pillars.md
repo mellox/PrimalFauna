@@ -42,7 +42,7 @@ orchestrating agent handing packets to lower-cost implementation agents. No sour
 6. **Vertical slice before roster.** Nothing gets a second creature until the first one survives
    the full gauntlet: fresh save, existing save, MP client, HostileScaling on/off, mod-removed
    save-load. (D2.)
-7. **Diagnostics everywhere.** Every decision path logs under `LogPrimalFauna` (`[PF]` prefix);
+7. **Diagnostics everywhere.** Every decision path logs under `LogPrimalFauna` (`[PFA]` prefix);
    one launch must localize any failure. Per-entity spam at Verbose, session summaries at Display —
    NodeShuffle conventions.
 

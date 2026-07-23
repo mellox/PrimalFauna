@@ -4,6 +4,106 @@
   "graph": {},
   "nodes": [
     {
+      "label": "05-asset-pipeline.md",
+      "file_type": "document",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_05_asset_pipeline",
+      "community": 2,
+      "norm_label": "05-asset-pipeline.md"
+    },
+    {
+      "label": "05 \u2014 Asset Pipeline",
+      "file_type": "document",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_05_asset_pipeline_05_asset_pipeline",
+      "community": 2,
+      "norm_label": "05 \u2014 asset pipeline"
+    },
+    {
+      "label": "1. Art direction & generation briefs",
+      "file_type": "document",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L12",
+      "_origin": "ast",
+      "id": "docs_05_asset_pipeline_1_art_direction_generation_briefs",
+      "community": 2,
+      "norm_label": "1. art direction & generation briefs"
+    },
+    {
+      "label": "2. Per-creature pipeline (stage gates in order)",
+      "file_type": "document",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L25",
+      "_origin": "ast",
+      "id": "docs_05_asset_pipeline_2_per_creature_pipeline_stage_gates_in_order",
+      "community": 2,
+      "norm_label": "2. per-creature pipeline (stage gates in order)"
+    },
+    {
+      "label": "3. Animation \u2014 the honest plan (verified Tripo facts)",
+      "file_type": "document",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L39",
+      "_origin": "ast",
+      "id": "docs_05_asset_pipeline_3_animation_the_honest_plan_verified_tripo_facts",
+      "community": 2,
+      "norm_label": "3. animation \u2014 the honest plan (verified tripo facts)"
+    },
+    {
+      "label": "4. Texturing & the aggro-glow telegraph",
+      "file_type": "document",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L73",
+      "_origin": "ast",
+      "id": "docs_05_asset_pipeline_4_texturing_the_aggro_glow_telegraph",
+      "community": 2,
+      "norm_label": "4. texturing & the aggro-glow telegraph"
+    },
+    {
+      "label": "5. Fab/Sketchfab licensing rules (for rungs 3\u20134 and the worm fallback)",
+      "file_type": "document",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L87",
+      "_origin": "ast",
+      "id": "docs_05_asset_pipeline_5_fab_sketchfab_licensing_rules_for_rungs_3_4_and_the_worm_fallback",
+      "community": 2,
+      "norm_label": "5. fab/sketchfab licensing rules (for rungs 3\u20134 and the worm fallback)"
+    },
+    {
+      "label": "6. UE import & wiring (headless-first)",
+      "file_type": "document",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L99",
+      "_origin": "ast",
+      "id": "docs_05_asset_pipeline_6_ue_import_wiring_headless_first",
+      "community": 2,
+      "norm_label": "6. ue import & wiring (headless-first)"
+    },
+    {
+      "label": "7. Sandwyrm assets \u2014 procedural by design",
+      "file_type": "document",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L122",
+      "_origin": "ast",
+      "id": "docs_05_asset_pipeline_7_sandwyrm_assets_procedural_by_design",
+      "community": 2,
+      "norm_label": "7. sandwyrm assets \u2014 procedural by design"
+    },
+    {
+      "label": "8. GPU & credit discipline",
+      "file_type": "document",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L140",
+      "_origin": "ast",
+      "id": "docs_05_asset_pipeline_8_gpu_credit_discipline",
+      "community": 2,
+      "norm_label": "8. gpu & credit discipline"
+    },
+    {
       "label": "08-implementation-plan.md",
       "file_type": "document",
       "source_file": "docs/08-implementation-plan.md",
@@ -37,7 +137,7 @@
       "label": "Packet handoff contract",
       "file_type": "document",
       "source_file": "docs/08-implementation-plan.md",
-      "source_location": "L36",
+      "source_location": "L38",
       "_origin": "ast",
       "id": "docs_08_implementation_plan_packet_handoff_contract",
       "community": 1,
@@ -47,7 +147,7 @@
       "label": "2. Packet families",
       "file_type": "document",
       "source_file": "docs/08-implementation-plan.md",
-      "source_location": "L46",
+      "source_location": "L48",
       "_origin": "ast",
       "id": "docs_08_implementation_plan_2_packet_families",
       "community": 0,
@@ -57,7 +157,7 @@
       "label": "3. Phases",
       "file_type": "document",
       "source_file": "docs/08-implementation-plan.md",
-      "source_location": "L109",
+      "source_location": "L111",
       "_origin": "ast",
       "id": "docs_08_implementation_plan_3_phases",
       "community": 0,
@@ -67,7 +167,7 @@
       "label": "4. In-game test checklists (owner: user; orchestrator writes per-build)",
       "file_type": "document",
       "source_file": "docs/08-implementation-plan.md",
-      "source_location": "L125",
+      "source_location": "L127",
       "_origin": "ast",
       "id": "docs_08_implementation_plan_4_in_game_test_checklists_owner_user_orchestrator_writes_per_build",
       "community": 0,
@@ -77,7 +177,7 @@
       "label": "5. Packet-family inputs (load ONLY these + doc 07)",
       "file_type": "document",
       "source_file": "docs/08-implementation-plan.md",
-      "source_location": "L144",
+      "source_location": "L146",
       "_origin": "ast",
       "id": "docs_08_implementation_plan_5_packet_family_inputs_load_only_these_doc_07",
       "community": 0,
@@ -87,7 +187,7 @@
       "label": "6. Risk register",
       "file_type": "document",
       "source_file": "docs/08-implementation-plan.md",
-      "source_location": "L156",
+      "source_location": "L158",
       "_origin": "ast",
       "id": "docs_08_implementation_plan_6_risk_register",
       "community": 0,
@@ -97,7 +197,7 @@
       "label": "7. Definition of v1.0",
       "file_type": "document",
       "source_file": "docs/08-implementation-plan.md",
-      "source_location": "L171",
+      "source_location": "L173",
       "_origin": "ast",
       "id": "docs_08_implementation_plan_7_definition_of_v1_0",
       "community": 0,
@@ -108,12 +208,102 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "docs_05_asset_pipeline",
+      "target": "docs_05_asset_pipeline_05_asset_pipeline",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L12",
+      "weight": 1.0,
+      "source": "docs_05_asset_pipeline_05_asset_pipeline",
+      "target": "docs_05_asset_pipeline_1_art_direction_generation_briefs",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L25",
+      "weight": 1.0,
+      "source": "docs_05_asset_pipeline_05_asset_pipeline",
+      "target": "docs_05_asset_pipeline_2_per_creature_pipeline_stage_gates_in_order",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L39",
+      "weight": 1.0,
+      "source": "docs_05_asset_pipeline_05_asset_pipeline",
+      "target": "docs_05_asset_pipeline_3_animation_the_honest_plan_verified_tripo_facts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L73",
+      "weight": 1.0,
+      "source": "docs_05_asset_pipeline_05_asset_pipeline",
+      "target": "docs_05_asset_pipeline_4_texturing_the_aggro_glow_telegraph",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L87",
+      "weight": 1.0,
+      "source": "docs_05_asset_pipeline_05_asset_pipeline",
+      "target": "docs_05_asset_pipeline_5_fab_sketchfab_licensing_rules_for_rungs_3_4_and_the_worm_fallback",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L99",
+      "weight": 1.0,
+      "source": "docs_05_asset_pipeline_05_asset_pipeline",
+      "target": "docs_05_asset_pipeline_6_ue_import_wiring_headless_first",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L122",
+      "weight": 1.0,
+      "source": "docs_05_asset_pipeline_05_asset_pipeline",
+      "target": "docs_05_asset_pipeline_7_sandwyrm_assets_procedural_by_design",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L140",
+      "weight": 1.0,
+      "source": "docs_05_asset_pipeline_05_asset_pipeline",
+      "target": "docs_05_asset_pipeline_8_gpu_credit_discipline",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "docs/08-implementation-plan.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_08_implementation_plan",
-      "target": "docs_08_implementation_plan_08_implementation_plan_team_execution",
-      "confidence_score": 1.0
+      "target": "docs_08_implementation_plan_08_implementation_plan_team_execution"
     },
     {
       "relation": "contains",
@@ -121,9 +311,9 @@
       "source_file": "docs/08-implementation-plan.md",
       "source_location": "L8",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_08_implementation_plan_08_implementation_plan_team_execution",
-      "target": "docs_08_implementation_plan_1_orchestration_model",
-      "confidence_score": 1.0
+      "target": "docs_08_implementation_plan_1_orchestration_model"
     },
     {
       "relation": "contains",
@@ -131,9 +321,9 @@
       "source_file": "docs/08-implementation-plan.md",
       "source_location": "L46",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_08_implementation_plan_08_implementation_plan_team_execution",
-      "target": "docs_08_implementation_plan_2_packet_families",
-      "confidence_score": 1.0
+      "target": "docs_08_implementation_plan_2_packet_families"
     },
     {
       "relation": "contains",
@@ -141,9 +331,9 @@
       "source_file": "docs/08-implementation-plan.md",
       "source_location": "L109",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_08_implementation_plan_08_implementation_plan_team_execution",
-      "target": "docs_08_implementation_plan_3_phases",
-      "confidence_score": 1.0
+      "target": "docs_08_implementation_plan_3_phases"
     },
     {
       "relation": "contains",
@@ -151,9 +341,9 @@
       "source_file": "docs/08-implementation-plan.md",
       "source_location": "L125",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_08_implementation_plan_08_implementation_plan_team_execution",
-      "target": "docs_08_implementation_plan_4_in_game_test_checklists_owner_user_orchestrator_writes_per_build",
-      "confidence_score": 1.0
+      "target": "docs_08_implementation_plan_4_in_game_test_checklists_owner_user_orchestrator_writes_per_build"
     },
     {
       "relation": "contains",
@@ -161,9 +351,9 @@
       "source_file": "docs/08-implementation-plan.md",
       "source_location": "L144",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_08_implementation_plan_08_implementation_plan_team_execution",
-      "target": "docs_08_implementation_plan_5_packet_family_inputs_load_only_these_doc_07",
-      "confidence_score": 1.0
+      "target": "docs_08_implementation_plan_5_packet_family_inputs_load_only_these_doc_07"
     },
     {
       "relation": "contains",
@@ -171,9 +361,9 @@
       "source_file": "docs/08-implementation-plan.md",
       "source_location": "L156",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_08_implementation_plan_08_implementation_plan_team_execution",
-      "target": "docs_08_implementation_plan_6_risk_register",
-      "confidence_score": 1.0
+      "target": "docs_08_implementation_plan_6_risk_register"
     },
     {
       "relation": "contains",
@@ -181,9 +371,9 @@
       "source_file": "docs/08-implementation-plan.md",
       "source_location": "L171",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_08_implementation_plan_08_implementation_plan_team_execution",
-      "target": "docs_08_implementation_plan_7_definition_of_v1_0",
-      "confidence_score": 1.0
+      "target": "docs_08_implementation_plan_7_definition_of_v1_0"
     },
     {
       "relation": "contains",
@@ -191,11 +381,11 @@
       "source_file": "docs/08-implementation-plan.md",
       "source_location": "L36",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "docs_08_implementation_plan_1_orchestration_model",
-      "target": "docs_08_implementation_plan_packet_handoff_contract",
-      "confidence_score": 1.0
+      "target": "docs_08_implementation_plan_packet_handoff_contract"
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "932c8b901ec6857ed61c6735ba0c2846fcd95130"
+  "built_at_commit": "0372ec8a51e5ca8e1087f18b40c527bdba65dc1d"
 }

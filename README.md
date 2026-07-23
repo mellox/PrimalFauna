@@ -37,4 +37,4 @@ Reading order for implementers: 00 → 07 → 08, then the domain doc for your p
   compatibility is structural, not coded.
 
 Workspace law applies: build lock, cold review before user tests, differential review on
-path-adjacent changes, diagnostics everywhere (`LogPrimalFauna`, `[PF]`).
+path-adjacent changes, diagnostics everywhere (`LogPrimalFauna`, `[PFA]`).

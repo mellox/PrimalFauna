@@ -41,7 +41,7 @@ review on ⚠ packets, diagnostics everywhere.
 Inputs:     doc sections + memory names listed in §5 for the family (load ONLY these)
 Scope:      files/classes owned by the packet (no drive-by edits)
 Invariants: doc 06 contract items (C1-C6/S1-S4) the packet may touch
-Output:     code in repo + handoff note + [PF] diagnostics on every new path
+Output:     code in repo + handoff note + [PFA] diagnostics on every new path
 Done when:  compiles in orchestrator build + cold review SHIP + in-game checklist items written
 ```
 
@@ -49,24 +49,24 @@ Done when:  compiles in orchestrator build + cold review SHIP + in-game checklis
 
 **W0 — Skeleton**
 - **W0.1** Plugin scaffold per `new-mod-scaffold.md`: `.uplugin` (SML ^3.12.0), module + build
-  marker, `UPFConfig` skeleton (traps A–D), root modules, `APFSubsystem` skeleton with RefreshTick
+  marker, `UPFAConfig` skeleton (traps A–D), root modules, `APFASubsystem` skeleton with RefreshTick
   heartbeat, `LogPrimalFauna`. **Gotcha:** brand-new plugin needs the FactoryEditor module compiled
   once via Build.bat before PackagePlugin cooks [[sf-new-plugin-needs-editor-build]]. Gate: mod
   loads, marker in log, config page renders + saves to `Configs/PrimalFauna.cfg`.
 
 **W1 — Systems slice (placeholder assets; parallel with W2 asset track)**
-- **W1.1** Dev commands + census (`PFCheats`): `PF.DumpCreature` (class/BT path/actions/health/
-  aggro), `PF.DumpCandidates`, `PF.SpawnNest`, `PF.KillAllPF`; anchor dump (doc 07 §9). Also
+- **W1.1** Dev commands + census (`PFACheats`): `PFA.DumpCreature` (class/BT path/actions/health/
+  aggro), `PFA.DumpCandidates`, `PFA.SpawnNest`, `PFA.KillAll`; anchor dump (doc 07 §9). Also
   exercise SML's built-in `ForceSpawnCreatures` cheat as the spawner test accelerator.
 - **W1.2** Census run (user session): dump hog/stinger/spitter — vanilla BT asset paths, action
   configs, anchor stats, remains→protein recipe shape. Output: `docs/CENSUS.md` (data, not prose).
-- **W1.3** `APFCreatureBase` + `APFCreatureController` (full doc 02 §2 policy + Verbose verdicts) +
-  `APFSicklejaw` with **scripted placeholder rig** (Blender capsule + 2-bone chain export — proves
+- **W1.3** `APFACreatureBase` + `APFACreatureController` (full doc 02 §2 policy + Verbose verdicts) +
+  `APFASicklejaw` with **scripted placeholder rig** (Blender capsule + 2-bone chain export — proves
   import path without waiting on art) + health/speeds/perception on CDO.
 - **W1.4** ⚠ Borrowed-BT + actions: CDO `mBehaviorTree` ← vanilla tree (census path), melee action
   via `CreateDefaultSubobject`, montage-less. **The riskiest systems packet** — instrument
-  action-scoring/target lines from the first build. Fallback ready: `BT_PFGeneric` editor recipe.
-- **W1.5** ⚠ `APFNestSpawner` + minimal injection (ONE hardcoded region near spawn), stable names,
+  action-scoring/target lines from the first build. Fallback ready: `BT_PFAGeneric` editor recipe.
+- **W1.5** ⚠ `APFANestSpawner` + minimal injection (ONE hardcoded region near spawn), stable names,
   write-once spawn data, adopt-on-load idempotence.
 - Phase-1 gate (in-game): placeholder Sicklejaw spawns from our nest, detects, chases, bites,
   takes damage, dies, drops a test item, respawns per days; save/load keeps kill-state; no
@@ -79,7 +79,7 @@ Done when:  compiles in orchestrator build + cold review SHIP + in-game checklis
 - **W2.2** Import + wire (doc 05 §6): mesh/anims/montages/AnimBP-or-code, emissive aggro material.
 - **W2.3** Full config tree (doc 04) + live-apply reconciliation + `mIsPassiveCreature` mode 0.
 - **W2.4** HostileScaling verification matrix (doc 06 §4) — including the 2-cycle compounding test.
-- **W2.5** ⚠ Territory authoring: `PF.DumpCandidates` sessions with user → bake real Sicklejaw
+- **W2.5** ⚠ Territory authoring: `PFA.DumpCandidates` sessions with user → bake real Sicklejaw
   regions → dynamic-spawner persistence verdict (doc 03 §4; fallback flip if needed).
 - **W2.6** Pack assist (doc 02 §4) + polish (loot final, sounds via Wwise reuse).
 
@@ -91,8 +91,8 @@ Done when:  compiles in orchestrator build + cold review SHIP + in-game checklis
 - **W3.4** Radar/scanner surface (doc 07 §8; ⚠ only vanilla-CDO-write packet, experimental-gated).
 
 **W4 — The Wyrm Beneath**
-- **W4.1** `UPFWormMovement` + director state machine + procedural spine on placeholder segments +
-  `PF.WormForceEvent`. Persistent-creature exemptions verified (`SetIsPersistent`, orphan timer).
+- **W4.1** `UPFAWormMovement` + director state machine + procedural spine on placeholder segments +
+  `PFA.WormForceEvent`. Persistent-creature exemptions verified (`SetIsPersistent`, orphan timer).
 - **W4.2** Telegraph chain: rumble → dust trail (Niagara ribbon + decal) → eruption flipbook VFX +
   audio; MP-replicated visuals.
 - **W4.3** Emergence radial damage (causer/instigator per C3) + surface window + kill/respawn/
@@ -128,13 +128,13 @@ first phase at placeholder cost, with authored-BT and transient-registry fallbac
 
 Standing items every phase: fresh save · existing save · mod-added-mid-save · mod-removed-load ·
 SP + MP client · HostileScaling present/absent/disabled (doc 06 §4 matrix from Phase 2) ·
-`[PF]` log review (the log alone must explain every decision path) · NodeShuffle-active
+`[PFA]` log review (the log alone must explain every decision path) · NodeShuffle-active
 coexistence smoke · vanilla AGS creature-hostility setting flipped.
 
 **[assumption] items with dedicated lines (from the differential reviews):**
 1. Borrowed vanilla BT drives our actions (docs 07 §4) — Phase 1.
 2. Actions run montage-less (07 §5) — Phase 1.
-3. Dynamic `APFNestSpawner` persists with kill-state; no dupes; creatures re-couple (03 §4) — Phase 1/2.
+3. Dynamic `APFANestSpawner` persists with kill-state; no dupes; creatures re-couple (03 §4) — Phase 1/2.
 4. Native `mCreaturesCanAttackEachother` doesn't veto our infighting (02 §7.1) — Phase 1.
 5. Vanilla creatures retaliate against ours (02 §7.2) — Phase 1.
 6. Per-instance `mIsPassiveCreature` cleanly de-aggros + HostileScaling skips (02 §7.3) — Phase 2.
@@ -160,7 +160,7 @@ coexistence smoke · vanilla AGS creature-hostility setting flipped.
 | # | Risk | Mitigation |
 |---|---|---|
 | R1 | **Nobody has ever shipped a custom SF creature** — unknown unknowns in binary-side behavior | Native-machinery-first architecture (real spawners/actions/BT); Phase 1 resolves all flagged assumptions on placeholder art; census-driven (copy what vanilla data does, not what docs say — there are no docs) |
-| R2 | Borrowed vanilla BT incompatible with our actions | Authored `BT_PFGeneric` fallback (one editor recipe, reused by all species) — W1.4 exit criterion either way |
+| R2 | Borrowed vanilla BT incompatible with our actions | Authored `BT_PFAGeneric` fallback (one editor recipe, reused by all species) — W1.4 exit criterion either way |
 | R3 | Dynamic spawner persistence broken (MobSpawners' manta/crab bugs are evidence this CAN bite) | Doc 03 §4 fallback: transient spawners + own SaveGame registry; registry designed for the swap |
 | R4 | Native creature-vs-creature gate vetoes infighting | Doc 02 §7.1 fallbacks (global toggle / direct aggro), instrumented from first build |
 | R5 | AI-pipeline animation quality below bar | Doc 05 §3 ladder; biped-classification trick; purchase fallbacks pre-licensed, pre-priced, user-approved at review gates |

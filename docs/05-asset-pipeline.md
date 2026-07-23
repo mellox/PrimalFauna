@@ -126,7 +126,7 @@ Verified 2026-07-11 (fab.com/eula + Epic Content EULA):
 - **Skeleton:** simple spine chain (~20–30 bones head→tail), authored by bpy SCRIPT (deterministic,
   no rigging tool needed — serpentine rigs are trivial chains).
 - **Animation: NONE imported.** The spine is driven procedurally in C++ (undulation sine train +
-  emergence arc + lunge curves via `UPFWormMovement`, doc 07 §7) — the same procedural-transform
+  emergence arc + lunge curves via `UPFAWormMovement`, doc 07 §7) — the same procedural-transform
   playbook that already ships in LaserRifle [[laserrifle-procedural-hold]]. Morph/jaw: one jaw bone,
   code-driven. This makes the worm the LEAST animation-risky creature despite being the biggest.
 - **Fallback (pre-approved path, needs purchase sign-off):** StockLancer worm pack (§3 rung 4) if

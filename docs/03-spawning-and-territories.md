@@ -26,8 +26,8 @@ provides everything pillar 1 wants:
   near-player-base state for spawners (expected: suppresses respawn near factories; binary-side,
   verify in slice testing).
 
-**Our subclass `APFNestSpawner : AFGCreatureSpawner`** exists for: identification
-(`IsA<APFNestSpawner>` — cleanly separates ours from vanilla for diagnostics/adoption), region/nest
+**Our subclass `APFANestSpawner : AFGCreatureSpawner`** exists for: identification
+(`IsA<APFANestSpawner>` — cleanly separates ours from vanilla for diagnostics/adoption), region/nest
 id fields (SaveGame), and species-config despawn behavior. It must NOT change spawn mechanics —
 that keeps HostileScaling's generic `TActorIterator<AFGCreatureSpawner>` treatment (doc 06 §3) and
 radar/scanner behavior identical to vanilla. ⚠ This is a path-adjacent subclass: the cold review
@@ -39,9 +39,9 @@ A **territory region** = named area + species mix. Baked as a C++ static table (
 asset is an acceptable alternative if the editor is open anyway — decide in the packet):
 
 ```
-FPFRegion { FName RegionId; FString Label;            // "DuneDesert_Fringe"
-            TArray<FPFDiskArea> Areas;                 // {FVector Center(with GROUND Z), float Radius}
-            TArray<FPFNestSpec> Nests; }               // per species: class, nest count min..max,
+FPFARegion { FName RegionId; FString Label;            // "DuneDesert_Fringe"
+            TArray<FPFADiskArea> Areas;                 // {FVector Center(with GROUND Z), float Radius}
+            TArray<FPFANestSpec> Nests; }               // per species: class, nest count min..max,
                                                        //   creatures/nest (FInt32Interval), spawn radius,
                                                        //   day/night flags, respawn days
 ```
@@ -50,7 +50,7 @@ FPFRegion { FName RegionId; FString Label;            // "DuneDesert_Fringe"
   this dodges the entire NodeShuffle unstreamed-terrain problem (spawners at valid ground Z are
   inert until a player streams them in; the navmesh invoker handles the rest locally).
 - **Authoring workflow (packet W2.1, mirrors Satismagictory's site-authoring):** a dev console
-  command (`PF.DumpCandidates <RegionId>`) samples the region areas, line-traces ground Z, probes
+  command (`PFA.DumpCandidates <RegionId>`) samples the region areas, line-traces ground Z, probes
   water (`AFGWaterVolume::EncompassesPoint` — reject), logs candidates + teleports the player
   through them for eyeballing. Curation session with the user picks final areas; results baked into
   the table. Starter-plain exclusion zones (Grass Fields spawn shores) are part of the table, not code.
@@ -61,12 +61,12 @@ FPFRegion { FName RegionId; FString Label;            // "DuneDesert_Fringe"
 
 ## 3. Injection & idempotence (the subsystem's job)
 
-`APFSubsystem` (server-only, `AModSubsystem`, 10 s refresh tick — HostileScaling cadence):
+`APFASubsystem` (server-only, `AModSubsystem`, 10 s refresh tick — HostileScaling cadence):
 
-1. **Adopt:** scan world for existing `APFNestSpawner`s (they persist in the save — §4), match to
+1. **Adopt:** scan world for existing `APFANestSpawner`s (they persist in the save — §4), match to
    the registry by `NestId`, adopt state.
-2. **Materialize missing:** for each registry nest with no live spawner: `SpawnActor<APFNestSpawner>`
-   with **deterministic stable name** (`FActorSpawnParameters::Name = "PFNest_<RegionId>_<idx>"`) —
+2. **Materialize missing:** for each registry nest with no live spawner: `SpawnActor<APFANestSpawner>`
+   with **deterministic stable name** (`FActorSpawnParameters::Name = "PFANest_<RegionId>_<idx>"`) —
    stable names keep `GetPathName()` stable across sessions, which HostileScaling uses as its
    baseline key (doc 06 §3). Configure from the nest spec (`mCreatureClass`, `mNumberOfCreatures`,
    `mSpawnRadius`, day/night, `mRespawnTimeIndays`), then `RegisterAsNavigationInvoker(true)` and
@@ -78,14 +78,14 @@ FPFRegion { FName RegionId; FString Label;            // "DuneDesert_Fringe"
    spawners from a *removed region* (plan version bump) are destroyed explicitly and logged.
 4. **Anti-grief check at materialization:** skip/relocate a nest if player buildables exist within
    `NestClearRadius` (~150 m) of it (query via the buildable subsystem); log
-   `[PF] Nest <id> suppressed: player base within <d>m`. Re-check on refresh so building near a
+   `[PFA] Nest <id> suppressed: player base within <d>m`. Re-check on refresh so building near a
    nest eventually (next session) retires it — the world yields to the factory, like vanilla.
-5. **Log census every load (Display):** `[PF] Regions: N, nests live: X (by species: …), suppressed: Y`.
+5. **Log census every load (Display):** `[PFA] Regions: N, nests live: X (by species: …), suppressed: Y`.
    Per-nest lines at Verbose.
 
 ## 4. Persistence model ⚠ [assumption → slice test]
 
-**Intended:** runtime-spawned `APFNestSpawner`s are SAVED by the game (the class implements
+**Intended:** runtime-spawned `APFANestSpawner`s are SAVED by the game (the class implements
 `IFGSaveInterface`; dynamically spawned save-interface actors persist like buildings do), so
 `mSpawnData` kill-state/respawn-days survive reload natively, and creatures re-link via
 `TryRecoupleCreatureAndSpawner()` (:175) / orphan-kill otherwise (`FGCreature.h:663`).
@@ -120,7 +120,7 @@ materialize step only.
 
 ## 7. Sandwyrm event system (its own phase — no nests)
 
-One `APFWormDirector` per worm region (Dune Desert v1; Rocky Desert optional), state machine
+One `APFAWormDirector` per worm region (Dune Desert v1; Rocky Desert optional), state machine
 driven from the subsystem tick, ALL state SaveGame:
 
 ```
@@ -133,7 +133,7 @@ DORMANT (cooldown/respawn wait, config RespawnDays after a kill)
   → SUBMERGE  burrow VFX, cooldown scoring reset → STALKING (or DORMANT if killed)
 ```
 
-**§7a — one persistent worm actor per region** (not spawned per event): `APFSandwyrm` is an
+**§7a — one persistent worm actor per region** (not spawned per event): `APFASandwyrm` is an
 `AFGCreature` subclass (identity/health/damage standard — locked, doc 01 §4) with
 `SetIsPersistent(true)` (`FGCreature.h:477` — exempts it from the despawn budget; verify) and
 orphan-timer cleared (`ClearKillOrphanTimer()` :438) since it has no spawner. Between events it
@@ -144,8 +144,8 @@ Movement is a custom movement component in custom mode driven kinematically by t
 `AFGCreatureSubsystem::BeginSpawningCreature(class, transform)` (`FGCreatureSubsystem.h:162`).
 
 **Worm testability rule (diagnostics-first):** every state transition logs at Display with score
-snapshot: `[PF] Wyrm: STALKING->TELEGRAPH target=<actor> score=… dist=…`. A dev console command
-`PF.WormForceEvent` triggers a hunt at the player for testing without waiting on scores.
+snapshot: `[PFA] Wyrm: STALKING->TELEGRAPH target=<actor> score=… dist=…`. A dev console command
+`PFA.WormForceEvent` triggers a hunt at the player for testing without waiting on scores.
 
 ## 8. Multiplayer
 
