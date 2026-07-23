@@ -4,14 +4,614 @@
   "graph": {},
   "nodes": [
     {
+      "label": "PFACheats.cpp",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "private_pfacheats",
+      "community": 11,
+      "norm_label": "pfacheats.cpp"
+    },
+    {
+      "label": "IsEnabled()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L38",
+      "_origin": "ast",
+      "id": "private_pfacheats_isenabled",
+      "community": 11,
+      "norm_label": "isenabled()"
+    },
+    {
+      "label": "SetConfigDiagnostics()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L43",
+      "_origin": "ast",
+      "id": "private_pfacheats_setconfigdiagnostics",
+      "community": 11,
+      "norm_label": "setconfigdiagnostics()"
+    },
+    {
+      "label": "IsAutoTestRequested()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L48",
+      "_origin": "ast",
+      "id": "private_pfacheats_isautotestrequested",
+      "community": 11,
+      "norm_label": "isautotestrequested()"
+    },
+    {
+      "label": "RegisterPFASelfTest()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L65",
+      "_origin": "ast",
+      "id": "private_pfacheats_registerpfaselftest",
+      "community": 11,
+      "norm_label": "registerpfaselftest()"
+    },
+    {
+      "label": "FPFASelfTest",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L65",
+      "_origin": "ast",
+      "id": "fpfaselftest",
+      "community": 11,
+      "norm_label": "fpfaselftest"
+    },
+    {
+      "label": "PFA_RunSelfTests()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L70",
+      "_origin": "ast",
+      "id": "private_pfacheats_pfa_runselftests",
+      "community": 11,
+      "norm_label": "pfa_runselftests()"
+    },
+    {
+      "label": "UWorld",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L70",
+      "_origin": "ast",
+      "id": "uworld",
+      "community": 11,
+      "norm_label": "uworld"
+    },
+    {
+      "label": "FindLookedAtOrNearestCreature()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L123",
+      "_origin": "ast",
+      "id": "private_pfacheats_findlookedatornearestcreature",
+      "community": 11,
+      "norm_label": "findlookedatornearestcreature()"
+    },
+    {
+      "label": "AFGCreature",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L123",
+      "_origin": "ast",
+      "id": "afgcreature",
+      "community": 11,
+      "norm_label": "afgcreature"
+    },
+    {
+      "label": "LogActionReflection()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L194",
+      "_origin": "ast",
+      "id": "private_pfacheats_logactionreflection",
+      "community": 11,
+      "norm_label": "logactionreflection()"
+    },
+    {
+      "label": "UFGAction",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L194",
+      "_origin": "ast",
+      "id": "ufgaction",
+      "community": 11,
+      "norm_label": "ufgaction"
+    },
+    {
+      "label": "DumpCreatureCommand()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L228",
+      "_origin": "ast",
+      "id": "private_pfacheats_dumpcreaturecommand",
+      "community": 11,
+      "norm_label": "dumpcreaturecommand()"
+    },
+    {
+      "label": "DumpAllCreaturesCommand()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L315",
+      "_origin": "ast",
+      "id": "private_pfacheats_dumpallcreaturescommand",
+      "community": 11,
+      "norm_label": "dumpallcreaturescommand()"
+    },
+    {
+      "label": "PFAConfig.cpp",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFAConfig.cpp",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "private_pfaconfig",
+      "community": 10,
+      "norm_label": "pfaconfig.cpp"
+    },
+    {
+      "label": "GetActiveConfig()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFAConfig.cpp",
+      "source_location": "L12",
+      "_origin": "ast",
+      "id": "private_pfaconfig_getactiveconfig",
+      "community": 10,
+      "norm_label": "getactiveconfig()"
+    },
+    {
+      "label": "FPFAConfigStruct",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFAConfig.cpp",
+      "source_location": "L12",
+      "_origin": "ast",
+      "id": "fpfaconfigstruct",
+      "community": 10,
+      "norm_label": "fpfaconfigstruct"
+    },
+    {
+      "label": "UObject",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFAConfig.cpp",
+      "source_location": "L12",
+      "_origin": "ast",
+      "id": "uobject",
+      "community": 10,
+      "norm_label": "uobject"
+    },
+    {
+      "label": "UPFAConfig()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFAConfig.cpp",
+      "source_location": "L31",
+      "_origin": "ast",
+      "id": "private_pfaconfig_upfaconfig",
+      "community": 10,
+      "norm_label": "upfaconfig()"
+    },
+    {
+      "label": "PostInitProperties()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFAConfig.cpp",
+      "source_location": "L38",
+      "_origin": "ast",
+      "id": "private_pfaconfig_postinitproperties",
+      "community": 10,
+      "norm_label": "postinitproperties()"
+    },
+    {
+      "label": "PFASubsystem.cpp",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFASubsystem.cpp",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "private_pfasubsystem",
+      "community": 11,
+      "norm_label": "pfasubsystem.cpp"
+    },
+    {
+      "label": "APFASubsystem()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFASubsystem.cpp",
+      "source_location": "L14",
+      "_origin": "ast",
+      "id": "private_pfasubsystem_apfasubsystem",
+      "community": 11,
+      "norm_label": "apfasubsystem()"
+    },
+    {
+      "label": "BeginPlay()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFASubsystem.cpp",
+      "source_location": "L19",
+      "_origin": "ast",
+      "id": "private_pfasubsystem_beginplay",
+      "community": 11,
+      "norm_label": "beginplay()"
+    },
+    {
+      "label": "RefreshTick()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFASubsystem.cpp",
+      "source_location": "L35",
+      "_origin": "ast",
+      "id": "private_pfasubsystem_refreshtick",
+      "community": 11,
+      "norm_label": "refreshtick()"
+    },
+    {
+      "label": "PrimalFauna.cpp",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PrimalFauna.cpp",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "private_primalfauna",
+      "community": 19,
+      "norm_label": "primalfauna.cpp"
+    },
+    {
+      "label": "StartupModule()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PrimalFauna.cpp",
+      "source_location": "L5",
+      "_origin": "ast",
+      "id": "private_primalfauna_startupmodule",
+      "community": 19,
+      "norm_label": "startupmodule()"
+    },
+    {
+      "label": "PFACheats.h",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Public/PFACheats.h",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "public_pfacheats",
+      "community": 21,
+      "norm_label": "pfacheats.h"
+    },
+    {
+      "label": "PFADiag()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Public/PFACheats.h",
+      "source_location": "L52",
+      "_origin": "ast",
+      "id": "public_pfacheats_pfadiag",
+      "community": 21,
+      "norm_label": "pfadiag()"
+    },
+    {
+      "label": "namespace",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Public/PFACheats.h",
+      "source_location": "L52",
+      "_origin": "ast",
+      "id": "namespace",
+      "community": 21,
+      "norm_label": "namespace"
+    },
+    {
+      "label": "FPFASelfTest()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Public/PFACheats.h",
+      "source_location": "L94",
+      "_origin": "ast",
+      "id": "public_pfacheats_fpfaselftest",
+      "community": 21,
+      "norm_label": "fpfaselftest()"
+    },
+    {
+      "label": "PFASubsystem.h",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "public_pfasubsystem",
+      "community": 9,
+      "norm_label": "pfasubsystem.h"
+    },
+    {
+      "label": "NeedTransform_Implementation()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
+      "source_location": "L31",
+      "_origin": "ast",
+      "id": "public_pfasubsystem_needtransform_implementation",
+      "community": 9,
+      "norm_label": "needtransform_implementation()"
+    },
+    {
+      "label": "virtual",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
+      "source_location": "L31",
+      "_origin": "ast",
+      "id": "virtual",
+      "community": 9,
+      "norm_label": "virtual"
+    },
+    {
+      "label": "PreSaveGame_Implementation()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
+      "source_location": "L32",
+      "_origin": "ast",
+      "id": "public_pfasubsystem_presavegame_implementation",
+      "community": 9,
+      "norm_label": "presavegame_implementation()"
+    },
+    {
+      "label": "int32",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
+      "source_location": "L32",
+      "_origin": "ast",
+      "id": "int32",
+      "community": 9,
+      "norm_label": "int32"
+    },
+    {
+      "label": "PostSaveGame_Implementation()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
+      "source_location": "L33",
+      "_origin": "ast",
+      "id": "public_pfasubsystem_postsavegame_implementation",
+      "community": 9,
+      "norm_label": "postsavegame_implementation()"
+    },
+    {
+      "label": "PreLoadGame_Implementation()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
+      "source_location": "L34",
+      "_origin": "ast",
+      "id": "public_pfasubsystem_preloadgame_implementation",
+      "community": 9,
+      "norm_label": "preloadgame_implementation()"
+    },
+    {
+      "label": "PostLoadGame_Implementation()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
+      "source_location": "L35",
+      "_origin": "ast",
+      "id": "public_pfasubsystem_postloadgame_implementation",
+      "community": 9,
+      "norm_label": "postloadgame_implementation()"
+    },
+    {
+      "label": "07-technical-architecture.md",
+      "file_type": "document",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_07_technical_architecture",
+      "community": 1,
+      "norm_label": "07-technical-architecture.md"
+    },
+    {
+      "label": "07 \u2014 Technical Architecture",
+      "file_type": "document",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_07_technical_architecture_07_technical_architecture",
+      "community": 1,
+      "norm_label": "07 \u2014 technical architecture"
+    },
+    {
+      "label": "1. Architecture principle: own every class you change",
+      "file_type": "document",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L7",
+      "_origin": "ast",
+      "id": "docs_07_technical_architecture_1_architecture_principle_own_every_class_you_change",
+      "community": 1,
+      "norm_label": "1. architecture principle: own every class you change"
+    },
+    {
+      "label": "2. Class map",
+      "file_type": "document",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L25",
+      "_origin": "ast",
+      "id": "docs_07_technical_architecture_2_class_map",
+      "community": 1,
+      "norm_label": "2. class map"
+    },
+    {
+      "label": "3. Species authoring \u2014 everything on the CDO, in C++",
+      "file_type": "document",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L54",
+      "_origin": "ast",
+      "id": "docs_07_technical_architecture_3_species_authoring_everything_on_the_cdo_in_c",
+      "community": 1,
+      "norm_label": "3. species authoring \u2014 everything on the cdo, in c++"
+    },
+    {
+      "label": "4. Behavior: borrow the vanilla Behavior Tree, own the actions",
+      "file_type": "document",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L83",
+      "_origin": "ast",
+      "id": "docs_07_technical_architecture_4_behavior_borrow_the_vanilla_behavior_tree_own_the_actions",
+      "community": 1,
+      "norm_label": "4. behavior: borrow the vanilla behavior tree, own the actions"
+    },
+    {
+      "label": "5. Attacks = native `UFGCreatureAction` classes (no custom combat code)",
+      "file_type": "document",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L104",
+      "_origin": "ast",
+      "id": "docs_07_technical_architecture_5_attacks_native_ufgcreatureaction_classes_no_custom_combat_code",
+      "community": 1,
+      "norm_label": "5. attacks = native `ufgcreatureaction` classes (no custom combat code)"
+    },
+    {
+      "label": "6. Loot & death",
+      "file_type": "document",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L127",
+      "_origin": "ast",
+      "id": "docs_07_technical_architecture_6_loot_death",
+      "community": 1,
+      "norm_label": "6. loot & death"
+    },
+    {
+      "label": "7. Sandwyrm movement (the one custom-movement quarantine)",
+      "file_type": "document",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L137",
+      "_origin": "ast",
+      "id": "docs_07_technical_architecture_7_sandwyrm_movement_the_one_custom_movement_quarantine",
+      "community": 1,
+      "norm_label": "7. sandwyrm movement (the one custom-movement quarantine)"
+    },
+    {
+      "label": "8. Scanner / radar / bestiary surface (polish tier)",
+      "file_type": "document",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L149",
+      "_origin": "ast",
+      "id": "docs_07_technical_architecture_8_scanner_radar_bestiary_surface_polish_tier",
+      "community": 1,
+      "norm_label": "8. scanner / radar / bestiary surface (polish tier)"
+    },
+    {
+      "label": "9. Diagnostics contract (`LogPrimalFauna`, `[PFA]`)",
+      "file_type": "document",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L160",
+      "_origin": "ast",
+      "id": "docs_07_technical_architecture_9_diagnostics_contract_logprimalfauna_pfa",
+      "community": 1,
+      "norm_label": "9. diagnostics contract (`logprimalfauna`, `[pfa]`)"
+    },
+    {
+      "label": "10. Save-plan versioning",
+      "file_type": "document",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L186",
+      "_origin": "ast",
+      "id": "docs_07_technical_architecture_10_save_plan_versioning",
+      "community": 1,
+      "norm_label": "10. save-plan versioning"
+    },
+    {
+      "label": "08-implementation-plan.md",
+      "file_type": "document",
+      "source_file": "docs/08-implementation-plan.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_08_implementation_plan",
+      "community": 0,
+      "norm_label": "08-implementation-plan.md"
+    },
+    {
+      "label": "08 \u2014 Implementation Plan (team execution)",
+      "file_type": "document",
+      "source_file": "docs/08-implementation-plan.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_08_implementation_plan_08_implementation_plan_team_execution",
+      "community": 0,
+      "norm_label": "08 \u2014 implementation plan (team execution)"
+    },
+    {
+      "label": "1. Orchestration model",
+      "file_type": "document",
+      "source_file": "docs/08-implementation-plan.md",
+      "source_location": "L8",
+      "_origin": "ast",
+      "id": "docs_08_implementation_plan_1_orchestration_model",
+      "community": 0,
+      "norm_label": "1. orchestration model"
+    },
+    {
+      "label": "Packet handoff contract",
+      "file_type": "document",
+      "source_file": "docs/08-implementation-plan.md",
+      "source_location": "L39",
+      "_origin": "ast",
+      "id": "docs_08_implementation_plan_packet_handoff_contract",
+      "community": 0,
+      "norm_label": "packet handoff contract"
+    },
+    {
+      "label": "2. Packet families",
+      "file_type": "document",
+      "source_file": "docs/08-implementation-plan.md",
+      "source_location": "L49",
+      "_origin": "ast",
+      "id": "docs_08_implementation_plan_2_packet_families",
+      "community": 0,
+      "norm_label": "2. packet families"
+    },
+    {
+      "label": "3. Phases",
+      "file_type": "document",
+      "source_file": "docs/08-implementation-plan.md",
+      "source_location": "L121",
+      "_origin": "ast",
+      "id": "docs_08_implementation_plan_3_phases",
+      "community": 0,
+      "norm_label": "3. phases"
+    },
+    {
+      "label": "4. In-game test checklists (owner: user; orchestrator writes per-build)",
+      "file_type": "document",
+      "source_file": "docs/08-implementation-plan.md",
+      "source_location": "L137",
+      "_origin": "ast",
+      "id": "docs_08_implementation_plan_4_in_game_test_checklists_owner_user_orchestrator_writes_per_build",
+      "community": 0,
+      "norm_label": "4. in-game test checklists (owner: user; orchestrator writes per-build)"
+    },
+    {
+      "label": "5. Packet-family inputs (load ONLY these + doc 07)",
+      "file_type": "document",
+      "source_file": "docs/08-implementation-plan.md",
+      "source_location": "L156",
+      "_origin": "ast",
+      "id": "docs_08_implementation_plan_5_packet_family_inputs_load_only_these_doc_07",
+      "community": 0,
+      "norm_label": "5. packet-family inputs (load only these + doc 07)"
+    },
+    {
+      "label": "6. Risk register",
+      "file_type": "document",
+      "source_file": "docs/08-implementation-plan.md",
+      "source_location": "L168",
+      "_origin": "ast",
+      "id": "docs_08_implementation_plan_6_risk_register",
+      "community": 0,
+      "norm_label": "6. risk register"
+    },
+    {
+      "label": "7. Definition of v1.0",
+      "file_type": "document",
+      "source_file": "docs/08-implementation-plan.md",
+      "source_location": "L183",
+      "_origin": "ast",
+      "id": "docs_08_implementation_plan_7_definition_of_v1_0",
+      "community": 0,
+      "norm_label": "7. definition of v1.0"
+    },
+    {
       "label": "05-asset-pipeline.md",
       "file_type": "document",
       "source_file": "docs/05-asset-pipeline.md",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "docs_05_asset_pipeline",
       "community": 2,
-      "norm_label": "05-asset-pipeline.md"
+      "norm_label": "05-asset-pipeline.md",
+      "id": "docs_05_asset_pipeline"
     },
     {
       "label": "05 \u2014 Asset Pipeline",
@@ -19,9 +619,9 @@
       "source_file": "docs/05-asset-pipeline.md",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "docs_05_asset_pipeline_05_asset_pipeline",
       "community": 2,
-      "norm_label": "05 \u2014 asset pipeline"
+      "norm_label": "05 \u2014 asset pipeline",
+      "id": "docs_05_asset_pipeline_05_asset_pipeline"
     },
     {
       "label": "1. Art direction & generation briefs",
@@ -29,9 +629,9 @@
       "source_file": "docs/05-asset-pipeline.md",
       "source_location": "L12",
       "_origin": "ast",
-      "id": "docs_05_asset_pipeline_1_art_direction_generation_briefs",
       "community": 2,
-      "norm_label": "1. art direction & generation briefs"
+      "norm_label": "1. art direction & generation briefs",
+      "id": "docs_05_asset_pipeline_1_art_direction_generation_briefs"
     },
     {
       "label": "2. Per-creature pipeline (stage gates in order)",
@@ -39,9 +639,9 @@
       "source_file": "docs/05-asset-pipeline.md",
       "source_location": "L25",
       "_origin": "ast",
-      "id": "docs_05_asset_pipeline_2_per_creature_pipeline_stage_gates_in_order",
       "community": 2,
-      "norm_label": "2. per-creature pipeline (stage gates in order)"
+      "norm_label": "2. per-creature pipeline (stage gates in order)",
+      "id": "docs_05_asset_pipeline_2_per_creature_pipeline_stage_gates_in_order"
     },
     {
       "label": "3. Animation \u2014 the honest plan (verified Tripo facts)",
@@ -49,9 +649,9 @@
       "source_file": "docs/05-asset-pipeline.md",
       "source_location": "L39",
       "_origin": "ast",
-      "id": "docs_05_asset_pipeline_3_animation_the_honest_plan_verified_tripo_facts",
       "community": 2,
-      "norm_label": "3. animation \u2014 the honest plan (verified tripo facts)"
+      "norm_label": "3. animation \u2014 the honest plan (verified tripo facts)",
+      "id": "docs_05_asset_pipeline_3_animation_the_honest_plan_verified_tripo_facts"
     },
     {
       "label": "4. Texturing & the aggro-glow telegraph",
@@ -59,9 +659,9 @@
       "source_file": "docs/05-asset-pipeline.md",
       "source_location": "L73",
       "_origin": "ast",
-      "id": "docs_05_asset_pipeline_4_texturing_the_aggro_glow_telegraph",
       "community": 2,
-      "norm_label": "4. texturing & the aggro-glow telegraph"
+      "norm_label": "4. texturing & the aggro-glow telegraph",
+      "id": "docs_05_asset_pipeline_4_texturing_the_aggro_glow_telegraph"
     },
     {
       "label": "5. Fab/Sketchfab licensing rules (for rungs 3\u20134 and the worm fallback)",
@@ -69,9 +669,9 @@
       "source_file": "docs/05-asset-pipeline.md",
       "source_location": "L87",
       "_origin": "ast",
-      "id": "docs_05_asset_pipeline_5_fab_sketchfab_licensing_rules_for_rungs_3_4_and_the_worm_fallback",
       "community": 2,
-      "norm_label": "5. fab/sketchfab licensing rules (for rungs 3\u20134 and the worm fallback)"
+      "norm_label": "5. fab/sketchfab licensing rules (for rungs 3\u20134 and the worm fallback)",
+      "id": "docs_05_asset_pipeline_5_fab_sketchfab_licensing_rules_for_rungs_3_4_and_the_worm_fallback"
     },
     {
       "label": "6. UE import & wiring (headless-first)",
@@ -79,9 +679,9 @@
       "source_file": "docs/05-asset-pipeline.md",
       "source_location": "L99",
       "_origin": "ast",
-      "id": "docs_05_asset_pipeline_6_ue_import_wiring_headless_first",
       "community": 2,
-      "norm_label": "6. ue import & wiring (headless-first)"
+      "norm_label": "6. ue import & wiring (headless-first)",
+      "id": "docs_05_asset_pipeline_6_ue_import_wiring_headless_first"
     },
     {
       "label": "7. Sandwyrm assets \u2014 procedural by design",
@@ -89,9 +689,9 @@
       "source_file": "docs/05-asset-pipeline.md",
       "source_location": "L122",
       "_origin": "ast",
-      "id": "docs_05_asset_pipeline_7_sandwyrm_assets_procedural_by_design",
       "community": 2,
-      "norm_label": "7. sandwyrm assets \u2014 procedural by design"
+      "norm_label": "7. sandwyrm assets \u2014 procedural by design",
+      "id": "docs_05_asset_pipeline_7_sandwyrm_assets_procedural_by_design"
     },
     {
       "label": "8. GPU & credit discipline",
@@ -99,9 +699,9 @@
       "source_file": "docs/05-asset-pipeline.md",
       "source_location": "L140",
       "_origin": "ast",
-      "id": "docs_05_asset_pipeline_8_gpu_credit_discipline",
       "community": 2,
-      "norm_label": "8. gpu & credit discipline"
+      "norm_label": "8. gpu & credit discipline",
+      "id": "docs_05_asset_pipeline_8_gpu_credit_discipline"
     },
     {
       "label": "ASSET-LEDGER.md",
@@ -109,9 +709,9 @@
       "source_file": "docs/ASSET-LEDGER.md",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "docs_asset_ledger",
       "community": 13,
-      "norm_label": "asset-ledger.md"
+      "norm_label": "asset-ledger.md",
+      "id": "docs_asset_ledger"
     },
     {
       "label": "PrimalFauna \u2014 Asset Ledger",
@@ -119,9 +719,9 @@
       "source_file": "docs/ASSET-LEDGER.md",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "docs_asset_ledger_primalfauna_asset_ledger",
       "community": 13,
-      "norm_label": "primalfauna \u2014 asset ledger"
+      "norm_label": "primalfauna \u2014 asset ledger",
+      "id": "docs_asset_ledger_primalfauna_asset_ledger"
     },
     {
       "label": "Placeholder rig \u2014 technical notes (for the systems lane)",
@@ -129,9 +729,9 @@
       "source_file": "docs/ASSET-LEDGER.md",
       "source_location": "L20",
       "_origin": "ast",
-      "id": "docs_asset_ledger_placeholder_rig_technical_notes_for_the_systems_lane",
       "community": 13,
-      "norm_label": "placeholder rig \u2014 technical notes (for the systems lane)"
+      "norm_label": "placeholder rig \u2014 technical notes (for the systems lane)",
+      "id": "docs_asset_ledger_placeholder_rig_technical_notes_for_the_systems_lane"
     },
     {
       "label": "PrimalFauna.Build.cs",
@@ -162,66 +762,6 @@
       "community": 14,
       "norm_label": "modulerules",
       "id": "modulerules"
-    },
-    {
-      "label": "PFAConfig.cpp",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFAConfig.cpp",
-      "source_location": "L1",
-      "_origin": "ast",
-      "community": 10,
-      "norm_label": "pfaconfig.cpp",
-      "id": "private_pfaconfig"
-    },
-    {
-      "label": "GetActiveConfig()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFAConfig.cpp",
-      "source_location": "L12",
-      "_origin": "ast",
-      "community": 10,
-      "norm_label": "getactiveconfig()",
-      "id": "private_pfaconfig_getactiveconfig"
-    },
-    {
-      "label": "FPFAConfigStruct",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFAConfig.cpp",
-      "source_location": "L12",
-      "_origin": "ast",
-      "community": 10,
-      "norm_label": "fpfaconfigstruct",
-      "id": "fpfaconfigstruct"
-    },
-    {
-      "label": "UObject",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFAConfig.cpp",
-      "source_location": "L12",
-      "_origin": "ast",
-      "community": 10,
-      "norm_label": "uobject",
-      "id": "uobject"
-    },
-    {
-      "label": "UPFAConfig()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFAConfig.cpp",
-      "source_location": "L24",
-      "_origin": "ast",
-      "community": 10,
-      "norm_label": "upfaconfig()",
-      "id": "private_pfaconfig_upfaconfig"
-    },
-    {
-      "label": "PostInitProperties()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFAConfig.cpp",
-      "source_location": "L31",
-      "_origin": "ast",
-      "community": 10,
-      "norm_label": "postinitproperties()",
-      "id": "private_pfaconfig_postinitproperties"
     },
     {
       "label": "PFARootInstance.cpp",
@@ -262,66 +802,6 @@
       "community": 18,
       "norm_label": "urootgameworld_primalfauna()",
       "id": "private_pfarootworld_urootgameworld_primalfauna"
-    },
-    {
-      "label": "PFASubsystem.cpp",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFASubsystem.cpp",
-      "source_location": "L1",
-      "_origin": "ast",
-      "community": 11,
-      "norm_label": "pfasubsystem.cpp",
-      "id": "private_pfasubsystem"
-    },
-    {
-      "label": "APFASubsystem()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFASubsystem.cpp",
-      "source_location": "L13",
-      "_origin": "ast",
-      "community": 11,
-      "norm_label": "apfasubsystem()",
-      "id": "private_pfasubsystem_apfasubsystem"
-    },
-    {
-      "label": "BeginPlay()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFASubsystem.cpp",
-      "source_location": "L18",
-      "_origin": "ast",
-      "community": 11,
-      "norm_label": "beginplay()",
-      "id": "private_pfasubsystem_beginplay"
-    },
-    {
-      "label": "RefreshTick()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFASubsystem.cpp",
-      "source_location": "L34",
-      "_origin": "ast",
-      "community": 11,
-      "norm_label": "refreshtick()",
-      "id": "private_pfasubsystem_refreshtick"
-    },
-    {
-      "label": "PrimalFauna.cpp",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PrimalFauna.cpp",
-      "source_location": "L1",
-      "_origin": "ast",
-      "community": 19,
-      "norm_label": "primalfauna.cpp",
-      "id": "private_primalfauna"
-    },
-    {
-      "label": "StartupModule()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PrimalFauna.cpp",
-      "source_location": "L5",
-      "_origin": "ast",
-      "community": 19,
-      "norm_label": "startupmodule()",
-      "id": "private_primalfauna_startupmodule"
     },
     {
       "label": "PFAConfig.h",
@@ -404,86 +884,6 @@
       "id": "source_primalfauna_public_pfarootworld_h_primalfauna_api"
     },
     {
-      "label": "PFASubsystem.h",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
-      "source_location": "L1",
-      "_origin": "ast",
-      "community": 9,
-      "norm_label": "pfasubsystem.h",
-      "id": "public_pfasubsystem"
-    },
-    {
-      "label": "NeedTransform_Implementation()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
-      "source_location": "L26",
-      "_origin": "ast",
-      "community": 9,
-      "norm_label": "needtransform_implementation()",
-      "id": "public_pfasubsystem_needtransform_implementation"
-    },
-    {
-      "label": "virtual",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
-      "source_location": "L26",
-      "_origin": "ast",
-      "community": 9,
-      "norm_label": "virtual",
-      "id": "virtual"
-    },
-    {
-      "label": "PreSaveGame_Implementation()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
-      "source_location": "L27",
-      "_origin": "ast",
-      "community": 9,
-      "norm_label": "presavegame_implementation()",
-      "id": "public_pfasubsystem_presavegame_implementation"
-    },
-    {
-      "label": "int32",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
-      "source_location": "L27",
-      "_origin": "ast",
-      "community": 9,
-      "norm_label": "int32",
-      "id": "int32"
-    },
-    {
-      "label": "PostSaveGame_Implementation()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
-      "source_location": "L28",
-      "_origin": "ast",
-      "community": 9,
-      "norm_label": "postsavegame_implementation()",
-      "id": "public_pfasubsystem_postsavegame_implementation"
-    },
-    {
-      "label": "PreLoadGame_Implementation()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
-      "source_location": "L29",
-      "_origin": "ast",
-      "community": 9,
-      "norm_label": "preloadgame_implementation()",
-      "id": "public_pfasubsystem_preloadgame_implementation"
-    },
-    {
-      "label": "PostLoadGame_Implementation()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
-      "source_location": "L30",
-      "_origin": "ast",
-      "community": 9,
-      "norm_label": "postloadgame_implementation()",
-      "id": "public_pfasubsystem_postloadgame_implementation"
-    },
-    {
       "label": "PrimalFauna.h",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Public/PrimalFauna.h",
@@ -512,106 +912,6 @@
       "community": 12,
       "norm_label": "class",
       "id": "class"
-    },
-    {
-      "label": "08-implementation-plan.md",
-      "file_type": "document",
-      "source_file": "docs/08-implementation-plan.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "community": 0,
-      "norm_label": "08-implementation-plan.md",
-      "id": "docs_08_implementation_plan"
-    },
-    {
-      "label": "08 \u2014 Implementation Plan (team execution)",
-      "file_type": "document",
-      "source_file": "docs/08-implementation-plan.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "community": 0,
-      "norm_label": "08 \u2014 implementation plan (team execution)",
-      "id": "docs_08_implementation_plan_08_implementation_plan_team_execution"
-    },
-    {
-      "label": "1. Orchestration model",
-      "file_type": "document",
-      "source_file": "docs/08-implementation-plan.md",
-      "source_location": "L8",
-      "_origin": "ast",
-      "community": 0,
-      "norm_label": "1. orchestration model",
-      "id": "docs_08_implementation_plan_1_orchestration_model"
-    },
-    {
-      "label": "Packet handoff contract",
-      "file_type": "document",
-      "source_file": "docs/08-implementation-plan.md",
-      "source_location": "L39",
-      "_origin": "ast",
-      "community": 0,
-      "norm_label": "packet handoff contract",
-      "id": "docs_08_implementation_plan_packet_handoff_contract"
-    },
-    {
-      "label": "2. Packet families",
-      "file_type": "document",
-      "source_file": "docs/08-implementation-plan.md",
-      "source_location": "L49",
-      "_origin": "ast",
-      "community": 0,
-      "norm_label": "2. packet families",
-      "id": "docs_08_implementation_plan_2_packet_families"
-    },
-    {
-      "label": "3. Phases",
-      "file_type": "document",
-      "source_file": "docs/08-implementation-plan.md",
-      "source_location": "L120",
-      "_origin": "ast",
-      "community": 0,
-      "norm_label": "3. phases",
-      "id": "docs_08_implementation_plan_3_phases"
-    },
-    {
-      "label": "4. In-game test checklists (owner: user; orchestrator writes per-build)",
-      "file_type": "document",
-      "source_file": "docs/08-implementation-plan.md",
-      "source_location": "L136",
-      "_origin": "ast",
-      "community": 0,
-      "norm_label": "4. in-game test checklists (owner: user; orchestrator writes per-build)",
-      "id": "docs_08_implementation_plan_4_in_game_test_checklists_owner_user_orchestrator_writes_per_build"
-    },
-    {
-      "label": "5. Packet-family inputs (load ONLY these + doc 07)",
-      "file_type": "document",
-      "source_file": "docs/08-implementation-plan.md",
-      "source_location": "L155",
-      "_origin": "ast",
-      "community": 0,
-      "norm_label": "5. packet-family inputs (load only these + doc 07)",
-      "id": "docs_08_implementation_plan_5_packet_family_inputs_load_only_these_doc_07"
-    },
-    {
-      "label": "6. Risk register",
-      "file_type": "document",
-      "source_file": "docs/08-implementation-plan.md",
-      "source_location": "L167",
-      "_origin": "ast",
-      "community": 0,
-      "norm_label": "6. risk register",
-      "id": "docs_08_implementation_plan_6_risk_register"
-    },
-    {
-      "label": "7. Definition of v1.0",
-      "file_type": "document",
-      "source_file": "docs/08-implementation-plan.md",
-      "source_location": "L182",
-      "_origin": "ast",
-      "community": 0,
-      "norm_label": "7. definition of v1.0",
-      "id": "docs_08_implementation_plan_7_definition_of_v1_0"
     },
     {
       "label": "README.md",
@@ -1092,258 +1392,219 @@
       "community": 7,
       "norm_label": "5. broader compatibility notes",
       "id": "docs_06_integration_and_compat_5_broader_compatibility_notes"
-    },
-    {
-      "label": "07-technical-architecture.md",
-      "file_type": "document",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "community": 1,
-      "norm_label": "07-technical-architecture.md",
-      "id": "docs_07_technical_architecture"
-    },
-    {
-      "label": "07 \u2014 Technical Architecture",
-      "file_type": "document",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "community": 1,
-      "norm_label": "07 \u2014 technical architecture",
-      "id": "docs_07_technical_architecture_07_technical_architecture"
-    },
-    {
-      "label": "1. Architecture principle: own every class you change",
-      "file_type": "document",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L7",
-      "_origin": "ast",
-      "community": 1,
-      "norm_label": "1. architecture principle: own every class you change",
-      "id": "docs_07_technical_architecture_1_architecture_principle_own_every_class_you_change"
-    },
-    {
-      "label": "2. Class map",
-      "file_type": "document",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L25",
-      "_origin": "ast",
-      "community": 1,
-      "norm_label": "2. class map",
-      "id": "docs_07_technical_architecture_2_class_map"
-    },
-    {
-      "label": "3. Species authoring \u2014 everything on the CDO, in C++",
-      "file_type": "document",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L54",
-      "_origin": "ast",
-      "community": 1,
-      "norm_label": "3. species authoring \u2014 everything on the cdo, in c++",
-      "id": "docs_07_technical_architecture_3_species_authoring_everything_on_the_cdo_in_c"
-    },
-    {
-      "label": "4. Behavior: borrow the vanilla Behavior Tree, own the actions",
-      "file_type": "document",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L83",
-      "_origin": "ast",
-      "community": 1,
-      "norm_label": "4. behavior: borrow the vanilla behavior tree, own the actions",
-      "id": "docs_07_technical_architecture_4_behavior_borrow_the_vanilla_behavior_tree_own_the_actions"
-    },
-    {
-      "label": "5. Attacks = native `UFGCreatureAction` classes (no custom combat code)",
-      "file_type": "document",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L104",
-      "_origin": "ast",
-      "community": 1,
-      "norm_label": "5. attacks = native `ufgcreatureaction` classes (no custom combat code)",
-      "id": "docs_07_technical_architecture_5_attacks_native_ufgcreatureaction_classes_no_custom_combat_code"
-    },
-    {
-      "label": "6. Loot & death",
-      "file_type": "document",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L127",
-      "_origin": "ast",
-      "community": 1,
-      "norm_label": "6. loot & death",
-      "id": "docs_07_technical_architecture_6_loot_death"
-    },
-    {
-      "label": "7. Sandwyrm movement (the one custom-movement quarantine)",
-      "file_type": "document",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L137",
-      "_origin": "ast",
-      "community": 1,
-      "norm_label": "7. sandwyrm movement (the one custom-movement quarantine)",
-      "id": "docs_07_technical_architecture_7_sandwyrm_movement_the_one_custom_movement_quarantine"
-    },
-    {
-      "label": "8. Scanner / radar / bestiary surface (polish tier)",
-      "file_type": "document",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L149",
-      "_origin": "ast",
-      "community": 1,
-      "norm_label": "8. scanner / radar / bestiary surface (polish tier)",
-      "id": "docs_07_technical_architecture_8_scanner_radar_bestiary_surface_polish_tier"
-    },
-    {
-      "label": "9. Diagnostics contract (`LogPrimalFauna`, `[PFA]`)",
-      "file_type": "document",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L160",
-      "_origin": "ast",
-      "community": 1,
-      "norm_label": "9. diagnostics contract (`logprimalfauna`, `[pfa]`)",
-      "id": "docs_07_technical_architecture_9_diagnostics_contract_logprimalfauna_pfa"
-    },
-    {
-      "label": "10. Save-plan versioning",
-      "file_type": "document",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L180",
-      "_origin": "ast",
-      "community": 1,
-      "norm_label": "10. save-plan versioning",
-      "id": "docs_07_technical_architecture_10_save_plan_versioning"
     }
   ],
   "links": [
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "docs/05-asset-pipeline.md",
-      "source_location": "L1",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L315",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_05_asset_pipeline",
-      "target": "docs_05_asset_pipeline_05_asset_pipeline"
+      "source": "private_pfacheats",
+      "target": "private_pfacheats_dumpallcreaturescommand",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "docs/05-asset-pipeline.md",
-      "source_location": "L12",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L228",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_05_asset_pipeline_05_asset_pipeline",
-      "target": "docs_05_asset_pipeline_1_art_direction_generation_briefs"
+      "source": "private_pfacheats",
+      "target": "private_pfacheats_dumpcreaturecommand",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "docs/05-asset-pipeline.md",
-      "source_location": "L25",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L123",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_05_asset_pipeline_05_asset_pipeline",
-      "target": "docs_05_asset_pipeline_2_per_creature_pipeline_stage_gates_in_order"
+      "source": "private_pfacheats",
+      "target": "private_pfacheats_findlookedatornearestcreature",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "docs/05-asset-pipeline.md",
-      "source_location": "L39",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L48",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_05_asset_pipeline_05_asset_pipeline",
-      "target": "docs_05_asset_pipeline_3_animation_the_honest_plan_verified_tripo_facts"
+      "source": "private_pfacheats",
+      "target": "private_pfacheats_isautotestrequested",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "docs/05-asset-pipeline.md",
-      "source_location": "L73",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L38",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_05_asset_pipeline_05_asset_pipeline",
-      "target": "docs_05_asset_pipeline_4_texturing_the_aggro_glow_telegraph"
+      "source": "private_pfacheats",
+      "target": "private_pfacheats_isenabled",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "docs/05-asset-pipeline.md",
-      "source_location": "L87",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L194",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_05_asset_pipeline_05_asset_pipeline",
-      "target": "docs_05_asset_pipeline_5_fab_sketchfab_licensing_rules_for_rungs_3_4_and_the_worm_fallback"
+      "source": "private_pfacheats",
+      "target": "private_pfacheats_logactionreflection",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "docs/05-asset-pipeline.md",
-      "source_location": "L99",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L70",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_05_asset_pipeline_05_asset_pipeline",
-      "target": "docs_05_asset_pipeline_6_ue_import_wiring_headless_first"
+      "source": "private_pfacheats",
+      "target": "private_pfacheats_pfa_runselftests",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "docs/05-asset-pipeline.md",
-      "source_location": "L122",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L65",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_05_asset_pipeline_05_asset_pipeline",
-      "target": "docs_05_asset_pipeline_7_sandwyrm_assets_procedural_by_design"
+      "source": "private_pfacheats",
+      "target": "private_pfacheats_registerpfaselftest",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "docs/05-asset-pipeline.md",
-      "source_location": "L140",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L43",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_05_asset_pipeline_05_asset_pipeline",
-      "target": "docs_05_asset_pipeline_8_gpu_credit_discipline"
+      "source": "private_pfacheats",
+      "target": "private_pfacheats_setconfigdiagnostics",
+      "confidence_score": 1.0
     },
     {
-      "relation": "contains",
+      "relation": "calls",
+      "context": "call",
       "confidence": "EXTRACTED",
-      "source_file": "docs/ASSET-LEDGER.md",
-      "source_location": "L1",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L294",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_asset_ledger",
-      "target": "docs_asset_ledger_primalfauna_asset_ledger"
+      "source": "private_pfacheats_dumpcreaturecommand",
+      "target": "private_pfacheats_isenabled",
+      "confidence_score": 1.0
     },
     {
-      "relation": "contains",
+      "relation": "references",
       "confidence": "EXTRACTED",
-      "source_file": "docs/ASSET-LEDGER.md",
-      "source_location": "L16",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L65",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_asset_ledger_primalfauna_asset_ledger",
-      "target": "docs_asset_ledger_placeholder_rig_technical_notes_for_the_systems_lane"
+      "context": "parameter_type",
+      "source": "private_pfacheats_registerpfaselftest",
+      "target": "fpfaselftest",
+      "confidence_score": 1.0
     },
     {
-      "relation": "contains",
+      "relation": "references",
       "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/PrimalFauna.Build.cs",
-      "source_location": "L3",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L70",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "primalfauna_primalfauna_build",
-      "target": "primalfauna_primalfauna_build_primalfauna"
+      "context": "parameter_type",
+      "source": "private_pfacheats_pfa_runselftests",
+      "target": "uworld",
+      "confidence_score": 1.0
     },
     {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/PrimalFauna.Build.cs",
-      "source_location": "L3",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "Source/PrimalFauna/Private/PFASubsystem.cpp",
+      "source_location": "L66",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "primalfauna_primalfauna_build_primalfauna",
-      "target": "modulerules"
+      "source": "private_pfasubsystem_refreshtick",
+      "target": "private_pfacheats_pfa_runselftests"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L315",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "private_pfacheats_dumpallcreaturescommand",
+      "target": "uworld",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L228",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "private_pfacheats_dumpcreaturecommand",
+      "target": "uworld",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L123",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "private_pfacheats_findlookedatornearestcreature",
+      "target": "uworld",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L238",
+      "weight": 1.0,
+      "source": "private_pfacheats_dumpcreaturecommand",
+      "target": "private_pfacheats_findlookedatornearestcreature",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L123",
+      "weight": 1.0,
+      "context": "return_type",
+      "source": "private_pfacheats_findlookedatornearestcreature",
+      "target": "afgcreature",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L306",
+      "weight": 1.0,
+      "source": "private_pfacheats_dumpcreaturecommand",
+      "target": "private_pfacheats_logactionreflection",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
+      "source_location": "L194",
+      "weight": 1.0,
+      "context": "parameter_type",
+      "source": "private_pfacheats_logactionreflection",
+      "target": "ufgaction",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -1400,26 +1661,6 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFARootInstance.cpp",
-      "source_location": "L4",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "private_pfarootinstance",
-      "target": "private_pfarootinstance_urootinstance_primalfauna"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PFARootWorld.cpp",
-      "source_location": "L4",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "private_pfarootworld",
-      "target": "private_pfarootworld_urootgameworld_primalfauna"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
       "source_file": "Source/PrimalFauna/Private/PFASubsystem.cpp",
       "source_location": "L13",
       "weight": 1.0,
@@ -1460,54 +1701,33 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Public/PFAConfig.h",
-      "source_location": "L30",
+      "source_file": "Source/PrimalFauna/Public/PFACheats.h",
+      "source_location": "L94",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "public_pfaconfig",
-      "target": "public_pfaconfig_enablediagnostics"
+      "source": "public_pfacheats",
+      "target": "public_pfacheats_fpfaselftest",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Public/PFARootInstance.h",
-      "source_location": "L10",
+      "source_file": "Source/PrimalFauna/Public/PFACheats.h",
+      "source_location": "L52",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "public_pfarootinstance",
-      "target": "public_pfarootinstance_urootinstance_primalfauna"
+      "source": "public_pfacheats",
+      "target": "public_pfacheats_pfadiag",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
       "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Public/PFARootInstance.h",
-      "source_location": "L10",
+      "source_file": "Source/PrimalFauna/Public/PFACheats.h",
+      "source_location": "L52",
       "weight": 1.0,
       "context": "return_type",
-      "confidence_score": 1.0,
-      "source": "public_pfarootinstance_urootinstance_primalfauna",
-      "target": "source_primalfauna_public_pfarootinstance_h_primalfauna_api"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Public/PFARootWorld.h",
-      "source_location": "L9",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "public_pfarootworld",
-      "target": "public_pfarootworld_urootgameworld_primalfauna"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Public/PFARootWorld.h",
-      "source_location": "L9",
-      "weight": 1.0,
-      "context": "return_type",
-      "confidence_score": 1.0,
-      "source": "public_pfarootworld_urootgameworld_primalfauna",
-      "target": "source_primalfauna_public_pfarootworld_h_primalfauna_api"
+      "source": "public_pfacheats_pfadiag",
+      "target": "namespace",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -1661,23 +1881,112 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Public/PrimalFauna.h",
-      "source_location": "L16",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L1",
       "weight": 1.0,
       "confidence_score": 1.0,
-      "source": "public_primalfauna",
-      "target": "public_primalfauna_fdefaultgamemoduleimpl"
+      "source": "docs_07_technical_architecture",
+      "target": "docs_07_technical_architecture_07_technical_architecture"
     },
     {
-      "relation": "references",
+      "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Public/PrimalFauna.h",
-      "source_location": "L16",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L180",
       "weight": 1.0,
-      "context": "return_type",
       "confidence_score": 1.0,
-      "source": "public_primalfauna_fdefaultgamemoduleimpl",
-      "target": "class"
+      "source": "docs_07_technical_architecture_07_technical_architecture",
+      "target": "docs_07_technical_architecture_10_save_plan_versioning"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_07_technical_architecture_07_technical_architecture",
+      "target": "docs_07_technical_architecture_1_architecture_principle_own_every_class_you_change"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L25",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_07_technical_architecture_07_technical_architecture",
+      "target": "docs_07_technical_architecture_2_class_map"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L54",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_07_technical_architecture_07_technical_architecture",
+      "target": "docs_07_technical_architecture_3_species_authoring_everything_on_the_cdo_in_c"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L83",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_07_technical_architecture_07_technical_architecture",
+      "target": "docs_07_technical_architecture_4_behavior_borrow_the_vanilla_behavior_tree_own_the_actions"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L104",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_07_technical_architecture_07_technical_architecture",
+      "target": "docs_07_technical_architecture_5_attacks_native_ufgcreatureaction_classes_no_custom_combat_code"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L127",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_07_technical_architecture_07_technical_architecture",
+      "target": "docs_07_technical_architecture_6_loot_death"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L137",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_07_technical_architecture_07_technical_architecture",
+      "target": "docs_07_technical_architecture_7_sandwyrm_movement_the_one_custom_movement_quarantine"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L149",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_07_technical_architecture_07_technical_architecture",
+      "target": "docs_07_technical_architecture_8_scanner_radar_bestiary_surface_polish_tier"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L160",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_07_technical_architecture_07_technical_architecture",
+      "target": "docs_07_technical_architecture_9_diagnostics_contract_logprimalfauna_pfa"
     },
     {
       "relation": "contains",
@@ -1768,6 +2077,229 @@
       "confidence_score": 1.0,
       "source": "docs_08_implementation_plan_1_orchestration_model",
       "target": "docs_08_implementation_plan_packet_handoff_contract"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_05_asset_pipeline",
+      "target": "docs_05_asset_pipeline_05_asset_pipeline"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L12",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_05_asset_pipeline_05_asset_pipeline",
+      "target": "docs_05_asset_pipeline_1_art_direction_generation_briefs"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L25",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_05_asset_pipeline_05_asset_pipeline",
+      "target": "docs_05_asset_pipeline_2_per_creature_pipeline_stage_gates_in_order"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L39",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_05_asset_pipeline_05_asset_pipeline",
+      "target": "docs_05_asset_pipeline_3_animation_the_honest_plan_verified_tripo_facts"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L73",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_05_asset_pipeline_05_asset_pipeline",
+      "target": "docs_05_asset_pipeline_4_texturing_the_aggro_glow_telegraph"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L87",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_05_asset_pipeline_05_asset_pipeline",
+      "target": "docs_05_asset_pipeline_5_fab_sketchfab_licensing_rules_for_rungs_3_4_and_the_worm_fallback"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L99",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_05_asset_pipeline_05_asset_pipeline",
+      "target": "docs_05_asset_pipeline_6_ue_import_wiring_headless_first"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L122",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_05_asset_pipeline_05_asset_pipeline",
+      "target": "docs_05_asset_pipeline_7_sandwyrm_assets_procedural_by_design"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/05-asset-pipeline.md",
+      "source_location": "L140",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_05_asset_pipeline_05_asset_pipeline",
+      "target": "docs_05_asset_pipeline_8_gpu_credit_discipline"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ASSET-LEDGER.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_asset_ledger",
+      "target": "docs_asset_ledger_primalfauna_asset_ledger"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ASSET-LEDGER.md",
+      "source_location": "L16",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_asset_ledger_primalfauna_asset_ledger",
+      "target": "docs_asset_ledger_placeholder_rig_technical_notes_for_the_systems_lane"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/PrimalFauna.Build.cs",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "primalfauna_primalfauna_build",
+      "target": "primalfauna_primalfauna_build_primalfauna"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/PrimalFauna.Build.cs",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "primalfauna_primalfauna_build_primalfauna",
+      "target": "modulerules"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFARootInstance.cpp",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "private_pfarootinstance",
+      "target": "private_pfarootinstance_urootinstance_primalfauna"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFARootWorld.cpp",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "private_pfarootworld",
+      "target": "private_pfarootworld_urootgameworld_primalfauna"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Public/PFAConfig.h",
+      "source_location": "L30",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "public_pfaconfig",
+      "target": "public_pfaconfig_enablediagnostics"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Public/PFARootInstance.h",
+      "source_location": "L10",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "public_pfarootinstance",
+      "target": "public_pfarootinstance_urootinstance_primalfauna"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Public/PFARootInstance.h",
+      "source_location": "L10",
+      "weight": 1.0,
+      "context": "return_type",
+      "confidence_score": 1.0,
+      "source": "public_pfarootinstance_urootinstance_primalfauna",
+      "target": "source_primalfauna_public_pfarootinstance_h_primalfauna_api"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Public/PFARootWorld.h",
+      "source_location": "L9",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "public_pfarootworld",
+      "target": "public_pfarootworld_urootgameworld_primalfauna"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Public/PFARootWorld.h",
+      "source_location": "L9",
+      "weight": 1.0,
+      "context": "return_type",
+      "confidence_score": 1.0,
+      "source": "public_pfarootworld_urootgameworld_primalfauna",
+      "target": "source_primalfauna_public_pfarootworld_h_primalfauna_api"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Public/PrimalFauna.h",
+      "source_location": "L16",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "public_primalfauna",
+      "target": "public_primalfauna_fdefaultgamemoduleimpl"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Public/PrimalFauna.h",
+      "source_location": "L16",
+      "weight": 1.0,
+      "context": "return_type",
+      "confidence_score": 1.0,
+      "source": "public_primalfauna_fdefaultgamemoduleimpl",
+      "target": "class"
     },
     {
       "relation": "contains",
@@ -2188,118 +2720,8 @@
       "confidence_score": 1.0,
       "source": "docs_06_integration_and_compat_06_integration_compatibility",
       "target": "docs_06_integration_and_compat_5_broader_compatibility_notes"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L1",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_07_technical_architecture",
-      "target": "docs_07_technical_architecture_07_technical_architecture"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L180",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_07_technical_architecture_07_technical_architecture",
-      "target": "docs_07_technical_architecture_10_save_plan_versioning"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L7",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_07_technical_architecture_07_technical_architecture",
-      "target": "docs_07_technical_architecture_1_architecture_principle_own_every_class_you_change"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L25",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_07_technical_architecture_07_technical_architecture",
-      "target": "docs_07_technical_architecture_2_class_map"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L54",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_07_technical_architecture_07_technical_architecture",
-      "target": "docs_07_technical_architecture_3_species_authoring_everything_on_the_cdo_in_c"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L83",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_07_technical_architecture_07_technical_architecture",
-      "target": "docs_07_technical_architecture_4_behavior_borrow_the_vanilla_behavior_tree_own_the_actions"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L104",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_07_technical_architecture_07_technical_architecture",
-      "target": "docs_07_technical_architecture_5_attacks_native_ufgcreatureaction_classes_no_custom_combat_code"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L127",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_07_technical_architecture_07_technical_architecture",
-      "target": "docs_07_technical_architecture_6_loot_death"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L137",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_07_technical_architecture_07_technical_architecture",
-      "target": "docs_07_technical_architecture_7_sandwyrm_movement_the_one_custom_movement_quarantine"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L149",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_07_technical_architecture_07_technical_architecture",
-      "target": "docs_07_technical_architecture_8_scanner_radar_bestiary_surface_polish_tier"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L160",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_07_technical_architecture_07_technical_architecture",
-      "target": "docs_07_technical_architecture_9_diagnostics_contract_logprimalfauna_pfa"
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "dfbf7cc1f7eeae57d239afbf6331e5faf7c2dbe5"
+  "built_at_commit": "e93a39f313acbd552ee2c5fc78087b2d72ad4ad1"
 }

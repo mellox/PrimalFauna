@@ -40,13 +40,13 @@
     "semantic_hash": ""
   },
   "docs/07-technical-architecture.md": {
-    "mtime": 1784812028.001067,
-    "ast_hash": "b65e1254555bf814ea5f0538d02ca307",
+    "mtime": 1784818155.4801507,
+    "ast_hash": "f9ed46893fcac263b6c6c699a9a08b09",
     "semantic_hash": ""
   },
   "docs/08-implementation-plan.md": {
-    "mtime": 1784813200.0715697,
-    "ast_hash": "418a41f44fd49bb222edecd0025c8e6c",
+    "mtime": 1784818159.2319994,
+    "ast_hash": "1b3b96702780cf5423daf44fddd52481",
     "semantic_hash": ""
   },
   "Source/PrimalFauna/PrimalFauna.Build.cs": {
@@ -55,8 +55,8 @@
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Private/PFAConfig.cpp": {
-    "mtime": 1784815111.8832436,
-    "ast_hash": "f615144f1a20490c298c4b875f566bd4",
+    "mtime": 1784818135.8150487,
+    "ast_hash": "cbd15569e6cd12aeb2e4d52c23a357f7",
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Private/PFARootInstance.cpp": {
@@ -70,13 +70,13 @@
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Private/PFASubsystem.cpp": {
-    "mtime": 1784813795.4862106,
-    "ast_hash": "45433c49b17239b8dde0afc2c1290d08",
+    "mtime": 1784816603.869665,
+    "ast_hash": "4addbfe22c17e44ce87c3cf3a16d5147",
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Private/PrimalFauna.cpp": {
-    "mtime": 1784813731.342023,
-    "ast_hash": "f2a554ef9ce8484a9cd6883d1036d055",
+    "mtime": 1784818137.4168258,
+    "ast_hash": "fa7841cd870f3c61b4e0c56514e740ae",
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Public/PFAConfig.h": {
@@ -95,8 +95,8 @@
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Public/PFASubsystem.h": {
-    "mtime": 1784813790.4103787,
-    "ast_hash": "e0a03617494fff40598d5abd0019597b",
+    "mtime": 1784816586.418808,
+    "ast_hash": "ecadfe2f2fb3708ed85d5034391cc013",
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Public/PrimalFauna.h": {
@@ -232,6 +232,16 @@
   "art/review/2026-07-11-sicklejaw/turntable_315.png": {
     "mtime": 1784815372.6463034,
     "ast_hash": "cea5cb345c87239b0c468897acca4ce5",
+    "semantic_hash": ""
+  },
+  "Source/PrimalFauna/Private/PFACheats.cpp": {
+    "mtime": 1784818127.3685622,
+    "ast_hash": "f45d65a027cd7582420549a49b8a1043",
+    "semantic_hash": ""
+  },
+  "Source/PrimalFauna/Public/PFACheats.h": {
+    "mtime": 1784816297.4016912,
+    "ast_hash": "4005054bfeb72f3a244b8310f9e1f3a5",
     "semantic_hash": ""
   }
 }

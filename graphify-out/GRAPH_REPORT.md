@@ -1,16 +1,16 @@
 # Graph Report - PrimalFauna  (2026-07-23)
 
 ## Corpus Check
-- 22 files · ~775,648 words
+- 24 files · ~778,452 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 121 nodes · 107 edges · 21 communities (16 shown, 5 thin omitted)
-- Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
+- 139 nodes · 130 edges · 22 communities (16 shown, 6 thin omitted)
+- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 1 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `dfbf7cc1`
+- Built from commit: `e93a39f3`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -26,11 +26,13 @@
 - [[_COMMUNITY_Community 8|Community 8]]
 - [[_COMMUNITY_Community 9|Community 9]]
 - [[_COMMUNITY_Community 10|Community 10]]
+- [[_COMMUNITY_Community 11|Community 11]]
 - [[_COMMUNITY_Community 12|Community 12]]
 - [[_COMMUNITY_Community 13|Community 13]]
 - [[_COMMUNITY_Community 14|Community 14]]
 - [[_COMMUNITY_Community 15|Community 15]]
 - [[_COMMUNITY_Community 16|Community 16]]
+- [[_COMMUNITY_Community 21|Community 21]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `07 — Technical Architecture` - 11 edges
@@ -41,16 +43,17 @@
 6. `00 — Vision & Pillars` - 6 edges
 7. `04 — Config & UI` - 6 edges
 8. `06 — Integration & Compatibility` - 6 edges
-9. `virtual` - 5 edges
-10. `1. The config tree (v1)` - 5 edges
+9. `DumpCreatureCommand()` - 5 edges
+10. `virtual` - 5 edges
 
 ## Surprising Connections (you probably didn't know these)
-- None detected - all connections are within the same source files.
+- `RefreshTick()` --calls--> `PFA_RunSelfTests()`  [INFERRED]
+  Source/PrimalFauna/Private/PFASubsystem.cpp → Source/PrimalFauna/Private/PFACheats.cpp
 
 ## Import Cycles
 - None detected.
 
-## Communities (21 total, 5 thin omitted)
+## Communities (22 total, 6 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.20
@@ -96,13 +99,17 @@ Nodes (7): int32, NeedTransform_Implementation(), PostLoadGame_Implementation(),
 Cohesion: 0.33
 Nodes (3): FPFAConfigStruct, GetActiveConfig(), UObject
 
+### Community 11 - "Community 11"
+Cohesion: 0.15
+Nodes (12): AFGCreature, FPFASelfTest, DumpAllCreaturesCommand(), DumpCreatureCommand(), FindLookedAtOrNearestCreature(), IsEnabled(), LogActionReflection(), PFA_RunSelfTests() (+4 more)
+
 ## Knowledge Gaps
-- **66 isolated node(s):** `1. Art direction & generation briefs`, `2. Per-creature pipeline (stage gates in order)`, `3. Animation — the honest plan (verified Tripo facts)`, `4. Texturing & the aggro-glow telegraph`, `5. Fab/Sketchfab licensing rules (for rungs 3–4 and the worm fallback)` (+61 more)
+- **70 isolated node(s):** `FPFASelfTest`, `AFGCreature`, `UFGAction`, `FPFAConfigStruct`, `UObject` (+65 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **5 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **6 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **What connects `1. Art direction & generation briefs`, `2. Per-creature pipeline (stage gates in order)`, `3. Animation — the honest plan (verified Tripo facts)` to the rest of the system?**
-  _66 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **What connects `FPFASelfTest`, `AFGCreature`, `UFGAction` to the rest of the system?**
+  _70 weakly-connected nodes found - possible documentation gaps or missing edges._

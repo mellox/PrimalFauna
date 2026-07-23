@@ -13,11 +13,17 @@ Consequences (verify at every review):
   override; worm movement = our movement component. (HostileScaling needs hooks because it changes
   *vanilla* creatures; we don't.) If a packet proposes a hook, that's an architecture deviation →
   escalate to the orchestrator.
-- **Zero AccessTransformers expected.** Protected members of `AFGCreature`/`AFGCreatureSpawner`/
+- **Minimal AccessTransformers.** Protected members of `AFGCreature`/`AFGCreatureSpawner`/
   `AFGCreatureController` are reached from *inside our subclasses* (C++ protected inheritance
-  access). The census/anchor reader (§9) uses reflection (`FindFProperty`) for read-only dumps of
-  vanilla action configs instead of Friend grants. If a transformer becomes necessary, document why
-  in the packet handoff.
+  access). The census/anchor reader (§9) uses reflection (`FindFProperty`) for read-only dumps.
+  **Correction (W1.3, 2026-07-23, review-adjudicated):** `AFGCreature::mIsPassiveCreature`/
+  `mSpawnDistance`/`mDespawnDistance` are **private**, not protected — self-access is impossible
+  for them. Settled mechanism: **one Friend grant** (`Friend=(Class="AFGCreature",
+  FriendClass="APFACreatureBase")` in `Config/AccessTransformers.ini`) so a game-update field
+  rename breaks the BUILD, not runtime behavior (decisive for `mIsPassiveCreature`, which feeds
+  the HostileScaling skip-check). `PFA.SpawnTest` asserts the writes on a live instance. Any
+  further transformer entry must be documented in its packet handoff and stays scoped to OUR
+  classes' needs, never to altering vanilla instances.
 - Vanilla content is referenced (borrowed BT asset §4, Wwise events, remains recipes as templates)
   — never edited. No CDO writes to vanilla classes in v1 except the possible scanner registration
   (§8, quarantined + experimental-flagged).
