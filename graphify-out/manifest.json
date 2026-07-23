@@ -1,0 +1,52 @@
+{
+  "README.md": {
+    "mtime": 1783822590.555491,
+    "ast_hash": "3dacdfaf9cf748edbee492fec29cf4df",
+    "semantic_hash": ""
+  },
+  "docs/00-vision-and-pillars.md": {
+    "mtime": 1783821991.6243248,
+    "ast_hash": "26ab334cdbe7ae8c27cdef6b279bad3f",
+    "semantic_hash": ""
+  },
+  "docs/01-creature-roster.md": {
+    "mtime": 1783822066.3836393,
+    "ast_hash": "7dbb7522da4572790b6bbd8dcb1e5344",
+    "semantic_hash": ""
+  },
+  "docs/02-hostility-and-factions.md": {
+    "mtime": 1783822287.2437544,
+    "ast_hash": "86509690bf71fdcb8912a7ca1bce6eec",
+    "semantic_hash": ""
+  },
+  "docs/03-spawning-and-territories.md": {
+    "mtime": 1783822358.1873395,
+    "ast_hash": "45b9ec4372241c409d6ebffb47064498",
+    "semantic_hash": ""
+  },
+  "docs/04-config-and-ui.md": {
+    "mtime": 1783822121.3993552,
+    "ast_hash": "88fdd1535382c565b246190435e6d3d1",
+    "semantic_hash": ""
+  },
+  "docs/05-asset-pipeline.md": {
+    "mtime": 1783822771.3195958,
+    "ast_hash": "eeea39bcf6321ef89264a4e1c07cda55",
+    "semantic_hash": ""
+  },
+  "docs/06-integration-and-compat.md": {
+    "mtime": 1783822565.65465,
+    "ast_hash": "682ee6c1266f191ba2278bf03fe4a167",
+    "semantic_hash": ""
+  },
+  "docs/07-technical-architecture.md": {
+    "mtime": 1783822496.7398584,
+    "ast_hash": "64d0f9b2b0e3706e5cf932bf329d3df1",
+    "semantic_hash": ""
+  },
+  "docs/08-implementation-plan.md": {
+    "mtime": 1784810582.9550018,
+    "ast_hash": "24a36b7a1835b48ae7ac10c7f75c827d",
+    "semantic_hash": ""
+  }
+}

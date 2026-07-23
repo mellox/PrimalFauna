@@ -15,16 +15,18 @@ review on ⚠ packets, diagnostics everywhere.
 - **Research/design may fan out read-only** (farmout pattern) but defaults inline per budget rules.
 - **Cold review = fresh `ruflo-core:reviewer` per build**, BEFORE user tests. ⚠ packets get the
   differential/parity prompt (old-path invariants → provided/assumed/unverifiable → in-game list).
-- **Asset track runs PARALLEL to the systems track** (it's not code) — but respects GPU law: no
-  generative/texture tools during builds; UE headless imports sequenced like builds.
+- **Asset track runs PARALLEL to the systems track** (it's not code), executed by the shared
+  **`mod-artist` agent** (model table below) — and respects GPU law: no generative/texture tools
+  during builds; UE headless imports sequenced like builds.
 - **Models (explicit per role — the budget rule made concrete):**
 
   | Role / packets | Model | Why |
   |---|---|---|
   | Orchestrator (sequencing, builds, integration, census sessions with user, architecture deviations) | **top-tier session model** (Opus-class+) | Judgment-heavy; owns every merge |
   | ⚠ novel-engineering implementation: **W1.4** (borrowed-BT + actions), **W4.1** (worm movement/director) | **top-tier** | Assumption-resolving, no prior art anywhere; rework costs more than the tier delta |
-  | Standard implementation: W0.1, W1.1, W1.3, W1.5, W2.2–W2.6, W3.1–W3.4, W4.2–W4.5, W5.1–W5.2 | `sonnet` | Contract-driven C++/bpy against these docs |
-  | Mechanical passes: CENSUS.md transcription, region-table data entry, icon batch, anim import batches, ASSET-LEDGER | `haiku` (`effort: low`) | Verify/extract work, cheap to check |
+  | **All art creation & art decisions:** W2.1, W4.4, the art halves of W3.1/W3.2 (creature asset runs) and W4.2 (telegraph/eruption VFX), icons, any post-ship art tweak | **`mod-artist` agent** (`C:\Claude\Projects\.claude\agents\mod-artist.md`, runs `opus`; orchestrator may override to the session top tier for hero pieces — Sandwyrm, eruption) | Art judgment demonstrably fails on cheap tiers (Satismagictory's spheres-and-circles); the shared agent carries the pipeline + anti-primitive guardrails |
+  | Standard implementation: W0.1, W1.1, W1.3, W1.5, W2.2–W2.6, W3.1–W3.4 (systems halves), W4.2 (wiring/replication), W4.3, W4.5, W5.1–W5.2 | `sonnet` | Contract-driven C++/bpy against these docs |
+  | Mechanical passes: CENSUS.md transcription, region-table data entry, anim import batches, ASSET-LEDGER | `haiku` (`effort: low`) | Verify/extract work, cheap to check |
   | Cold review, ordinary packets | `sonnet` (fresh `ruflo-core:reviewer`) | Independent eyes ≫ tier here |
   | Cold review, ⚠ packets (W1.4, W1.5, W2.5, W3.4) + anything touching doc 06 contract items | **top-tier** differential/parity review | The regression class that slips past local review |
   | Local LLM (LM Studio) | log/dump summarization during test sessions ONLY | Never implementation (correctness-critical), never during builds (VRAM) |

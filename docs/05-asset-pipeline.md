@@ -1,5 +1,9 @@
 # 05 — Asset Pipeline
 
+**Executor: every stage of this doc is owned by the shared `mod-artist` agent**
+(`C:\Claude\Projects\.claude\agents\mod-artist.md`, opus-tier) — art is never done inline by
+implementation-tier agents (doc 08 §1 model table).
+
 Locked D1: **AI pipeline first, marketplace packs as the per-creature fallback.** Toolchain facts
 from `Creature-VFX-Pipeline-Tools-Summary.md` + per-tool guides; Tripo capabilities verified
 against the official v3 docs 2026-07-11. Nobody has shipped a custom Satisfactory creature before

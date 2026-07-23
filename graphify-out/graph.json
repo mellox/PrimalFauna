@@ -1,0 +1,201 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [
+    {
+      "label": "08-implementation-plan.md",
+      "file_type": "document",
+      "source_file": "docs/08-implementation-plan.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_08_implementation_plan",
+      "community": 0,
+      "norm_label": "08-implementation-plan.md"
+    },
+    {
+      "label": "08 \u2014 Implementation Plan (team execution)",
+      "file_type": "document",
+      "source_file": "docs/08-implementation-plan.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_08_implementation_plan_08_implementation_plan_team_execution",
+      "community": 0,
+      "norm_label": "08 \u2014 implementation plan (team execution)"
+    },
+    {
+      "label": "1. Orchestration model",
+      "file_type": "document",
+      "source_file": "docs/08-implementation-plan.md",
+      "source_location": "L8",
+      "_origin": "ast",
+      "id": "docs_08_implementation_plan_1_orchestration_model",
+      "community": 1,
+      "norm_label": "1. orchestration model"
+    },
+    {
+      "label": "Packet handoff contract",
+      "file_type": "document",
+      "source_file": "docs/08-implementation-plan.md",
+      "source_location": "L36",
+      "_origin": "ast",
+      "id": "docs_08_implementation_plan_packet_handoff_contract",
+      "community": 1,
+      "norm_label": "packet handoff contract"
+    },
+    {
+      "label": "2. Packet families",
+      "file_type": "document",
+      "source_file": "docs/08-implementation-plan.md",
+      "source_location": "L46",
+      "_origin": "ast",
+      "id": "docs_08_implementation_plan_2_packet_families",
+      "community": 0,
+      "norm_label": "2. packet families"
+    },
+    {
+      "label": "3. Phases",
+      "file_type": "document",
+      "source_file": "docs/08-implementation-plan.md",
+      "source_location": "L109",
+      "_origin": "ast",
+      "id": "docs_08_implementation_plan_3_phases",
+      "community": 0,
+      "norm_label": "3. phases"
+    },
+    {
+      "label": "4. In-game test checklists (owner: user; orchestrator writes per-build)",
+      "file_type": "document",
+      "source_file": "docs/08-implementation-plan.md",
+      "source_location": "L125",
+      "_origin": "ast",
+      "id": "docs_08_implementation_plan_4_in_game_test_checklists_owner_user_orchestrator_writes_per_build",
+      "community": 0,
+      "norm_label": "4. in-game test checklists (owner: user; orchestrator writes per-build)"
+    },
+    {
+      "label": "5. Packet-family inputs (load ONLY these + doc 07)",
+      "file_type": "document",
+      "source_file": "docs/08-implementation-plan.md",
+      "source_location": "L144",
+      "_origin": "ast",
+      "id": "docs_08_implementation_plan_5_packet_family_inputs_load_only_these_doc_07",
+      "community": 0,
+      "norm_label": "5. packet-family inputs (load only these + doc 07)"
+    },
+    {
+      "label": "6. Risk register",
+      "file_type": "document",
+      "source_file": "docs/08-implementation-plan.md",
+      "source_location": "L156",
+      "_origin": "ast",
+      "id": "docs_08_implementation_plan_6_risk_register",
+      "community": 0,
+      "norm_label": "6. risk register"
+    },
+    {
+      "label": "7. Definition of v1.0",
+      "file_type": "document",
+      "source_file": "docs/08-implementation-plan.md",
+      "source_location": "L171",
+      "_origin": "ast",
+      "id": "docs_08_implementation_plan_7_definition_of_v1_0",
+      "community": 0,
+      "norm_label": "7. definition of v1.0"
+    }
+  ],
+  "links": [
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/08-implementation-plan.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "docs_08_implementation_plan",
+      "target": "docs_08_implementation_plan_08_implementation_plan_team_execution",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/08-implementation-plan.md",
+      "source_location": "L8",
+      "weight": 1.0,
+      "source": "docs_08_implementation_plan_08_implementation_plan_team_execution",
+      "target": "docs_08_implementation_plan_1_orchestration_model",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/08-implementation-plan.md",
+      "source_location": "L46",
+      "weight": 1.0,
+      "source": "docs_08_implementation_plan_08_implementation_plan_team_execution",
+      "target": "docs_08_implementation_plan_2_packet_families",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/08-implementation-plan.md",
+      "source_location": "L109",
+      "weight": 1.0,
+      "source": "docs_08_implementation_plan_08_implementation_plan_team_execution",
+      "target": "docs_08_implementation_plan_3_phases",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/08-implementation-plan.md",
+      "source_location": "L125",
+      "weight": 1.0,
+      "source": "docs_08_implementation_plan_08_implementation_plan_team_execution",
+      "target": "docs_08_implementation_plan_4_in_game_test_checklists_owner_user_orchestrator_writes_per_build",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/08-implementation-plan.md",
+      "source_location": "L144",
+      "weight": 1.0,
+      "source": "docs_08_implementation_plan_08_implementation_plan_team_execution",
+      "target": "docs_08_implementation_plan_5_packet_family_inputs_load_only_these_doc_07",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/08-implementation-plan.md",
+      "source_location": "L156",
+      "weight": 1.0,
+      "source": "docs_08_implementation_plan_08_implementation_plan_team_execution",
+      "target": "docs_08_implementation_plan_6_risk_register",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/08-implementation-plan.md",
+      "source_location": "L171",
+      "weight": 1.0,
+      "source": "docs_08_implementation_plan_08_implementation_plan_team_execution",
+      "target": "docs_08_implementation_plan_7_definition_of_v1_0",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/08-implementation-plan.md",
+      "source_location": "L36",
+      "weight": 1.0,
+      "source": "docs_08_implementation_plan_1_orchestration_model",
+      "target": "docs_08_implementation_plan_packet_handoff_contract",
+      "confidence_score": 1.0
+    }
+  ],
+  "hyperedges": [],
+  "built_at_commit": "932c8b901ec6857ed61c6735ba0c2846fcd95130"
+}
