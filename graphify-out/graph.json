@@ -4,14 +4,134 @@
   "graph": {},
   "nodes": [
     {
+      "label": "07-technical-architecture.md",
+      "file_type": "document",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_07_technical_architecture",
+      "community": 1,
+      "norm_label": "07-technical-architecture.md"
+    },
+    {
+      "label": "07 \u2014 Technical Architecture",
+      "file_type": "document",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_07_technical_architecture_07_technical_architecture",
+      "community": 1,
+      "norm_label": "07 \u2014 technical architecture"
+    },
+    {
+      "label": "1. Architecture principle: own every class you change",
+      "file_type": "document",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L7",
+      "_origin": "ast",
+      "id": "docs_07_technical_architecture_1_architecture_principle_own_every_class_you_change",
+      "community": 1,
+      "norm_label": "1. architecture principle: own every class you change"
+    },
+    {
+      "label": "2. Class map",
+      "file_type": "document",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L38",
+      "_origin": "ast",
+      "id": "docs_07_technical_architecture_2_class_map",
+      "community": 1,
+      "norm_label": "2. class map"
+    },
+    {
+      "label": "3. Species authoring \u2014 everything on the CDO, in C++",
+      "file_type": "document",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L67",
+      "_origin": "ast",
+      "id": "docs_07_technical_architecture_3_species_authoring_everything_on_the_cdo_in_c",
+      "community": 1,
+      "norm_label": "3. species authoring \u2014 everything on the cdo, in c++"
+    },
+    {
+      "label": "4. Behavior: borrow the vanilla Behavior Tree, own the actions",
+      "file_type": "document",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L96",
+      "_origin": "ast",
+      "id": "docs_07_technical_architecture_4_behavior_borrow_the_vanilla_behavior_tree_own_the_actions",
+      "community": 1,
+      "norm_label": "4. behavior: borrow the vanilla behavior tree, own the actions"
+    },
+    {
+      "label": "5. Attacks = native `UFGCreatureAction` classes (no custom combat code)",
+      "file_type": "document",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L128",
+      "_origin": "ast",
+      "id": "docs_07_technical_architecture_5_attacks_native_ufgcreatureaction_classes_no_custom_combat_code",
+      "community": 1,
+      "norm_label": "5. attacks = native `ufgcreatureaction` classes (no custom combat code)"
+    },
+    {
+      "label": "6. Loot & death",
+      "file_type": "document",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L153",
+      "_origin": "ast",
+      "id": "docs_07_technical_architecture_6_loot_death",
+      "community": 1,
+      "norm_label": "6. loot & death"
+    },
+    {
+      "label": "7. Sandwyrm movement (the one custom-movement quarantine)",
+      "file_type": "document",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L163",
+      "_origin": "ast",
+      "id": "docs_07_technical_architecture_7_sandwyrm_movement_the_one_custom_movement_quarantine",
+      "community": 1,
+      "norm_label": "7. sandwyrm movement (the one custom-movement quarantine)"
+    },
+    {
+      "label": "8. Scanner / radar / bestiary surface (polish tier)",
+      "file_type": "document",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L175",
+      "_origin": "ast",
+      "id": "docs_07_technical_architecture_8_scanner_radar_bestiary_surface_polish_tier",
+      "community": 1,
+      "norm_label": "8. scanner / radar / bestiary surface (polish tier)"
+    },
+    {
+      "label": "9. Diagnostics contract (`LogPrimalFauna`, `[PFA]`)",
+      "file_type": "document",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L186",
+      "_origin": "ast",
+      "id": "docs_07_technical_architecture_9_diagnostics_contract_logprimalfauna_pfa",
+      "community": 1,
+      "norm_label": "9. diagnostics contract (`logprimalfauna`, `[pfa]`)"
+    },
+    {
+      "label": "10. Save-plan versioning",
+      "file_type": "document",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L212",
+      "_origin": "ast",
+      "id": "docs_07_technical_architecture_10_save_plan_versioning",
+      "community": 1,
+      "norm_label": "10. save-plan versioning"
+    },
+    {
       "label": "PFACreatureController.cpp",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "private_pfacreaturecontroller",
       "community": 23,
-      "norm_label": "pfacreaturecontroller.cpp"
+      "norm_label": "pfacreaturecontroller.cpp",
+      "id": "private_pfacreaturecontroller"
     },
     {
       "label": "LogRuleVerdict()",
@@ -19,9 +139,9 @@
       "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
       "source_location": "L19",
       "_origin": "ast",
-      "id": "private_pfacreaturecontroller_logruleverdict",
       "community": 23,
-      "norm_label": "logruleverdict()"
+      "norm_label": "logruleverdict()",
+      "id": "private_pfacreaturecontroller_logruleverdict"
     },
     {
       "label": "AFGCreature",
@@ -29,9 +149,9 @@
       "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
       "source_location": "L19",
       "_origin": "ast",
-      "id": "afgcreature",
       "community": 23,
-      "norm_label": "afgcreature"
+      "norm_label": "afgcreature",
+      "id": "afgcreature"
     },
     {
       "label": "AActor",
@@ -39,9 +159,9 @@
       "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
       "source_location": "L19",
       "_origin": "ast",
-      "id": "aactor",
       "community": 23,
-      "norm_label": "aactor"
+      "norm_label": "aactor",
+      "id": "aactor"
     },
     {
       "label": "int32",
@@ -49,9 +169,9 @@
       "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
       "source_location": "L19",
       "_origin": "ast",
-      "id": "source_primalfauna_private_pfacreaturecontroller_cpp_int32",
       "community": 23,
-      "norm_label": "int32"
+      "norm_label": "int32",
+      "id": "source_primalfauna_private_pfacreaturecontroller_cpp_int32"
     },
     {
       "label": "APFACreatureController()",
@@ -59,9 +179,9 @@
       "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
       "source_location": "L35",
       "_origin": "ast",
-      "id": "private_pfacreaturecontroller_apfacreaturecontroller",
       "community": 23,
-      "norm_label": "apfacreaturecontroller()"
+      "norm_label": "apfacreaturecontroller()",
+      "id": "private_pfacreaturecontroller_apfacreaturecontroller"
     },
     {
       "label": "FObjectInitializer",
@@ -69,9 +189,9 @@
       "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
       "source_location": "L35",
       "_origin": "ast",
-      "id": "fobjectinitializer",
       "community": 23,
-      "norm_label": "fobjectinitializer"
+      "norm_label": "fobjectinitializer",
+      "id": "fobjectinitializer"
     },
     {
       "label": "OnPossess()",
@@ -79,9 +199,9 @@
       "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
       "source_location": "L105",
       "_origin": "ast",
-      "id": "private_pfacreaturecontroller_onpossess",
       "community": 23,
-      "norm_label": "onpossess()"
+      "norm_label": "onpossess()",
+      "id": "private_pfacreaturecontroller_onpossess"
     },
     {
       "label": "APawn",
@@ -89,9 +209,9 @@
       "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
       "source_location": "L105",
       "_origin": "ast",
-      "id": "apawn",
       "community": 23,
-      "norm_label": "apawn"
+      "norm_label": "apawn",
+      "id": "apawn"
     },
     {
       "label": "CanBeHostileTowards()",
@@ -99,9 +219,9 @@
       "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
       "source_location": "L202",
       "_origin": "ast",
-      "id": "private_pfacreaturecontroller_canbehostiletowards",
       "community": 23,
-      "norm_label": "canbehostiletowards()"
+      "norm_label": "canbehostiletowards()",
+      "id": "private_pfacreaturecontroller_canbehostiletowards"
     },
     {
       "label": "IsValidTarget()",
@@ -109,9 +229,9 @@
       "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
       "source_location": "L297",
       "_origin": "ast",
-      "id": "private_pfacreaturecontroller_isvalidtarget",
       "community": 23,
-      "norm_label": "isvalidtarget()"
+      "norm_label": "isvalidtarget()",
+      "id": "private_pfacreaturecontroller_isvalidtarget"
     },
     {
       "label": "CanBeAlertedByTarget_Implementation()",
@@ -119,9 +239,9 @@
       "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
       "source_location": "L302",
       "_origin": "ast",
-      "id": "private_pfacreaturecontroller_canbealertedbytarget_implementation",
       "community": 23,
-      "norm_label": "canbealertedbytarget_implementation()"
+      "norm_label": "canbealertedbytarget_implementation()",
+      "id": "private_pfacreaturecontroller_canbealertedbytarget_implementation"
     },
     {
       "label": "PassesAggressionModeGate()",
@@ -129,9 +249,9 @@
       "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
       "source_location": "L307",
       "_origin": "ast",
-      "id": "private_pfacreaturecontroller_passesaggressionmodegate",
       "community": 23,
-      "norm_label": "passesaggressionmodegate()"
+      "norm_label": "passesaggressionmodegate()",
+      "id": "private_pfacreaturecontroller_passesaggressionmodegate"
     },
     {
       "label": "WasRecentlyDamagedBy()",
@@ -139,9 +259,9 @@
       "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
       "source_location": "L357",
       "_origin": "ast",
-      "id": "private_pfacreaturecontroller_wasrecentlydamagedby",
       "community": 23,
-      "norm_label": "wasrecentlydamagedby()"
+      "norm_label": "wasrecentlydamagedby()",
+      "id": "private_pfacreaturecontroller_wasrecentlydamagedby"
     },
     {
       "label": "PrimalFauna.cpp",
@@ -149,9 +269,9 @@
       "source_file": "Source/PrimalFauna/Private/PrimalFauna.cpp",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "private_primalfauna",
       "community": 19,
-      "norm_label": "primalfauna.cpp"
+      "norm_label": "primalfauna.cpp",
+      "id": "private_primalfauna"
     },
     {
       "label": "StartupModule()",
@@ -159,9 +279,9 @@
       "source_file": "Source/PrimalFauna/Private/PrimalFauna.cpp",
       "source_location": "L5",
       "_origin": "ast",
-      "id": "private_primalfauna_startupmodule",
       "community": 19,
-      "norm_label": "startupmodule()"
+      "norm_label": "startupmodule()",
+      "id": "private_primalfauna_startupmodule"
     },
     {
       "label": "PFASubsystem.h",
@@ -169,9 +289,9 @@
       "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "public_pfasubsystem",
       "community": 9,
-      "norm_label": "pfasubsystem.h"
+      "norm_label": "pfasubsystem.h",
+      "id": "public_pfasubsystem"
     },
     {
       "label": "GetBorrowedBehaviorTree()",
@@ -179,9 +299,9 @@
       "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
       "source_location": "L86",
       "_origin": "ast",
-      "id": "public_pfasubsystem_getborrowedbehaviortree",
       "community": 9,
-      "norm_label": "getborrowedbehaviortree()"
+      "norm_label": "getborrowedbehaviortree()",
+      "id": "public_pfasubsystem_getborrowedbehaviortree"
     },
     {
       "label": "UBehaviorTree",
@@ -189,9 +309,9 @@
       "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
       "source_location": "L86",
       "_origin": "ast",
-      "id": "ubehaviortree",
       "community": 9,
-      "norm_label": "ubehaviortree"
+      "norm_label": "ubehaviortree",
+      "id": "ubehaviortree"
     },
     {
       "label": "NeedTransform_Implementation()",
@@ -199,9 +319,9 @@
       "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
       "source_location": "L94",
       "_origin": "ast",
-      "id": "public_pfasubsystem_needtransform_implementation",
       "community": 9,
-      "norm_label": "needtransform_implementation()"
+      "norm_label": "needtransform_implementation()",
+      "id": "public_pfasubsystem_needtransform_implementation"
     },
     {
       "label": "virtual",
@@ -209,9 +329,9 @@
       "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
       "source_location": "L94",
       "_origin": "ast",
-      "id": "virtual",
       "community": 9,
-      "norm_label": "virtual"
+      "norm_label": "virtual",
+      "id": "virtual"
     },
     {
       "label": "PreSaveGame_Implementation()",
@@ -219,9 +339,9 @@
       "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
       "source_location": "L95",
       "_origin": "ast",
-      "id": "public_pfasubsystem_presavegame_implementation",
       "community": 9,
-      "norm_label": "presavegame_implementation()"
+      "norm_label": "presavegame_implementation()",
+      "id": "public_pfasubsystem_presavegame_implementation"
     },
     {
       "label": "int32",
@@ -229,9 +349,9 @@
       "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
       "source_location": "L95",
       "_origin": "ast",
-      "id": "source_primalfauna_public_pfasubsystem_h_int32",
       "community": 9,
-      "norm_label": "int32"
+      "norm_label": "int32",
+      "id": "source_primalfauna_public_pfasubsystem_h_int32"
     },
     {
       "label": "PostSaveGame_Implementation()",
@@ -239,9 +359,9 @@
       "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
       "source_location": "L96",
       "_origin": "ast",
-      "id": "public_pfasubsystem_postsavegame_implementation",
       "community": 9,
-      "norm_label": "postsavegame_implementation()"
+      "norm_label": "postsavegame_implementation()",
+      "id": "public_pfasubsystem_postsavegame_implementation"
     },
     {
       "label": "PreLoadGame_Implementation()",
@@ -249,9 +369,9 @@
       "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
       "source_location": "L97",
       "_origin": "ast",
-      "id": "public_pfasubsystem_preloadgame_implementation",
       "community": 9,
-      "norm_label": "preloadgame_implementation()"
+      "norm_label": "preloadgame_implementation()",
+      "id": "public_pfasubsystem_preloadgame_implementation"
     },
     {
       "label": "PFACheats.cpp",
@@ -882,126 +1002,6 @@
       "community": 25,
       "norm_label": "2026-07-23 \u2014 phase-1 gate re-run: the bt census (build w15-3, full profile)",
       "id": "docs_census_2026_07_23_phase_1_gate_re_run_the_bt_census_build_w15_3_full_profile"
-    },
-    {
-      "label": "07-technical-architecture.md",
-      "file_type": "document",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "community": 1,
-      "norm_label": "07-technical-architecture.md",
-      "id": "docs_07_technical_architecture"
-    },
-    {
-      "label": "07 \u2014 Technical Architecture",
-      "file_type": "document",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "community": 1,
-      "norm_label": "07 \u2014 technical architecture",
-      "id": "docs_07_technical_architecture_07_technical_architecture"
-    },
-    {
-      "label": "1. Architecture principle: own every class you change",
-      "file_type": "document",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L7",
-      "_origin": "ast",
-      "community": 1,
-      "norm_label": "1. architecture principle: own every class you change",
-      "id": "docs_07_technical_architecture_1_architecture_principle_own_every_class_you_change"
-    },
-    {
-      "label": "2. Class map",
-      "file_type": "document",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L38",
-      "_origin": "ast",
-      "community": 1,
-      "norm_label": "2. class map",
-      "id": "docs_07_technical_architecture_2_class_map"
-    },
-    {
-      "label": "3. Species authoring \u2014 everything on the CDO, in C++",
-      "file_type": "document",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L67",
-      "_origin": "ast",
-      "community": 1,
-      "norm_label": "3. species authoring \u2014 everything on the cdo, in c++",
-      "id": "docs_07_technical_architecture_3_species_authoring_everything_on_the_cdo_in_c"
-    },
-    {
-      "label": "4. Behavior: borrow the vanilla Behavior Tree, own the actions",
-      "file_type": "document",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L96",
-      "_origin": "ast",
-      "community": 1,
-      "norm_label": "4. behavior: borrow the vanilla behavior tree, own the actions",
-      "id": "docs_07_technical_architecture_4_behavior_borrow_the_vanilla_behavior_tree_own_the_actions"
-    },
-    {
-      "label": "5. Attacks = native `UFGCreatureAction` classes (no custom combat code)",
-      "file_type": "document",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L117",
-      "_origin": "ast",
-      "community": 1,
-      "norm_label": "5. attacks = native `ufgcreatureaction` classes (no custom combat code)",
-      "id": "docs_07_technical_architecture_5_attacks_native_ufgcreatureaction_classes_no_custom_combat_code"
-    },
-    {
-      "label": "6. Loot & death",
-      "file_type": "document",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L142",
-      "_origin": "ast",
-      "community": 1,
-      "norm_label": "6. loot & death",
-      "id": "docs_07_technical_architecture_6_loot_death"
-    },
-    {
-      "label": "7. Sandwyrm movement (the one custom-movement quarantine)",
-      "file_type": "document",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L152",
-      "_origin": "ast",
-      "community": 1,
-      "norm_label": "7. sandwyrm movement (the one custom-movement quarantine)",
-      "id": "docs_07_technical_architecture_7_sandwyrm_movement_the_one_custom_movement_quarantine"
-    },
-    {
-      "label": "8. Scanner / radar / bestiary surface (polish tier)",
-      "file_type": "document",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L164",
-      "_origin": "ast",
-      "community": 1,
-      "norm_label": "8. scanner / radar / bestiary surface (polish tier)",
-      "id": "docs_07_technical_architecture_8_scanner_radar_bestiary_surface_polish_tier"
-    },
-    {
-      "label": "9. Diagnostics contract (`LogPrimalFauna`, `[PFA]`)",
-      "file_type": "document",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L175",
-      "_origin": "ast",
-      "community": 1,
-      "norm_label": "9. diagnostics contract (`logprimalfauna`, `[pfa]`)",
-      "id": "docs_07_technical_architecture_9_diagnostics_contract_logprimalfauna_pfa"
-    },
-    {
-      "label": "10. Save-plan versioning",
-      "file_type": "document",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L201",
-      "_origin": "ast",
-      "community": 1,
-      "norm_label": "10. save-plan versioning",
-      "id": "docs_07_technical_architecture_10_save_plan_versioning"
     },
     {
       "label": "check_imports.ps1",
@@ -2518,6 +2518,116 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_07_technical_architecture",
+      "target": "docs_07_technical_architecture_07_technical_architecture"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L180",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_07_technical_architecture_07_technical_architecture",
+      "target": "docs_07_technical_architecture_10_save_plan_versioning"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_07_technical_architecture_07_technical_architecture",
+      "target": "docs_07_technical_architecture_1_architecture_principle_own_every_class_you_change"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L25",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_07_technical_architecture_07_technical_architecture",
+      "target": "docs_07_technical_architecture_2_class_map"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L54",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_07_technical_architecture_07_technical_architecture",
+      "target": "docs_07_technical_architecture_3_species_authoring_everything_on_the_cdo_in_c"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L83",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_07_technical_architecture_07_technical_architecture",
+      "target": "docs_07_technical_architecture_4_behavior_borrow_the_vanilla_behavior_tree_own_the_actions"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L104",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_07_technical_architecture_07_technical_architecture",
+      "target": "docs_07_technical_architecture_5_attacks_native_ufgcreatureaction_classes_no_custom_combat_code"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L127",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_07_technical_architecture_07_technical_architecture",
+      "target": "docs_07_technical_architecture_6_loot_death"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L137",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_07_technical_architecture_07_technical_architecture",
+      "target": "docs_07_technical_architecture_7_sandwyrm_movement_the_one_custom_movement_quarantine"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L149",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_07_technical_architecture_07_technical_architecture",
+      "target": "docs_07_technical_architecture_8_scanner_radar_bestiary_surface_polish_tier"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/07-technical-architecture.md",
+      "source_location": "L160",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_07_technical_architecture_07_technical_architecture",
+      "target": "docs_07_technical_architecture_9_diagnostics_contract_logprimalfauna_pfa"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
       "source_location": "L30",
       "weight": 1.0,
@@ -2624,9 +2734,9 @@
       "source_location": "L19",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "private_pfacreaturecontroller_logruleverdict",
-      "target": "afgcreature",
-      "confidence_score": 1.0
+      "target": "afgcreature"
     },
     {
       "relation": "references",
@@ -2635,9 +2745,9 @@
       "source_location": "L19",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "private_pfacreaturecontroller_logruleverdict",
-      "target": "source_primalfauna_private_pfacreaturecontroller_cpp_int32",
-      "confidence_score": 1.0
+      "target": "source_primalfauna_private_pfacreaturecontroller_cpp_int32"
     },
     {
       "relation": "references",
@@ -2701,9 +2811,9 @@
       "source_location": "L35",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "private_pfacreaturecontroller_apfacreaturecontroller",
-      "target": "fobjectinitializer",
-      "confidence_score": 1.0
+      "target": "fobjectinitializer"
     },
     {
       "relation": "references",
@@ -2776,9 +2886,9 @@
       "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
       "source_location": "L86",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "public_pfasubsystem",
-      "target": "public_pfasubsystem_getborrowedbehaviortree",
-      "confidence_score": 1.0
+      "target": "public_pfasubsystem_getborrowedbehaviortree"
     },
     {
       "relation": "contains",
@@ -2827,9 +2937,9 @@
       "source_location": "L86",
       "weight": 1.0,
       "context": "return_type",
+      "confidence_score": 1.0,
       "source": "public_pfasubsystem_getborrowedbehaviortree",
-      "target": "ubehaviortree",
-      "confidence_score": 1.0
+      "target": "ubehaviortree"
     },
     {
       "relation": "references",
@@ -3658,116 +3768,6 @@
       "confidence_score": 1.0,
       "source": "docs_census_census_live_vanilla_creature_data_feeds_doc_01_anchors",
       "target": "docs_census_2026_07_23_smoke_session_grass_fields_spawn_build_w11_2_113_mod_profile_incl_sf"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L1",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_07_technical_architecture",
-      "target": "docs_07_technical_architecture_07_technical_architecture"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L180",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_07_technical_architecture_07_technical_architecture",
-      "target": "docs_07_technical_architecture_10_save_plan_versioning"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L7",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_07_technical_architecture_07_technical_architecture",
-      "target": "docs_07_technical_architecture_1_architecture_principle_own_every_class_you_change"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L25",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_07_technical_architecture_07_technical_architecture",
-      "target": "docs_07_technical_architecture_2_class_map"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L54",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_07_technical_architecture_07_technical_architecture",
-      "target": "docs_07_technical_architecture_3_species_authoring_everything_on_the_cdo_in_c"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L83",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_07_technical_architecture_07_technical_architecture",
-      "target": "docs_07_technical_architecture_4_behavior_borrow_the_vanilla_behavior_tree_own_the_actions"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L104",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_07_technical_architecture_07_technical_architecture",
-      "target": "docs_07_technical_architecture_5_attacks_native_ufgcreatureaction_classes_no_custom_combat_code"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L127",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_07_technical_architecture_07_technical_architecture",
-      "target": "docs_07_technical_architecture_6_loot_death"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L137",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_07_technical_architecture_07_technical_architecture",
-      "target": "docs_07_technical_architecture_7_sandwyrm_movement_the_one_custom_movement_quarantine"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L149",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_07_technical_architecture_07_technical_architecture",
-      "target": "docs_07_technical_architecture_8_scanner_radar_bestiary_surface_polish_tier"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/07-technical-architecture.md",
-      "source_location": "L160",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_07_technical_architecture_07_technical_architecture",
-      "target": "docs_07_technical_architecture_9_diagnostics_contract_logprimalfauna_pfa"
     },
     {
       "relation": "contains",
@@ -5198,5 +5198,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "119e7e839a3c78baf11a4286d589ce8932ffe936"
+  "built_at_commit": "068710b09cfc26169a6ca8d078a50be86e6730f9"
 }
