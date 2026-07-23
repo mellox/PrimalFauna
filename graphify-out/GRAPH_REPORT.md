@@ -1,16 +1,16 @@
 # Graph Report - PrimalFauna  (2026-07-23)
 
 ## Corpus Check
-- 10 files · ~11,983 words
+- 22 files · ~240,021 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 80 nodes · 71 edges · 9 communities
+- 121 nodes · 107 edges · 21 communities (16 shown, 5 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `0e719583`
+- Built from commit: `822b029f`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -24,6 +24,13 @@
 - [[_COMMUNITY_Community 6|Community 6]]
 - [[_COMMUNITY_Community 7|Community 7]]
 - [[_COMMUNITY_Community 8|Community 8]]
+- [[_COMMUNITY_Community 9|Community 9]]
+- [[_COMMUNITY_Community 10|Community 10]]
+- [[_COMMUNITY_Community 12|Community 12]]
+- [[_COMMUNITY_Community 13|Community 13]]
+- [[_COMMUNITY_Community 14|Community 14]]
+- [[_COMMUNITY_Community 15|Community 15]]
+- [[_COMMUNITY_Community 16|Community 16]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `07 — Technical Architecture` - 11 edges
@@ -34,8 +41,8 @@
 6. `00 — Vision & Pillars` - 6 edges
 7. `04 — Config & UI` - 6 edges
 8. `06 — Integration & Compatibility` - 6 edges
-9. `1. The config tree (v1)` - 5 edges
-10. `PrimalFauna — hostile megafauna for Satisfactory` - 3 edges
+9. `virtual` - 5 edges
+10. `1. The config tree (v1)` - 5 edges
 
 ## Surprising Connections (you probably didn't know these)
 - None detected - all connections are within the same source files.
@@ -43,7 +50,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (9 total, 0 thin omitted)
+## Communities (21 total, 5 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.20
@@ -81,12 +88,21 @@ Nodes (6): 06 — Integration & Compatibility, 1. How HostileScaling discovers a
 Cohesion: 0.50
 Nodes (3): Headline design facts (why this plan is buildable), PrimalFauna — hostile megafauna for Satisfactory, The plan
 
+### Community 9 - "Community 9"
+Cohesion: 0.50
+Nodes (7): int32, NeedTransform_Implementation(), PostLoadGame_Implementation(), PostSaveGame_Implementation(), PreLoadGame_Implementation(), PreSaveGame_Implementation(), virtual
+
+### Community 10 - "Community 10"
+Cohesion: 0.33
+Nodes (3): FPFAConfigStruct, GetActiveConfig(), UObject
+
 ## Knowledge Gaps
-- **60 isolated node(s):** `Packet handoff contract`, `2. Packet families`, `3. Phases`, `4. In-game test checklists (owner: user; orchestrator writes per-build)`, `5. Packet-family inputs (load ONLY these + doc 07)` (+55 more)
+- **66 isolated node(s):** `FPFAConfigStruct`, `UObject`, `PRIMALFAUNA_API`, `PRIMALFAUNA_API`, `class` (+61 more)
   These have ≤1 connection - possible missing edges or undocumented components.
+- **5 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **What connects `Packet handoff contract`, `2. Packet families`, `3. Phases` to the rest of the system?**
-  _60 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **What connects `FPFAConfigStruct`, `UObject`, `PRIMALFAUNA_API` to the rest of the system?**
+  _66 weakly-connected nodes found - possible documentation gaps or missing edges._

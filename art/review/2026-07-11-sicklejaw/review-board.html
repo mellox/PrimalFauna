@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sicklejaw — Candidate Review Board</title>
+<style>
+  :root{
+    --bg:#f4f5f7; --panel:#fff; --ink:#1a1d21; --mut:#5c636e; --line:#e2e5ea;
+    --accent:#12b5c9; --good:#1f9d57; --warn:#c77d19; --chip:#eef1f5;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{--bg:#14161a; --panel:#1c1f25; --ink:#e9edf2; --mut:#9aa3b0; --line:#2b2f37;
+          --accent:#25c6da; --good:#3ec07a; --warn:#e0a14a; --chip:#242832;}
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:15px/1.55 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;}
+  .wrap{max-width:1180px;margin:0 auto;padding:28px 20px 60px}
+  header h1{margin:0 0 4px;font-size:26px;letter-spacing:.2px}
+  header .sub{color:var(--mut);font-size:14px}
+  .verdict{margin:18px 0 8px;padding:16px 18px;background:var(--panel);
+    border:1px solid var(--line);border-left:4px solid var(--good);border-radius:10px}
+  .verdict b{color:var(--good)}
+  h2{font-size:17px;margin:34px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+  .grid{display:grid;gap:14px}
+  .g4{grid-template-columns:repeat(4,1fr)}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  @media(max-width:820px){.g4{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:520px){.g4,.g3,.g2{grid-template-columns:1fr}}
+  figure{margin:0;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  figure img{display:block;width:100%;height:auto;background:#8a8f98}
+  figcap{padding:8px 10px;font-size:12.5px;color:var(--mut)}
+  figcap b{color:var(--ink)}
+  .pick{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 40%,transparent)}
+  .tag{display:inline-block;font-size:11px;padding:1px 7px;border-radius:20px;background:var(--chip);color:var(--mut);margin-left:6px;vertical-align:middle}
+  .tag.keep{background:color-mix(in srgb,var(--good) 22%,transparent);color:var(--good)}
+  .tag.cut{background:color-mix(in srgb,#c0392b 20%,transparent);color:#d9695c}
+  .notes{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:6px 20px}
+  .notes li{margin:9px 0}
+  .warnbox{border-left:4px solid var(--warn)}
+  code{background:var(--chip);padding:1px 5px;border-radius:5px;font-size:12.5px}
+  .kv{display:flex;flex-wrap:wrap;gap:8px 22px;color:var(--mut);font-size:13px;margin-top:6px}
+  .kv b{color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Sicklejaw — Candidate Review Board</h1>
+  <div class="sub">PrimalFauna vertical-slice species · Tripo→Blender pipeline · rendered 2026-07-23 · all shots fully textured (EEVEE, flat 3-pt rig)</div>
+</header>
+
+<div class="verdict">
+  <b>Recommendation: ship candidate&nbsp;D ("alien")</b> as the Sicklejaw base mesh. Best on-brief raptor
+  silhouette, bioluminescent teal markings already present, dorsal spines, ~38k tris, clean UVs, rig-checks
+  <b>biped</b>, textured. Full anim set (idle/walk/run/slash/hurt) obtained via Tripo presets — but that motion is
+  humanoid-styled and needs raptor refinement (see Animations). Candidate&nbsp;A is the saved fallback.
+</div>
+
+<h2>1 · Candidate triage <span class="tag">4 generated · pick by silhouette</span></h2>
+<div class="grid g4">
+  <figure><img src="candidate_A.png" alt="A"><figcap><b>A · baseline</b> <span class="tag keep">fallback</span><br>Clean upright raptor, neutral pose. Safest rig. Slightly generic head.</figcap></figure>
+  <figure><img src="candidate_B.png" alt="B"><figcap><b>B · lean</b> <span class="tag cut">cut</span><br>Avian S-neck / hooked beak. Off-brief, fragile read.</figcap></figure>
+  <figure><img src="candidate_C.png" alt="C"><figcap><b>C · alpha</b> <span class="tag cut">cut</span><br>Tail too stubby, posture too upright/humanoid.</figcap></figure>
+  <figure class="pick"><img src="candidate_D.png" alt="D"><figcap><b>D · alien</b> <span class="tag keep">KEEPER</span><br>Aggressive raptor, long tail, dorsal spines, teal bio-markings. On-brief.</figcap></figure>
+</div>
+
+<h2>2 · Keeper turntable — candidate D <span class="tag">fully textured · aggro off</span></h2>
+<div class="grid g4">
+  <figure><img src="turntable_000.png" alt="front"><figcap>Front (0&deg;)</figcap></figure>
+  <figure><img src="turntable_045.png" alt="front 3q"><figcap><b>Front 3/4 (45&deg;) — hero</b></figcap></figure>
+  <figure><img src="turntable_090.png" alt="side"><figcap>Side (90&deg;)</figcap></figure>
+  <figure><img src="turntable_135.png" alt="rear 3q"><figcap>Rear-side (135&deg;)</figcap></figure>
+  <figure><img src="turntable_180.png" alt="back"><figcap>Back (180&deg;)</figcap></figure>
+  <figure><img src="turntable_225.png" alt="back 3q"><figcap>Back 3/4 (225&deg;)</figcap></figure>
+  <figure><img src="turntable_270.png" alt="side"><figcap>Side (270&deg;)</figcap></figure>
+  <figure><img src="turntable_315.png" alt="front side"><figcap>Front-side (315&deg;)</figcap></figure>
+</div>
+
+<h2>3 · Aggro-glow telegraph <span class="tag">emissive mask · doc-01 tell</span></h2>
+<div class="grid g2">
+  <figure><img src="turntable_045.png" alt="calm"><figcap><b>Aggro OFF</b> — muted teal flecks, base state.</figcap></figure>
+  <figure><img src="aggro_ON_hero.png" alt="aggro"><figcap><b>Aggro ON</b> — bioluminescent stripes/spines glow cyan. Scalar-driven emissive (C++ <code>MID</code> parameter, no extra VFX).</figcap></figure>
+</div>
+
+<h2>4 · Silhouette read</h2>
+<div class="grid g2">
+  <figure><img src="silhouette_black.png" alt="silhouette"><figcap><b>Black-fill silhouette</b> — sickle jaw, dorsal spines, tail, digitigrade legs read instantly. Passes the readable-silhouette test.</figcap></figure>
+  <figure style="display:flex;align-items:center"><figcap style="font-size:14px;color:var(--ink)">
+    Unmistakably an aggressive theropod predator from pure outline — no reliance on color or texture.
+    This is the "first-contact hog-moment" read the brief asks for.
+  </figcap></figure>
+</div>
+
+<h2>5 · Animation proof <span class="tag">Tripo presets · rung 1</span></h2>
+<div class="notes warnbox" style="margin-bottom:14px">
+  <ul>
+    <li><b>All 5 target presets obtained</b> (idle · walk · run · slash · hurt) on a 54-bone tripo-spec biped rig — the design-intent "classify biped" goal was met.</li>
+    <li><b>Caveat (needs refinement):</b> the presets are <i>humanoid-styled</i>. On a raptor they read upright ("meerkat" idle, human running gait) and the mixamo skeleton has <b>no tail bone</b> (tail stays rigid). Fine as placeholder/bring-up anims; not final content.</li>
+  </ul>
+</div>
+<div class="grid g2">
+  <figure><img src="anim_slash.png" alt="slash"><figcap><b>slash</b> (f78) — crouched lunge, reads OK as an attack.</figcap></figure>
+  <figure><img src="anim_run.png" alt="run"><figcap><b>run</b> (f8) — upright human-ish gait; the refinement target.</figcap></figure>
+</div>
+
+<h2>6 · Pipeline notes &amp; next tweak</h2>
+<div class="notes">
+  <ul>
+    <li><b>Correction to the pipeline doc:</b> Tripo preset retargets <b>fail on a <code>spec=mixamo</code> rig</b> (all 5 failed silently). They work only on <code>spec=tripo</code>. Rig <code>tripo</code>, retarget, then re-name/re-target bones for UE if mixamo naming is required later. <em>(doc 05 §2 currently says request mixamo — flag for update.)</em></li>
+    <li><b>Next tweak (one change):</b> re-generate D with an enforced neutral A-pose &amp; closed mouth for a cleaner rig bind, OR keep D and hand-author raptor locomotion (walk/run) in Blender on the tripo rig (doc 05 §3 rung 2). If a horizontal-spine sprint is must-have fast, the Kubold raptor pack ($59.99, rung 4) is the pre-approved buy — surfaced here with renders as the fallback, user decides.</li>
+    <li><b>Texture:</b> base color/PBR is Tripo's native output; emissive mask is Blender-derived from the teal markings. A deliberate StableProjectorz+ArmorPaint stripe pass is deferred (GUI-only tools + concurrent-build GPU contention) — recommend as an idle-time refinement.</li>
+  </ul>
+  <div class="kv">
+    <span><b>Tris:</b> ~38k (≤40k budget)</span>
+    <span><b>Rig:</b> 54-bone tripo biped</span>
+    <span><b>UVs:</b> single non-overlapping set</span>
+    <span><b>Tripo API spend:</b> 225 cr (8600→8375)</span>
+    <span><b>Studio pool:</b> separate — web dashboard only</span>
+    <span><b>Marketplace:</b> $0 (no purchases)</span>
+  </div>
+</div>
+
+</div>
+</body>
+</html>

@@ -48,5 +48,105 @@
     "mtime": 1784813200.0715697,
     "ast_hash": "418a41f44fd49bb222edecd0025c8e6c",
     "semantic_hash": ""
+  },
+  "Source/PrimalFauna/PrimalFauna.Build.cs": {
+    "mtime": 1784813724.274186,
+    "ast_hash": "b85f88ca2e00fc05e1525594c07a0dfe",
+    "semantic_hash": ""
+  },
+  "Source/PrimalFauna/Private/PFAConfig.cpp": {
+    "mtime": 1784815111.8832436,
+    "ast_hash": "f615144f1a20490c298c4b875f566bd4",
+    "semantic_hash": ""
+  },
+  "Source/PrimalFauna/Private/PFARootInstance.cpp": {
+    "mtime": 1784813772.258171,
+    "ast_hash": "4122824f210e5136f90cf51e1343cccd",
+    "semantic_hash": ""
+  },
+  "Source/PrimalFauna/Private/PFARootWorld.cpp": {
+    "mtime": 1784813775.5804439,
+    "ast_hash": "7868a594510868f4aa3bd504a36a8d83",
+    "semantic_hash": ""
+  },
+  "Source/PrimalFauna/Private/PFASubsystem.cpp": {
+    "mtime": 1784813795.4862106,
+    "ast_hash": "45433c49b17239b8dde0afc2c1290d08",
+    "semantic_hash": ""
+  },
+  "Source/PrimalFauna/Private/PrimalFauna.cpp": {
+    "mtime": 1784813731.342023,
+    "ast_hash": "f2a554ef9ce8484a9cd6883d1036d055",
+    "semantic_hash": ""
+  },
+  "Source/PrimalFauna/Public/PFAConfig.h": {
+    "mtime": 1784813742.3732662,
+    "ast_hash": "731e012c45b7cc35ba0a45b02280d8e1",
+    "semantic_hash": ""
+  },
+  "Source/PrimalFauna/Public/PFARootInstance.h": {
+    "mtime": 1784813771.053727,
+    "ast_hash": "74474877617687668d9577052f51935b",
+    "semantic_hash": ""
+  },
+  "Source/PrimalFauna/Public/PFARootWorld.h": {
+    "mtime": 1784813773.9323714,
+    "ast_hash": "cb186725dfc8cc78338189f8987c6f9a",
+    "semantic_hash": ""
+  },
+  "Source/PrimalFauna/Public/PFASubsystem.h": {
+    "mtime": 1784813790.4103787,
+    "ast_hash": "e0a03617494fff40598d5abd0019597b",
+    "semantic_hash": ""
+  },
+  "Source/PrimalFauna/Public/PrimalFauna.h": {
+    "mtime": 1784813727.8857791,
+    "ast_hash": "bf21ecdd4785229cf52090e5aff60e82",
+    "semantic_hash": ""
+  },
+  "docs/ASSET-LEDGER.md": {
+    "mtime": 1784813951.7531264,
+    "ast_hash": "0aa18e3b0da27dd0e318cf7fa63770a5",
+    "semantic_hash": ""
+  },
+  "art/wip/placeholder/preview_BLOCKOUT_bindpose.png": {
+    "mtime": 1784813890.85432,
+    "ast_hash": "331e2c425ce9ee29d2e52d256358425a",
+    "semantic_hash": ""
+  },
+  "art/wip/placeholder/preview_BLOCKOUT_bite_peak.png": {
+    "mtime": 1784813918.8670635,
+    "ast_hash": "79f41ba2bd7b82c008a6aa59a539987a",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw/candidates/cand_A_baseline_3q.png": {
+    "mtime": 1784814437.10175,
+    "ast_hash": "65d381d69ed2b8fda4a01ffcfcc12e78",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw/candidates/cand_B_lean_3q.png": {
+    "mtime": 1784814437.344422,
+    "ast_hash": "cb3f6bf488c710cac6011d243a0ef22a",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw/candidates/cand_C_alpha_3q.png": {
+    "mtime": 1784814437.5996585,
+    "ast_hash": "4a02abf0c043776455f4cf568a4cd52f",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw/candidates/cand_D_alien_3q.png": {
+    "mtime": 1784814437.8480399,
+    "ast_hash": "8329c3b32897c1774ed74e19b1aa0da1",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw/candidates/rigged_A_baseline_bind.png": {
+    "mtime": 1784814705.1379375,
+    "ast_hash": "eebebd7a636055a4631101b72c57e461",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw/candidates/rigged_D_alien_bind.png": {
+    "mtime": 1784814705.4169052,
+    "ast_hash": "8112a4b62d9e5943ba7d3b412932431c",
+    "semantic_hash": ""
   }
 }
