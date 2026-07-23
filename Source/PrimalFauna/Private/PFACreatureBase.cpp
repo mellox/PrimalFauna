@@ -49,6 +49,60 @@ APFACreatureBase::APFACreatureBase(const FObjectInitializer& ObjectInitializer)
 	AIControllerClass = APFACreatureController::StaticClass();
 }
 
+void APFACreatureBase::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// W1.6 current-health init gap fixup (docs/08 packet, Phase-1 gate
+	// Section B item 8: fresh nest Sicklejaws read Health=0.0/200.0). Server-
+	// only -- health is server-authoritative (replicated to clients, never
+	// locally decided). [assumption -> in-game test, docs/07 §1 methodology]:
+	// this is a spawn-init gap our C++-only species never got (vanilla BP
+	// creatures likely heal-to-full somewhere in their own spawn/BeginPlay BP
+	// graph), NOT a sign a creature is meant to spawn near-dead. Guarded on
+	// !IsDead() so this can never resurrect a creature that legitimately died
+	// at 0 health -- only fixes a creature that was never alive at all.
+	if (!HasAuthority())
+	{
+		return;
+	}
+
+	if (UFGHealthComponent* Health = GetHealthComponent())
+	{
+		const float CurrentBefore = Health->GetCurrentHealth();
+		if (CurrentBefore <= 0.0f && !Health->IsDead())
+		{
+			// ResetHealth() (FGHealthComponent.h:124) -- verified UFUNCTION
+			// (BlueprintCallable, Category = "Health"), not the shipping-
+			// export-trap risk class (docs/07 §1: that trap is specifically
+			// plain non-UFUNCTION methods). New symbol for this mod's DLL --
+			// tools/check_imports.ps1 must run on the next package.
+			Health->ResetHealth();
+
+			// Gated (PFADiag), matching every other per-instance write-audit
+			// log in this file (SetAggressionMode/SetSpawnDespawnDistance/
+			// SetBorrowedBehaviorTree all follow this same convention).
+			if (PFADiag::IsEnabled())
+			{
+				UE_LOG(LogPrimalFauna, Display,
+					TEXT("[PFA] %s: BeginPlay current-health init gap detected (was %.1f/%.1f, IsDead=false) -- ResetHealth() -> %.1f/%.1f"),
+					*GetName(), CurrentBefore, Health->GetMaxHealth(),
+					Health->GetCurrentHealth(), Health->GetMaxHealth());
+			}
+		}
+	}
+	else
+	{
+		// Should not happen (see SetBaseHealth's own comment: AFGCharacterBase
+		// creates mHealthComponent before any subclass ctor body runs, well
+		// before BeginPlay) -- logged, not asserted, same degrade philosophy
+		// as the rest of this file.
+		UE_LOG(LogPrimalFauna, Warning,
+			TEXT("[PFA] %s: BeginPlay found no health component to check for the current-health init gap."),
+			*GetName());
+	}
+}
+
 void APFACreatureBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

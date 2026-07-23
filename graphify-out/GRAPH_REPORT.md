@@ -1,16 +1,16 @@
 # Graph Report - PrimalFauna  (2026-07-23)
 
 ## Corpus Check
-- 40 files · ~792,483 words
+- 40 files · ~792,645 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 243 nodes · 252 edges · 35 communities (26 shown, 9 thin omitted)
+- 245 nodes · 254 edges · 35 communities (27 shown, 8 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 4 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `c64d2e02`
+- Built from commit: `7da1e27b`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -48,8 +48,8 @@
 
 ## God Nodes (most connected - your core abstractions)
 1. `07 — Technical Architecture` - 11 edges
-2. `05 — Asset Pipeline` - 9 edges
-3. `03 — Spawning & Territories` - 9 edges
+2. `03 — Spawning & Territories` - 9 edges
+3. `05 — Asset Pipeline` - 9 edges
 4. `08 — Implementation Plan (team execution)` - 8 edges
 5. `02 — Hostility & Factions` - 8 edges
 6. `UWorld` - 6 edges
@@ -59,13 +59,13 @@
 10. `CanBeHostileTowards()` - 6 edges
 
 ## Surprising Connections (you probably didn't know these)
+- `RefreshTick()` --calls--> `PFA_RunSelfTests()`  [INFERRED]
+  Source/PrimalFauna/Private/PFASubsystem.cpp → Source/PrimalFauna/Private/PFACheats.cpp
 - `APFASicklejaw()` --calls--> `SetBaseHealth()`  [INFERRED]
   Source/PrimalFauna/Private/Species/PFASicklejaw.cpp → Source/PrimalFauna/Private/PFACreatureBase.cpp
 - `APFASicklejaw()` --calls--> `SetSpawnDespawnDistance()`  [INFERRED]
   Source/PrimalFauna/Private/Species/PFASicklejaw.cpp → Source/PrimalFauna/Private/PFACreatureBase.cpp
 - `DumpAllCreaturesCommand()` --references--> `UWorld`  [EXTRACTED]
-  Source/PrimalFauna/Private/PFACheats.cpp → Source/PrimalFauna/Private/Species/PFASicklejaw.cpp
-- `PFA_RunSelfTests()` --references--> `UWorld`  [EXTRACTED]
   Source/PrimalFauna/Private/PFACheats.cpp → Source/PrimalFauna/Private/Species/PFASicklejaw.cpp
 - `SpawnNestCommand()` --references--> `UWorld`  [EXTRACTED]
   Source/PrimalFauna/Private/PFACheats.cpp → Source/PrimalFauna/Private/Species/PFASicklejaw.cpp
@@ -73,7 +73,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (35 total, 9 thin omitted)
+## Communities (35 total, 8 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.20
@@ -92,8 +92,8 @@ Cohesion: 0.18
 Nodes (10): 04 — Config & UI, 1. The config tree (v1), 2. Multiplayer semantics (must be logged + tested, not assumed), 3. Config ↔ world-reload interactions, 4. Why ModConfiguration (and the alternative considered), 5. UI copy standards, Section: Factions (doc 02), Section: General (+2 more)
 
 ### Community 4 - "Community 4"
-Cohesion: 0.20
-Nodes (9): 03 — Spawning & Territories, 1. Why real `AFGCreatureSpawner`s (not a custom spawn loop), 2. Territory data (authored, seeded, curated), 3. Injection & idempotence (the subsystem's job), 4. Persistence model ⚠ [assumption → slice test], 5. Density semantics (compose with HostileScaling, don't fight it), 6. Live creature lifecycle rules, 7. Sandwyrm event system (its own phase — no nests) (+1 more)
+Cohesion: 0.18
+Nodes (10): 03 — Spawning & Territories, 1. Why real `AFGCreatureSpawner`s (not a custom spawn loop), 2. Territory data (authored, seeded, curated), 3. Injection & idempotence (the subsystem's job), 4. Persistence model — ✅ RESOLVED: OUTCOME A (native persistence), gate re-run 2026-07-23, 5. Density semantics (compose with HostileScaling, don't fight it), 6. Live creature lifecycle rules, 7. Sandwyrm event system (its own phase — no nests) (+2 more)
 
 ### Community 5 - "Community 5"
 Cohesion: 0.22
@@ -120,8 +120,8 @@ Cohesion: 0.33
 Nodes (3): FPFAConfigStruct, GetActiveConfig(), UObject
 
 ### Community 11 - "Community 11"
-Cohesion: 0.21
-Nodes (11): FPFASelfTest, DumpAllCreaturesCommand(), DumpCreatureCommand(), FindLookedAtOrNearestCreature(), IsEnabled(), LogActionReflection(), RegisterPFASelfTest(), SpawnNestCommand() (+3 more)
+Cohesion: 0.20
+Nodes (12): FPFASelfTest, DumpAllCreaturesCommand(), DumpCreatureCommand(), FindLookedAtOrNearestCreature(), IsEnabled(), LogActionReflection(), PFA_RunSelfTests(), RegisterPFASelfTest() (+4 more)
 
 ### Community 12 - "Community 12"
 Cohesion: 0.40
@@ -143,6 +143,10 @@ Nodes (9): AActor, APFACreatureController(), CanBeAlertedByTarget_Implementation
 Cohesion: 0.39
 Nodes (7): disk_verify(), log(), make_anim_task(), make_sk_task(), r""" import_placeholder_ue.py -- import the W1.3 placeholder creature rig (a ske, set_editor_property that logs-and-continues instead of aborting the     whole sc, safe_set()
 
+### Community 25 - "Community 25"
+Cohesion: 0.50
+Nodes (3): 2026-07-23 — Phase-1 gate re-run: THE BT CENSUS (build w15-3, full profile), 2026-07-23 — smoke session (Grass Fields spawn, build w11-2, 113-mod profile incl. SF+), CENSUS — live vanilla creature data (feeds doc 01 anchors)
+
 ### Community 28 - "Community 28"
 Cohesion: 0.27
 Nodes (10): FAssetData, FResult, IAssetRegistry, DiscoverAndBorrow(), PickCandidate(), QueryBehaviorTrees(), int32, TArray (+2 more)
@@ -156,24 +160,26 @@ Cohesion: 0.22
 Nodes (8): After either path — re-verify, Assigning `BT_PFAGeneric` to our creatures, BT-FALLBACK-RECIPE — authoring `BT_PFAGeneric`, Path A — hardcode a discovered vanilla path (try this before Path B), Path B — author `BT_PFAGeneric` from scratch, Prerequisites, Step 0 — read the census the borrower already logged (do this first), The structure (best-effort — verify against a census BT)
 
 ### Community 32 - "Community 32"
-Cohesion: 0.13
-Nodes (13): FName, FString, PFA_RunSelfTests(), ConfigureNest(), CheckNestRegistryConsistency(), PostLoadGame_Implementation(), ReconcileNests(), RefreshTick() (+5 more)
+Cohesion: 0.14
+Nodes (12): FName, FString, ConfigureNest(), CheckNestRegistryConsistency(), PostLoadGame_Implementation(), ReconcileNests(), RefreshTick(), SpawnNestAtPlayer() (+4 more)
 
 ## Knowledge Gaps
-- **97 isolated node(s):** `TCHAR`, `FObjectInitializer`, `TArray`, `FLifetimeProperty`, `UBehaviorTree` (+92 more)
+- **98 isolated node(s):** `1. Why real `AFGCreatureSpawner`s (not a custom spawn loop)`, `2. Territory data (authored, seeded, curated)`, `3. Injection & idempotence (the subsystem's job)`, `(original assumption text, superseded)`, `5. Density semantics (compose with HostileScaling, don't fight it)` (+93 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **9 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **8 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `PFA_RunSelfTests()` connect `Community 32` to `Community 11`?**
+- **Why does `PFA_RunSelfTests()` connect `Community 11` to `Community 32`?**
   _High betweenness centrality (0.034) - this node is a cross-community bridge._
-- **Why does `UWorld` connect `Community 11` to `Community 32`, `Community 22`?**
+- **Why does `RefreshTick()` connect `Community 32` to `Community 11`?**
   _High betweenness centrality (0.033) - this node is a cross-community bridge._
-- **What connects `TCHAR`, `FObjectInitializer`, `TArray` to the rest of the system?**
-  _99 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Why does `UWorld` connect `Community 11` to `Community 22`?**
+  _High betweenness centrality (0.032) - this node is a cross-community bridge._
+- **What connects `1. Why real `AFGCreatureSpawner`s (not a custom spawn loop)`, `2. Territory data (authored, seeded, curated)`, `3. Injection & idempotence (the subsystem's job)` to the rest of the system?**
+  _100 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 22` be split into smaller, more focused modules?**
   _Cohesion score 0.10952380952380952 - nodes in this community are weakly interconnected._
 - **Should `Community 32` be split into smaller, more focused modules?**
-  _Cohesion score 0.13071895424836602 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.13970588235294118 - nodes in this community are weakly interconnected._

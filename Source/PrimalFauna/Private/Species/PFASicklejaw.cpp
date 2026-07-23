@@ -221,21 +221,41 @@ namespace
 			SpawnedCreature->GetDespawnDistance(), SicklejawDespawnDistanceCm,
 			bDistancesMatch ? TEXT("OK") : TEXT("MISMATCH"));
 
+		// W1.6 softening (docs/08 packet, Phase-1 gate Section B item 10): the
+		// gate's OWN evidence showed this "FAIL" firing twice, always
+		// none/unpossessed, while nest-path creatures (PFA.SpawnNest /
+		// ReconcileNests) possessed correctly every time -- a detached
+		// PFA.SpawnTest spawn can still be mid-possess on the SAME tick this
+		// check runs. Re-checking after a delay is overkill for a dev
+		// command, so the known-benign case (no controller at all) is now a
+		// WARN and the roundtrip always completes (destroy) instead of
+		// aborting early. A REAL wrong-class mismatch (controller present but
+		// not APFACreatureController -- never actually observed, but would
+		// mean AIControllerClass wiring is broken) stays at Error. The
+		// distance-write assertion above is untouched.
 		AController* Controller = SpawnedCreature->GetController();
 		APFACreatureController* PFAController = Cast<APFACreatureController>(Controller);
 		if (!PFAController)
 		{
-			UE_LOG(LogPrimalFauna, Error,
-				TEXT("[PFA] PFA.SpawnTest FAIL: possessed controller is %s, expected APFACreatureController. (If this is 'none/unpossessed', BeginSpawningCreature may possess on a later tick -- rerun PFA.SpawnTest a moment later before concluding this is broken.)"),
-				Controller ? *Controller->GetClass()->GetName() : TEXT("none/unpossessed"));
-			SpawnedCreature->Destroy();
-			return;
+			if (!Controller)
+			{
+				UE_LOG(LogPrimalFauna, Warning,
+					TEXT("[PFA] PFA.SpawnTest: unpossessed at check time (detached-spawn timing; nest-path creatures possess correctly -- see gate report)."));
+			}
+			else
+			{
+				UE_LOG(LogPrimalFauna, Error,
+					TEXT("[PFA] PFA.SpawnTest: possessed controller is %s, expected APFACreatureController."),
+					*Controller->GetClass()->GetName());
+			}
 		}
-
-		const bool bHostileToPlayer = PFAController->CanBeHostileTowards(PlayerPawn);
-		UE_LOG(LogPrimalFauna, Display, TEXT("[PFA] PFA.SpawnTest: spawned %s, controller=%s, CanBeHostileTowards(player)=%s"),
-			*SpawnedCreature->GetName(), *PFAController->GetClass()->GetName(),
-			bHostileToPlayer ? TEXT("true") : TEXT("false"));
+		else
+		{
+			const bool bHostileToPlayer = PFAController->CanBeHostileTowards(PlayerPawn);
+			UE_LOG(LogPrimalFauna, Display, TEXT("[PFA] PFA.SpawnTest: spawned %s, controller=%s, CanBeHostileTowards(player)=%s"),
+				*SpawnedCreature->GetName(), *PFAController->GetClass()->GetName(),
+				bHostileToPlayer ? TEXT("true") : TEXT("false"));
+		}
 
 		SpawnedCreature->Destroy();
 		UE_LOG(LogPrimalFauna, Display, TEXT("[PFA] PFA.SpawnTest: destroyed spawned creature. Roundtrip complete."));

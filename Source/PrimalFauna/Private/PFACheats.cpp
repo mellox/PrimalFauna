@@ -2,6 +2,7 @@
 #include "PrimalFauna.h"
 #include "PFAConfig.h"
 #include "PFASubsystem.h"
+#include "PFACreatureBase.h"
 
 #include "Creature/FGCreature.h"
 #include "Creature/FGCreatureSpawner.h"
@@ -378,6 +379,82 @@ namespace
 
 		UE_LOG(LogPrimalFauna, Error, TEXT("[PFA] PFA.SpawnNest FAIL: no APFASubsystem in this world."));
 	}
+
+	// ---- PFA.KillAll (W1.6, docs/08 packet): real body replacing the
+	// pre-W1.3 stub. Iterates every live APFACreatureBase (our abstract
+	// species base, docs/07 §2 -- covers Sicklejaw and every future species
+	// with zero per-species code) and kills it through its OWN health
+	// component, matching the standard damage/death pipeline every other
+	// creature in the game dies through (workspace guardrail, docs/06:
+	// "damage through standard pipeline with causer/instigator set" --
+	// Kill() still routes through Died()/DeathDelegate, see FGHealthComponent.h
+	// :133's own doc comment "Will trigger DeathDelegate").
+	//
+	// UFGHealthComponent::Kill() (FGHealthComponent.h:133) -- verified
+	// UFUNCTION(BlueprintCallable, Category = "Damage"), NOT the shipping-
+	// export-trap risk class (docs/07 §1: that trap was specifically a PLAIN
+	// NON-UFUNCTION method, AFGCreature::ClearKillOrphanTimer). Kill()/
+	// ResetHealth() being UFUNCTION-reflected is exactly the "prefer UFUNCTION
+	// /inline/getter paths for novel calls" rule in practice -- still a NEW
+	// symbol for this mod's DLL, so tools/check_imports.ps1 must run on the
+	// next package before any game session, same as every other novel call.
+	void KillAllCommand(UWorld* World)
+	{
+		if (!World)
+		{
+			UE_LOG(LogPrimalFauna, Warning, TEXT("[PFA] PFA.KillAll aborted: no world context."));
+			return;
+		}
+		if (World->GetNetMode() == NM_Client)
+		{
+			UE_LOG(LogPrimalFauna, Warning,
+				TEXT("[PFA] PFA.KillAll aborted: this is a network client with no authority. Run PFA.KillAll from the host/server."));
+			return;
+		}
+
+		int32 KilledCount = 0;
+		int32 AlreadyDeadCount = 0;
+		int32 NoHealthComponentCount = 0;
+
+		for (TActorIterator<APFACreatureBase> It(World); It; ++It)
+		{
+			APFACreatureBase* Creature = *It;
+			if (!Creature)
+			{
+				continue;
+			}
+
+			UFGHealthComponent* Health = Creature->GetHealthComponent();
+			if (!Health)
+			{
+				++NoHealthComponentCount;
+				UE_LOG(LogPrimalFauna, Warning, TEXT("[PFA] PFA.KillAll: %s has no health component, skipping."), *Creature->GetName());
+				continue;
+			}
+
+			if (Health->IsDead())
+			{
+				++AlreadyDeadCount;
+				continue;
+			}
+
+			// Snapshot before Kill() zeroes current health, so the per-kill
+			// line shows what was actually killed (diagnostics-first rule:
+			// print the values, not just "applied").
+			const float HealthBefore = Health->GetCurrentHealth();
+			const float MaxHealth = Health->GetMaxHealth();
+
+			Health->Kill();
+			++KilledCount;
+
+			UE_LOG(LogPrimalFauna, Display, TEXT("[PFA] PFA.KillAll: killed %s (was %.1f/%.1f, IsDead now=%s)."),
+				*Creature->GetName(), HealthBefore, MaxHealth, Health->IsDead() ? TEXT("true") : TEXT("false"));
+		}
+
+		UE_LOG(LogPrimalFauna, Display,
+			TEXT("[PFA] PFA.KillAll: SUMMARY killed=%d alreadyDead=%d noHealthComponent=%d"),
+			KilledCount, AlreadyDeadCount, NoHealthComponentCount);
+	}
 }
 
 // ---- Console commands: plain IConsoleManager registrations (not UFUNCTION(exec)
@@ -429,10 +506,10 @@ namespace
 
 	FAutoConsoleCommandWithWorldAndArgs CCmdPFAKillAll(
 		TEXT("PFA.KillAll"),
-		TEXT("Primal Fauna: kill every PrimalFauna-owned creature. NOT YET IMPLEMENTED (arrives with W1.3 creatures; will be server-side only)."),
-		FConsoleCommandWithWorldAndArgsDelegate::CreateLambda([](const TArray<FString>& /*Args*/, UWorld* /*World*/)
+		TEXT("Primal Fauna: kills every live PrimalFauna creature (APFACreatureBase) via its health component's Kill(), logs a per-kill line plus a killed/alreadyDead/noHealthComponent summary. Server-side only."),
+		FConsoleCommandWithWorldAndArgsDelegate::CreateLambda([](const TArray<FString>& /*Args*/, UWorld* World)
 		{
-			UE_LOG(LogPrimalFauna, Display, TEXT("[PFA] PFA.KillAll not available until W1.3 ships (no PrimalFauna creature classes exist yet)."));
+			KillAllCommand(World);
 		}));
 }
 

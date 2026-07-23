@@ -107,6 +107,17 @@ public:
 	void ClearNativeOrphanTimer();
 
 protected:
+	// W1.6 (docs/08 packet, Phase-1 gate finding): fresh nest-spawned
+	// creatures were observed reading CurrentHealth=0/MaxHealth=200 (Section B
+	// item 8 of the gate) -- SetBaseHealth/SetMaxHealth (ctor) only sets the
+	// MAX; something in vanilla's own spawn-init path (BP-side, closed-source)
+	// is responsible for healing a freshly spawned creature to full, and our
+	// C++-only species never replicate that step. Super called FIRST (docs/07
+	// §1 pattern, matches every other BeginPlay override in this codebase,
+	// e.g. Species/PFASicklejaw.cpp). See the .cpp for the fixup + why it's a
+	// belt-and-suspenders check rather than an unconditional heal.
+	virtual void BeginPlay() override;
+
 	// Species ctors call this instead of GetHealthComponent()->SetMaxHealth()
 	// directly. GetHealthComponent() is public (FGCharacterBase.h:210) so
 	// this isn't an ACCESS requirement -- it's a single audited call site for

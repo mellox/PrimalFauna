@@ -27,6 +27,20 @@ class PRIMALFAUNA_API APFACreatureController : public AFGCreatureController
 public:
 	APFACreatureController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
+	// W1.6 (docs/08 packet, Phase-1 gate finding): launches the borrowed
+	// BehaviorTree (docs/07 §4) the possessed creature's CDO carries.
+	// AFGCreatureController itself declares OnPossess public (AI/
+	// FGCreatureController.h:156, overriding AAIController's protected
+	// AIController.h:346) -- matched here at the same access level. Vanilla
+	// creatures get this from BP_CreatureController_C's own Blueprint graph;
+	// our C++ controller replaces that layer and must reproduce it explicitly
+	// (docs/07 §1: own every class we change). See the .cpp for the full
+	// success-chain logging and the InitializeBlackboard non-decision (we
+	// deliberately do NOT override it -- AFGCreatureController already does,
+	// and RunBehaviorTree's internal UseBlackboard() call reaches that
+	// existing override automatically).
+	virtual void OnPossess(APawn* InPawn) override;
+
 	// Doc 02 §2 rules 1-8, evaluated in order, first match wins. See the .cpp
 	// for the full ladder and per-rule [PFA] verdict logging.
 	virtual bool CanBeHostileTowards(const AActor* actor) const override;

@@ -4,14 +4,164 @@
   "graph": {},
   "nodes": [
     {
+      "label": "03-spawning-and-territories.md",
+      "file_type": "document",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_03_spawning_and_territories",
+      "community": 4,
+      "norm_label": "03-spawning-and-territories.md"
+    },
+    {
+      "label": "03 \u2014 Spawning & Territories",
+      "file_type": "document",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_03_spawning_and_territories_03_spawning_territories",
+      "community": 4,
+      "norm_label": "03 \u2014 spawning & territories"
+    },
+    {
+      "label": "1. Why real `AFGCreatureSpawner`s (not a custom spawn loop)",
+      "file_type": "document",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L6",
+      "_origin": "ast",
+      "id": "docs_03_spawning_and_territories_1_why_real_afgcreaturespawner_s_not_a_custom_spawn_loop",
+      "community": 4,
+      "norm_label": "1. why real `afgcreaturespawner`s (not a custom spawn loop)"
+    },
+    {
+      "label": "2. Territory data (authored, seeded, curated)",
+      "file_type": "document",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L36",
+      "_origin": "ast",
+      "id": "docs_03_spawning_and_territories_2_territory_data_authored_seeded_curated",
+      "community": 4,
+      "norm_label": "2. territory data (authored, seeded, curated)"
+    },
+    {
+      "label": "3. Injection & idempotence (the subsystem's job)",
+      "file_type": "document",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L62",
+      "_origin": "ast",
+      "id": "docs_03_spawning_and_territories_3_injection_idempotence_the_subsystem_s_job",
+      "community": 4,
+      "norm_label": "3. injection & idempotence (the subsystem's job)"
+    },
+    {
+      "label": "4. Persistence model \u2014 \u2705 RESOLVED: OUTCOME A (native persistence), gate re-run 2026-07-23",
+      "file_type": "document",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L86",
+      "_origin": "ast",
+      "id": "docs_03_spawning_and_territories_4_persistence_model_resolved_outcome_a_native_persistence_gate_re_run_2026_07_23",
+      "community": 4,
+      "norm_label": "4. persistence model \u2014 \u2705 resolved: outcome a (native persistence), gate re-run 2026-07-23"
+    },
+    {
+      "label": "(original assumption text, superseded)",
+      "file_type": "document",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L94",
+      "_origin": "ast",
+      "id": "docs_03_spawning_and_territories_original_assumption_text_superseded",
+      "community": 4,
+      "norm_label": "(original assumption text, superseded)"
+    },
+    {
+      "label": "5. Density semantics (compose with HostileScaling, don't fight it)",
+      "file_type": "document",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L113",
+      "_origin": "ast",
+      "id": "docs_03_spawning_and_territories_5_density_semantics_compose_with_hostilescaling_don_t_fight_it",
+      "community": 4,
+      "norm_label": "5. density semantics (compose with hostilescaling, don't fight it)"
+    },
+    {
+      "label": "6. Live creature lifecycle rules",
+      "file_type": "document",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L122",
+      "_origin": "ast",
+      "id": "docs_03_spawning_and_territories_6_live_creature_lifecycle_rules",
+      "community": 4,
+      "norm_label": "6. live creature lifecycle rules"
+    },
+    {
+      "label": "7. Sandwyrm event system (its own phase \u2014 no nests)",
+      "file_type": "document",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L129",
+      "_origin": "ast",
+      "id": "docs_03_spawning_and_territories_7_sandwyrm_event_system_its_own_phase_no_nests",
+      "community": 4,
+      "norm_label": "7. sandwyrm event system (its own phase \u2014 no nests)"
+    },
+    {
+      "label": "8. Multiplayer",
+      "file_type": "document",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L158",
+      "_origin": "ast",
+      "id": "docs_03_spawning_and_territories_8_multiplayer",
+      "community": 4,
+      "norm_label": "8. multiplayer"
+    },
+    {
+      "label": "CENSUS.md",
+      "file_type": "document",
+      "source_file": "docs/CENSUS.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_census",
+      "community": 25,
+      "norm_label": "census.md"
+    },
+    {
+      "label": "CENSUS \u2014 live vanilla creature data (feeds doc 01 anchors)",
+      "file_type": "document",
+      "source_file": "docs/CENSUS.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_census_census_live_vanilla_creature_data_feeds_doc_01_anchors",
+      "community": 25,
+      "norm_label": "census \u2014 live vanilla creature data (feeds doc 01 anchors)"
+    },
+    {
+      "label": "2026-07-23 \u2014 smoke session (Grass Fields spawn, build w11-2, 113-mod profile incl. SF+)",
+      "file_type": "document",
+      "source_file": "docs/CENSUS.md",
+      "source_location": "L6",
+      "_origin": "ast",
+      "id": "docs_census_2026_07_23_smoke_session_grass_fields_spawn_build_w11_2_113_mod_profile_incl_sf",
+      "community": 25,
+      "norm_label": "2026-07-23 \u2014 smoke session (grass fields spawn, build w11-2, 113-mod profile incl. sf+)"
+    },
+    {
+      "label": "2026-07-23 \u2014 Phase-1 gate re-run: THE BT CENSUS (build w15-3, full profile)",
+      "file_type": "document",
+      "source_file": "docs/CENSUS.md",
+      "source_location": "L19",
+      "_origin": "ast",
+      "id": "docs_census_2026_07_23_phase_1_gate_re_run_the_bt_census_build_w15_3_full_profile",
+      "community": 25,
+      "norm_label": "2026-07-23 \u2014 phase-1 gate re-run: the bt census (build w15-3, full profile)"
+    },
+    {
       "label": "PFACreatureBase.cpp",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "private_pfacreaturebase",
       "community": 22,
-      "norm_label": "pfacreaturebase.cpp"
+      "norm_label": "pfacreaturebase.cpp",
+      "id": "private_pfacreaturebase"
     },
     {
       "label": "AggressionModeToString()",
@@ -19,9 +169,9 @@
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
       "source_location": "L14",
       "_origin": "ast",
-      "id": "private_pfacreaturebase_aggressionmodetostring",
       "community": 22,
-      "norm_label": "aggressionmodetostring()"
+      "norm_label": "aggressionmodetostring()",
+      "id": "private_pfacreaturebase_aggressionmodetostring"
     },
     {
       "label": "TCHAR",
@@ -29,9 +179,9 @@
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
       "source_location": "L14",
       "_origin": "ast",
-      "id": "tchar",
       "community": 22,
-      "norm_label": "tchar"
+      "norm_label": "tchar",
+      "id": "tchar"
     },
     {
       "label": "EPFAAggression",
@@ -39,9 +189,9 @@
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
       "source_location": "L14",
       "_origin": "ast",
-      "id": "epfaaggression",
       "community": 22,
-      "norm_label": "epfaaggression"
+      "norm_label": "epfaaggression",
+      "id": "epfaaggression"
     },
     {
       "label": "APFACreatureBase()",
@@ -49,9 +199,9 @@
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
       "source_location": "L44",
       "_origin": "ast",
-      "id": "private_pfacreaturebase_apfacreaturebase",
       "community": 22,
-      "norm_label": "apfacreaturebase()"
+      "norm_label": "apfacreaturebase()",
+      "id": "private_pfacreaturebase_apfacreaturebase"
     },
     {
       "label": "FObjectInitializer",
@@ -59,9 +209,9 @@
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
       "source_location": "L44",
       "_origin": "ast",
-      "id": "source_primalfauna_private_pfacreaturebase_cpp_fobjectinitializer",
       "community": 22,
-      "norm_label": "fobjectinitializer"
+      "norm_label": "fobjectinitializer",
+      "id": "source_primalfauna_private_pfacreaturebase_cpp_fobjectinitializer"
     },
     {
       "label": "GetLifetimeReplicatedProps()",
@@ -69,9 +219,9 @@
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
       "source_location": "L52",
       "_origin": "ast",
-      "id": "private_pfacreaturebase_getlifetimereplicatedprops",
       "community": 22,
-      "norm_label": "getlifetimereplicatedprops()"
+      "norm_label": "getlifetimereplicatedprops()",
+      "id": "private_pfacreaturebase_getlifetimereplicatedprops"
     },
     {
       "label": "TArray",
@@ -79,9 +229,9 @@
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
       "source_location": "L52",
       "_origin": "ast",
-      "id": "tarray",
       "community": 22,
-      "norm_label": "tarray"
+      "norm_label": "tarray",
+      "id": "tarray"
     },
     {
       "label": "FLifetimeProperty",
@@ -89,9 +239,9 @@
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
       "source_location": "L52",
       "_origin": "ast",
-      "id": "flifetimeproperty",
       "community": 22,
-      "norm_label": "flifetimeproperty"
+      "norm_label": "flifetimeproperty",
+      "id": "flifetimeproperty"
     },
     {
       "label": "SetAggressionMode()",
@@ -99,9 +249,9 @@
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
       "source_location": "L58",
       "_origin": "ast",
-      "id": "private_pfacreaturebase_setaggressionmode",
       "community": 22,
-      "norm_label": "setaggressionmode()"
+      "norm_label": "setaggressionmode()",
+      "id": "private_pfacreaturebase_setaggressionmode"
     },
     {
       "label": "SetBaseHealth()",
@@ -109,9 +259,9 @@
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
       "source_location": "L96",
       "_origin": "ast",
-      "id": "private_pfacreaturebase_setbasehealth",
       "community": 22,
-      "norm_label": "setbasehealth()"
+      "norm_label": "setbasehealth()",
+      "id": "private_pfacreaturebase_setbasehealth"
     },
     {
       "label": "SetSpawnDespawnDistance()",
@@ -119,9 +269,9 @@
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
       "source_location": "L113",
       "_origin": "ast",
-      "id": "private_pfacreaturebase_setspawndespawndistance",
       "community": 22,
-      "norm_label": "setspawndespawndistance()"
+      "norm_label": "setspawndespawndistance()",
+      "id": "private_pfacreaturebase_setspawndespawndistance"
     },
     {
       "label": "SetBorrowedBehaviorTree()",
@@ -129,9 +279,9 @@
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
       "source_location": "L127",
       "_origin": "ast",
-      "id": "private_pfacreaturebase_setborrowedbehaviortree",
       "community": 22,
-      "norm_label": "setborrowedbehaviortree()"
+      "norm_label": "setborrowedbehaviortree()",
+      "id": "private_pfacreaturebase_setborrowedbehaviortree"
     },
     {
       "label": "UBehaviorTree",
@@ -139,9 +289,9 @@
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
       "source_location": "L127",
       "_origin": "ast",
-      "id": "ubehaviortree",
       "community": 22,
-      "norm_label": "ubehaviortree"
+      "norm_label": "ubehaviortree",
+      "id": "ubehaviortree"
     },
     {
       "label": "ClearNativeOrphanTimer()",
@@ -149,9 +299,9 @@
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
       "source_location": "L144",
       "_origin": "ast",
-      "id": "private_pfacreaturebase_clearnativeorphantimer",
       "community": 22,
-      "norm_label": "clearnativeorphantimer()"
+      "norm_label": "clearnativeorphantimer()",
+      "id": "private_pfacreaturebase_clearnativeorphantimer"
     },
     {
       "label": "SpawnDeathItem_Implementation()",
@@ -159,9 +309,9 @@
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
       "source_location": "L154",
       "_origin": "ast",
-      "id": "private_pfacreaturebase_spawndeathitem_implementation",
       "community": 22,
-      "norm_label": "spawndeathitem_implementation()"
+      "norm_label": "spawndeathitem_implementation()",
+      "id": "private_pfacreaturebase_spawndeathitem_implementation"
     },
     {
       "label": "PrimalFauna.cpp",
@@ -169,9 +319,9 @@
       "source_file": "Source/PrimalFauna/Private/PrimalFauna.cpp",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "private_primalfauna",
       "community": 19,
-      "norm_label": "primalfauna.cpp"
+      "norm_label": "primalfauna.cpp",
+      "id": "private_primalfauna"
     },
     {
       "label": "StartupModule()",
@@ -179,9 +329,9 @@
       "source_file": "Source/PrimalFauna/Private/PrimalFauna.cpp",
       "source_location": "L5",
       "_origin": "ast",
-      "id": "private_primalfauna_startupmodule",
       "community": 19,
-      "norm_label": "startupmodule()"
+      "norm_label": "startupmodule()",
+      "id": "private_primalfauna_startupmodule"
     },
     {
       "label": "PFASicklejaw.cpp",
@@ -189,9 +339,9 @@
       "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "species_pfasicklejaw",
       "community": 22,
-      "norm_label": "pfasicklejaw.cpp"
+      "norm_label": "pfasicklejaw.cpp",
+      "id": "species_pfasicklejaw"
     },
     {
       "label": "APFASicklejaw()",
@@ -199,9 +349,9 @@
       "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
       "source_location": "L51",
       "_origin": "ast",
-      "id": "species_pfasicklejaw_apfasicklejaw",
       "community": 22,
-      "norm_label": "apfasicklejaw()"
+      "norm_label": "apfasicklejaw()",
+      "id": "species_pfasicklejaw_apfasicklejaw"
     },
     {
       "label": "FObjectInitializer",
@@ -209,9 +359,9 @@
       "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
       "source_location": "L51",
       "_origin": "ast",
-      "id": "source_primalfauna_private_species_pfasicklejaw_cpp_fobjectinitializer",
       "community": 22,
-      "norm_label": "fobjectinitializer"
+      "norm_label": "fobjectinitializer",
+      "id": "source_primalfauna_private_species_pfasicklejaw_cpp_fobjectinitializer"
     },
     {
       "label": "BeginPlay()",
@@ -219,9 +369,9 @@
       "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
       "source_location": "L113",
       "_origin": "ast",
-      "id": "species_pfasicklejaw_beginplay",
       "community": 22,
-      "norm_label": "beginplay()"
+      "norm_label": "beginplay()",
+      "id": "species_pfasicklejaw_beginplay"
     },
     {
       "label": "SpawnTestCommand()",
@@ -229,9 +379,9 @@
       "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
       "source_location": "L164",
       "_origin": "ast",
-      "id": "species_pfasicklejaw_spawntestcommand",
       "community": 22,
-      "norm_label": "spawntestcommand()"
+      "norm_label": "spawntestcommand()",
+      "id": "species_pfasicklejaw_spawntestcommand"
     },
     {
       "label": "UWorld",
@@ -239,9 +389,9 @@
       "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
       "source_location": "L164",
       "_origin": "ast",
-      "id": "uworld",
       "community": 11,
-      "norm_label": "uworld"
+      "norm_label": "uworld",
+      "id": "uworld"
     },
     {
       "label": "PFACreatureBase.h",
@@ -249,9 +399,9 @@
       "source_file": "Source/PrimalFauna/Public/PFACreatureBase.h",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "public_pfacreaturebase",
       "community": 12,
-      "norm_label": "pfacreaturebase.h"
+      "norm_label": "pfacreaturebase.h",
+      "id": "public_pfacreaturebase"
     },
     {
       "label": "EPFAAggression()",
@@ -259,9 +409,9 @@
       "source_file": "Source/PrimalFauna/Public/PFACreatureBase.h",
       "source_location": "L12",
       "_origin": "ast",
-      "id": "public_pfacreaturebase_epfaaggression",
       "community": 12,
-      "norm_label": "epfaaggression()"
+      "norm_label": "epfaaggression()",
+      "id": "public_pfacreaturebase_epfaaggression"
     },
     {
       "label": "class",
@@ -269,9 +419,9 @@
       "source_file": "Source/PrimalFauna/Public/PFACreatureBase.h",
       "source_location": "L12",
       "_origin": "ast",
-      "id": "class",
       "community": 12,
-      "norm_label": "class"
+      "norm_label": "class",
+      "id": "class"
     },
     {
       "label": "07-technical-architecture.md",
@@ -279,9 +429,9 @@
       "source_file": "docs/07-technical-architecture.md",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "docs_07_technical_architecture",
       "community": 1,
-      "norm_label": "07-technical-architecture.md"
+      "norm_label": "07-technical-architecture.md",
+      "id": "docs_07_technical_architecture"
     },
     {
       "label": "07 \u2014 Technical Architecture",
@@ -289,9 +439,9 @@
       "source_file": "docs/07-technical-architecture.md",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "docs_07_technical_architecture_07_technical_architecture",
       "community": 1,
-      "norm_label": "07 \u2014 technical architecture"
+      "norm_label": "07 \u2014 technical architecture",
+      "id": "docs_07_technical_architecture_07_technical_architecture"
     },
     {
       "label": "1. Architecture principle: own every class you change",
@@ -299,9 +449,9 @@
       "source_file": "docs/07-technical-architecture.md",
       "source_location": "L7",
       "_origin": "ast",
-      "id": "docs_07_technical_architecture_1_architecture_principle_own_every_class_you_change",
       "community": 1,
-      "norm_label": "1. architecture principle: own every class you change"
+      "norm_label": "1. architecture principle: own every class you change",
+      "id": "docs_07_technical_architecture_1_architecture_principle_own_every_class_you_change"
     },
     {
       "label": "2. Class map",
@@ -309,9 +459,9 @@
       "source_file": "docs/07-technical-architecture.md",
       "source_location": "L38",
       "_origin": "ast",
-      "id": "docs_07_technical_architecture_2_class_map",
       "community": 1,
-      "norm_label": "2. class map"
+      "norm_label": "2. class map",
+      "id": "docs_07_technical_architecture_2_class_map"
     },
     {
       "label": "3. Species authoring \u2014 everything on the CDO, in C++",
@@ -319,9 +469,9 @@
       "source_file": "docs/07-technical-architecture.md",
       "source_location": "L67",
       "_origin": "ast",
-      "id": "docs_07_technical_architecture_3_species_authoring_everything_on_the_cdo_in_c",
       "community": 1,
-      "norm_label": "3. species authoring \u2014 everything on the cdo, in c++"
+      "norm_label": "3. species authoring \u2014 everything on the cdo, in c++",
+      "id": "docs_07_technical_architecture_3_species_authoring_everything_on_the_cdo_in_c"
     },
     {
       "label": "4. Behavior: borrow the vanilla Behavior Tree, own the actions",
@@ -329,9 +479,9 @@
       "source_file": "docs/07-technical-architecture.md",
       "source_location": "L96",
       "_origin": "ast",
-      "id": "docs_07_technical_architecture_4_behavior_borrow_the_vanilla_behavior_tree_own_the_actions",
       "community": 1,
-      "norm_label": "4. behavior: borrow the vanilla behavior tree, own the actions"
+      "norm_label": "4. behavior: borrow the vanilla behavior tree, own the actions",
+      "id": "docs_07_technical_architecture_4_behavior_borrow_the_vanilla_behavior_tree_own_the_actions"
     },
     {
       "label": "5. Attacks = native `UFGCreatureAction` classes (no custom combat code)",
@@ -339,9 +489,9 @@
       "source_file": "docs/07-technical-architecture.md",
       "source_location": "L117",
       "_origin": "ast",
-      "id": "docs_07_technical_architecture_5_attacks_native_ufgcreatureaction_classes_no_custom_combat_code",
       "community": 1,
-      "norm_label": "5. attacks = native `ufgcreatureaction` classes (no custom combat code)"
+      "norm_label": "5. attacks = native `ufgcreatureaction` classes (no custom combat code)",
+      "id": "docs_07_technical_architecture_5_attacks_native_ufgcreatureaction_classes_no_custom_combat_code"
     },
     {
       "label": "6. Loot & death",
@@ -349,9 +499,9 @@
       "source_file": "docs/07-technical-architecture.md",
       "source_location": "L142",
       "_origin": "ast",
-      "id": "docs_07_technical_architecture_6_loot_death",
       "community": 1,
-      "norm_label": "6. loot & death"
+      "norm_label": "6. loot & death",
+      "id": "docs_07_technical_architecture_6_loot_death"
     },
     {
       "label": "7. Sandwyrm movement (the one custom-movement quarantine)",
@@ -359,9 +509,9 @@
       "source_file": "docs/07-technical-architecture.md",
       "source_location": "L152",
       "_origin": "ast",
-      "id": "docs_07_technical_architecture_7_sandwyrm_movement_the_one_custom_movement_quarantine",
       "community": 1,
-      "norm_label": "7. sandwyrm movement (the one custom-movement quarantine)"
+      "norm_label": "7. sandwyrm movement (the one custom-movement quarantine)",
+      "id": "docs_07_technical_architecture_7_sandwyrm_movement_the_one_custom_movement_quarantine"
     },
     {
       "label": "8. Scanner / radar / bestiary surface (polish tier)",
@@ -369,9 +519,9 @@
       "source_file": "docs/07-technical-architecture.md",
       "source_location": "L164",
       "_origin": "ast",
-      "id": "docs_07_technical_architecture_8_scanner_radar_bestiary_surface_polish_tier",
       "community": 1,
-      "norm_label": "8. scanner / radar / bestiary surface (polish tier)"
+      "norm_label": "8. scanner / radar / bestiary surface (polish tier)",
+      "id": "docs_07_technical_architecture_8_scanner_radar_bestiary_surface_polish_tier"
     },
     {
       "label": "9. Diagnostics contract (`LogPrimalFauna`, `[PFA]`)",
@@ -379,9 +529,9 @@
       "source_file": "docs/07-technical-architecture.md",
       "source_location": "L175",
       "_origin": "ast",
-      "id": "docs_07_technical_architecture_9_diagnostics_contract_logprimalfauna_pfa",
       "community": 1,
-      "norm_label": "9. diagnostics contract (`logprimalfauna`, `[pfa]`)"
+      "norm_label": "9. diagnostics contract (`logprimalfauna`, `[pfa]`)",
+      "id": "docs_07_technical_architecture_9_diagnostics_contract_logprimalfauna_pfa"
     },
     {
       "label": "10. Save-plan versioning",
@@ -389,9 +539,9 @@
       "source_file": "docs/07-technical-architecture.md",
       "source_location": "L201",
       "_origin": "ast",
-      "id": "docs_07_technical_architecture_10_save_plan_versioning",
       "community": 1,
-      "norm_label": "10. save-plan versioning"
+      "norm_label": "10. save-plan versioning",
+      "id": "docs_07_technical_architecture_10_save_plan_versioning"
     },
     {
       "label": "check_imports.ps1",
@@ -399,9 +549,9 @@
       "source_file": "tools/check_imports.ps1",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "tools_check_imports",
       "community": 34,
-      "norm_label": "check_imports.ps1"
+      "norm_label": "check_imports.ps1",
+      "id": "tools_check_imports"
     },
     {
       "label": "PFACheats.cpp",
@@ -469,7 +619,7 @@
       "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
       "source_location": "L70",
       "_origin": "ast",
-      "community": 32,
+      "community": 11,
       "norm_label": "pfa_runselftests()",
       "id": "private_pfacheats_pfa_runselftests"
     },
@@ -1414,36 +1564,6 @@
       "id": "source_primalfauna_public_pfacreaturecontroller_h_primalfauna_api"
     },
     {
-      "label": "CENSUS.md",
-      "file_type": "document",
-      "source_file": "docs/CENSUS.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "community": 25,
-      "norm_label": "census.md",
-      "id": "docs_census"
-    },
-    {
-      "label": "CENSUS \u2014 live vanilla creature data (feeds doc 01 anchors)",
-      "file_type": "document",
-      "source_file": "docs/CENSUS.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "community": 25,
-      "norm_label": "census \u2014 live vanilla creature data (feeds doc 01 anchors)",
-      "id": "docs_census_census_live_vanilla_creature_data_feeds_doc_01_anchors"
-    },
-    {
-      "label": "2026-07-23 \u2014 smoke session (Grass Fields spawn, build w11-2, 113-mod profile incl. SF+)",
-      "file_type": "document",
-      "source_file": "docs/CENSUS.md",
-      "source_location": "L6",
-      "_origin": "ast",
-      "community": 25,
-      "norm_label": "2026-07-23 \u2014 smoke session (grass fields spawn, build w11-2, 113-mod profile incl. sf+)",
-      "id": "docs_census_2026_07_23_smoke_session_grass_fields_spawn_build_w11_2_113_mod_profile_incl_sf"
-    },
-    {
       "label": "import_placeholder_ue.py",
       "file_type": "code",
       "source_file": "tools/import_placeholder_ue.py",
@@ -2154,106 +2274,6 @@
       "id": "docs_02_hostility_and_factions_7_statically_unverifiable_items_differential_review_carryover_in_game_checklist"
     },
     {
-      "label": "03-spawning-and-territories.md",
-      "file_type": "document",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "community": 4,
-      "norm_label": "03-spawning-and-territories.md",
-      "id": "docs_03_spawning_and_territories"
-    },
-    {
-      "label": "03 \u2014 Spawning & Territories",
-      "file_type": "document",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "community": 4,
-      "norm_label": "03 \u2014 spawning & territories",
-      "id": "docs_03_spawning_and_territories_03_spawning_territories"
-    },
-    {
-      "label": "1. Why real `AFGCreatureSpawner`s (not a custom spawn loop)",
-      "file_type": "document",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L6",
-      "_origin": "ast",
-      "community": 4,
-      "norm_label": "1. why real `afgcreaturespawner`s (not a custom spawn loop)",
-      "id": "docs_03_spawning_and_territories_1_why_real_afgcreaturespawner_s_not_a_custom_spawn_loop"
-    },
-    {
-      "label": "2. Territory data (authored, seeded, curated)",
-      "file_type": "document",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L36",
-      "_origin": "ast",
-      "community": 4,
-      "norm_label": "2. territory data (authored, seeded, curated)",
-      "id": "docs_03_spawning_and_territories_2_territory_data_authored_seeded_curated"
-    },
-    {
-      "label": "3. Injection & idempotence (the subsystem's job)",
-      "file_type": "document",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L62",
-      "_origin": "ast",
-      "community": 4,
-      "norm_label": "3. injection & idempotence (the subsystem's job)",
-      "id": "docs_03_spawning_and_territories_3_injection_idempotence_the_subsystem_s_job"
-    },
-    {
-      "label": "4. Persistence model \u26a0 [assumption \u2192 slice test]",
-      "file_type": "document",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L86",
-      "_origin": "ast",
-      "community": 4,
-      "norm_label": "4. persistence model \u26a0 [assumption \u2192 slice test]",
-      "id": "docs_03_spawning_and_territories_4_persistence_model_assumption_slice_test"
-    },
-    {
-      "label": "5. Density semantics (compose with HostileScaling, don't fight it)",
-      "file_type": "document",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L105",
-      "_origin": "ast",
-      "community": 4,
-      "norm_label": "5. density semantics (compose with hostilescaling, don't fight it)",
-      "id": "docs_03_spawning_and_territories_5_density_semantics_compose_with_hostilescaling_don_t_fight_it"
-    },
-    {
-      "label": "6. Live creature lifecycle rules",
-      "file_type": "document",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L114",
-      "_origin": "ast",
-      "community": 4,
-      "norm_label": "6. live creature lifecycle rules",
-      "id": "docs_03_spawning_and_territories_6_live_creature_lifecycle_rules"
-    },
-    {
-      "label": "7. Sandwyrm event system (its own phase \u2014 no nests)",
-      "file_type": "document",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L121",
-      "_origin": "ast",
-      "community": 4,
-      "norm_label": "7. sandwyrm event system (its own phase \u2014 no nests)",
-      "id": "docs_03_spawning_and_territories_7_sandwyrm_event_system_its_own_phase_no_nests"
-    },
-    {
-      "label": "8. Multiplayer",
-      "file_type": "document",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L150",
-      "_origin": "ast",
-      "community": 4,
-      "norm_label": "8. multiplayer",
-      "id": "docs_03_spawning_and_territories_8_multiplayer"
-    },
-    {
       "label": "04-config-and-ui.md",
       "file_type": "document",
       "source_file": "docs/04-config-and-ui.md",
@@ -2438,6 +2458,136 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_03_spawning_and_territories",
+      "target": "docs_03_spawning_and_territories_03_spawning_territories"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_03_spawning_and_territories_03_spawning_territories",
+      "target": "docs_03_spawning_and_territories_1_why_real_afgcreaturespawner_s_not_a_custom_spawn_loop"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L36",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_03_spawning_and_territories_03_spawning_territories",
+      "target": "docs_03_spawning_and_territories_2_territory_data_authored_seeded_curated"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L62",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_03_spawning_and_territories_03_spawning_territories",
+      "target": "docs_03_spawning_and_territories_3_injection_idempotence_the_subsystem_s_job"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L86",
+      "weight": 1.0,
+      "source": "docs_03_spawning_and_territories_03_spawning_territories",
+      "target": "docs_03_spawning_and_territories_4_persistence_model_resolved_outcome_a_native_persistence_gate_re_run_2026_07_23",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L105",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_03_spawning_and_territories_03_spawning_territories",
+      "target": "docs_03_spawning_and_territories_5_density_semantics_compose_with_hostilescaling_don_t_fight_it"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L114",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_03_spawning_and_territories_03_spawning_territories",
+      "target": "docs_03_spawning_and_territories_6_live_creature_lifecycle_rules"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L121",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_03_spawning_and_territories_03_spawning_territories",
+      "target": "docs_03_spawning_and_territories_7_sandwyrm_event_system_its_own_phase_no_nests"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L150",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_03_spawning_and_territories_03_spawning_territories",
+      "target": "docs_03_spawning_and_territories_8_multiplayer"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/03-spawning-and-territories.md",
+      "source_location": "L94",
+      "weight": 1.0,
+      "source": "docs_03_spawning_and_territories_4_persistence_model_resolved_outcome_a_native_persistence_gate_re_run_2026_07_23",
+      "target": "docs_03_spawning_and_territories_original_assumption_text_superseded",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/CENSUS.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_census",
+      "target": "docs_census_census_live_vanilla_creature_data_feeds_doc_01_anchors"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/CENSUS.md",
+      "source_location": "L19",
+      "weight": 1.0,
+      "source": "docs_census_census_live_vanilla_creature_data_feeds_doc_01_anchors",
+      "target": "docs_census_2026_07_23_phase_1_gate_re_run_the_bt_census_build_w15_3_full_profile",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/CENSUS.md",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_census_census_live_vanilla_creature_data_feeds_doc_01_anchors",
+      "target": "docs_census_2026_07_23_smoke_session_grass_fields_spawn_build_w11_2_113_mod_profile_incl_sf"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
       "source_location": "L13",
       "weight": 1.0,
@@ -2461,9 +2611,9 @@
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
       "source_location": "L144",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "private_pfacreaturebase",
-      "target": "private_pfacreaturebase_clearnativeorphantimer",
-      "confidence_score": 1.0
+      "target": "private_pfacreaturebase_clearnativeorphantimer"
     },
     {
       "relation": "contains",
@@ -2543,9 +2693,9 @@
       "source_location": "L14",
       "weight": 1.0,
       "context": "return_type",
+      "confidence_score": 1.0,
       "source": "private_pfacreaturebase_aggressionmodetostring",
-      "target": "tchar",
-      "confidence_score": 1.0
+      "target": "tchar"
     },
     {
       "relation": "calls",
@@ -2598,9 +2748,9 @@
       "source_location": "L52",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "private_pfacreaturebase_getlifetimereplicatedprops",
-      "target": "tarray",
-      "confidence_score": 1.0
+      "target": "tarray"
     },
     {
       "relation": "calls",
@@ -2651,9 +2801,9 @@
       "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
       "source_location": "L51",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "species_pfasicklejaw",
-      "target": "species_pfasicklejaw_apfasicklejaw",
-      "confidence_score": 1.0
+      "target": "species_pfasicklejaw_apfasicklejaw"
     },
     {
       "relation": "contains",
@@ -2661,9 +2811,9 @@
       "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
       "source_location": "L113",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "species_pfasicklejaw",
-      "target": "species_pfasicklejaw_beginplay",
-      "confidence_score": 1.0
+      "target": "species_pfasicklejaw_beginplay"
     },
     {
       "relation": "contains",
@@ -2671,9 +2821,9 @@
       "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
       "source_location": "L164",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "species_pfasicklejaw",
-      "target": "species_pfasicklejaw_spawntestcommand",
-      "confidence_score": 1.0
+      "target": "species_pfasicklejaw_spawntestcommand"
     },
     {
       "relation": "references",
@@ -2693,9 +2843,9 @@
       "source_location": "L164",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "species_pfasicklejaw_spawntestcommand",
-      "target": "uworld",
-      "confidence_score": 1.0
+      "target": "uworld"
     },
     {
       "relation": "references",
@@ -4160,26 +4310,6 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "docs/CENSUS.md",
-      "source_location": "L1",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_census",
-      "target": "docs_census_census_live_vanilla_creature_data_feeds_doc_01_anchors"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/CENSUS.md",
-      "source_location": "L6",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_census_census_live_vanilla_creature_data_feeds_doc_01_anchors",
-      "target": "docs_census_2026_07_23_smoke_session_grass_fields_spawn_build_w11_2_113_mod_profile_incl_sf"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
       "source_file": "tools/import_placeholder_ue.py",
       "source_location": "L145",
       "weight": 1.0,
@@ -4798,96 +4928,6 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L1",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_03_spawning_and_territories",
-      "target": "docs_03_spawning_and_territories_03_spawning_territories"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L6",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_03_spawning_and_territories_03_spawning_territories",
-      "target": "docs_03_spawning_and_territories_1_why_real_afgcreaturespawner_s_not_a_custom_spawn_loop"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L36",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_03_spawning_and_territories_03_spawning_territories",
-      "target": "docs_03_spawning_and_territories_2_territory_data_authored_seeded_curated"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L62",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_03_spawning_and_territories_03_spawning_territories",
-      "target": "docs_03_spawning_and_territories_3_injection_idempotence_the_subsystem_s_job"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L86",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_03_spawning_and_territories_03_spawning_territories",
-      "target": "docs_03_spawning_and_territories_4_persistence_model_assumption_slice_test"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L105",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_03_spawning_and_territories_03_spawning_territories",
-      "target": "docs_03_spawning_and_territories_5_density_semantics_compose_with_hostilescaling_don_t_fight_it"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L114",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_03_spawning_and_territories_03_spawning_territories",
-      "target": "docs_03_spawning_and_territories_6_live_creature_lifecycle_rules"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L121",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_03_spawning_and_territories_03_spawning_territories",
-      "target": "docs_03_spawning_and_territories_7_sandwyrm_event_system_its_own_phase_no_nests"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/03-spawning-and-territories.md",
-      "source_location": "L150",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_03_spawning_and_territories_03_spawning_territories",
-      "target": "docs_03_spawning_and_territories_8_multiplayer"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
       "source_file": "docs/04-config-and-ui.md",
       "source_location": "L1",
       "weight": 1.0,
@@ -5047,5 +5087,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "c64d2e02c0fc0f3eaaeccd6c4d77781951fe1e26"
+  "built_at_commit": "7da1e27b6ce9395e967c1f7555640ffc18839456"
 }
