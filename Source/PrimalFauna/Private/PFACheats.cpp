@@ -458,13 +458,17 @@ namespace
 				// Round-trip: forcing the CVar to 1 must read true unconditionally
 				// (OR-gate); restoring it must return the gate to its prior reading.
 				// Proves IsEnabled() reads the live CVar without assuming config state.
+				// ECVF_SetByConsole, NOT SetByCode: a prior console `pfa.Diag` set
+				// outranks SetByCode and silently ignores it -- the smoke session
+				// (2026-07-23) proved that false-FAILs this test after any console
+				// touch of the CVar. Console priority can always overwrite itself.
 				const bool bBefore = PFADiag::IsEnabled();
 				const int32 OriginalValue = CVar->GetInt();
 
-				CVar->Set(1, ECVF_SetByCode);
+				CVar->Set(1, ECVF_SetByConsole);
 				const bool bForcedOn = PFADiag::IsEnabled();
 
-				CVar->Set(OriginalValue, ECVF_SetByCode);
+				CVar->Set(OriginalValue, ECVF_SetByConsole);
 				const bool bAfterRestore = PFADiag::IsEnabled();
 
 				OutDetail = FString::Printf(TEXT("before=%d forcedOn=%d afterRestore=%d (cvar restored to %d)"),

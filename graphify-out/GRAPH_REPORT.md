@@ -1,16 +1,16 @@
 # Graph Report - PrimalFauna  (2026-07-23)
 
 ## Corpus Check
-- 24 files · ~778,452 words
+- 32 files · ~783,699 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 139 nodes · 130 edges · 22 communities (16 shown, 6 thin omitted)
-- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 1 edges (avg confidence: 0.8)
+- 186 nodes · 191 edges · 28 communities (20 shown, 8 thin omitted)
+- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 3 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `e93a39f3`
+- Built from commit: `e0012cf0`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -33,6 +33,12 @@
 - [[_COMMUNITY_Community 15|Community 15]]
 - [[_COMMUNITY_Community 16|Community 16]]
 - [[_COMMUNITY_Community 21|Community 21]]
+- [[_COMMUNITY_Community 22|Community 22]]
+- [[_COMMUNITY_Community 23|Community 23]]
+- [[_COMMUNITY_Community 24|Community 24]]
+- [[_COMMUNITY_Community 25|Community 25]]
+- [[_COMMUNITY_Community 26|Community 26]]
+- [[_COMMUNITY_Community 27|Community 27]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `07 — Technical Architecture` - 11 edges
@@ -40,20 +46,28 @@
 3. `03 — Spawning & Territories` - 9 edges
 4. `08 — Implementation Plan (team execution)` - 8 edges
 5. `02 — Hostility & Factions` - 8 edges
-6. `00 — Vision & Pillars` - 6 edges
-7. `04 — Config & UI` - 6 edges
-8. `06 — Integration & Compatibility` - 6 edges
-9. `DumpCreatureCommand()` - 5 edges
-10. `virtual` - 5 edges
+6. `AActor` - 6 edges
+7. `CanBeHostileTowards()` - 6 edges
+8. `00 — Vision & Pillars` - 6 edges
+9. `04 — Config & UI` - 6 edges
+10. `06 — Integration & Compatibility` - 6 edges
 
 ## Surprising Connections (you probably didn't know these)
+- `APFASicklejaw()` --calls--> `SetBaseHealth()`  [INFERRED]
+  Source/PrimalFauna/Private/Species/PFASicklejaw.cpp → Source/PrimalFauna/Private/PFACreatureBase.cpp
+- `APFASicklejaw()` --calls--> `SetSpawnDespawnDistance()`  [INFERRED]
+  Source/PrimalFauna/Private/Species/PFASicklejaw.cpp → Source/PrimalFauna/Private/PFACreatureBase.cpp
+- `DumpAllCreaturesCommand()` --references--> `UWorld`  [EXTRACTED]
+  Source/PrimalFauna/Private/PFACheats.cpp → Source/PrimalFauna/Private/Species/PFASicklejaw.cpp
 - `RefreshTick()` --calls--> `PFA_RunSelfTests()`  [INFERRED]
   Source/PrimalFauna/Private/PFASubsystem.cpp → Source/PrimalFauna/Private/PFACheats.cpp
+- `FindLookedAtOrNearestCreature()` --references--> `AFGCreature`  [EXTRACTED]
+  Source/PrimalFauna/Private/PFACheats.cpp → Source/PrimalFauna/Private/PFACreatureController.cpp
 
 ## Import Cycles
 - None detected.
 
-## Communities (22 total, 6 thin omitted)
+## Communities (28 total, 8 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.20
@@ -103,13 +117,35 @@ Nodes (3): FPFAConfigStruct, GetActiveConfig(), UObject
 Cohesion: 0.15
 Nodes (12): AFGCreature, FPFASelfTest, DumpAllCreaturesCommand(), DumpCreatureCommand(), FindLookedAtOrNearestCreature(), IsEnabled(), LogActionReflection(), PFA_RunSelfTests() (+4 more)
 
+### Community 12 - "Community 12"
+Cohesion: 0.40
+Nodes (3): class, EPFAAggression(), FDefaultGameModuleImpl()
+
+### Community 22 - "Community 22"
+Cohesion: 0.13
+Nodes (14): EPFAAggression, FLifetimeProperty, AggressionModeToString(), APFACreatureBase(), GetLifetimeReplicatedProps(), SetAggressionMode(), SetBaseHealth(), SetSpawnDespawnDistance() (+6 more)
+
+### Community 23 - "Community 23"
+Cohesion: 0.42
+Nodes (9): AActor, APFACreatureController(), CanBeAlertedByTarget_Implementation(), CanBeHostileTowards(), IsValidTarget(), LogRuleVerdict(), PassesAggressionModeGate(), WasRecentlyDamagedBy() (+1 more)
+
+### Community 24 - "Community 24"
+Cohesion: 0.39
+Nodes (7): disk_verify(), log(), make_anim_task(), make_sk_task(), r""" import_placeholder_ue.py -- import the W1.3 placeholder creature rig (a ske, set_editor_property that logs-and-continues instead of aborting the     whole sc, safe_set()
+
 ## Knowledge Gaps
-- **70 isolated node(s):** `FPFASelfTest`, `AFGCreature`, `UFGAction`, `FPFAConfigStruct`, `UObject` (+65 more)
+- **77 isolated node(s):** `TCHAR`, `FObjectInitializer`, `TArray`, `FLifetimeProperty`, `FObjectInitializer` (+72 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **6 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **8 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **What connects `FPFASelfTest`, `AFGCreature`, `UFGAction` to the rest of the system?**
-  _70 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Why does `UWorld` connect `Community 11` to `Community 22`?**
+  _High betweenness centrality (0.041) - this node is a cross-community bridge._
+- **Why does `LogRuleVerdict()` connect `Community 23` to `Community 9`, `Community 11`?**
+  _High betweenness centrality (0.040) - this node is a cross-community bridge._
+- **What connects `TCHAR`, `FObjectInitializer`, `TArray` to the rest of the system?**
+  _79 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Should `Community 22` be split into smaller, more focused modules?**
+  _Cohesion score 0.13071895424836602 - nodes in this community are weakly interconnected._

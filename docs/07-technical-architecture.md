@@ -120,8 +120,10 @@ Verified classes with the fields we set (all under `Creature/Actions/`):
 | Duskstalker pounce | LeapAttack again (slam radius 0) | |
 | Worm attacks | custom `UFGCreatureAction` subclasses (Worm/PFAWormActions) — the action SYSTEM is native, the motion is ours | base lifecycle `FGAction.h:59-105` |
 
-Actions are instanced UObjects: `CreateDefaultSubobject<UFGCreatureActionMeleeAttack>` in the
-species ctor, tune fields, wrap in `FCreatureAction{RequiredStates = Fight}`. Target selection per
+Actions are instanced UObjects — **but the native tuning fields are PROTECTED (W1.4 finding), so
+species packets SUBCLASS the native action (`UPFACreatureAction*`) and set fields in the subclass
+ctor** (compile-safe, no grants); direct `CreateDefaultSubobject<UFGCreatureAction*>`+set does not
+compile. Wrap in `FCreatureAction{RequiredStates = Fight}`. Target selection per
 action via `FCreatureActionTargetParams` (`FGCreatureAction.h:33` — Closest/HighestAggro/…).
 Damage: `mDamageTypes` arrays take `UFGDamageType` instances — instantiate ours with damage =
 anchor × config `DamageMultiplier` (doc 04) pushed on refresh; **the damage numbers therefore live

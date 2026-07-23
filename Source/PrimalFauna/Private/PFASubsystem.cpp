@@ -2,13 +2,16 @@
 #include "PrimalFauna.h"
 #include "PFAConfig.h"
 #include "PFACheats.h"
+#include "PFABehaviorBorrower.h"
 
+#include "BehaviorTree/BehaviorTree.h"
 #include "TimerManager.h"
 
 namespace
 {
     constexpr float RefreshIntervalSeconds = 10.0f;
     constexpr int32 HeartbeatEveryNTicks = 6;
+    constexpr int32 MaxBTBorrowAttempts = 5;
 }
 
 APFASubsystem::APFASubsystem()
@@ -25,6 +28,21 @@ void APFASubsystem::BeginPlay()
     if (!HasAuthority())
     {
         return;
+    }
+
+    // W1.4 (docs/07 §4): borrow a vanilla BehaviorTree onto our creatures' CDO,
+    // server-side, post-mount. This subsystem is spawned by the world module
+    // (PFARootWorld), so its BeginPlay is the post-mount hook the packet calls
+    // for. Runtime AssetRegistry discovery because no vanilla hostile-BT path
+    // was ever captured (docs/CENSUS.md). Idempotent across worlds. The returned
+    // tree is held in mBorrowedBehaviorTree to keep it alive (cookbook #34); the
+    // stats feed the BorrowedBTAssigned self-test.
+    {
+        const PFABehaviorBorrower::FResult BorrowResult = PFABehaviorBorrower::DiscoverAndBorrow(GetWorld());
+        mBorrowedBehaviorTree = BorrowResult.ChosenTree;
+        BTDiscoveredCount = BorrowResult.DiscoveredCount;
+        BTSearchRoot = BorrowResult.SearchRoot;
+        BTBorrowAttempts = 1;
     }
 
     GetWorldTimerManager().SetTimer(
@@ -64,6 +82,21 @@ void APFASubsystem::RefreshTick()
         bRanAutoTest = true;
         UE_LOG(LogPrimalFauna, Display, TEXT("[PFA] pfa.AutoTest=1: running self-tests on first refresh tick."));
         PFA_RunSelfTests(GetWorld());
+    }
+
+    // W1.4 review W2: re-attempt the BT borrow if discovery raced a still-
+    // scanning asset registry and saw ZERO assets (null tree with a non-zero
+    // census = heuristic miss, retrying cannot help). Cap keeps a genuinely
+    // empty registry from spamming forever.
+    if (!mBorrowedBehaviorTree && BTDiscoveredCount == 0 && BTBorrowAttempts < MaxBTBorrowAttempts)
+    {
+        ++BTBorrowAttempts;
+        UE_LOG(LogPrimalFauna, Display, TEXT("[PFA] BT borrow retry %d/%d (previous discovery found 0 assets)"),
+            BTBorrowAttempts, MaxBTBorrowAttempts);
+        const PFABehaviorBorrower::FResult BorrowResult = PFABehaviorBorrower::DiscoverAndBorrow(GetWorld());
+        mBorrowedBehaviorTree = BorrowResult.ChosenTree;
+        BTDiscoveredCount = BorrowResult.DiscoveredCount;
+        BTSearchRoot = BorrowResult.SearchRoot;
     }
 
     if (TickCount % HeartbeatEveryNTicks == 0)

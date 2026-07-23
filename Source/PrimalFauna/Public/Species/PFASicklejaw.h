@@ -16,14 +16,22 @@
 // against live vanilla creatures) is what fixes the real numbers. Nothing
 // here should be read as balance-final.
 //
-// NOT set in this packet (deliberately -- see docs/08 W1.3 handoff):
-//   - mBehaviorTree / mCreatureActionsSetup (W1.4) -- this creature idles
-//     without a behavior tree. EXPECTED this packet.
+// Wired by W1.4 (docs/08 W1.4):
+//   - mCreatureActionsSetup -- gains ONE montage-less bite (UPFACreatureActionMelee,
+//     Actions/PFACreatureActionMelee.h), enabled for the Fight state. Appended
+//     in the ctor below.
+//   - mBehaviorTree -- NOT set on the CDO at ctor time; PFABehaviorBorrower
+//     discovers a vanilla BehaviorTree at world load (server-side) and assigns
+//     it to this CDO via APFACreatureBase::SetBorrowedBehaviorTree. If discovery
+//     finds nothing, mBehaviorTree stays null and the creature idles (degraded,
+//     not broken) -- BorrowedBTAssigned self-test FAILs with the found-count.
+//
+// NOT set in this packet (deliberately):
 //   - AnimInstance class (no placeholder AnimBP exists yet; the 2 imported
 //     anim FBXs become raw UAnimSequence assets only, per
 //     tools/import_placeholder_ue.py)
 //   - mCreatureFamily (doc 07 §3 marks this an open [assumption] to resolve
-//     "during W1", not specifically W1.3; deferred until doc 02 §7 item 1's
+//     "during W1", not specifically W1.3/W1.4; deferred until doc 02 §7 item 1's
 //     in-game test tells us whether the family system actually gates our
 //     creature-vs-creature targeting)
 // ---------------------------------------------------------------------------

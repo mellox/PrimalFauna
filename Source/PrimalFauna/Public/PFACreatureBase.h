@@ -86,6 +86,15 @@ public:
 	// -- real item-drop spawning arrives with W2's loot items (doc 07 §6).
 	virtual void SpawnDeathItem_Implementation() override;
 
+	// W1.4 (docs/07 §4 borrowed-BT): PFABehaviorBorrower assigns a discovered
+	// vanilla UBehaviorTree onto this species' CDO. mBehaviorTree is PROTECTED
+	// on AFGCreature (FGCreature.h:548) -- reachable from this subclass via
+	// inheritance (docs/07 §1), so NO Friend grant is needed (contrast the
+	// PRIVATE spawn/despawn fields, which do use the grant). Public because the
+	// borrower (a free function, not a subclass) calls it on the CDO; the loaded
+	// tree is GC-rooted by the world subsystem, not here.
+	void SetBorrowedBehaviorTree(class UBehaviorTree* BehaviorTree);
+
 protected:
 	// Species ctors call this instead of GetHealthComponent()->SetMaxHealth()
 	// directly. GetHealthComponent() is public (FGCharacterBase.h:210) so

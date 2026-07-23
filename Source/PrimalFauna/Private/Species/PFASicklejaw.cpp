@@ -2,6 +2,7 @@
 #include "PrimalFauna.h"
 #include "PFACheats.h"
 #include "PFACreatureController.h"
+#include "Actions/PFACreatureActionMelee.h"
 
 #include "FGHealthComponent.h"
 #include "FGCreatureSubsystem.h"
@@ -90,6 +91,23 @@ APFASicklejaw::APFASicklejaw(const FObjectInitializer& ObjectInitializer)
 
 	// --- Flags (doc 07 §3) ---
 	mIsArachnid = false; // explicit; matches the engine's own zero-init default
+
+	// --- Attacks (doc 07 §5, doc 08 W1.4): the bite. UPFACreatureActionMelee is
+	// our subclass of UFGCreatureActionMeleeAttack (its tuning fields are
+	// protected -- see that class for why we subclass instead of grant/reflect).
+	// Created as an instanced default subobject (matching how vanilla creatures
+	// author actions), wrapped in an FCreatureAction enabled for the Fight state
+	// (FGCreature.h:106,149), and appended to mCreatureActionsSetup (:584 --
+	// protected, inherited, set directly like mMoveSpeedData/mPerceptionSettings
+	// above). Montage-less: the action carries no montage (docs/08 §4 assumption
+	// 2). Pounce/leap (doc 01 §1b) is a W2 fast-follow, not this packet. ---
+	UPFACreatureActionMelee* BiteAction = CreateDefaultSubobject<UPFACreatureActionMelee>(TEXT("SicklejawMeleeAction"));
+	FCreatureAction BiteEntry;
+	BiteEntry.Action = BiteAction;
+	BiteEntry.RequiredStates = static_cast<uint8>(ECreatureState::CS_Fight);
+	BiteEntry.StartsWithCooldown = false;
+	BiteEntry.ActionName = TEXT("SicklejawMelee"); // cosmetic (array display / dumps)
+	mCreatureActionsSetup.Add(BiteEntry);
 }
 
 void APFASicklejaw::BeginPlay()

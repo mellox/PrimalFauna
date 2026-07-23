@@ -6,6 +6,7 @@
 #include "AI/FGCreatureController.h"
 #include "Creature/FGCreature.h"
 #include "FGHealthComponent.h"
+#include "BehaviorTree/BehaviorTree.h"
 #include "Net/UnrealNetwork.h"
 
 namespace
@@ -120,6 +121,23 @@ void APFACreatureBase::SetSpawnDespawnDistance(float NewSpawnDistanceCm, float N
 	{
 		UE_LOG(LogPrimalFauna, Display, TEXT("[PFA] %s: SetSpawnDespawnDistance spawn=%.1f despawn=%.1f (getters: %.1f/%.1f)"),
 			*GetName(), NewSpawnDistanceCm, NewDespawnDistanceCm, GetSpawnDistance(), GetDespawnDistance());
+	}
+}
+
+void APFACreatureBase::SetBorrowedBehaviorTree(UBehaviorTree* BehaviorTree)
+{
+	// mBehaviorTree is protected on AFGCreature (FGCreature.h:548) -- inherited,
+	// so written directly (no Friend grant, unlike the private spawn/despawn
+	// fields). Assigning null is legal: the creature simply idles (degraded, not
+	// broken) if discovery found nothing to borrow.
+	mBehaviorTree = BehaviorTree;
+
+	if (PFADiag::IsEnabled())
+	{
+		UE_LOG(LogPrimalFauna, Display, TEXT("[PFA] %s: SetBorrowedBehaviorTree -> %s (readback %s)"),
+			*GetClass()->GetName(),
+			BehaviorTree ? *BehaviorTree->GetName() : TEXT("null"),
+			GetBehaviorTreeAsset() ? *GetBehaviorTreeAsset()->GetName() : TEXT("null"));
 	}
 }
 

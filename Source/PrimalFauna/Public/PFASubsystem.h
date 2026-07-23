@@ -24,6 +24,12 @@ public:
     // read its heartbeat without a Friend/AccessTransformer grant.
     FORCEINLINE int32 GetTickCount() const { return TickCount; }
 
+    // W1.4 read-backs for the BorrowedBTAssigned self-test
+    // (PFABehaviorBorrower.cpp): the behavior-borrow discovery stats captured in
+    // BeginPlay, so a FAIL can report WHY (no BTs vs. no heuristic match).
+    FORCEINLINE int32 GetBTDiscoveredCount() const { return BTDiscoveredCount; }
+    FORCEINLINE const FString& GetBTSearchRoot() const { return BTSearchRoot; }
+
     // IFGSaveInterface -- no savegame data yet in this packet, so every
     // hook is an empty stub; ShouldSave still returns true so the actor is
     // already registered with the save system once fields are added later.
@@ -59,4 +65,23 @@ private:
     // once per world (docs/08 W1.1: "hook via the subsystem's first
     // RefreshTick, NOT a new engine hook").
     bool bRanAutoTest = false;
+
+    // W1.4 (docs/07 §4): GC root for the borrowed vanilla BehaviorTree that
+    // PFABehaviorBorrower assigns onto the Sicklejaw CDO in BeginPlay. An asset
+    // referenced only from a CDO is invisible to GC (cookbook gotcha #34); this
+    // UPROPERTY on the live, world-rooted subsystem keeps it alive. Transient --
+    // re-discovered every load, never serialized to the save.
+    UPROPERTY(Transient)
+    TObjectPtr<class UBehaviorTree> mBorrowedBehaviorTree = nullptr;
+
+    // Discovery stats cached for the BorrowedBTAssigned self-test.
+    int32 BTDiscoveredCount = -1;
+    FString BTSearchRoot;
+
+    // W1.4 review W2: retry counter for the asset-registry race (a scan still in
+    // progress at BeginPlay can return ZERO assets; RefreshTick re-attempts up
+    // to the cap instead of idling the species all session). Retries only fire
+    // on DiscoveredCount == 0 -- a heuristic miss over a full census will not
+    // improve by retrying.
+    int32 BTBorrowAttempts = 0;
 };
