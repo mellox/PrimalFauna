@@ -17,8 +17,19 @@ review on ⚠ packets, diagnostics everywhere.
   differential/parity prompt (old-path invariants → provided/assumed/unverifiable → in-game list).
 - **Asset track runs PARALLEL to the systems track** (it's not code) — but respects GPU law: no
   generative/texture tools during builds; UE headless imports sequenced like builds.
-- **Models:** implementation → `sonnet`; mechanical (icons, data tables, region tables) → `haiku`;
-  ⚠ reviews + architecture deviations → top-tier. State agent counts before fan-outs >10.
+- **Models (explicit per role — the budget rule made concrete):**
+
+  | Role / packets | Model | Why |
+  |---|---|---|
+  | Orchestrator (sequencing, builds, integration, census sessions with user, architecture deviations) | **top-tier session model** (Opus-class+) | Judgment-heavy; owns every merge |
+  | ⚠ novel-engineering implementation: **W1.4** (borrowed-BT + actions), **W4.1** (worm movement/director) | **top-tier** | Assumption-resolving, no prior art anywhere; rework costs more than the tier delta |
+  | Standard implementation: W0.1, W1.1, W1.3, W1.5, W2.2–W2.6, W3.1–W3.4, W4.2–W4.5, W5.1–W5.2 | `sonnet` | Contract-driven C++/bpy against these docs |
+  | Mechanical passes: CENSUS.md transcription, region-table data entry, icon batch, anim import batches, ASSET-LEDGER | `haiku` (`effort: low`) | Verify/extract work, cheap to check |
+  | Cold review, ordinary packets | `sonnet` (fresh `ruflo-core:reviewer`) | Independent eyes ≫ tier here |
+  | Cold review, ⚠ packets (W1.4, W1.5, W2.5, W3.4) + anything touching doc 06 contract items | **top-tier** differential/parity review | The regression class that slips past local review |
+  | Local LLM (LM Studio) | log/dump summarization during test sessions ONLY | Never implementation (correctness-critical), never during builds (VRAM) |
+
+  State agent counts before fan-outs >10; one implementation packet in flight regardless of tier.
 - **Mandatory reading for every implementer:** satisfactory-modding skill (esp. `sml-gotchas.md`,
   `new-mod-scaffold.md`), `_team/playbooks/satisfactory-mod.md`, doc 07, and the packet's domain doc.
 
