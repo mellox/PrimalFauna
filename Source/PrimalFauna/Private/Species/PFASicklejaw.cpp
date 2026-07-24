@@ -84,6 +84,16 @@ namespace
 		TEXT("Additional Z offset (cm) applied to the Sicklejaw mesh after feet planting. Negative sinks, positive lifts. Respawn to apply."),
 		ECVF_Default);
 
+	// w24-4: live kill-switch for locomotion playback (session-14 finding:
+	// the FIRST real PlayAnimation visually destroyed the mesh -- creatures
+	// present/on-surface/animating per log, invisible to the eye; suspected
+	// anim-vs-mesh unit-scale mismatch launching bones ~166x out of position).
+	// 0 = skip arming (visible statues) while the anim DATA is fixed.
+	static TAutoConsoleVariable<int32> CVarPFALocomotionAnims(
+		TEXT("pfa.LocomotionAnims"), 1,
+		TEXT("1 (default): play idle/walk/run on Sicklejaws. 0: skip animation playback (statues) -- escape hatch while anim data is fixed. Respawn to apply."),
+		ECVF_Default);
+
 	// w24-2 locomotion anim PACKAGES. w24-1 in-game evidence (MISSING x3
 	// despite the assets being in the cooked pak): the FBX anim import put
 	// the MESH payload into each primary package (five ~611KB cooked twins of
@@ -362,6 +372,14 @@ namespace
 
 void APFASicklejaw::StartLocomotionAnim()
 {
+	if (CVarPFALocomotionAnims.GetValueOnGameThread() == 0)
+	{
+		UE_LOG(LogPrimalFauna, Display,
+			TEXT("[PFA] %s: locomotion playback DISABLED by pfa.LocomotionAnims=0 -- ref-pose statue by choice."),
+			*GetName());
+		return;
+	}
+
 	const FString OwnerName = GetName();
 	LocomotionIdleAnim = FindSequenceInPackages(SicklejawIdleAnimPackages, UE_ARRAY_COUNT(SicklejawIdleAnimPackages), TEXT("idle"), OwnerName);
 	LocomotionWalkAnim = FindSequenceInPackages(SicklejawWalkAnimPackages, UE_ARRAY_COUNT(SicklejawWalkAnimPackages), TEXT("walk"), OwnerName);

@@ -127,7 +127,7 @@
       "label": "TickLocomotionAnim()",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
-      "source_location": "L393",
+      "source_location": "L406",
       "_origin": "ast",
       "id": "species_pfasicklejaw_ticklocomotionanim",
       "community": 22,
@@ -137,7 +137,7 @@
       "label": "SpawnTestCommand()",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
-      "source_location": "L461",
+      "source_location": "L490",
       "_origin": "ast",
       "id": "species_pfasicklejaw_spawntestcommand",
       "community": 22,
@@ -147,7 +147,7 @@
       "label": "UWorld",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
-      "source_location": "L461",
+      "source_location": "L490",
       "_origin": "ast",
       "id": "uworld",
       "community": 11,
@@ -159,9 +159,9 @@
       "source_file": "tools/import_sicklejaw_ue.py",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "tools_import_sicklejaw_ue",
       "community": 31,
-      "norm_label": "import_sicklejaw_ue.py"
+      "norm_label": "import_sicklejaw_ue.py",
+      "id": "tools_import_sicklejaw_ue"
     },
     {
       "label": "log()",
@@ -169,9 +169,9 @@
       "source_file": "tools/import_sicklejaw_ue.py",
       "source_location": "L61",
       "_origin": "ast",
-      "id": "tools_import_sicklejaw_ue_log",
       "community": 31,
-      "norm_label": "log()"
+      "norm_label": "log()",
+      "id": "tools_import_sicklejaw_ue_log"
     },
     {
       "label": "fail()",
@@ -179,9 +179,9 @@
       "source_file": "tools/import_sicklejaw_ue.py",
       "source_location": "L65",
       "_origin": "ast",
-      "id": "tools_import_sicklejaw_ue_fail",
       "community": 31,
-      "norm_label": "fail()"
+      "norm_label": "fail()",
+      "id": "tools_import_sicklejaw_ue_fail"
     },
     {
       "label": "safe_set()",
@@ -189,9 +189,9 @@
       "source_file": "tools/import_sicklejaw_ue.py",
       "source_location": "L76",
       "_origin": "ast",
-      "id": "tools_import_sicklejaw_ue_safe_set",
       "community": 31,
-      "norm_label": "safe_set()"
+      "norm_label": "safe_set()",
+      "id": "tools_import_sicklejaw_ue_safe_set"
     },
     {
       "label": "make_sk_task()",
@@ -199,9 +199,9 @@
       "source_file": "tools/import_sicklejaw_ue.py",
       "source_location": "L85",
       "_origin": "ast",
-      "id": "tools_import_sicklejaw_ue_make_sk_task",
       "community": 31,
-      "norm_label": "make_sk_task()"
+      "norm_label": "make_sk_task()",
+      "id": "tools_import_sicklejaw_ue_make_sk_task"
     },
     {
       "label": "make_anim_task()",
@@ -209,9 +209,9 @@
       "source_file": "tools/import_sicklejaw_ue.py",
       "source_location": "L113",
       "_origin": "ast",
-      "id": "tools_import_sicklejaw_ue_make_anim_task",
       "community": 31,
-      "norm_label": "make_anim_task()"
+      "norm_label": "make_anim_task()",
+      "id": "tools_import_sicklejaw_ue_make_anim_task"
     },
     {
       "label": "measure_height_cm()",
@@ -219,9 +219,9 @@
       "source_file": "tools/import_sicklejaw_ue.py",
       "source_location": "L144",
       "_origin": "ast",
-      "id": "tools_import_sicklejaw_ue_measure_height_cm",
       "community": 31,
-      "norm_label": "measure_height_cm()"
+      "norm_label": "measure_height_cm()",
+      "id": "tools_import_sicklejaw_ue_measure_height_cm"
     },
     {
       "label": "disk_verify()",
@@ -229,9 +229,9 @@
       "source_file": "tools/import_sicklejaw_ue.py",
       "source_location": "L152",
       "_origin": "ast",
-      "id": "tools_import_sicklejaw_ue_disk_verify",
       "community": 31,
-      "norm_label": "disk_verify()"
+      "norm_label": "disk_verify()",
+      "id": "tools_import_sicklejaw_ue_disk_verify"
     },
     {
       "label": "import_sk_fresh()",
@@ -239,9 +239,9 @@
       "source_file": "tools/import_sicklejaw_ue.py",
       "source_location": "L164",
       "_origin": "ast",
-      "id": "tools_import_sicklejaw_ue_import_sk_fresh",
       "community": 31,
-      "norm_label": "import_sk_fresh()"
+      "norm_label": "import_sk_fresh()",
+      "id": "tools_import_sicklejaw_ue_import_sk_fresh"
     },
     {
       "label": "r\"\"\" import_sicklejaw_ue.py -- W2.2: import the APPROVED Sicklejaw rebuild (art/",
@@ -249,9 +249,9 @@
       "source_file": "tools/import_sicklejaw_ue.py",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "tools_import_sicklejaw_ue_rationale_1",
       "community": 31,
-      "norm_label": "r\"\"\" import_sicklejaw_ue.py -- w2.2: import the approved sicklejaw rebuild (art/"
+      "norm_label": "r\"\"\" import_sicklejaw_ue.py -- w2.2: import the approved sicklejaw rebuild (art/",
+      "id": "tools_import_sicklejaw_ue_rationale_1"
     },
     {
       "label": "Delete-then-import so replace-in-place can never hand back stale     bounds/rend",
@@ -259,9 +259,9 @@
       "source_file": "tools/import_sicklejaw_ue.py",
       "source_location": "L165",
       "_origin": "ast",
-      "id": "tools_import_sicklejaw_ue_rationale_165",
       "community": 31,
-      "norm_label": "delete-then-import so replace-in-place can never hand back stale     bounds/rend"
+      "norm_label": "delete-then-import so replace-in-place can never hand back stale     bounds/rend",
+      "id": "tools_import_sicklejaw_ue_rationale_165"
     },
     {
       "label": "PFASicklejaw.h",
@@ -3051,9 +3051,9 @@
       "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
       "source_location": "L119",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "species_pfasicklejaw",
-      "target": "species_pfasicklejaw_apfasicklejaw",
-      "confidence_score": 1.0
+      "target": "species_pfasicklejaw_apfasicklejaw"
     },
     {
       "relation": "contains",
@@ -3061,9 +3061,9 @@
       "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
       "source_location": "L181",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "species_pfasicklejaw",
-      "target": "species_pfasicklejaw_beginplay",
-      "confidence_score": 1.0
+      "target": "species_pfasicklejaw_beginplay"
     },
     {
       "relation": "contains",
@@ -3071,9 +3071,9 @@
       "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
       "source_location": "L321",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "species_pfasicklejaw",
-      "target": "species_pfasicklejaw_findsequenceinpackages",
-      "confidence_score": 1.0
+      "target": "species_pfasicklejaw_findsequenceinpackages"
     },
     {
       "relation": "contains",
@@ -3081,9 +3081,9 @@
       "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
       "source_location": "L461",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "species_pfasicklejaw",
-      "target": "species_pfasicklejaw_spawntestcommand",
-      "confidence_score": 1.0
+      "target": "species_pfasicklejaw_spawntestcommand"
     },
     {
       "relation": "contains",
@@ -3091,9 +3091,9 @@
       "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
       "source_location": "L363",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "species_pfasicklejaw",
-      "target": "species_pfasicklejaw_startlocomotionanim",
-      "confidence_score": 1.0
+      "target": "species_pfasicklejaw_startlocomotionanim"
     },
     {
       "relation": "contains",
@@ -3101,9 +3101,9 @@
       "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
       "source_location": "L393",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "species_pfasicklejaw",
-      "target": "species_pfasicklejaw_ticklocomotionanim",
-      "confidence_score": 1.0
+      "target": "species_pfasicklejaw_ticklocomotionanim"
     },
     {
       "relation": "references",
@@ -3156,9 +3156,9 @@
       "source_location": "L321",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "species_pfasicklejaw_findsequenceinpackages",
-      "target": "fstring",
-      "confidence_score": 1.0
+      "target": "fstring"
     },
     {
       "relation": "references",
@@ -3167,9 +3167,9 @@
       "source_location": "L321",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "species_pfasicklejaw_findsequenceinpackages",
-      "target": "int32",
-      "confidence_score": 1.0
+      "target": "int32"
     },
     {
       "relation": "references",
@@ -3178,9 +3178,9 @@
       "source_location": "L321",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "species_pfasicklejaw_findsequenceinpackages",
-      "target": "tchar",
-      "confidence_score": 1.0
+      "target": "tchar"
     },
     {
       "relation": "references",
@@ -3189,9 +3189,9 @@
       "source_location": "L321",
       "weight": 1.0,
       "context": "return_type",
+      "confidence_score": 1.0,
       "source": "species_pfasicklejaw_findsequenceinpackages",
-      "target": "uanimsequence",
-      "confidence_score": 1.0
+      "target": "uanimsequence"
     },
     {
       "relation": "calls",
@@ -3200,9 +3200,9 @@
       "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
       "source_location": "L366",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "species_pfasicklejaw_startlocomotionanim",
-      "target": "species_pfasicklejaw_findsequenceinpackages",
-      "confidence_score": 1.0
+      "target": "species_pfasicklejaw_findsequenceinpackages"
     },
     {
       "relation": "references",
@@ -6559,5 +6559,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "26f79dce671aa5e0779f3aa9add0cd833892b7ba"
+  "built_at_commit": "47f3219153b5c2dcce611992c92a4c45691721fa"
 }
