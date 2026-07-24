@@ -75,8 +75,8 @@
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Private/PrimalFauna.cpp": {
-    "mtime": 1784837377.7256444,
-    "ast_hash": "9d1d6933dc703ddf2bd4b4ab7da75be6",
+    "mtime": 1784869588.731362,
+    "ast_hash": "3c20dd649981c8d59e8212bd4e8e159a",
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Public/PFAConfig.h": {
@@ -235,13 +235,13 @@
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Private/PFACheats.cpp": {
-    "mtime": 1784834423.3051157,
-    "ast_hash": "16b329ddd14236651144e723f73b16e1",
+    "mtime": 1784869447.4764545,
+    "ast_hash": "a5e972ce3ea310192d95b2b9a48464b1",
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Public/PFACheats.h": {
-    "mtime": 1784834813.4613895,
-    "ast_hash": "6575d55e4092c0502b6bbfa90c986b57",
+    "mtime": 1784869394.6101868,
+    "ast_hash": "b6932e0bbec2cd4b5b4f55c28ce997c3",
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Private/PFACreatureBase.cpp": {
@@ -250,8 +250,8 @@
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Private/PFACreatureController.cpp": {
-    "mtime": 1784837375.80823,
-    "ast_hash": "9e7863121fce12098747929b8004d447",
+    "mtime": 1784869321.6768532,
+    "ast_hash": "88be36f6cb93623f4110a77f605868b5",
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp": {
@@ -265,8 +265,8 @@
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Public/PFACreatureController.h": {
-    "mtime": 1784834327.5522585,
-    "ast_hash": "356f9d57ceca0d4b6e1b7d90fafe7248",
+    "mtime": 1784869114.6805685,
+    "ast_hash": "a20abb82f578282296195166f8ace5e9",
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Public/Species/PFASicklejaw.h": {
@@ -322,6 +322,51 @@
   "tools/check_imports.ps1": {
     "mtime": 1784829643.556988,
     "ast_hash": "0e7b700715217c740b09f8faa007bfa4",
+    "semantic_hash": ""
+  },
+  "Source/PrimalFauna/Private/PFACreatureControllerPerception.cpp": {
+    "mtime": 1784869379.2222075,
+    "ast_hash": "061318c90e73c6d792c19c9c23e5af10",
+    "semantic_hash": ""
+  },
+  "Source/PrimalFauna/Private/PFAPerceptionDebug.cpp": {
+    "mtime": 1784869763.9798374,
+    "ast_hash": "2b12287172426d3a8b08a550d61a1647",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-rebuild/candidates/manifest.json": {
+    "mtime": 1784870545.7453008,
+    "ast_hash": "3ffd9f0fdb7429fd51acfef41bfece30",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-rebuild/ref/D_hero_3q.png": {
+    "mtime": 1784815695.367659,
+    "ast_hash": "8329c3b32897c1774ed74e19b1aa0da1",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-rebuild/ref/D_silhouette.png": {
+    "mtime": 1784815474.0944874,
+    "ast_hash": "c5d1a5f156d4af6cf72d9b08bd5c7b95",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-rebuild/ref/D_turntable_000_front.png": {
+    "mtime": 1784815371.4310749,
+    "ast_hash": "a32be4ca4f3b8f7f60ceb6cfd35aa6a2",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-rebuild/ref/D_turntable_090_side.png": {
+    "mtime": 1784815371.7793043,
+    "ast_hash": "57c246e7572e82e9a3589492656bf887",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-rebuild/ref/D_turntable_180_back.png": {
+    "mtime": 1784815372.1232123,
+    "ast_hash": "e052e4d3b58a0b95f726175423f8c0cd",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-rebuild/ref/D_turntable_270_side.png": {
+    "mtime": 1784815372.4673147,
+    "ast_hash": "e4cbff1947abd128874726f5548bea31",
     "semantic_hash": ""
   }
 }

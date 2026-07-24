@@ -1,16 +1,16 @@
-# Graph Report - PrimalFauna  (2026-07-23)
+# Graph Report - PrimalFauna  (2026-07-24)
 
 ## Corpus Check
-- 40 files · ~795,010 words
+- 43 files · ~1,004,060 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 251 nodes · 259 edges · 34 communities (28 shown, 6 thin omitted)
-- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 4 edges (avg confidence: 0.8)
+- 271 nodes · 284 edges · 37 communities (29 shown, 8 thin omitted)
+- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 5 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `5e447640`
+- Built from commit: `ce920fa6`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -37,6 +37,7 @@
 - [[_COMMUNITY_Community 23|Community 23]]
 - [[_COMMUNITY_Community 24|Community 24]]
 - [[_COMMUNITY_Community 25|Community 25]]
+- [[_COMMUNITY_Community 26|Community 26]]
 - [[_COMMUNITY_Community 27|Community 27]]
 - [[_COMMUNITY_Community 28|Community 28]]
 - [[_COMMUNITY_Community 29|Community 29]]
@@ -44,6 +45,7 @@
 - [[_COMMUNITY_Community 31|Community 31]]
 - [[_COMMUNITY_Community 32|Community 32]]
 - [[_COMMUNITY_Community 33|Community 33]]
+- [[_COMMUNITY_Community 35|Community 35]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `07 — Technical Architecture` - 11 edges
@@ -51,28 +53,28 @@
 3. `03 — Spawning & Territories` - 9 edges
 4. `08 — Implementation Plan (team execution)` - 8 edges
 5. `02 — Hostility & Factions` - 8 edges
-6. `AActor` - 6 edges
-7. `CanBeHostileTowards()` - 6 edges
-8. `UWorld` - 6 edges
-9. `QueryBehaviorTrees()` - 6 edges
-10. `PickCandidate()` - 6 edges
+6. `UWorld` - 6 edges
+7. `AActor` - 6 edges
+8. `CanBeHostileTowards()` - 6 edges
+9. `FindNearestPFACreature()` - 6 edges
+10. `QueryBehaviorTrees()` - 6 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `RefreshTick()` --calls--> `PFA_RunSelfTests()`  [INFERRED]
   Source/PrimalFauna/Private/PFASubsystem.cpp → Source/PrimalFauna/Private/PFACheats.cpp
+- `OnPossess()` --calls--> `WireCreaturePerception()`  [INFERRED]
+  Source/PrimalFauna/Private/PFACreatureController.cpp → Source/PrimalFauna/Private/PFACreatureControllerPerception.cpp
 - `APFASicklejaw()` --calls--> `SetBaseHealth()`  [INFERRED]
   Source/PrimalFauna/Private/Species/PFASicklejaw.cpp → Source/PrimalFauna/Private/PFACreatureBase.cpp
 - `APFASicklejaw()` --calls--> `SetSpawnDespawnDistance()`  [INFERRED]
   Source/PrimalFauna/Private/Species/PFASicklejaw.cpp → Source/PrimalFauna/Private/PFACreatureBase.cpp
 - `SpawnNestAtPlayer()` --calls--> `FName`  [INFERRED]
   Source/PrimalFauna/Private/PFASubsystem.cpp → Source/PrimalFauna/Private/PFANestSpawner.cpp
-- `PickCandidate()` --references--> `FString`  [EXTRACTED]
-  Source/PrimalFauna/Private/PFABehaviorBorrower.cpp → Source/PrimalFauna/Private/PFASubsystem.cpp
 
 ## Import Cycles
 - None detected.
 
-## Communities (34 total, 6 thin omitted)
+## Communities (37 total, 8 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.20
@@ -111,16 +113,17 @@ Cohesion: 0.50
 Nodes (3): Headline design facts (why this plan is buildable), PrimalFauna — hostile megafauna for Satisfactory, The plan
 
 ### Community 9 - "Community 9"
-Cohesion: 0.31
-Nodes (9): SetBorrowedBehaviorTree(), GetBorrowedBehaviorTree(), NeedTransform_Implementation(), PostSaveGame_Implementation(), PreLoadGame_Implementation(), PreSaveGame_Implementation(), int32, UBehaviorTree (+1 more)
+Cohesion: 0.52
+Nodes (6): NeedTransform_Implementation(), PostSaveGame_Implementation(), PreLoadGame_Implementation(), PreSaveGame_Implementation(), int32, virtual
 
 ### Community 10 - "Community 10"
 Cohesion: 0.33
 Nodes (3): FPFAConfigStruct, GetActiveConfig(), UObject
 
 ### Community 11 - "Community 11"
-Cohesion: 0.19
-Nodes (13): FPFASelfTest, DumpAllCreaturesCommand(), DumpCreatureCommand(), FindLookedAtOrNearestCreature(), IsEnabled(), KillAllCommand(), LogActionReflection(), PFA_RunSelfTests() (+5 more)
+Cohesion: 0.17
+Nodes (15): FPFASelfTest, DumpAllCreaturesCommand(), DumpCreatureCommand(), FindLookedAtOrNearestCreature(), IsEnabled(), KillAllCommand(), LogActionReflection(), * PFA_FindLookedAtOrNearestCreature(
+	UWorld* World, float& OutDistanceCm, bool& bOutFromLookDirection)() (+7 more)
 
 ### Community 12 - "Community 12"
 Cohesion: 0.40
@@ -131,12 +134,12 @@ Cohesion: 0.33
 Nodes (3): namespace, PFABehaviorBorrower(), PFADiag()
 
 ### Community 22 - "Community 22"
-Cohesion: 0.11
-Nodes (15): EPFAAggression, FLifetimeProperty, AggressionModeToString(), APFACreatureBase(), GetLifetimeReplicatedProps(), SetAggressionMode(), SetBaseHealth(), SetSpawnDespawnDistance() (+7 more)
+Cohesion: 0.09
+Nodes (18): EPFAAggression, FLifetimeProperty, AggressionModeToString(), APFACreatureBase(), GetLifetimeReplicatedProps(), SetAggressionMode(), SetBaseHealth(), SetBorrowedBehaviorTree() (+10 more)
 
 ### Community 23 - "Community 23"
-Cohesion: 0.25
-Nodes (13): AActor, AFGCreature, APawn, FObjectInitializer, APFACreatureController(), CanBeAlertedByTarget_Implementation(), CanBeHostileTowards(), IsValidTarget() (+5 more)
+Cohesion: 0.18
+Nodes (15): APawn, FObjectInitializer, int32, APFACreatureController(), CanBeAlertedByTarget_Implementation(), CanBeHostileTowards(), IsValidTarget(), LogRuleVerdict() (+7 more)
 
 ### Community 24 - "Community 24"
 Cohesion: 0.39
@@ -145,6 +148,10 @@ Nodes (7): disk_verify(), log(), make_anim_task(), make_sk_task(), r""" import_p
 ### Community 25 - "Community 25"
 Cohesion: 0.50
 Nodes (3): 2026-07-23 — Phase-1 gate re-run: THE BT CENSUS (build w15-3, full profile), 2026-07-23 — smoke session (Grass Fields spawn, build w11-2, 113-mod profile incl. SF+), CENSUS — live vanilla creature data (feeds doc 01 anchors)
+
+### Community 26 - "Community 26"
+Cohesion: 0.31
+Nodes (10): AFGCreatureController, APFACreatureBase, FVector, AggroNearestCommand(), DamageNearestCommand(), DumpControllerCommand(), FindNearestPFACreature(), ReadbackAggroFor() (+2 more)
 
 ### Community 28 - "Community 28"
 Cohesion: 0.27
@@ -162,25 +169,21 @@ Nodes (8): After either path — re-verify, Assigning `BT_PFAGeneric` to our cre
 Cohesion: 0.14
 Nodes (12): FName, FString, ConfigureNest(), CheckNestRegistryConsistency(), PostLoadGame_Implementation(), ReconcileNests(), RefreshTick(), SpawnNestAtPlayer() (+4 more)
 
-### Community 33 - "Community 33"
-Cohesion: 0.40
-Nodes (3): PRIMALFAUNA_API, APFACreatureController(), AFGCreatureSpawner()
-
 ## Knowledge Gaps
-- **99 isolated node(s):** `1. Art direction & generation briefs`, `2. Per-creature pipeline (stage gates in order)`, `3. Animation — the honest plan (verified Tripo facts)`, `4. Texturing & the aggro-glow telegraph`, `5. Fab/Sketchfab licensing rules (for rungs 3–4 and the worm fallback)` (+94 more)
+- **108 isolated node(s):** `FPFASelfTest`, `AFGCreature`, `UFGAction`, `PRIMALFAUNA_API`, `AFGCreature` (+103 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **6 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **8 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `RefreshTick()` connect `Community 32` to `Community 11`?**
-  _High betweenness centrality (0.014) - this node is a cross-community bridge._
+  _High betweenness centrality (0.013) - this node is a cross-community bridge._
 - **Why does `PFA_RunSelfTests()` connect `Community 11` to `Community 32`?**
-  _High betweenness centrality (0.014) - this node is a cross-community bridge._
-- **What connects `1. Art direction & generation briefs`, `2. Per-creature pipeline (stage gates in order)`, `3. Animation — the honest plan (verified Tripo facts)` to the rest of the system?**
-  _101 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _High betweenness centrality (0.013) - this node is a cross-community bridge._
+- **What connects `FPFASelfTest`, `AFGCreature`, `UFGAction` to the rest of the system?**
+  _110 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 22` be split into smaller, more focused modules?**
-  _Cohesion score 0.10952380952380952 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.09420289855072464 - nodes in this community are weakly interconnected._
 - **Should `Community 32` be split into smaller, more focused modules?**
   _Cohesion score 0.13970588235294118 - nodes in this community are weakly interconnected._

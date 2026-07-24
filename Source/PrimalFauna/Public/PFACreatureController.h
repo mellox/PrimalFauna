@@ -11,9 +11,13 @@
 // C++ virtual overrides ... no SML hooks needed for our own creatures."
 //
 // Rule table -> code map (see PFACreatureController.cpp for the full ladder):
-//   Rules 1-8 all live in CanBeHostileTowards() -- the single source of truth.
-//   IsValidTarget() composes Super's own validity gate with CanBeHostileTowards
-//   (doc 02 §2: "IsValidTarget ... appl[ies] the same table").
+//   CanBeHostileTowards() runs the full 8-rule ladder; rules 1-4 (the
+//   unconditional "never" rules) live in the Super-free helper
+//   PassesAbsoluteNeverRules() it shares with IsValidTarget().
+//   IsValidTarget() composes Super's own validity gate with rules 1-4 ONLY --
+//   it must NEVER call CanBeHostileTowards: the base class's own
+//   CanBeHostileTowards calls this virtual as a sub-check, so that
+//   composition recursed unboundedly (w18-1 stack-overflow crash).
 //   CanBeAlertedByTarget_Implementation() delegates to CanBeHostileTowards
 //   directly rather than trusting the closed-source default's documented
 //   "runs CanBeHostileTowards by default" behavior (doc 07 §1: own every
@@ -45,9 +49,9 @@ public:
 	// for the full ladder and per-rule [PFA] verdict logging.
 	virtual bool CanBeHostileTowards(const AActor* actor) const override;
 
-	// Doc 02 §2: applies the same table as CanBeHostileTowards, ANDed with
-	// Super's own validity gate so we're never MORE permissive than the
-	// native baseline.
+	// Super's validity gate ANDed with rules 1-4 only (never the full ladder
+	// -- see the class comment: the base's CanBeHostileTowards calls this
+	// virtual, so running CanBeHostileTowards from here recursed; w18-1).
 	virtual bool IsValidTarget(const AActor* actor) const override;
 
 	// TODO(W2.3): these stand in for the not-yet-existing "Factions" config
@@ -67,6 +71,15 @@ protected:
 	virtual bool CanBeAlertedByTarget_Implementation(const AActor* target) const override;
 
 private:
+	// Rules 1-4 of the doc 02 §2 ladder -- tamed / protected species / own
+	// species / other PrimalFauna species -> never. RECURSION CONTRACT: no
+	// Super:: calls, no CanBeHostileTowards/IsValidTarget calls inside (the
+	// base class couples those two virtuals), so it is safe from BOTH
+	// CanBeHostileTowards and IsValidTarget. Returns true when no never-rule
+	// fires (including null actor / no controlled creature -- callers keep
+	// their own Super deferral for that corner).
+	bool PassesAbsoluteNeverRules(const AActor* actor) const;
+
 	// Doc 02 §3 Territorial-mode gate, applied to rules 5/6/7. Returns true
 	// (permissive) for Hostile mode, false for Passive, and for Territorial
 	// checks recent-damage-by-target OR distance-to-spawner <= the species'

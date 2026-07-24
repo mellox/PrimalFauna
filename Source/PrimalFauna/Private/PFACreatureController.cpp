@@ -211,12 +211,20 @@ void APFACreatureController::OnPossess(APawn* InPawn)
 	}
 }
 
-bool APFACreatureController::CanBeHostileTowards(const AActor* actor) const
+bool APFACreatureController::PassesAbsoluteNeverRules(const AActor* actor) const
 {
+	// Rules 1-4 of the doc 02 §2 ladder -- the unconditional "never target"
+	// rules. RECURSION CONTRACT: this helper must contain NO Super:: calls and
+	// no calls into CanBeHostileTowards/IsValidTarget -- it is the only part
+	// of the ladder IsValidTarget may run (see IsValidTarget's comment for the
+	// w18-1 stack-overflow this prevents).
 	const AFGCreature* SelfCreature = GetControlledCreature();
 	if (!actor || !SelfCreature)
 	{
-		return Super::CanBeHostileTowards(actor);
+		// No basis to reject; both callers keep their own Super deferral for
+		// this corner (CanBeHostileTowards returns Super's verdict outright,
+		// IsValidTarget has already ANDed Super::IsValidTarget).
+		return true;
 	}
 
 	const AFGCreature* TargetCreature = Cast<AFGCreature>(actor);
@@ -266,6 +274,26 @@ bool APFACreatureController::CanBeHostileTowards(const AActor* actor) const
 		return false;
 	}
 
+	return true;
+}
+
+bool APFACreatureController::CanBeHostileTowards(const AActor* actor) const
+{
+	const AFGCreature* SelfCreature = GetControlledCreature();
+	if (!actor || !SelfCreature)
+	{
+		return Super::CanBeHostileTowards(actor);
+	}
+
+	// Rules 1-4 live in the shared Super-free helper so IsValidTarget can
+	// apply them too without re-entering this function.
+	if (!PassesAbsoluteNeverRules(actor))
+	{
+		return false;
+	}
+
+	const AFGCreature* TargetCreature = Cast<AFGCreature>(actor);
+
 	// Rule 5: a player -> defer to Super (preserves the vanilla per-player
 	// Passive/Retaliate setting, doc 02 §2 row 5), THEN apply our species
 	// aggression gate. We only ever make the result MORE restrictive.
@@ -308,7 +336,19 @@ bool APFACreatureController::CanBeHostileTowards(const AActor* actor) const
 
 bool APFACreatureController::IsValidTarget(const AActor* actor) const
 {
-	return Super::IsValidTarget(actor) && CanBeHostileTowards(actor);
+	// RECURSION HAZARD (caused the w18-1 EXCEPTION_STACK_OVERFLOW): the BASE
+	// class's CanBeHostileTowards (FGCreatureController.cpp:286 per the crash
+	// stack) calls this VIRTUAL IsValidTarget as its own sub-check. So the old
+	// `&& CanBeHostileTowards(actor)` here looped forever the moment any rule
+	// consulted Super::CanBeHostileTowards (rule 5 for players, rule 8):
+	// ours -> Super -> base:286 -> IsValidTarget (virtual, ours) -> ours -> ...
+	//
+	// Therefore only the Super-free rules 1-4 run here. Nothing is lost on
+	// hostility-INITIATION paths: the base already conjoins IsValidTarget into
+	// CanBeHostileTowards, and our override runs the full 8-rule ladder on
+	// top. Retention/validation paths that consult IsValidTarget alone keep
+	// vanilla semantics plus the absolute never-rules.
+	return Super::IsValidTarget(actor) && PassesAbsoluteNeverRules(actor);
 }
 
 bool APFACreatureController::CanBeAlertedByTarget_Implementation(const AActor* target) const
