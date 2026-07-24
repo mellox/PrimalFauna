@@ -19,6 +19,8 @@
 #include "Rendering/SkeletalMeshLODRenderData.h"
 #include "TimerManager.h"
 #include "FGHealthComponent.h"
+#include "UObject/Package.h"
+#include "UObject/UObjectHash.h"
 
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/Pawn.h"
@@ -82,11 +84,30 @@ namespace
 		TEXT("Additional Z offset (cm) applied to the Sicklejaw mesh after feet planting. Negative sinks, positive lifts. Respawn to apply."),
 		ECVF_Default);
 
-	// w24-1 locomotion anims (imported + skeleton-verified by
-	// tools/import_sicklejaw_ue.py; only valid on the REAL mesh's skeleton).
-	const TCHAR* SicklejawIdleAnimPath = TEXT("/PrimalFauna/Sicklejaw/Anims/A_Sicklejaw_Idle.A_Sicklejaw_Idle");
-	const TCHAR* SicklejawWalkAnimPath = TEXT("/PrimalFauna/Sicklejaw/Anims/A_Sicklejaw_Walk.A_Sicklejaw_Walk");
-	const TCHAR* SicklejawRunAnimPath = TEXT("/PrimalFauna/Sicklejaw/Anims/A_Sicklejaw_Run.A_Sicklejaw_Run");
+	// w24-2 locomotion anim PACKAGES. w24-1 in-game evidence (MISSING x3
+	// despite the assets being in the cooked pak): the FBX anim import put
+	// the MESH payload into each primary package (five ~611KB cooked twins of
+	// the mesh) and the actual takes into suffixed sibling assets
+	// (*_Anim_preset_* / *_Anim_Armature_preset_*, proper 5-16KB cooked anim
+	// sizes) -- and LoadObject<UAnimSequence> rightly nulls on a mesh-classed
+	// object. The import script's skeleton-match check was fooled because
+	// `skeleton` is a property on BOTH classes. Fix: don't guess object
+	// names -- load each candidate PACKAGE and scan it for whatever
+	// UAnimSequence it actually contains (FindSequenceInPackages below).
+	// Candidates orderd primary-first so a future clean re-import wins.
+	const TCHAR* SicklejawIdleAnimPackages[] = {
+		TEXT("/PrimalFauna/Sicklejaw/Anims/A_Sicklejaw_Idle"),
+		TEXT("/PrimalFauna/Sicklejaw/Anims/A_Sicklejaw_Idle_Anim_Armature_preset_idle"),
+		TEXT("/PrimalFauna/Sicklejaw/Anims/A_Sicklejaw_Idle_Anim_preset_idle"),
+	};
+	const TCHAR* SicklejawWalkAnimPackages[] = {
+		TEXT("/PrimalFauna/Sicklejaw/Anims/A_Sicklejaw_Walk"),
+		TEXT("/PrimalFauna/Sicklejaw/Anims/A_Sicklejaw_Walk_Anim_Armature_preset_walk"),
+		TEXT("/PrimalFauna/Sicklejaw/Anims/A_Sicklejaw_Walk_Anim_preset_walk"),
+	};
+	const TCHAR* SicklejawRunAnimPackages[] = {
+		TEXT("/PrimalFauna/Sicklejaw/Anims/A_Sicklejaw_Run"),
+	};
 
 	// Speed thresholds (cm/s) for the idle/walk/run pick. Walk 400 / run 600
 	// per the ctor's authored speeds; the boundaries sit between states.
@@ -292,11 +313,59 @@ void APFASicklejaw::BeginPlay()
 	}
 }
 
+namespace
+{
+	// w24-2: load each candidate package and return the FIRST UAnimSequence
+	// object inside, regardless of what the FBX importer named it. Logs every
+	// probe so the log alone shows which package+object won (or why none did).
+	UAnimSequence* FindSequenceInPackages(const TCHAR* const* PackagePaths, int32 NumPackages, const TCHAR* Label, const FString& OwnerName)
+	{
+		for (int32 i = 0; i < NumPackages; ++i)
+		{
+			UPackage* Package = LoadPackage(nullptr, PackagePaths[i], LOAD_None);
+			if (!Package)
+			{
+				if (PFADiag::IsEnabled())
+				{
+					UE_LOG(LogPrimalFauna, Display, TEXT("[PFA] %s: anim probe [%s] package %s: NOT FOUND"),
+						*OwnerName, Label, PackagePaths[i]);
+				}
+				continue;
+			}
+			UAnimSequence* Found = nullptr;
+			ForEachObjectWithPackage(Package, [&Found](UObject* Object)
+			{
+				if (UAnimSequence* Sequence = Cast<UAnimSequence>(Object))
+				{
+					Found = Sequence;
+					return false;
+				}
+				return true;
+			});
+			if (Found)
+			{
+				UE_LOG(LogPrimalFauna, Display,
+					TEXT("[PFA] %s: anim [%s] resolved: package=%s object=%s length=%.2fs"),
+					*OwnerName, Label, PackagePaths[i], *Found->GetName(), Found->GetPlayLength());
+				return Found;
+			}
+			if (PFADiag::IsEnabled())
+			{
+				UE_LOG(LogPrimalFauna, Display,
+					TEXT("[PFA] %s: anim probe [%s] package %s loaded but contains NO UAnimSequence"),
+					*OwnerName, Label, PackagePaths[i]);
+			}
+		}
+		return nullptr;
+	}
+}
+
 void APFASicklejaw::StartLocomotionAnim()
 {
-	LocomotionIdleAnim = LoadObject<UAnimSequence>(nullptr, SicklejawIdleAnimPath);
-	LocomotionWalkAnim = LoadObject<UAnimSequence>(nullptr, SicklejawWalkAnimPath);
-	LocomotionRunAnim = LoadObject<UAnimSequence>(nullptr, SicklejawRunAnimPath);
+	const FString OwnerName = GetName();
+	LocomotionIdleAnim = FindSequenceInPackages(SicklejawIdleAnimPackages, UE_ARRAY_COUNT(SicklejawIdleAnimPackages), TEXT("idle"), OwnerName);
+	LocomotionWalkAnim = FindSequenceInPackages(SicklejawWalkAnimPackages, UE_ARRAY_COUNT(SicklejawWalkAnimPackages), TEXT("walk"), OwnerName);
+	LocomotionRunAnim = FindSequenceInPackages(SicklejawRunAnimPackages, UE_ARRAY_COUNT(SicklejawRunAnimPackages), TEXT("run"), OwnerName);
 	if (!LocomotionIdleAnim || !LocomotionWalkAnim || !LocomotionRunAnim)
 	{
 		UE_LOG(LogPrimalFauna, Warning,

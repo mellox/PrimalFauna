@@ -214,10 +214,20 @@ for dest_name, fbx_path in ANIM_FBXS:
     anim_asset = eal.load_asset(DEST + "/Anims/" + dest_name)
     if not anim_asset:
         fail("%s did not import" % dest_name)
+    # 2026-07-24 lesson (w24-1 in-game): the FBX importer can put the MESH
+    # into the primary package and the actual take into a suffixed sibling.
+    # `skeleton` exists on BOTH USkeletalMesh and UAnimSequence, so a
+    # skeleton-match check alone is FOOLED. Assert the CLASS and a nonzero
+    # play length -- the two properties only a real animation satisfies.
+    if not isinstance(anim_asset, unreal.AnimSequence):
+        fail("%s imported as %s, NOT AnimSequence -- the FBX take landed in a sibling asset (check *_Anim_preset_* neighbors / multi-take FBX)" % (dest_name, type(anim_asset).__name__))
+    play_len = anim_asset.get_play_length()
+    if play_len <= 0.0:
+        fail("%s is an AnimSequence with ZERO play length -- empty take" % dest_name)
     anim_skeleton = anim_asset.get_editor_property("skeleton")
     if not anim_skeleton or anim_skeleton.get_name() != skeleton.get_name():
         fail("%s skeleton mismatch (got %s, want %s)" % (dest_name, anim_skeleton.get_name() if anim_skeleton else "<none>", skeleton.get_name()))
-    log("imported ANIM=%s skeleton-match=True" % dest_name)
+    log("imported ANIM=%s class=AnimSequence length=%.2fs skeleton-match=True" % (dest_name, play_len))
 
 # --- CRITICAL: persist EVERYTHING (skeleton/physics/textures/materials) ---
 saved = eal.save_directory(DEST, only_if_is_dirty=False, recursive=True)

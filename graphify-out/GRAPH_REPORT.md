@@ -1,16 +1,16 @@
 # Graph Report - PrimalFauna  (2026-07-24)
 
 ## Corpus Check
-- 47 files · ~1,996,793 words
+- 47 files · ~1,997,289 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 299 nodes · 329 edges · 37 communities (32 shown, 5 thin omitted)
+- 300 nodes · 333 edges · 36 communities (32 shown, 4 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 5 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `d148d63f`
+- Built from commit: `e79d9be0`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -38,7 +38,6 @@
 - [[_COMMUNITY_Community 24|Community 24]]
 - [[_COMMUNITY_Community 25|Community 25]]
 - [[_COMMUNITY_Community 26|Community 26]]
-- [[_COMMUNITY_Community 27|Community 27]]
 - [[_COMMUNITY_Community 28|Community 28]]
 - [[_COMMUNITY_Community 29|Community 29]]
 - [[_COMMUNITY_Community 30|Community 30]]
@@ -74,7 +73,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (37 total, 5 thin omitted)
+## Communities (36 total, 4 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.20
@@ -138,7 +137,7 @@ Nodes (4): namespace, PFABehaviorBorrower(), PFADiag(), PFAFactionConfig()
 
 ### Community 22 - "Community 22"
 Cohesion: 0.10
-Nodes (17): EPFAAggression, FLifetimeProperty, FObjectInitializer, AggressionModeToString(), APFACreatureBase(), BeginPlay(), GetLifetimeReplicatedProps(), SetAggressionMode() (+9 more)
+Nodes (20): EPFAAggression, FLifetimeProperty, FObjectInitializer, AggressionModeToString(), APFACreatureBase(), BeginPlay(), GetLifetimeReplicatedProps(), SetAggressionMode() (+12 more)
 
 ### Community 23 - "Community 23"
 Cohesion: 0.19
@@ -173,30 +172,30 @@ Cohesion: 0.13
 Nodes (13): FName, FString, PFA_RunSelfTests(), ConfigureNest(), CheckNestRegistryConsistency(), PostLoadGame_Implementation(), ReconcileNests(), RefreshTick() (+5 more)
 
 ### Community 33 - "Community 33"
-Cohesion: 0.33
-Nodes (4): UFGCreatureActionMeleeAttack(), PRIMALFAUNA_API, APFACreatureController(), PRIMALFAUNA_API
+Cohesion: 0.25
+Nodes (5): UFGCreatureActionMeleeAttack(), PRIMALFAUNA_API, APFACreatureController(), PRIMALFAUNA_API, APFACreatureBase()
 
 ### Community 35 - "Community 35"
 Cohesion: 0.22
 Nodes (8): credits, file, label, model, rendered, status, task_id, type
 
 ## Knowledge Gaps
-- **115 isolated node(s):** `FObjectInitializer`, `FObjectInitializer`, `AFGCharacterBase`, `FHitResult`, `FPFASelfTest` (+110 more)
+- **114 isolated node(s):** `FObjectInitializer`, `FObjectInitializer`, `AFGCharacterBase`, `FHitResult`, `FPFASelfTest` (+109 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **5 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **4 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `UWorld` connect `Community 11` to `Community 32`, `Community 22`?**
-  _High betweenness centrality (0.069) - this node is a cross-community bridge._
+  _High betweenness centrality (0.071) - this node is a cross-community bridge._
 - **Why does `PFA_RunSelfTests()` connect `Community 32` to `Community 11`?**
-  _High betweenness centrality (0.044) - this node is a cross-community bridge._
+  _High betweenness centrality (0.045) - this node is a cross-community bridge._
 - **What connects `FObjectInitializer`, `r""" import_sicklejaw_ue.py -- W2.2: import the APPROVED Sicklejaw rebuild (art/`, `Delete-then-import so replace-in-place can never hand back stale     bounds/rend` to the rest of the system?**
-  _119 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _118 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 11` be split into smaller, more focused modules?**
   _Cohesion score 0.12307692307692308 - nodes in this community are weakly interconnected._
 - **Should `Community 22` be split into smaller, more focused modules?**
-  _Cohesion score 0.10276679841897234 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.1 - nodes in this community are weakly interconnected._
 - **Should `Community 32` be split into smaller, more focused modules?**
   _Cohesion score 0.13071895424836602 - nodes in this community are weakly interconnected._
