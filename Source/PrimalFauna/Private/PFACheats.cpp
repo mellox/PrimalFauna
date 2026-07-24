@@ -609,3 +609,15 @@ namespace
 		return true;
 	}();
 }
+
+// ---- Shared finder forwarder (declared in PFACheats.h). Thin wrapper giving
+// sibling dev-command TUs (PFAPerceptionDebug.cpp) external-linkage access to
+// the anonymous-namespace FindLookedAtOrNearestCreature above, without
+// duplicating the ~65-line cone math or moving it out of this file. Anonymous-
+// namespace names are visible unqualified through the rest of this TU, so this
+// call resolves to the definition near the top of the file. ----
+PRIMALFAUNA_API AFGCreature* PFA_FindLookedAtOrNearestCreature(
+	UWorld* World, float& OutDistanceCm, bool& bOutFromLookDirection)
+{
+	return FindLookedAtOrNearestCreature(World, OutDistanceCm, bOutFromLookDirection);
+}

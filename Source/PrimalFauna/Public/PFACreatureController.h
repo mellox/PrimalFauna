@@ -80,6 +80,43 @@ private:
 	// definition recent; we don't need our own recency window.
 	bool WasRecentlyDamagedBy(const AActor* Target) const;
 
+	// W1.8 (docs/08 packet; docs/02 §5 perception tuning, docs/07 §4 "OPEN
+	// (W1.8): the tree runs but perception/targeting never evaluates"):
+	// reproduces the perception wiring the vanilla BP_CreatureController_C layer
+	// did that our C++ controller replaced (docs/07 §1: own every class we
+	// change) -- the same layer that also did the BT launch (W1.6). Pushes the
+	// possessed creature's authored sight/hearing sense configs
+	// (AFGCreature::GetPerceptionSettings(), FGCreature.h:370 FORCEINLINE public,
+	// inline -> no import) into THIS controller's inherited UAIPerceptionComponent
+	// (AAIController::GetAIPerceptionComponent(), AIController.h:441 inline),
+	// ensures the inherited OnTargetPerceptionUpdated handler is bound, sets the
+	// dominant sense, and kicks a stimuli-listener update. Called from OnPossess
+	// after the creature is validated, INDEPENDENT of the BT launch (perception
+	// feeds aggro; the BT reads aggro -- separate subsystems). Every step emits
+	// its own Display success-chain line. See the .cpp for the full symbol/export
+	// analysis and the idempotent bind-if-not-already-bound rationale.
+	void WireCreaturePerception(class AFGCreature* PossessedCreature);
+
+	// W1.8 gated diagnostic: logs this creature's current behavior state,
+	// aggro-target count, and current target every 30s, but ONLY when
+	// pfa.Diag/EnableDiagnostics is on (PFADiag::IsEnabled()). Lets the micro-test
+	// distinguish "perceiving but stuck in CS_Default" from "transitioning
+	// Roam->Alert->Fight". Deliberately NO forced SetCurrentCreatureState: header
+	// evidence (perception -> aggro -> native TriggerStateUpdate/UpdateCreatureState)
+	// does not require a manual kick, and forcing state could fight the native
+	// state machine (docs/08 packet guidance: implement a kick ONLY if header
+	// evidence supports it, else leave this gated logger). Plain member fn
+	// (FTimerManager's templated SetTimer binds raw member fns -- no UFUNCTION
+	// needed and none wanted, keeping it off the reflection/export surface).
+	void LogCreatureStateHeartbeat();
+
+	// Repeating 30s timer driving LogCreatureStateHeartbeat; set once in
+	// WireCreaturePerception (guarded against re-set on re-possession), and
+	// auto-cleared by the world when this controller actor is destroyed on
+	// creature despawn -- so no OnUnPossess/EndPlay override (each would force a
+	// Super:: direct call to a closed-source FactoryGame method) is needed.
+	FTimerHandle StateHeartbeatTimerHandle;
+
 	// Set once PassesAggressionModeGate has logged the "no spawner yet"
 	// fallback for this controller, so it logs once instead of once per
 	// evaluation. Mutable because CanBeHostileTowards and friends are const.

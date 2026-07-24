@@ -1,7 +1,7 @@
 # Graph Report - PrimalFauna  (2026-07-23)
 
 ## Corpus Check
-- 40 files · ~794,877 words
+- 40 files · ~795,010 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `068710b0`
+- Built from commit: `5e447640`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -47,8 +47,8 @@
 
 ## God Nodes (most connected - your core abstractions)
 1. `07 — Technical Architecture` - 11 edges
-2. `03 — Spawning & Territories` - 9 edges
-3. `05 — Asset Pipeline` - 9 edges
+2. `05 — Asset Pipeline` - 9 edges
+3. `03 — Spawning & Territories` - 9 edges
 4. `08 — Implementation Plan (team execution)` - 8 edges
 5. `02 — Hostility & Factions` - 8 edges
 6. `AActor` - 6 edges
@@ -167,7 +167,7 @@ Cohesion: 0.40
 Nodes (3): PRIMALFAUNA_API, APFACreatureController(), AFGCreatureSpawner()
 
 ## Knowledge Gaps
-- **99 isolated node(s):** `1. Architecture principle: own every class you change`, `2. Class map`, `3. Species authoring — everything on the CDO, in C++`, `4. Behavior: borrow the vanilla Behavior Tree, own the actions`, `5. Attacks = native `UFGCreatureAction` classes (no custom combat code)` (+94 more)
+- **99 isolated node(s):** `1. Art direction & generation briefs`, `2. Per-creature pipeline (stage gates in order)`, `3. Animation — the honest plan (verified Tripo facts)`, `4. Texturing & the aggro-glow telegraph`, `5. Fab/Sketchfab licensing rules (for rungs 3–4 and the worm fallback)` (+94 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **6 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -178,7 +178,7 @@ _Questions this graph is uniquely positioned to answer:_
   _High betweenness centrality (0.014) - this node is a cross-community bridge._
 - **Why does `PFA_RunSelfTests()` connect `Community 11` to `Community 32`?**
   _High betweenness centrality (0.014) - this node is a cross-community bridge._
-- **What connects `1. Architecture principle: own every class you change`, `2. Class map`, `3. Species authoring — everything on the CDO, in C++` to the rest of the system?**
+- **What connects `1. Art direction & generation briefs`, `2. Per-creature pipeline (stage gates in order)`, `3. Animation — the honest plan (verified Tripo facts)` to the rest of the system?**
   _101 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 22` be split into smaller, more focused modules?**
   _Cohesion score 0.10952380952380952 - nodes in this community are weakly interconnected._

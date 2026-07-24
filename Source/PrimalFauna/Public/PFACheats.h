@@ -119,3 +119,14 @@ PRIMALFAUNA_API void RegisterPFASelfTest(const FPFASelfTest& Test);
 // pfa.AutoTest path (already server-only via APFASubsystem::HasAuthority(),
 // so the check there is a no-op safety belt, not load-bearing).
 PRIMALFAUNA_API void PFA_RunSelfTests(UWorld* World);
+
+// Shared dev-command helper (defined in PFACheats.cpp): returns the AFGCreature
+// nearest the local player's LOOK direction (~25 deg cone), falling back to the
+// nearest creature within 50m if the cone finds nothing. Exposed so sibling
+// dev-command files (e.g. PFAPerceptionDebug.cpp's PFA.DumpController) reuse ONE
+// look-at finder instead of duplicating the cone math. OutDistanceCm = distance
+// to the returned creature; bOutFromLookDirection = true if found via the look
+// cone, false if via the 50m nearest fallback. Null if neither hits.
+class AFGCreature;
+PRIMALFAUNA_API AFGCreature* PFA_FindLookedAtOrNearestCreature(
+	UWorld* World, float& OutDistanceCm, bool& bOutFromLookDirection);

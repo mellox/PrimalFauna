@@ -14,6 +14,12 @@
 #include "BrainComponent.h"
 #include "EngineUtils.h"
 
+// NOTE: the W1.8 perception wiring (WireCreaturePerception / LogCreatureState
+// Heartbeat, called from OnPossess below) is defined in the sibling TU
+// PFACreatureControllerPerception.cpp -- split out purely to keep both files
+// under the 500-line workspace limit (this class owns both). See that file for
+// the full root-cause + symbol/export analysis.
+
 namespace
 {
 	void LogRuleVerdict(const AFGCreature* SelfCreature, const AActor* Target, int32 RuleNumber, bool bHostile)
@@ -121,6 +127,12 @@ void APFACreatureController::OnPossess(APawn* InPawn)
 			*GetName(), InPawn ? *InPawn->GetName() : TEXT("<null>"));
 		return;
 	}
+
+	// W1.8: wire perception FIRST -- independent of the BT launch (perception
+	// feeds aggro; the BT consumes aggro), and must run even if the BT branch
+	// below early-returns (a creature with no BT should still be able to
+	// perceive). Self-contained + heavily instrumented; see the method.
+	WireCreaturePerception(PossessedCreature);
 
 	UBehaviorTree* BTAsset = PossessedCreature->GetBehaviorTreeAsset();
 	const TCHAR* BTSource = TEXT("instance");
