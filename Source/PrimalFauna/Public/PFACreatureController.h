@@ -55,6 +55,25 @@ public:
 	// virtual, so running CanBeHostileTowards from here recursed; w18-1).
 	virtual bool IsValidTarget(const AActor* actor) const override;
 
+	// W2.5: dev/diagnostic force-aggro that actually REGISTERS the target
+	// first -- the public SetAggroForTarget silently no-ops on an
+	// unregistered actor (GetAggroForTarget's -1.0 sentinel; session-15:
+	// PFA.AggroNearest Readback=-1.0, no Fight lock, both modes). Uses the
+	// native private GetOrRegisterAggroTarget under the AccessTransformers
+	// Friend grant so every FFGCreatureAggroData field is initialized by the
+	// game's own code. Returns false if registration was refused.
+	bool ForceAggro(AActor* Target, float NewAggro);
+
+	// W2.5: clear ALL per-target state (aggro entries, visibility entries,
+	// current target) so re-perception re-evaluates every rule fresh.
+	// Session-15: the first Passive->Hostile config round-trip left creatures
+	// with aggroTargets>0 / currentTarget=none and rule5 NOT_HOSTILE vs the
+	// player -- stale per-target data captured under the old mode is the
+	// prime suspect. Called on EVERY aggression-mode change (idempotent
+	// transitions). mAggroTargets/mVisibleTargets are protected
+	// (FGCreatureController.h:479/486) -- plain subclass access.
+	void ResetTargetingState(const TCHAR* Reason);
+
 	// W2.3 SHIPPED the Factions keys (flat layout, PFAConfig.cpp) -- these
 	// constexprs are no longer the runtime values. Their remaining roles:
 	// (1) compile-time doc-04 anchors the SicklejawControllerPolicy self-test
@@ -142,4 +161,10 @@ private:
 	// evaluation path, same convention as bLoggedNoSpawnerFallback above.
 	void LogRuleVerdict(const AFGCreature* SelfCreature, const AActor* Target, int32 RuleNumber, bool bHostile) const;
 	mutable TMap<FObjectKey, uint8> mLastLoggedRuleVerdict;
+
+	// W2.5 (w25-4 review fix): per-target throttle for the rule5 super-veto
+	// probe, mirroring mLastLoggedRuleVerdict -- logs only when
+	// mIsPassiveCreature CHANGES for a target, so the per-tick veto path
+	// cannot re-flood the log (the w18-2 lesson, applied to its own probe).
+	mutable TMap<FObjectKey, bool> mLastLoggedSuperVetoPassive;
 };

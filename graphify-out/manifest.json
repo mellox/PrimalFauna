@@ -75,8 +75,8 @@
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Private/PrimalFauna.cpp": {
-    "mtime": 1784898939.5587082,
-    "ast_hash": "8cb352ead1d918b8cf5055f1ed1eb6f6",
+    "mtime": 1784900116.698221,
+    "ast_hash": "f5dc4dddb0cef3984f2ad106d6b2d8c6",
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Public/PFAConfig.h": {
@@ -550,8 +550,98 @@
     "semantic_hash": ""
   },
   "tools/import_sicklejaw_ue.py": {
-    "mtime": 1784887314.5740588,
-    "ast_hash": "d9e0ed516df450a5fd9750b70514b6ac",
+    "mtime": 1784900060.5875626,
+    "ast_hash": "ca4e30bf3a2a9d6ac37e6b91d4ee2e4c",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-rebuild/anims_rebound/build_results.json": {
+    "mtime": 1784899572.9720442,
+    "ast_hash": "24fbf1b2c65d91a7f1ae838a734fdf2e",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-rebuild/anims_rebound/verify_results.json": {
+    "mtime": 1784899723.4874897,
+    "ast_hash": "df7e4cd9d1d4edc7b9d314a2410ead01",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-rebuild/anims_rebound/rebind_report.md": {
+    "mtime": 1784899883.2716508,
+    "ast_hash": "a945171240cf1309fd3049a2368a446c",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-rebuild/anims_rebound/A_Sicklejaw_Hurt_p25.png": {
+    "mtime": 1784899572.560792,
+    "ast_hash": "c71fc9648e39950ad1342a5137dc511c",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-rebuild/anims_rebound/A_Sicklejaw_Hurt_p50.png": {
+    "mtime": 1784899572.681733,
+    "ast_hash": "4d12dace2e0b6473b27da867bf075d7f",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-rebuild/anims_rebound/A_Sicklejaw_Hurt_p75.png": {
+    "mtime": 1784899572.7946908,
+    "ast_hash": "fd7d66c765a858d42af15055feabc847",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-rebuild/anims_rebound/A_Sicklejaw_Idle_p25.png": {
+    "mtime": 1784899568.9043007,
+    "ast_hash": "8276aea773ca0ae06597ad0cc0d52b32",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-rebuild/anims_rebound/A_Sicklejaw_Idle_p50.png": {
+    "mtime": 1784899569.0247831,
+    "ast_hash": "1dca67431e244ca6a621b9e22d9783cf",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-rebuild/anims_rebound/A_Sicklejaw_Idle_p75.png": {
+    "mtime": 1784899569.1341717,
+    "ast_hash": "558ca17149b92f53e464f9b1b11c6c22",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-rebuild/anims_rebound/A_Sicklejaw_Run_p25.png": {
+    "mtime": 1784899570.638512,
+    "ast_hash": "4e42da2997a973fb842eba07959c18f4",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-rebuild/anims_rebound/A_Sicklejaw_Run_p50.png": {
+    "mtime": 1784899570.7508922,
+    "ast_hash": "d0cd33d6e637284fbfdc590db300d77a",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-rebuild/anims_rebound/A_Sicklejaw_Run_p75.png": {
+    "mtime": 1784899570.861056,
+    "ast_hash": "326105ed91b1346815449beb8f096c97",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-rebuild/anims_rebound/A_Sicklejaw_Slash_p25.png": {
+    "mtime": 1784899571.5039477,
+    "ast_hash": "a822dfb1ceebd7a639ce1e8f02ff5e58",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-rebuild/anims_rebound/A_Sicklejaw_Slash_p50.png": {
+    "mtime": 1784899571.6169775,
+    "ast_hash": "08822292466c1431e898f2ed90ab9134",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-rebuild/anims_rebound/A_Sicklejaw_Slash_p75.png": {
+    "mtime": 1784899571.7302995,
+    "ast_hash": "b3c56b4e3d5f9d02cabdce46574d14d6",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-rebuild/anims_rebound/A_Sicklejaw_Walk_p25.png": {
+    "mtime": 1784899569.8579943,
+    "ast_hash": "0465d047d3e519e46ad08f0106b23158",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-rebuild/anims_rebound/A_Sicklejaw_Walk_p50.png": {
+    "mtime": 1784899569.967827,
+    "ast_hash": "cafe50fac9019f39c072b7cc6d17d32e",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-rebuild/anims_rebound/A_Sicklejaw_Walk_p75.png": {
+    "mtime": 1784899570.0789587,
+    "ast_hash": "d0cbf047909c0f48af40a66204588c82",
     "semantic_hash": ""
   }
 }

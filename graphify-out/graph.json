@@ -4,46 +4,6 @@
   "graph": {},
   "nodes": [
     {
-      "label": "PFACreatureControllerPerception.cpp",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureControllerPerception.cpp",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "private_pfacreaturecontrollerperception",
-      "community": 23,
-      "norm_label": "pfacreaturecontrollerperception.cpp"
-    },
-    {
-      "label": "WireCreaturePerception()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureControllerPerception.cpp",
-      "source_location": "L83",
-      "_origin": "ast",
-      "id": "private_pfacreaturecontrollerperception_wirecreatureperception",
-      "community": 23,
-      "norm_label": "wirecreatureperception()"
-    },
-    {
-      "label": "AFGCreature",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureControllerPerception.cpp",
-      "source_location": "L83",
-      "_origin": "ast",
-      "id": "afgcreature",
-      "community": 23,
-      "norm_label": "afgcreature"
-    },
-    {
-      "label": "LogCreatureStateHeartbeat()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureControllerPerception.cpp",
-      "source_location": "L212",
-      "_origin": "ast",
-      "id": "private_pfacreaturecontrollerperception_logcreaturestateheartbeat",
-      "community": 23,
-      "norm_label": "logcreaturestateheartbeat()"
-    },
-    {
       "label": "PrimalFauna.cpp",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/PrimalFauna.cpp",
@@ -62,6 +22,256 @@
       "id": "private_primalfauna_startupmodule",
       "community": 19,
       "norm_label": "startupmodule()"
+    },
+    {
+      "label": "rebind_report.md",
+      "file_type": "document",
+      "source_file": "art/wip/sicklejaw-rebuild/anims_rebound/rebind_report.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "anims_rebound_rebind_report",
+      "community": 27,
+      "norm_label": "rebind_report.md"
+    },
+    {
+      "label": "Sicklejaw animation rebind report",
+      "file_type": "document",
+      "source_file": "art/wip/sicklejaw-rebuild/anims_rebound/rebind_report.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "anims_rebound_rebind_report_sicklejaw_animation_rebind_report",
+      "community": 27,
+      "norm_label": "sicklejaw animation rebind report"
+    },
+    {
+      "label": "Verdict",
+      "file_type": "document",
+      "source_file": "art/wip/sicklejaw-rebuild/anims_rebound/rebind_report.md",
+      "source_location": "L6",
+      "_origin": "ast",
+      "id": "anims_rebound_rebind_report_verdict",
+      "community": 27,
+      "norm_label": "verdict"
+    },
+    {
+      "label": "Root cause (what actually broke it in-game)",
+      "file_type": "document",
+      "source_file": "art/wip/sicklejaw-rebuild/anims_rebound/rebind_report.md",
+      "source_location": "L12",
+      "_origin": "ast",
+      "id": "anims_rebound_rebind_report_root_cause_what_actually_broke_it_in_game",
+      "community": 27,
+      "norm_label": "root cause (what actually broke it in-game)"
+    },
+    {
+      "label": "Method (per clip)",
+      "file_type": "document",
+      "source_file": "art/wip/sicklejaw-rebuild/anims_rebound/rebind_report.md",
+      "source_location": "L27",
+      "_origin": "ast",
+      "id": "anims_rebound_rebind_report_method_per_clip",
+      "community": 27,
+      "norm_label": "method (per clip)"
+    },
+    {
+      "label": "Per-clip results",
+      "file_type": "document",
+      "source_file": "art/wip/sicklejaw-rebuild/anims_rebound/rebind_report.md",
+      "source_location": "L46",
+      "_origin": "ast",
+      "id": "anims_rebound_rebind_report_per_clip_results",
+      "community": 27,
+      "norm_label": "per-clip results"
+    },
+    {
+      "label": "Bone-mapping notes",
+      "file_type": "document",
+      "source_file": "art/wip/sicklejaw-rebuild/anims_rebound/rebind_report.md",
+      "source_location": "L64",
+      "_origin": "ast",
+      "id": "anims_rebound_rebind_report_bone_mapping_notes",
+      "community": 27,
+      "norm_label": "bone-mapping notes"
+    },
+    {
+      "label": "Known compromises / conscious deviations",
+      "file_type": "document",
+      "source_file": "art/wip/sicklejaw-rebuild/anims_rebound/rebind_report.md",
+      "source_location": "L73",
+      "_origin": "ast",
+      "id": "anims_rebound_rebind_report_known_compromises_conscious_deviations",
+      "community": 27,
+      "norm_label": "known compromises / conscious deviations"
+    },
+    {
+      "label": "Note for the UE import step (orchestrator)",
+      "file_type": "document",
+      "source_file": "art/wip/sicklejaw-rebuild/anims_rebound/rebind_report.md",
+      "source_location": "L85",
+      "_origin": "ast",
+      "id": "anims_rebound_rebind_report_note_for_the_ue_import_step_orchestrator",
+      "community": 27,
+      "norm_label": "note for the ue import step (orchestrator)"
+    },
+    {
+      "label": "The exact next tweak I would make",
+      "file_type": "document",
+      "source_file": "art/wip/sicklejaw-rebuild/anims_rebound/rebind_report.md",
+      "source_location": "L92",
+      "_origin": "ast",
+      "id": "anims_rebound_rebind_report_the_exact_next_tweak_i_would_make",
+      "community": 27,
+      "norm_label": "the exact next tweak i would make"
+    },
+    {
+      "label": "import_sicklejaw_ue.py",
+      "file_type": "code",
+      "source_file": "tools/import_sicklejaw_ue.py",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "tools_import_sicklejaw_ue",
+      "community": 31,
+      "norm_label": "import_sicklejaw_ue.py"
+    },
+    {
+      "label": "log()",
+      "file_type": "code",
+      "source_file": "tools/import_sicklejaw_ue.py",
+      "source_location": "L67",
+      "_origin": "ast",
+      "id": "tools_import_sicklejaw_ue_log",
+      "community": 31,
+      "norm_label": "log()"
+    },
+    {
+      "label": "fail()",
+      "file_type": "code",
+      "source_file": "tools/import_sicklejaw_ue.py",
+      "source_location": "L71",
+      "_origin": "ast",
+      "id": "tools_import_sicklejaw_ue_fail",
+      "community": 31,
+      "norm_label": "fail()"
+    },
+    {
+      "label": "safe_set()",
+      "file_type": "code",
+      "source_file": "tools/import_sicklejaw_ue.py",
+      "source_location": "L82",
+      "_origin": "ast",
+      "id": "tools_import_sicklejaw_ue_safe_set",
+      "community": 31,
+      "norm_label": "safe_set()"
+    },
+    {
+      "label": "make_sk_task()",
+      "file_type": "code",
+      "source_file": "tools/import_sicklejaw_ue.py",
+      "source_location": "L91",
+      "_origin": "ast",
+      "id": "tools_import_sicklejaw_ue_make_sk_task",
+      "community": 31,
+      "norm_label": "make_sk_task()"
+    },
+    {
+      "label": "make_anim_task()",
+      "file_type": "code",
+      "source_file": "tools/import_sicklejaw_ue.py",
+      "source_location": "L119",
+      "_origin": "ast",
+      "id": "tools_import_sicklejaw_ue_make_anim_task",
+      "community": 31,
+      "norm_label": "make_anim_task()"
+    },
+    {
+      "label": "measure_height_cm()",
+      "file_type": "code",
+      "source_file": "tools/import_sicklejaw_ue.py",
+      "source_location": "L156",
+      "_origin": "ast",
+      "id": "tools_import_sicklejaw_ue_measure_height_cm",
+      "community": 31,
+      "norm_label": "measure_height_cm()"
+    },
+    {
+      "label": "disk_verify()",
+      "file_type": "code",
+      "source_file": "tools/import_sicklejaw_ue.py",
+      "source_location": "L164",
+      "_origin": "ast",
+      "id": "tools_import_sicklejaw_ue_disk_verify",
+      "community": 31,
+      "norm_label": "disk_verify()"
+    },
+    {
+      "label": "import_sk_fresh()",
+      "file_type": "code",
+      "source_file": "tools/import_sicklejaw_ue.py",
+      "source_location": "L176",
+      "_origin": "ast",
+      "id": "tools_import_sicklejaw_ue_import_sk_fresh",
+      "community": 31,
+      "norm_label": "import_sk_fresh()"
+    },
+    {
+      "label": "r\"\"\" import_sicklejaw_ue.py -- W2.2: import the APPROVED Sicklejaw rebuild (art/",
+      "file_type": "rationale",
+      "source_file": "tools/import_sicklejaw_ue.py",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "tools_import_sicklejaw_ue_rationale_1",
+      "community": 31,
+      "norm_label": "r\"\"\" import_sicklejaw_ue.py -- w2.2: import the approved sicklejaw rebuild (art/"
+    },
+    {
+      "label": "Delete-then-import so replace-in-place can never hand back stale     bounds/rend",
+      "file_type": "rationale",
+      "source_file": "tools/import_sicklejaw_ue.py",
+      "source_location": "L177",
+      "_origin": "ast",
+      "id": "tools_import_sicklejaw_ue_rationale_177",
+      "community": 31,
+      "norm_label": "delete-then-import so replace-in-place can never hand back stale     bounds/rend"
+    },
+    {
+      "label": "PFACreatureControllerPerception.cpp",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureControllerPerception.cpp",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 23,
+      "norm_label": "pfacreaturecontrollerperception.cpp",
+      "id": "private_pfacreaturecontrollerperception"
+    },
+    {
+      "label": "WireCreaturePerception()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureControllerPerception.cpp",
+      "source_location": "L83",
+      "_origin": "ast",
+      "community": 23,
+      "norm_label": "wirecreatureperception()",
+      "id": "private_pfacreaturecontrollerperception_wirecreatureperception"
+    },
+    {
+      "label": "AFGCreature",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureControllerPerception.cpp",
+      "source_location": "L83",
+      "_origin": "ast",
+      "community": 23,
+      "norm_label": "afgcreature",
+      "id": "afgcreature"
+    },
+    {
+      "label": "LogCreatureStateHeartbeat()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureControllerPerception.cpp",
+      "source_location": "L212",
+      "_origin": "ast",
+      "community": 23,
+      "norm_label": "logcreaturestateheartbeat()",
+      "id": "private_pfacreaturecontrollerperception_logcreaturestateheartbeat"
     },
     {
       "label": "PFASicklejaw.cpp",
@@ -179,7 +389,7 @@
       "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
       "source_location": "L508",
       "_origin": "ast",
-      "community": 11,
+      "community": 22,
       "norm_label": "spawntestcommand()",
       "id": "species_pfasicklejaw_spawntestcommand"
     },
@@ -192,116 +402,6 @@
       "community": 11,
       "norm_label": "uworld",
       "id": "uworld"
-    },
-    {
-      "label": "import_sicklejaw_ue.py",
-      "file_type": "code",
-      "source_file": "tools/import_sicklejaw_ue.py",
-      "source_location": "L1",
-      "_origin": "ast",
-      "community": 31,
-      "norm_label": "import_sicklejaw_ue.py",
-      "id": "tools_import_sicklejaw_ue"
-    },
-    {
-      "label": "log()",
-      "file_type": "code",
-      "source_file": "tools/import_sicklejaw_ue.py",
-      "source_location": "L61",
-      "_origin": "ast",
-      "community": 31,
-      "norm_label": "log()",
-      "id": "tools_import_sicklejaw_ue_log"
-    },
-    {
-      "label": "fail()",
-      "file_type": "code",
-      "source_file": "tools/import_sicklejaw_ue.py",
-      "source_location": "L65",
-      "_origin": "ast",
-      "community": 31,
-      "norm_label": "fail()",
-      "id": "tools_import_sicklejaw_ue_fail"
-    },
-    {
-      "label": "safe_set()",
-      "file_type": "code",
-      "source_file": "tools/import_sicklejaw_ue.py",
-      "source_location": "L76",
-      "_origin": "ast",
-      "community": 31,
-      "norm_label": "safe_set()",
-      "id": "tools_import_sicklejaw_ue_safe_set"
-    },
-    {
-      "label": "make_sk_task()",
-      "file_type": "code",
-      "source_file": "tools/import_sicklejaw_ue.py",
-      "source_location": "L85",
-      "_origin": "ast",
-      "community": 31,
-      "norm_label": "make_sk_task()",
-      "id": "tools_import_sicklejaw_ue_make_sk_task"
-    },
-    {
-      "label": "make_anim_task()",
-      "file_type": "code",
-      "source_file": "tools/import_sicklejaw_ue.py",
-      "source_location": "L113",
-      "_origin": "ast",
-      "community": 31,
-      "norm_label": "make_anim_task()",
-      "id": "tools_import_sicklejaw_ue_make_anim_task"
-    },
-    {
-      "label": "measure_height_cm()",
-      "file_type": "code",
-      "source_file": "tools/import_sicklejaw_ue.py",
-      "source_location": "L144",
-      "_origin": "ast",
-      "community": 31,
-      "norm_label": "measure_height_cm()",
-      "id": "tools_import_sicklejaw_ue_measure_height_cm"
-    },
-    {
-      "label": "disk_verify()",
-      "file_type": "code",
-      "source_file": "tools/import_sicklejaw_ue.py",
-      "source_location": "L152",
-      "_origin": "ast",
-      "community": 31,
-      "norm_label": "disk_verify()",
-      "id": "tools_import_sicklejaw_ue_disk_verify"
-    },
-    {
-      "label": "import_sk_fresh()",
-      "file_type": "code",
-      "source_file": "tools/import_sicklejaw_ue.py",
-      "source_location": "L164",
-      "_origin": "ast",
-      "community": 31,
-      "norm_label": "import_sk_fresh()",
-      "id": "tools_import_sicklejaw_ue_import_sk_fresh"
-    },
-    {
-      "label": "r\"\"\" import_sicklejaw_ue.py -- W2.2: import the APPROVED Sicklejaw rebuild (art/",
-      "file_type": "rationale",
-      "source_file": "tools/import_sicklejaw_ue.py",
-      "source_location": "L1",
-      "_origin": "ast",
-      "community": 31,
-      "norm_label": "r\"\"\" import_sicklejaw_ue.py -- w2.2: import the approved sicklejaw rebuild (art/",
-      "id": "tools_import_sicklejaw_ue_rationale_1"
-    },
-    {
-      "label": "Delete-then-import so replace-in-place can never hand back stale     bounds/rend",
-      "file_type": "rationale",
-      "source_file": "tools/import_sicklejaw_ue.py",
-      "source_location": "L165",
-      "_origin": "ast",
-      "community": 31,
-      "norm_label": "delete-then-import so replace-in-place can never hand back stale     bounds/rend",
-      "id": "tools_import_sicklejaw_ue_rationale_165"
     },
     {
       "label": "PFASicklejaw.h",
@@ -519,7 +619,7 @@
       "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
       "source_location": "L71",
       "_origin": "ast",
-      "community": 32,
+      "community": 11,
       "norm_label": "pfa_runselftests()",
       "id": "private_pfacheats_pfa_runselftests"
     },
@@ -3038,6 +3138,305 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PrimalFauna.cpp",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "private_primalfauna",
+      "target": "private_primalfauna_startupmodule"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "art/wip/sicklejaw-rebuild/anims_rebound/rebind_report.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "anims_rebound_rebind_report",
+      "target": "anims_rebound_rebind_report_sicklejaw_animation_rebind_report",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "art/wip/sicklejaw-rebuild/anims_rebound/rebind_report.md",
+      "source_location": "L64",
+      "weight": 1.0,
+      "source": "anims_rebound_rebind_report_sicklejaw_animation_rebind_report",
+      "target": "anims_rebound_rebind_report_bone_mapping_notes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "art/wip/sicklejaw-rebuild/anims_rebound/rebind_report.md",
+      "source_location": "L73",
+      "weight": 1.0,
+      "source": "anims_rebound_rebind_report_sicklejaw_animation_rebind_report",
+      "target": "anims_rebound_rebind_report_known_compromises_conscious_deviations",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "art/wip/sicklejaw-rebuild/anims_rebound/rebind_report.md",
+      "source_location": "L27",
+      "weight": 1.0,
+      "source": "anims_rebound_rebind_report_sicklejaw_animation_rebind_report",
+      "target": "anims_rebound_rebind_report_method_per_clip",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "art/wip/sicklejaw-rebuild/anims_rebound/rebind_report.md",
+      "source_location": "L85",
+      "weight": 1.0,
+      "source": "anims_rebound_rebind_report_sicklejaw_animation_rebind_report",
+      "target": "anims_rebound_rebind_report_note_for_the_ue_import_step_orchestrator",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "art/wip/sicklejaw-rebuild/anims_rebound/rebind_report.md",
+      "source_location": "L46",
+      "weight": 1.0,
+      "source": "anims_rebound_rebind_report_sicklejaw_animation_rebind_report",
+      "target": "anims_rebound_rebind_report_per_clip_results",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "art/wip/sicklejaw-rebuild/anims_rebound/rebind_report.md",
+      "source_location": "L12",
+      "weight": 1.0,
+      "source": "anims_rebound_rebind_report_sicklejaw_animation_rebind_report",
+      "target": "anims_rebound_rebind_report_root_cause_what_actually_broke_it_in_game",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "art/wip/sicklejaw-rebuild/anims_rebound/rebind_report.md",
+      "source_location": "L92",
+      "weight": 1.0,
+      "source": "anims_rebound_rebind_report_sicklejaw_animation_rebind_report",
+      "target": "anims_rebound_rebind_report_the_exact_next_tweak_i_would_make",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "art/wip/sicklejaw-rebuild/anims_rebound/rebind_report.md",
+      "source_location": "L6",
+      "weight": 1.0,
+      "source": "anims_rebound_rebind_report_sicklejaw_animation_rebind_report",
+      "target": "anims_rebound_rebind_report_verdict",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/import_sicklejaw_ue.py",
+      "source_location": "L152",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tools_import_sicklejaw_ue",
+      "target": "tools_import_sicklejaw_ue_disk_verify"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/import_sicklejaw_ue.py",
+      "source_location": "L65",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tools_import_sicklejaw_ue",
+      "target": "tools_import_sicklejaw_ue_fail"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/import_sicklejaw_ue.py",
+      "source_location": "L164",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tools_import_sicklejaw_ue",
+      "target": "tools_import_sicklejaw_ue_import_sk_fresh"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/import_sicklejaw_ue.py",
+      "source_location": "L61",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tools_import_sicklejaw_ue",
+      "target": "tools_import_sicklejaw_ue_log"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/import_sicklejaw_ue.py",
+      "source_location": "L113",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tools_import_sicklejaw_ue",
+      "target": "tools_import_sicklejaw_ue_make_anim_task"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/import_sicklejaw_ue.py",
+      "source_location": "L85",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tools_import_sicklejaw_ue",
+      "target": "tools_import_sicklejaw_ue_make_sk_task"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/import_sicklejaw_ue.py",
+      "source_location": "L144",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tools_import_sicklejaw_ue",
+      "target": "tools_import_sicklejaw_ue_measure_height_cm"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/import_sicklejaw_ue.py",
+      "source_location": "L76",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tools_import_sicklejaw_ue",
+      "target": "tools_import_sicklejaw_ue_safe_set"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/import_sicklejaw_ue.py",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tools_import_sicklejaw_ue_rationale_1",
+      "target": "tools_import_sicklejaw_ue"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/import_sicklejaw_ue.py",
+      "source_location": "L155",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tools_import_sicklejaw_ue_disk_verify",
+      "target": "tools_import_sicklejaw_ue_log"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/import_sicklejaw_ue.py",
+      "source_location": "L66",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tools_import_sicklejaw_ue_fail",
+      "target": "tools_import_sicklejaw_ue_log"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/import_sicklejaw_ue.py",
+      "source_location": "L171",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tools_import_sicklejaw_ue_import_sk_fresh",
+      "target": "tools_import_sicklejaw_ue_log"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/import_sicklejaw_ue.py",
+      "source_location": "L148",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tools_import_sicklejaw_ue_measure_height_cm",
+      "target": "tools_import_sicklejaw_ue_log"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/import_sicklejaw_ue.py",
+      "source_location": "L81",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tools_import_sicklejaw_ue_safe_set",
+      "target": "tools_import_sicklejaw_ue_log"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/import_sicklejaw_ue.py",
+      "source_location": "L176",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tools_import_sicklejaw_ue_import_sk_fresh",
+      "target": "tools_import_sicklejaw_ue_fail"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/import_sicklejaw_ue.py",
+      "source_location": "L122",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tools_import_sicklejaw_ue_make_anim_task",
+      "target": "tools_import_sicklejaw_ue_safe_set"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/import_sicklejaw_ue.py",
+      "source_location": "L93",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tools_import_sicklejaw_ue_make_sk_task",
+      "target": "tools_import_sicklejaw_ue_safe_set"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/import_sicklejaw_ue.py",
+      "source_location": "L172",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "tools_import_sicklejaw_ue_import_sk_fresh",
+      "target": "tools_import_sicklejaw_ue_make_sk_task"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "tools/import_sicklejaw_ue.py",
+      "source_location": "L177",
+      "weight": 1.0,
+      "source": "tools_import_sicklejaw_ue_rationale_177",
+      "target": "tools_import_sicklejaw_ue_import_sk_fresh",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "Source/PrimalFauna/Private/PFACreatureControllerPerception.cpp",
       "source_location": "L207",
       "weight": 1.0,
@@ -3073,19 +3472,9 @@
       "source_location": "L83",
       "weight": 1.0,
       "context": "parameter_type",
-      "source": "private_pfacreaturecontrollerperception_wirecreatureperception",
-      "target": "afgcreature",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PrimalFauna.cpp",
-      "source_location": "L5",
-      "weight": 1.0,
       "confidence_score": 1.0,
-      "source": "private_primalfauna",
-      "target": "private_primalfauna_startupmodule"
+      "source": "private_pfacreaturecontrollerperception_wirecreatureperception",
+      "target": "afgcreature"
     },
     {
       "relation": "contains",
@@ -3421,205 +3810,6 @@
       "confidence_score": 1.0,
       "source": "private_pfaperceptiondebug_findnearestpfacreature",
       "target": "uworld"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "tools/import_sicklejaw_ue.py",
-      "source_location": "L152",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "tools_import_sicklejaw_ue",
-      "target": "tools_import_sicklejaw_ue_disk_verify"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "tools/import_sicklejaw_ue.py",
-      "source_location": "L65",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "tools_import_sicklejaw_ue",
-      "target": "tools_import_sicklejaw_ue_fail"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "tools/import_sicklejaw_ue.py",
-      "source_location": "L164",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "tools_import_sicklejaw_ue",
-      "target": "tools_import_sicklejaw_ue_import_sk_fresh"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "tools/import_sicklejaw_ue.py",
-      "source_location": "L61",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "tools_import_sicklejaw_ue",
-      "target": "tools_import_sicklejaw_ue_log"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "tools/import_sicklejaw_ue.py",
-      "source_location": "L113",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "tools_import_sicklejaw_ue",
-      "target": "tools_import_sicklejaw_ue_make_anim_task"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "tools/import_sicklejaw_ue.py",
-      "source_location": "L85",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "tools_import_sicklejaw_ue",
-      "target": "tools_import_sicklejaw_ue_make_sk_task"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "tools/import_sicklejaw_ue.py",
-      "source_location": "L144",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "tools_import_sicklejaw_ue",
-      "target": "tools_import_sicklejaw_ue_measure_height_cm"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "tools/import_sicklejaw_ue.py",
-      "source_location": "L76",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "tools_import_sicklejaw_ue",
-      "target": "tools_import_sicklejaw_ue_safe_set"
-    },
-    {
-      "relation": "rationale_for",
-      "confidence": "EXTRACTED",
-      "source_file": "tools/import_sicklejaw_ue.py",
-      "source_location": "L1",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "tools_import_sicklejaw_ue_rationale_1",
-      "target": "tools_import_sicklejaw_ue"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "tools/import_sicklejaw_ue.py",
-      "source_location": "L155",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "tools_import_sicklejaw_ue_disk_verify",
-      "target": "tools_import_sicklejaw_ue_log"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "tools/import_sicklejaw_ue.py",
-      "source_location": "L66",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "tools_import_sicklejaw_ue_fail",
-      "target": "tools_import_sicklejaw_ue_log"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "tools/import_sicklejaw_ue.py",
-      "source_location": "L171",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "tools_import_sicklejaw_ue_import_sk_fresh",
-      "target": "tools_import_sicklejaw_ue_log"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "tools/import_sicklejaw_ue.py",
-      "source_location": "L148",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "tools_import_sicklejaw_ue_measure_height_cm",
-      "target": "tools_import_sicklejaw_ue_log"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "tools/import_sicklejaw_ue.py",
-      "source_location": "L81",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "tools_import_sicklejaw_ue_safe_set",
-      "target": "tools_import_sicklejaw_ue_log"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "tools/import_sicklejaw_ue.py",
-      "source_location": "L176",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "tools_import_sicklejaw_ue_import_sk_fresh",
-      "target": "tools_import_sicklejaw_ue_fail"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "tools/import_sicklejaw_ue.py",
-      "source_location": "L122",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "tools_import_sicklejaw_ue_make_anim_task",
-      "target": "tools_import_sicklejaw_ue_safe_set"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "tools/import_sicklejaw_ue.py",
-      "source_location": "L93",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "tools_import_sicklejaw_ue_make_sk_task",
-      "target": "tools_import_sicklejaw_ue_safe_set"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "tools/import_sicklejaw_ue.py",
-      "source_location": "L172",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "tools_import_sicklejaw_ue_import_sk_fresh",
-      "target": "tools_import_sicklejaw_ue_make_sk_task"
-    },
-    {
-      "relation": "rationale_for",
-      "confidence": "EXTRACTED",
-      "source_file": "tools/import_sicklejaw_ue.py",
-      "source_location": "L165",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "tools_import_sicklejaw_ue_rationale_165",
-      "target": "tools_import_sicklejaw_ue_import_sk_fresh"
     },
     {
       "relation": "contains",
@@ -6559,5 +6749,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "e70ca09ff722e39140d5dc1e38d7a4504123a2d5"
+  "built_at_commit": "d1643e34d46a7e5fb8fbdf01ac8f6896027fecf1"
 }

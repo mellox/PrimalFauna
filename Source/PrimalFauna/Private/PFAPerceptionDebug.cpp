@@ -291,11 +291,14 @@ namespace
 			return;
 		}
 
-		AFGCreatureController* Controller = Cast<AFGCreatureController>(Nearest->GetController());
+		// W2.5: must be OUR controller -- ForceAggro needs the Friend-granted
+		// native registration (the raw SetAggroForTarget path proved inert on
+		// unregistered targets: session-15 Readback=-1.0).
+		APFACreatureController* Controller = Cast<APFACreatureController>(Nearest->GetController());
 		if (!Controller)
 		{
 			UE_LOG(LogPrimalFauna, Error,
-				TEXT("[PFA] PFA.AggroNearest FAIL: nearest creature %s is unpossessed or has a non-AFGCreatureController (%s)."),
+				TEXT("[PFA] PFA.AggroNearest FAIL: nearest creature %s is unpossessed or not APFACreatureController (%s)."),
 				*Nearest->GetName(),
 				Nearest->GetController() ? *Nearest->GetController()->GetClass()->GetName() : TEXT("none"));
 			return;
@@ -306,11 +309,12 @@ namespace
 		// is inline on AFGCreature (FGCreature.h:396).
 		const float Threshold = Nearest->GetAggroFightThreshold();
 		const float NewAggro = Threshold + 10.0f;
-		Controller->SetAggroForTarget(PlayerPawn, NewAggro, /*bImmediateStateUpdate=*/true);
+		const bool bForced = Controller->ForceAggro(PlayerPawn, NewAggro);
 
 		UE_LOG(LogPrimalFauna, Display,
-			TEXT("[PFA] PFA.AggroNearest: %s (%.0fcm) aggro toward %s set to %.1f (fightThreshold=%.1f +10). Readback=%.1f state now=%s"),
-			*Nearest->GetName(), DistCm, *PlayerPawn->GetName(), NewAggro, Threshold,
+			TEXT("[PFA] PFA.AggroNearest: %s (%.0fcm) ForceAggro(%s, %.1f) forced=%s (fightThreshold=%.1f +10). Readback=%.1f state now=%s"),
+			*Nearest->GetName(), DistCm, *PlayerPawn->GetName(), NewAggro,
+			bForced ? TEXT("true") : TEXT("false"), Threshold,
 			ReadbackAggroFor(Controller, PlayerPawn),
 			*CreatureStateEnumToString(Controller->GetCurrentCreatureState()));
 	}

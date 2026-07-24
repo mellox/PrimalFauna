@@ -317,6 +317,27 @@ bool APFACreatureController::CanBeHostileTowards(const AActor* actor) const
 	{
 		if (!Super::CanBeHostileTowards(actor))
 		{
+			// W2.5 root-cause probe (session-15: rule5 NOT_HOSTILE vs the
+			// player even in Hostile config, after the first Passive round
+			// trip): when the BASE vetoes, log the one field we control that
+			// feeds it. mIsPassiveCreature=true here after a mode flip back
+			// to Hostile = the flip failed to clear it; =false = the veto
+			// comes from deeper base state. Throttled per target on VALUE
+			// change (w25-4 review fix -- this sits on the per-tick hot path).
+			if (PFADiag::IsEnabled() && SelfCreature)
+			{
+				const bool bPassive = SelfCreature->IsPassiveCreature();
+				const FObjectKey ProbeKey(actor);
+				const bool* PrevPassive = mLastLoggedSuperVetoPassive.Find(ProbeKey);
+				if (!PrevPassive || *PrevPassive != bPassive)
+				{
+					mLastLoggedSuperVetoPassive.Add(ProbeKey, bPassive);
+					UE_LOG(LogPrimalFauna, Display,
+						TEXT("[PFA] %s vs %s: rule5 SUPER-VETO probe: mIsPassiveCreature=%s"),
+						*SelfCreature->GetName(), *actor->GetName(),
+						bPassive ? TEXT("true") : TEXT("false"));
+				}
+			}
 			LogRuleVerdict(SelfCreature, actor, 5, false);
 			return false;
 		}
@@ -373,6 +394,47 @@ bool APFACreatureController::IsValidTarget(const AActor* actor) const
 bool APFACreatureController::CanBeAlertedByTarget_Implementation(const AActor* target) const
 {
 	return CanBeHostileTowards(target);
+}
+
+bool APFACreatureController::ForceAggro(AActor* Target, float NewAggro)
+{
+	if (!Target)
+	{
+		return false;
+	}
+	// Native private registration via the Friend grant (AccessTransformers
+	// .ini) -- the same entry-initialization path perception itself uses.
+	FFGCreatureAggroData* Entry = GetOrRegisterAggroTarget(Target);
+	if (!Entry)
+	{
+		UE_LOG(LogPrimalFauna, Warning,
+			TEXT("[PFA] %s: ForceAggro(%s) -- native registration REFUSED (closed-source gate); aggro not set."),
+			*GetName(), *Target->GetName());
+		return false;
+	}
+	SetAggroForTarget(Target, NewAggro, /*bImmediateStateUpdate=*/true);
+	UE_LOG(LogPrimalFauna, Display,
+		TEXT("[PFA] %s: ForceAggro(%s, %.1f) registered+set; readback=%.1f state=%s currentTarget=%s"),
+		*GetName(), *Target->GetName(), NewAggro,
+		GetAggroForTarget(Target),
+		*CreatureStateEnumToString(GetCurrentCreatureState()),
+		GetCurrentTarget() ? *GetCurrentTarget()->GetName() : TEXT("none"));
+	return true;
+}
+
+void APFACreatureController::ResetTargetingState(const TCHAR* Reason)
+{
+	const int32 AggroCount = mAggroTargets.Num();
+	const int32 VisibleCount = mVisibleTargets.Num();
+	NullifyAllAggro(/*bImmediateStateUpdate=*/false);
+	mAggroTargets.Reset();
+	mVisibleTargets.Reset();
+	SetCurrentTarget(nullptr);
+	TriggerStateUpdate(/*bImmediate=*/true);
+	// Always-on: a state wipe is a behavioral event the log must explain.
+	UE_LOG(LogPrimalFauna, Display,
+		TEXT("[PFA] %s: ResetTargetingState (%s): cleared %d aggro + %d visibility entries; currentTarget=none."),
+		*GetName(), Reason, AggroCount, VisibleCount);
 }
 
 bool APFACreatureController::PassesAggressionModeGate(const AActor* Target) const

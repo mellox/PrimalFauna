@@ -276,14 +276,26 @@ void APFACreatureBase::SetAggressionMode(EPFAAggression NewMode)
 	// write under the AccessTransformers Friend grant (see note above).
 	mIsPassiveCreature = (NewMode == EPFAAggression::Passive);
 
-	if (NewMode == EPFAAggression::Passive && OldMode != EPFAAggression::Passive)
+	// W2.5 (session-15, + w25-4 review fix): wipe per-target state on an
+	// ACTUAL mode change only. A genuine Passive<->Hostile transition must
+	// not leak stale aggro/visibility entries (aggroTargets>0 with
+	// currentTarget=none, rule5 NOT_HOSTILE vs the player); a same-mode
+	// re-stamp (BeginPlay self-apply, the subsystem's first-tick -1
+	// sentinel) stays a NO-OP so it can't wipe live targeting or spam the
+	// always-on ResetTargetingState line. Falls back to the doc 02 §3
+	// Passive-only NullifyAllAggro if the controller is somehow not ours.
+	if (OldMode != NewMode)
 	{
-		// Doc 02 §3: "Verify in-game that flipping it live cleanly de-aggros
-		// (call NullifyAllAggro() on transition)." NullifyAllAggro is public
-		// on AFGCreatureController (AI/FGCreatureController.h:280).
 		if (AFGCreatureController* PFACreatureAI = GetCreatureController())
 		{
-			PFACreatureAI->NullifyAllAggro();
+			if (APFACreatureController* OurController = Cast<APFACreatureController>(PFACreatureAI))
+			{
+				OurController->ResetTargetingState(TEXT("aggression-mode change"));
+			}
+			else if (NewMode == EPFAAggression::Passive)
+			{
+				PFACreatureAI->NullifyAllAggro();
+			}
 		}
 	}
 
