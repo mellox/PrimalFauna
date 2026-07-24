@@ -366,15 +366,28 @@ void APFASicklejaw::StartLocomotionAnim()
 	LocomotionIdleAnim = FindSequenceInPackages(SicklejawIdleAnimPackages, UE_ARRAY_COUNT(SicklejawIdleAnimPackages), TEXT("idle"), OwnerName);
 	LocomotionWalkAnim = FindSequenceInPackages(SicklejawWalkAnimPackages, UE_ARRAY_COUNT(SicklejawWalkAnimPackages), TEXT("walk"), OwnerName);
 	LocomotionRunAnim = FindSequenceInPackages(SicklejawRunAnimPackages, UE_ARRAY_COUNT(SicklejawRunAnimPackages), TEXT("run"), OwnerName);
+	// w24-3 (overnight tester finding): the all-or-nothing gate kept the
+	// driver dark when only run was missing -- idle+walk resolved but NOT
+	// EVEN IDLE played. PARTIAL-ARM instead: any resolved sequence arms the
+	// driver, and TickLocomotionAnim falls back down the gait chain
+	// (run->walk->idle) for missing slots -- a missing take degrades to a
+	// slower gait, never to a statue. Only the nothing-resolved case stays
+	// dark (honest warning).
+	if (!LocomotionIdleAnim && !LocomotionWalkAnim && !LocomotionRunAnim)
+	{
+		UE_LOG(LogPrimalFauna, Warning,
+			TEXT("[PFA] %s: NO locomotion anims resolved at all -- ref-pose slide remains; run tools/import_sicklejaw_ue.py."),
+			*GetName());
+		return;
+	}
 	if (!LocomotionIdleAnim || !LocomotionWalkAnim || !LocomotionRunAnim)
 	{
 		UE_LOG(LogPrimalFauna, Warning,
-			TEXT("[PFA] %s: locomotion anims incomplete (idle=%s walk=%s run=%s) -- ref-pose slide remains; run tools/import_sicklejaw_ue.py."),
+			TEXT("[PFA] %s: locomotion anims partial (idle=%s walk=%s run=%s) -- arming with gait fallback (missing slots borrow the next-slower clip)."),
 			*GetName(),
 			LocomotionIdleAnim ? TEXT("ok") : TEXT("MISSING"),
 			LocomotionWalkAnim ? TEXT("ok") : TEXT("MISSING"),
 			LocomotionRunAnim ? TEXT("ok") : TEXT("MISSING"));
-		return;
 	}
 
 	if (USkeletalMeshComponent* MeshComponent = GetMesh())
@@ -426,14 +439,30 @@ void APFASicklejaw::TickLocomotionAnim()
 	}
 	LocomotionState = DesiredState;
 
-	UAnimSequence* Chosen = LocomotionIdleAnim;
-	if (DesiredState == 1)
+	// w24-3 gait fallback chain: a missing clip borrows the next-slower one
+	// (run->walk->idle, walk->idle, idle->walk as last resort) so partial
+	// asset coverage still animates. Guaranteed non-null: the arm gate
+	// requires at least one resolved sequence.
+	UAnimSequence* Chosen = nullptr;
+	if (DesiredState == 2)
 	{
-		Chosen = LocomotionWalkAnim;
+		Chosen = LocomotionRunAnim ? LocomotionRunAnim : (LocomotionWalkAnim ? LocomotionWalkAnim : LocomotionIdleAnim);
 	}
-	else if (DesiredState == 2)
+	else if (DesiredState == 1)
+	{
+		Chosen = LocomotionWalkAnim ? LocomotionWalkAnim : LocomotionIdleAnim;
+	}
+	else
+	{
+		Chosen = LocomotionIdleAnim ? LocomotionIdleAnim : LocomotionWalkAnim;
+	}
+	if (!Chosen)
 	{
 		Chosen = LocomotionRunAnim;
+	}
+	if (!Chosen)
+	{
+		return;
 	}
 	MeshComponent->PlayAnimation(Chosen, true);
 
