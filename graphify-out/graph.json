@@ -37,7 +37,7 @@
       "label": "APFASicklejaw()",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
-      "source_location": "L53",
+      "source_location": "L68",
       "_origin": "ast",
       "id": "species_pfasicklejaw_apfasicklejaw",
       "community": 22,
@@ -47,7 +47,7 @@
       "label": "FObjectInitializer",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
-      "source_location": "L53",
+      "source_location": "L68",
       "_origin": "ast",
       "id": "fobjectinitializer",
       "community": 22,
@@ -57,7 +57,7 @@
       "label": "BeginPlay()",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
-      "source_location": "L115",
+      "source_location": "L130",
       "_origin": "ast",
       "id": "species_pfasicklejaw_beginplay",
       "community": 26,
@@ -67,7 +67,7 @@
       "label": "SpawnTestCommand()",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
-      "source_location": "L217",
+      "source_location": "L243",
       "_origin": "ast",
       "id": "species_pfasicklejaw_spawntestcommand",
       "community": 26,
@@ -77,7 +77,7 @@
       "label": "UWorld",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
-      "source_location": "L217",
+      "source_location": "L243",
       "_origin": "ast",
       "id": "uworld",
       "community": 26,
@@ -5877,5 +5877,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "3a300eca977713c03588b11050774ba47b015195"
+  "built_at_commit": "5a7dfbc4a1c25cfbce32c100055820a821846ec5"
 }

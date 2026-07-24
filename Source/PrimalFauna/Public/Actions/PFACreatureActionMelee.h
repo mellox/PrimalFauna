@@ -34,6 +34,16 @@ class AFGCharacterBase;
 // We therefore instrument the four pipeline stages below so ONE in-game test
 // reveals precisely where (if anywhere) montage-less breaks; we do NOT force
 // the damage. See the handoff for the ranked montage-less fallback levers.
+//
+// W1.8 VERDICT (w18-9 in-game session, 2026-07-24): montage-less = NO HIT,
+// definitively. PerformAction fired and completed instantly, ProcessHit never
+// followed -- the hit sweep only exists inside the montage's anim-notify.
+// RESOLUTION (w18-10): PerformAction now runs TryDirectMeleeHit() when
+// mActionMontage is null -- the same range/angle gate the sweep enforces,
+// with damage still applied by the base ProcessHit (mDamageTypes+knockback),
+// so the standard damage pipeline / HostileScaling contract (doc 06) holds.
+// Self-retiring: ships a real attack montage in the W2.2 anim era and the
+// direct path stops running.
 // ---------------------------------------------------------------------------
 UCLASS()
 class PRIMALFAUNA_API UPFACreatureActionMelee : public UFGCreatureActionMeleeAttack
@@ -78,4 +88,13 @@ protected:
 	virtual void ProcessHit_Implementation(AFGCharacterBase* HitCharacter, const FHitResult& HitResult) override;
 	//   CleanupAction        -> the action finished (success flag) rather than hung
 	virtual void CleanupAction_Implementation(bool actionSuccess) override;
+
+private:
+	// w18-10: the montage-less hit (see the class comment's W1.8 VERDICT).
+	// Re-implements only the sweep's GATE (current target within mAttackRange
+	// and the mAttackAngle forward cone); the damage/knockback application is
+	// the base ProcessHit, untouched. Server-side only by construction
+	// (creature actions execute on the server); the base's private client-fx
+	// multicast is not reachable -- cosmetic hit fx absent until montages.
+	void TryDirectMeleeHit();
 };

@@ -105,8 +105,17 @@ bool UPFACreatureActionMelee::ScoreAction_Implementation(float& score) const
 	// by memory. mCreature (FGCreatureAction.h:111, protected, inherited) is
 	// populated by InitializeAction before scoring; the !IsValid() fallback
 	// keeps early bring-up safe.
+	// w18-10 addition to the force condition: ALSO require the base's own
+	// performability check. The w18-9 session showed that forcing a positive
+	// score while the action is cooling down / not performable makes the BT
+	// hammer it ~10x/s -- each attempt rejected with an engine LogAction
+	// Warning ("not performable ... Current state: EAS_Setup"). Gating the
+	// force on Super::CanPerformAction keeps the score honest during cooldown
+	// (score 0 -> BT picks nothing -> no churn) without touching the
+	// single-action bring-up guarantee while the bite IS available.
 	const bool bForce = (score <= 0.0f) &&
-		(!mCreature.IsValid() || mCreature->GetCreatureActionsSetup().Num() <= 1);
+		(!mCreature.IsValid() || mCreature->GetCreatureActionsSetup().Num() <= 1) &&
+		Super::CanPerformAction_Implementation();
 	if (bForce)
 	{
 		score = MeleeFallbackScore;
@@ -144,10 +153,70 @@ void UPFACreatureActionMelee::PerformAction_Implementation()
 	if (PFADiag::IsEnabled())
 	{
 		UE_LOG(LogPrimalFauna, Display,
-			TEXT("[PFA] Sicklejaw action=Melee PerformAction START (montage-less: mActionMontage null; a hit depends on the anim-notify path -- watch for a following ProcessHit line) target=%s"),
+			TEXT("[PFA] Sicklejaw action=Melee PerformAction START (montage=%s) target=%s"),
+			mActionMontage ? TEXT("set") : TEXT("null->direct-hit path"),
 			GetCurrentTarget() ? *GetCurrentTarget()->GetName() : TEXT("none"));
 	}
 	Super::PerformAction_Implementation();
+
+	// W1.8 verdict (see class comment): with no montage there is no anim-notify
+	// and therefore no hit sweep -- the action completes without ever dealing
+	// damage. Perform the hit directly through the same gate + the base's own
+	// ProcessHit so damage stays on the standard pipeline (HostileScaling
+	// contract, doc 06). Removed automatically from play once a real attack
+	// montage is authored (W2.2 anim era).
+	if (!mActionMontage)
+	{
+		TryDirectMeleeHit();
+	}
+}
+
+void UPFACreatureActionMelee::TryDirectMeleeHit()
+{
+	AFGCreature* Creature = mCreature.Get();
+	AActor* Target = GetCurrentTarget();
+	if (!Creature || !Target)
+	{
+		if (PFADiag::IsEnabled())
+		{
+			UE_LOG(LogPrimalFauna, Display,
+				TEXT("[PFA] Sicklejaw action=Melee direct-hit SKIPPED creature=%s target=%s"),
+				Creature ? TEXT("valid") : TEXT("null"), Target ? TEXT("valid") : TEXT("null"));
+		}
+		return;
+	}
+
+	AFGCharacterBase* HitCharacter = Cast<AFGCharacterBase>(Target);
+	const float DistanceCm = Creature->GetDistanceTo(Target);
+	const FVector ToTarget2D = (Target->GetActorLocation() - Creature->GetActorLocation()).GetSafeNormal2D();
+	const float CosToTarget = FVector::DotProduct(Creature->GetActorForwardVector().GetSafeNormal2D(), ToTarget2D);
+	// mAttackAngle is the full cone width ("targets need to be within this
+	// angle"), so the forward-dot test uses the half-angle.
+	const float CosHalfCone = FMath::Cos(FMath::DegreesToRadians(mAttackAngle * 0.5f));
+	const bool bInRange = DistanceCm <= mAttackRange;
+	const bool bInCone = CosToTarget >= CosHalfCone;
+
+	if (HitCharacter && bInRange && bInCone)
+	{
+		// Synthetic hit at the target -- the base ProcessHit consumes the
+		// character + a hit location for damage/knockback; there is no real
+		// sweep trace to source one from on this path.
+		FHitResult SyntheticHit;
+		SyntheticHit.bBlockingHit = true;
+		SyntheticHit.Location = Target->GetActorLocation();
+		SyntheticHit.ImpactPoint = Target->GetActorLocation();
+		SyntheticHit.Normal = -ToTarget2D;
+		SyntheticHit.ImpactNormal = -ToTarget2D;
+		ProcessHit(HitCharacter, SyntheticHit);
+	}
+	else if (PFADiag::IsEnabled())
+	{
+		UE_LOG(LogPrimalFauna, Display,
+			TEXT("[PFA] Sicklejaw action=Melee direct-hit MISS target=%s isCharacter=%s dist=%.0f/%.0f inCone=%s (cos=%.2f need>=%.2f)"),
+			*Target->GetName(), HitCharacter ? TEXT("true") : TEXT("false"),
+			DistanceCm, mAttackRange, bInCone ? TEXT("true") : TEXT("false"),
+			CosToTarget, CosHalfCone);
+	}
 }
 
 void UPFACreatureActionMelee::CleanupAction_Implementation(bool actionSuccess)
