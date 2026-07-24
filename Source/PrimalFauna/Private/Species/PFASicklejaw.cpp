@@ -14,6 +14,8 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Engine/SkeletalMesh.h"
 #include "Animation/Skeleton.h"
+#include "Rendering/SkeletalMeshRenderData.h"
+#include "Rendering/SkeletalMeshLODRenderData.h"
 
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/Pawn.h"
@@ -166,22 +168,39 @@ void APFASicklejaw::BeginPlay()
 			*GetName(), PlaceholderMesh->GetImportedBounds().SphereRadius);
 	}
 
-	MeshComponent->SetSkinnedAsset(PlaceholderMesh);
-	// w18-6 (cold review): SetSkinnedAsset is the TRIVIAL setter -- it does
-	// not recreate render state, and this component was registered with a
-	// null asset (no scene proxy at all). Rebuild explicitly so the render
-	// thread gets the mesh + the repaired non-zero bounds; deliberately NOT
-	// SetSkinnedAssetAndUpdate (its pose-reinit is extra crash surface on a
-	// headless-imported skeleton -- sf-skeletal-mesh-import-crash).
+	// w18-7: compR stayed 0 after the w18-6 trivial-setter + UpdateBounds +
+	// MarkRenderStateDirty attempt (in-game proof, session 5) -- a component
+	// registered with a NULL asset never allocated transform data / a mesh
+	// object, so there was no proxy to rebuild. Escalate to the engine's full
+	// path (the w18-6 review's designated fallback): AndUpdate recreates
+	// render state, allocates transform data, reinits the pose. The
+	// GetSkeleton() guard above hedges its pose-reinit crash surface
+	// (sf-skeletal-mesh-import-crash).
+	MeshComponent->SetSkinnedAssetAndUpdate(PlaceholderMesh, true);
 	MeshComponent->UpdateBounds();
-	MeshComponent->MarkRenderStateDirty();
-	// compR is the COMPONENT bounds -- the value the renderer culls with.
-	// compR~237 = fix took; compR=0 = proxy never rebuilt (escalate to
-	// SetSkinnedAssetAndUpdate).
+
+	// Geometry ground-truth: bounds that were ZERO at import time raise the
+	// possibility the headless FBX import produced a geometry-less asset
+	// (skeleton only). LODs=0 or verts=0 => nothing can EVER draw this asset
+	// and the fix moves to a proper re-import (or W2.2's real asset), not
+	// more render-state pokes.
+	int32 NumLODs = 0;
+	int32 NumVerts = 0;
+	int32 NumSections = 0;
+	if (FSkeletalMeshRenderData* RenderData = PlaceholderMesh->GetResourceForRendering())
+	{
+		NumLODs = RenderData->LODRenderData.Num();
+		if (NumLODs > 0)
+		{
+			NumVerts = RenderData->LODRenderData[0].GetNumVertices();
+			NumSections = RenderData->LODRenderData[0].RenderSections.Num();
+		}
+	}
 	UE_LOG(LogPrimalFauna, Display,
-		TEXT("[PFA] %s: placeholder mesh assigned (%s, assetR=%.0fcm, compR=%.0fcm)."),
+		TEXT("[PFA] %s: placeholder mesh assigned via AndUpdate (%s, assetR=%.0fcm, compR=%.0fcm, LODs=%d, LOD0verts=%d, LOD0sections=%d, materials=%d)."),
 		*GetName(), *PlaceholderMesh->GetName(),
-		PlaceholderMesh->GetBounds().SphereRadius, MeshComponent->Bounds.SphereRadius);
+		PlaceholderMesh->GetBounds().SphereRadius, MeshComponent->Bounds.SphereRadius,
+		NumLODs, NumVerts, NumSections, PlaceholderMesh->GetMaterials().Num());
 }
 
 // ---- PFA.SpawnTest: the "SicklejawSpawnRoundtrip" stretch item from the
