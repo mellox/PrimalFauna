@@ -37,7 +37,7 @@
       "label": "APFASicklejaw()",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
-      "source_location": "L51",
+      "source_location": "L53",
       "_origin": "ast",
       "id": "species_pfasicklejaw_apfasicklejaw",
       "community": 22,
@@ -47,7 +47,7 @@
       "label": "FObjectInitializer",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
-      "source_location": "L51",
+      "source_location": "L53",
       "_origin": "ast",
       "id": "fobjectinitializer",
       "community": 22,
@@ -57,7 +57,7 @@
       "label": "BeginPlay()",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
-      "source_location": "L113",
+      "source_location": "L115",
       "_origin": "ast",
       "id": "species_pfasicklejaw_beginplay",
       "community": 26,
@@ -67,7 +67,7 @@
       "label": "SpawnTestCommand()",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
-      "source_location": "L198",
+      "source_location": "L217",
       "_origin": "ast",
       "id": "species_pfasicklejaw_spawntestcommand",
       "community": 26,
@@ -77,7 +77,7 @@
       "label": "UWorld",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
-      "source_location": "L198",
+      "source_location": "L217",
       "_origin": "ast",
       "id": "uworld",
       "community": 26,
@@ -2842,9 +2842,9 @@
       "source_location": "L51",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "species_pfasicklejaw_apfasicklejaw",
-      "target": "fobjectinitializer",
-      "confidence_score": 1.0
+      "target": "fobjectinitializer"
     },
     {
       "relation": "calls",
@@ -2875,9 +2875,9 @@
       "source_location": "L198",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "species_pfasicklejaw_spawntestcommand",
-      "target": "uworld",
-      "confidence_score": 1.0
+      "target": "uworld"
     },
     {
       "relation": "references",
@@ -5877,5 +5877,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "7f8b463f798ff501c56d7fa8ac5fcfb249ea5cf2"
+  "built_at_commit": "3a300eca977713c03588b11050774ba47b015195"
 }

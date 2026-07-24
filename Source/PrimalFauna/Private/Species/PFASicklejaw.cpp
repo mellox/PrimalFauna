@@ -48,6 +48,21 @@ namespace
 	constexpr float SicklejawTerritoryRadiusCm = 3500.0f;          // inert while default mode is Hostile (doc 04 §1); wired for when Territorial is selected
 
 	const TCHAR* PlaceholderMeshPath = TEXT("/PrimalFauna/Placeholder/SK_PFA_Placeholder.SK_PFA_Placeholder");
+
+	// w18-8: designed standing height (doc 01 §1, matches the 1.65m rig the
+	// asset was authored at) -- the auto-scale target for the mis-scaled
+	// placeholder (FBX meter-units imported as cm; see AssignPlaceholderMesh).
+	constexpr float SicklejawTargetHeightCm = 165.0f;
+
+	// w18-8: live override for the placeholder mesh scale factor. 0 (default)
+	// = AUTO (target height / measured mesh height, clamped 1..500); >0 =
+	// explicit multiplier. Read at assign time: change it, then PFA.KillAll +
+	// PFA.SpawnNest to see the new size -- no rebuild (fp-weapon live-tune
+	// pattern).
+	static TAutoConsoleVariable<float> CVarPFAPlaceholderMeshScale(
+		TEXT("pfa.PlaceholderMeshScale"), 0.0f,
+		TEXT("Placeholder Sicklejaw mesh scale factor. 0 = auto (165cm target / measured mesh height). >0 = explicit multiplier."),
+		ECVF_Default);
 }
 
 APFASicklejaw::APFASicklejaw(const FObjectInitializer& ObjectInitializer)
@@ -148,59 +163,70 @@ void APFASicklejaw::BeginPlay()
 		return;
 	}
 
-	// w18-5 -- ROOT CAUSE of the invisible-Sicklejaw saga (proven by the
-	// w18-4 dump forensics: mesh=SK_PFA_Placeholder registered=true
-	// visible=true actorHidden=false recentlyRendered(5s)=false
-	// boundsRadius=0cm, creature on-surface sunken=-3cm): the headlessly
-	// imported placeholder asset carries ZERO imported bounds, so the
-	// renderer frustum-culls the component as an empty primitive -- it has
-	// never been drawn in ANY build (w15/w17 "mesh renders" verifications
-	// were unsound). Repair the shared asset's bounds in-place BEFORE
-	// assigning: generous 1.65m-raptor envelope, feet at component origin.
-	// Self-disabling: only fires on degenerate (<1cm) bounds, so a future
-	// properly-imported asset (W2.2) passes through untouched.
-	if (PlaceholderMesh->GetImportedBounds().SphereRadius < 1.0f)
+	// ---- w18-8: THE ACTUAL ROOT CAUSE (proven by the w18-7 forensics line:
+	// assetR=237(my earlier repair) compR=1cm LODs=1 LOD0verts=1189
+	// sections=1 materials=1): the asset is a real, renderable mesh -- but
+	// ~1.65 CENTIMETERS tall. The FBX was exported in Blender meter units
+	// and tools/import_placeholder_ue.py hardcodes import_uniform_scale=1.0,
+	// so UE (cm) read 1.65 units as 1.65cm (the documented Blender->UE
+	// gotcha that hit the laser rifle at 0.53cm). Every earlier hypothesis
+	// (burial / zero bounds / missing proxy) was a secondary symptom of a
+	// speck-sized mesh. Fix: measure the mesh's REAL height and scale the
+	// COMPONENT so the creature stands at its designed height; a live CVar
+	// overrides the factor so size tunes in-game with a respawn, no rebuild.
+	// The proper asset-side fix (re-import at scale 100) is folded into the
+	// W2.2 import standard (doc 05).
+
+	// Repair only a TRULY degenerate asset (radius < 0.01cm); a tiny-but-real
+	// bounds is the honest measurement the auto-scale below needs. (w18-5's
+	// <1cm threshold overwrote the real ~1cm evidence -- reverted.)
+	if (PlaceholderMesh->GetImportedBounds().SphereRadius < 0.01f)
 	{
-		const FBoxSphereBounds RepairedBounds(FBox(FVector(-150.0f, -150.0f, -10.0f), FVector(150.0f, 150.0f, 200.0f)));
-		PlaceholderMesh->SetImportedBounds(RepairedBounds);
-		UE_LOG(LogPrimalFauna, Display,
-			TEXT("[PFA] %s: placeholder mesh had ZERO imported bounds (frustum-culled -> never rendered) -- repaired to r=%.0fcm before assign."),
-			*GetName(), PlaceholderMesh->GetImportedBounds().SphereRadius);
+		PlaceholderMesh->SetImportedBounds(FBoxSphereBounds(FBox(FVector(-2.0f, -2.0f, 0.0f), FVector(2.0f, 2.0f, 2.0f))));
+		UE_LOG(LogPrimalFauna, Warning,
+			TEXT("[PFA] %s: placeholder mesh bounds were EXACTLY zero -- stub bounds injected so auto-scale can proceed."), *GetName());
 	}
 
-	// w18-7: compR stayed 0 after the w18-6 trivial-setter + UpdateBounds +
-	// MarkRenderStateDirty attempt (in-game proof, session 5) -- a component
-	// registered with a NULL asset never allocated transform data / a mesh
-	// object, so there was no proxy to rebuild. Escalate to the engine's full
-	// path (the w18-6 review's designated fallback): AndUpdate recreates
-	// render state, allocates transform data, reinits the pose. The
-	// GetSkeleton() guard above hedges its pose-reinit crash surface
-	// (sf-skeletal-mesh-import-crash).
+	const FBoxSphereBounds MeasuredBounds = PlaceholderMesh->GetImportedBounds();
+	const float MeshHeightCm = FMath::Max(MeasuredBounds.BoxExtent.Z * 2.0f, 0.01f);
+
+	// pfa.PlaceholderMeshScale: 0 = AUTO (SicklejawHeightCm / measured mesh
+	// height, clamped 1..500); >0 = explicit factor. Read at assign time --
+	// change it, then PFA.KillAll + PFA.SpawnNest to see the new size live.
+	float ScaleFactor = CVarPFAPlaceholderMeshScale.GetValueOnGameThread();
+	if (ScaleFactor <= 0.0f)
+	{
+		ScaleFactor = FMath::Clamp(SicklejawTargetHeightCm / MeshHeightCm, 1.0f, 500.0f);
+	}
+
 	MeshComponent->SetSkinnedAssetAndUpdate(PlaceholderMesh, true);
+	MeshComponent->SetRelativeScale3D(FVector(ScaleFactor));
+	// Feet at the capsule bottom (C++-only pawn: nobody set the usual -halfHeight
+	// mesh offset a BP character template carries).
+	float CapsuleHalfForMesh = 90.0f;
+	if (const UCapsuleComponent* MeshCapsule = GetCapsuleComponent())
+	{
+		CapsuleHalfForMesh = MeshCapsule->GetScaledCapsuleHalfHeight();
+	}
+	const FVector OldRelLoc = MeshComponent->GetRelativeLocation();
+	// w18-9 (cold-review hardening): plant the FEET at the capsule bottom for
+	// ANY mesh-origin convention (feet-origin OR pelvis-centered). FeetLocalZ
+	// is where the lowest point of the mesh sits in mesh-local space; scaled,
+	// it corrects the offset so a centered-origin rig can't spawn waist-deep
+	// -- the one failure mode the scale CVar could not tune away.
+	const float FeetLocalZ = MeasuredBounds.Origin.Z - MeasuredBounds.BoxExtent.Z;
+	MeshComponent->SetRelativeLocation(FVector(0.0f, 0.0f, -CapsuleHalfForMesh - ScaleFactor * FeetLocalZ));
 	MeshComponent->UpdateBounds();
 
-	// Geometry ground-truth: bounds that were ZERO at import time raise the
-	// possibility the headless FBX import produced a geometry-less asset
-	// (skeleton only). LODs=0 or verts=0 => nothing can EVER draw this asset
-	// and the fix moves to a proper re-import (or W2.2's real asset), not
-	// more render-state pokes.
-	int32 NumLODs = 0;
-	int32 NumVerts = 0;
-	int32 NumSections = 0;
-	if (FSkeletalMeshRenderData* RenderData = PlaceholderMesh->GetResourceForRendering())
-	{
-		NumLODs = RenderData->LODRenderData.Num();
-		if (NumLODs > 0)
-		{
-			NumVerts = RenderData->LODRenderData[0].GetNumVertices();
-			NumSections = RenderData->LODRenderData[0].RenderSections.Num();
-		}
-	}
 	UE_LOG(LogPrimalFauna, Display,
-		TEXT("[PFA] %s: placeholder mesh assigned via AndUpdate (%s, assetR=%.0fcm, compR=%.0fcm, LODs=%d, LOD0verts=%d, LOD0sections=%d, materials=%d)."),
+		TEXT("[PFA] %s: placeholder mesh assigned+scaled (%s): measuredHeight=%.2fcm scaleFactor=%.1f (%s) -> compR=%.0fcm worldScaleZ=%.1f relLoc=(%s -> %s) capsuleHalf=%.0f"),
 		*GetName(), *PlaceholderMesh->GetName(),
-		PlaceholderMesh->GetBounds().SphereRadius, MeshComponent->Bounds.SphereRadius,
-		NumLODs, NumVerts, NumSections, PlaceholderMesh->GetMaterials().Num());
+		MeshHeightCm, ScaleFactor,
+		CVarPFAPlaceholderMeshScale.GetValueOnGameThread() <= 0.0f ? TEXT("auto") : TEXT("cvar"),
+		MeshComponent->Bounds.SphereRadius,
+		MeshComponent->GetComponentTransform().GetScale3D().Z,
+		*OldRelLoc.ToCompactString(), *MeshComponent->GetRelativeLocation().ToCompactString(),
+		CapsuleHalfForMesh);
 }
 
 // ---- PFA.SpawnTest: the "SicklejawSpawnRoundtrip" stretch item from the
