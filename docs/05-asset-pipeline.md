@@ -27,7 +27,8 @@ builds). Iterate silhouettes cheaply BEFORE spending credits on rig-quality gene
 | Stage | Tool | Key rules |
 |---|---|---|
 | Generate | Tripo text/image-to-model (or Hunyuan → Blender) | Multiple candidates; pick by silhouette in a flat-lit turntable render. |
-| Clean | Blender via MCP (bpy) | Decimate/retopo to game budget (target ≤40k tris land species), UV unwrap (non-overlapping — hard prerequisite for both texture tools), scale to real size in METERS before rig, apply transforms. Batch hygiene: `orphans_purge` per iteration [[blender-ue-batch-memory-hygiene]]. |
+| Clean | Blender via MCP (bpy) | Decimate to working size, UV unwrap (non-overlapping — hard prerequisite for both texture tools), scale to real size in METERS before rig, apply transforms. Batch hygiene: `orphans_purge` per iteration [[blender-ue-batch-memory-hygiene]]. |
+| **Retopo (STANDARD as of 2026-07-23)** | AutoRemesher 1.0.0 (`C:\Blender\AutoRemesher\autoremesher.exe`, Blender 5.2 bridge) | Organic creature meshes ONLY (hard-surface shatters): voxel remesh first if messy/multi-shell (5.2 preserves color attrs) → `--target-quads` ≈ **5× the desired final count** (undershoots on smooth shapes; LOWER adaptivity ⇒ fewer faces) → minor pinch cleanup. **ALWAYS before rigging — retopo invalidates any existing rig/anims.** ≥4M-tri fused input crashes it. Gotchas: [[blender-5-2-install]]. |
 | Rig-check | `POST /v3/animations/rig-check` (free) | Returns riggable + recommended rig type. **Design intent: Sicklejaw/Duskstalker should classify `biped`** (two legs + tail) — biped rigs unlock Tripo's full preset library (§3). Crestback is honestly `quadruped`. |
 | Rig | `POST /v3/animations/rig` (25 credits) | Rig model `v2.5-20260210` supports quadruped/serpentine/avian/etc.; `out_format: fbx`. **Use `spec: tripo`, NOT mixamo** — verified at runtime 2026-07-23: preset retargets SILENTLY FAIL (progress 100, no output, uncharged) on `spec=mixamo` rigs and succeed only on `spec=tripo`. Only rig with mixamo spec if the target workflow is external humanoid retargeting, never for Tripo presets. |
 | Animate | §3 decision ladder | The pipeline's weak link — see §3. |
@@ -61,6 +62,13 @@ OUR skeleton):
    anim sets), **StockLancer "Sandworm, Lord of the Dunes"** $59.99 (43 anims incl. underground
    reveals). **Purchases need explicit user approval** — surface the decision at the review gate,
    with rung-2 renders in hand so the user judges the actual quality gap.
+
+**Sicklejaw resolution (user, 2026-07-24): QUALITY-FIRST REBUILD before W2.2** — regenerate the
+adopted candidate D in neutral A-pose + closed mouth (image-to-model from the approved
+review-board renders; `mod-artist` judges look-likeness against the board — user re-approves the
+rebuild board before UE import), retopo per the §2 standard, re-upload → Tripo rig (biped,
+`spec=tripo` — mixamo rigs fail preset retargets) → re-retarget the 5 presets. Kubold stays the
+pocketed fallback for locomotion quality.
 
 **Minimum viable anim set** (land species): idle, walk, run, attack-primary, death.
 Polish set: roar/warning, hit-react, leap start/land (Sicklejaw), charge loop + hit (Crestback),
