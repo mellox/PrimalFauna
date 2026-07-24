@@ -75,6 +75,11 @@
 #include "Engine/World.h"
 #include "TimerManager.h"
 
+#include "BehaviorTree/BlackboardComponent.h"
+#include "BehaviorTree/BlackboardData.h"
+#include "BehaviorTree/Blackboard/BlackboardKeyType_Object.h"
+#include "GameFramework/Pawn.h"
+
 void APFACreatureController::WireCreaturePerception(AFGCreature* PossessedCreature)
 {
 	// Step 0: the inherited perception component. Do NOT CreateDefaultSubobject
@@ -221,4 +226,46 @@ void APFACreatureController::LogCreatureStateHeartbeat()
 		*CreatureStateEnumToString(GetCurrentCreatureState()),
 		GetAggroTargets().Num(),
 		CurrentTarget ? *CurrentTarget->GetName() : TEXT("none"));
+
+	// w25-1 (aggro-but-no-path diagnosis; session-13 evidence: creatures that
+	// had chased earlier later sat frozen in CS_Fight targeting the player's
+	// RESPAWNED pawn): dump the movement layer's actual state -- every
+	// Object-typed blackboard key by its REAL name+value (the BT's own view
+	// of the target; the vanilla BP controller layer may re-sync these on
+	// target change -- our C++ controller never writes them: candidate parity
+	// gap), plus path-following status and true velocity. One heartbeat then
+	// separates: BB target stale/null (-> write the key on target change) vs
+	// moveStatus Idle (BT branch not issuing moves) vs Moving-with-zero
+	// velocity (nav/path blocked).
+	FString BlackboardDump = TEXT("<no blackboard>");
+	// Local named to dodge C4458: AAIController already has a `Blackboard`
+	// member (same shadowing-as-error class as the W1.3 `Controller` rename).
+	if (UBlackboardComponent* BlackboardComp = GetBlackboardComponent())
+	{
+		BlackboardDump.Reset();
+		if (const UBlackboardData* BlackboardAsset = BlackboardComp->GetBlackboardAsset())
+		{
+			for (const FBlackboardEntry& Entry : BlackboardAsset->Keys)
+			{
+				if (Entry.KeyType && Entry.KeyType->IsA<UBlackboardKeyType_Object>())
+				{
+					UObject* Value = BlackboardComp->GetValueAsObject(Entry.EntryName);
+					BlackboardDump += FString::Printf(TEXT("%s=%s "),
+						*Entry.EntryName.ToString(),
+						Value ? *Value->GetName() : TEXT("null"));
+				}
+			}
+		}
+		if (BlackboardDump.IsEmpty())
+		{
+			BlackboardDump = TEXT("<no Object-typed keys>");
+		}
+	}
+	const APawn* ControlledPawn = GetPawn();
+	UE_LOG(LogPrimalFauna, Display,
+		TEXT("[PFA] %s: heartbeat-move -> moveStatus=%d (0=Idle 1=Waiting 2=Paused 3=Moving) velocity=%.0fcm/s bbObjectKeys: %s"),
+		*GetName(),
+		static_cast<int32>(GetMoveStatus()),
+		ControlledPawn ? ControlledPawn->GetVelocity().Size2D() : -1.0f,
+		*BlackboardDump);
 }

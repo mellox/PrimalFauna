@@ -1,7 +1,7 @@
 # Graph Report - PrimalFauna  (2026-07-24)
 
 ## Corpus Check
-- 47 files · ~1,997,861 words
+- 47 files · ~1,997,963 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `47f32191`
+- Built from commit: `a629f69f`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
