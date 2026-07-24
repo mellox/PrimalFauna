@@ -4,206 +4,6 @@
   "graph": {},
   "nodes": [
     {
-      "label": "PFACreatureController.cpp",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "private_pfacreaturecontroller",
-      "community": 23,
-      "norm_label": "pfacreaturecontroller.cpp"
-    },
-    {
-      "label": "LogRuleVerdict()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
-      "source_location": "L25",
-      "_origin": "ast",
-      "id": "private_pfacreaturecontroller_logruleverdict",
-      "community": 23,
-      "norm_label": "logruleverdict()"
-    },
-    {
-      "label": "AFGCreature",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
-      "source_location": "L25",
-      "_origin": "ast",
-      "id": "afgcreature",
-      "community": 23,
-      "norm_label": "afgcreature"
-    },
-    {
-      "label": "AActor",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
-      "source_location": "L25",
-      "_origin": "ast",
-      "id": "aactor",
-      "community": 23,
-      "norm_label": "aactor"
-    },
-    {
-      "label": "int32",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
-      "source_location": "L25",
-      "_origin": "ast",
-      "id": "int32",
-      "community": 23,
-      "norm_label": "int32"
-    },
-    {
-      "label": "APFACreatureController()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
-      "source_location": "L41",
-      "_origin": "ast",
-      "id": "private_pfacreaturecontroller_apfacreaturecontroller",
-      "community": 23,
-      "norm_label": "apfacreaturecontroller()"
-    },
-    {
-      "label": "FObjectInitializer",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
-      "source_location": "L41",
-      "_origin": "ast",
-      "id": "fobjectinitializer",
-      "community": 23,
-      "norm_label": "fobjectinitializer"
-    },
-    {
-      "label": "OnPossess()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
-      "source_location": "L111",
-      "_origin": "ast",
-      "id": "private_pfacreaturecontroller_onpossess",
-      "community": 23,
-      "norm_label": "onpossess()"
-    },
-    {
-      "label": "APawn",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
-      "source_location": "L111",
-      "_origin": "ast",
-      "id": "apawn",
-      "community": 23,
-      "norm_label": "apawn"
-    },
-    {
-      "label": "PassesAbsoluteNeverRules()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
-      "source_location": "L214",
-      "_origin": "ast",
-      "id": "private_pfacreaturecontroller_passesabsoluteneverrules",
-      "community": 23,
-      "norm_label": "passesabsoluteneverrules()"
-    },
-    {
-      "label": "CanBeHostileTowards()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
-      "source_location": "L280",
-      "_origin": "ast",
-      "id": "private_pfacreaturecontroller_canbehostiletowards",
-      "community": 23,
-      "norm_label": "canbehostiletowards()"
-    },
-    {
-      "label": "IsValidTarget()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
-      "source_location": "L337",
-      "_origin": "ast",
-      "id": "private_pfacreaturecontroller_isvalidtarget",
-      "community": 23,
-      "norm_label": "isvalidtarget()"
-    },
-    {
-      "label": "CanBeAlertedByTarget_Implementation()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
-      "source_location": "L354",
-      "_origin": "ast",
-      "id": "private_pfacreaturecontroller_canbealertedbytarget_implementation",
-      "community": 23,
-      "norm_label": "canbealertedbytarget_implementation()"
-    },
-    {
-      "label": "PassesAggressionModeGate()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
-      "source_location": "L359",
-      "_origin": "ast",
-      "id": "private_pfacreaturecontroller_passesaggressionmodegate",
-      "community": 23,
-      "norm_label": "passesaggressionmodegate()"
-    },
-    {
-      "label": "WasRecentlyDamagedBy()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
-      "source_location": "L409",
-      "_origin": "ast",
-      "id": "private_pfacreaturecontroller_wasrecentlydamagedby",
-      "community": 23,
-      "norm_label": "wasrecentlydamagedby()"
-    },
-    {
-      "label": "PrimalFauna.cpp",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PrimalFauna.cpp",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "private_primalfauna",
-      "community": 19,
-      "norm_label": "primalfauna.cpp"
-    },
-    {
-      "label": "StartupModule()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PrimalFauna.cpp",
-      "source_location": "L5",
-      "_origin": "ast",
-      "id": "private_primalfauna_startupmodule",
-      "community": 19,
-      "norm_label": "startupmodule()"
-    },
-    {
-      "label": "PFACreatureController.h",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Public/PFACreatureController.h",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "public_pfacreaturecontroller",
-      "community": 33,
-      "norm_label": "pfacreaturecontroller.h"
-    },
-    {
-      "label": "APFACreatureController()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Public/PFACreatureController.h",
-      "source_location": "L27",
-      "_origin": "ast",
-      "id": "public_pfacreaturecontroller_apfacreaturecontroller",
-      "community": 33,
-      "norm_label": "apfacreaturecontroller()"
-    },
-    {
-      "label": "PRIMALFAUNA_API",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Public/PFACreatureController.h",
-      "source_location": "L27",
-      "_origin": "ast",
-      "id": "primalfauna_api",
-      "community": 33,
-      "norm_label": "primalfauna_api"
-    },
-    {
       "label": "manifest.json",
       "file_type": "code",
       "source_file": "art/wip/sicklejaw-rebuild/candidates/manifest.json",
@@ -292,6 +92,246 @@
       "id": "candidates_manifest_status",
       "community": 35,
       "norm_label": "status"
+    },
+    {
+      "label": "ASSET-LEDGER.md",
+      "file_type": "document",
+      "source_file": "docs/ASSET-LEDGER.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_asset_ledger",
+      "community": 13,
+      "norm_label": "asset-ledger.md"
+    },
+    {
+      "label": "PrimalFauna \u2014 Asset Ledger",
+      "file_type": "document",
+      "source_file": "docs/ASSET-LEDGER.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_asset_ledger_primalfauna_asset_ledger",
+      "community": 13,
+      "norm_label": "primalfauna \u2014 asset ledger"
+    },
+    {
+      "label": "W2.1b \u2014 Sicklejaw QUALITY REBUILD (2026-07-24)",
+      "file_type": "document",
+      "source_file": "docs/ASSET-LEDGER.md",
+      "source_location": "L20",
+      "_origin": "ast",
+      "id": "docs_asset_ledger_w2_1b_sicklejaw_quality_rebuild_2026_07_24",
+      "community": 13,
+      "norm_label": "w2.1b \u2014 sicklejaw quality rebuild (2026-07-24)"
+    },
+    {
+      "label": "Placeholder rig \u2014 technical notes (for the systems lane)",
+      "file_type": "document",
+      "source_file": "docs/ASSET-LEDGER.md",
+      "source_location": "L36",
+      "_origin": "ast",
+      "id": "docs_asset_ledger_placeholder_rig_technical_notes_for_the_systems_lane",
+      "community": 13,
+      "norm_label": "placeholder rig \u2014 technical notes (for the systems lane)"
+    },
+    {
+      "label": "PFACreatureController.cpp",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 23,
+      "norm_label": "pfacreaturecontroller.cpp",
+      "id": "private_pfacreaturecontroller"
+    },
+    {
+      "label": "LogRuleVerdict()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L25",
+      "_origin": "ast",
+      "community": 23,
+      "norm_label": "logruleverdict()",
+      "id": "private_pfacreaturecontroller_logruleverdict"
+    },
+    {
+      "label": "AFGCreature",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L25",
+      "_origin": "ast",
+      "community": 23,
+      "norm_label": "afgcreature",
+      "id": "afgcreature"
+    },
+    {
+      "label": "AActor",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L25",
+      "_origin": "ast",
+      "community": 23,
+      "norm_label": "aactor",
+      "id": "aactor"
+    },
+    {
+      "label": "int32",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L25",
+      "_origin": "ast",
+      "community": 23,
+      "norm_label": "int32",
+      "id": "int32"
+    },
+    {
+      "label": "APFACreatureController()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L41",
+      "_origin": "ast",
+      "community": 23,
+      "norm_label": "apfacreaturecontroller()",
+      "id": "private_pfacreaturecontroller_apfacreaturecontroller"
+    },
+    {
+      "label": "FObjectInitializer",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L41",
+      "_origin": "ast",
+      "community": 23,
+      "norm_label": "fobjectinitializer",
+      "id": "fobjectinitializer"
+    },
+    {
+      "label": "OnPossess()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L111",
+      "_origin": "ast",
+      "community": 23,
+      "norm_label": "onpossess()",
+      "id": "private_pfacreaturecontroller_onpossess"
+    },
+    {
+      "label": "APawn",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L111",
+      "_origin": "ast",
+      "community": 23,
+      "norm_label": "apawn",
+      "id": "apawn"
+    },
+    {
+      "label": "PassesAbsoluteNeverRules()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L214",
+      "_origin": "ast",
+      "community": 23,
+      "norm_label": "passesabsoluteneverrules()",
+      "id": "private_pfacreaturecontroller_passesabsoluteneverrules"
+    },
+    {
+      "label": "CanBeHostileTowards()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L280",
+      "_origin": "ast",
+      "community": 23,
+      "norm_label": "canbehostiletowards()",
+      "id": "private_pfacreaturecontroller_canbehostiletowards"
+    },
+    {
+      "label": "IsValidTarget()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L337",
+      "_origin": "ast",
+      "community": 23,
+      "norm_label": "isvalidtarget()",
+      "id": "private_pfacreaturecontroller_isvalidtarget"
+    },
+    {
+      "label": "CanBeAlertedByTarget_Implementation()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L354",
+      "_origin": "ast",
+      "community": 23,
+      "norm_label": "canbealertedbytarget_implementation()",
+      "id": "private_pfacreaturecontroller_canbealertedbytarget_implementation"
+    },
+    {
+      "label": "PassesAggressionModeGate()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L359",
+      "_origin": "ast",
+      "community": 23,
+      "norm_label": "passesaggressionmodegate()",
+      "id": "private_pfacreaturecontroller_passesaggressionmodegate"
+    },
+    {
+      "label": "WasRecentlyDamagedBy()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
+      "source_location": "L409",
+      "_origin": "ast",
+      "community": 23,
+      "norm_label": "wasrecentlydamagedby()",
+      "id": "private_pfacreaturecontroller_wasrecentlydamagedby"
+    },
+    {
+      "label": "PrimalFauna.cpp",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PrimalFauna.cpp",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 19,
+      "norm_label": "primalfauna.cpp",
+      "id": "private_primalfauna"
+    },
+    {
+      "label": "StartupModule()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PrimalFauna.cpp",
+      "source_location": "L5",
+      "_origin": "ast",
+      "community": 19,
+      "norm_label": "startupmodule()",
+      "id": "private_primalfauna_startupmodule"
+    },
+    {
+      "label": "PFACreatureController.h",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Public/PFACreatureController.h",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 33,
+      "norm_label": "pfacreaturecontroller.h",
+      "id": "public_pfacreaturecontroller"
+    },
+    {
+      "label": "APFACreatureController()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Public/PFACreatureController.h",
+      "source_location": "L27",
+      "_origin": "ast",
+      "community": 33,
+      "norm_label": "apfacreaturecontroller()",
+      "id": "public_pfacreaturecontroller_apfacreaturecontroller"
+    },
+    {
+      "label": "PRIMALFAUNA_API",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Public/PFACreatureController.h",
+      "source_location": "L27",
+      "_origin": "ast",
+      "community": 33,
+      "norm_label": "primalfauna_api",
+      "id": "primalfauna_api"
     },
     {
       "label": "PFACheats.cpp",
@@ -899,7 +939,7 @@
       "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
       "source_location": "L86",
       "_origin": "ast",
-      "community": 22,
+      "community": 9,
       "norm_label": "getborrowedbehaviortree()",
       "id": "public_pfasubsystem_getborrowedbehaviortree"
     },
@@ -909,7 +949,7 @@
       "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
       "source_location": "L86",
       "_origin": "ast",
-      "community": 22,
+      "community": 9,
       "norm_label": "ubehaviortree",
       "id": "ubehaviortree"
     },
@@ -1109,7 +1149,7 @@
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
       "source_location": "L181",
       "_origin": "ast",
-      "community": 22,
+      "community": 9,
       "norm_label": "setborrowedbehaviortree()",
       "id": "private_pfacreaturebase_setborrowedbehaviortree"
     },
@@ -2234,36 +2274,6 @@
       "id": "docs_08_implementation_plan_7_definition_of_v1_0"
     },
     {
-      "label": "ASSET-LEDGER.md",
-      "file_type": "document",
-      "source_file": "docs/ASSET-LEDGER.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "community": 13,
-      "norm_label": "asset-ledger.md",
-      "id": "docs_asset_ledger"
-    },
-    {
-      "label": "PrimalFauna \u2014 Asset Ledger",
-      "file_type": "document",
-      "source_file": "docs/ASSET-LEDGER.md",
-      "source_location": "L1",
-      "_origin": "ast",
-      "community": 13,
-      "norm_label": "primalfauna \u2014 asset ledger",
-      "id": "docs_asset_ledger_primalfauna_asset_ledger"
-    },
-    {
-      "label": "Placeholder rig \u2014 technical notes (for the systems lane)",
-      "file_type": "document",
-      "source_file": "docs/ASSET-LEDGER.md",
-      "source_location": "L20",
-      "_origin": "ast",
-      "community": 13,
-      "norm_label": "placeholder rig \u2014 technical notes (for the systems lane)",
-      "id": "docs_asset_ledger_placeholder_rig_technical_notes_for_the_systems_lane"
-    },
-    {
       "label": "PFARootInstance.cpp",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/PFARootInstance.cpp",
@@ -2788,6 +2798,116 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "art/wip/sicklejaw-rebuild/candidates/manifest.json",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "candidates_manifest",
+      "target": "candidates_manifest_credits"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "art/wip/sicklejaw-rebuild/candidates/manifest.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "candidates_manifest",
+      "target": "candidates_manifest_file"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "art/wip/sicklejaw-rebuild/candidates/manifest.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "candidates_manifest",
+      "target": "candidates_manifest_label"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "art/wip/sicklejaw-rebuild/candidates/manifest.json",
+      "source_location": "L8",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "candidates_manifest",
+      "target": "candidates_manifest_model"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "art/wip/sicklejaw-rebuild/candidates/manifest.json",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "candidates_manifest",
+      "target": "candidates_manifest_rendered"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "art/wip/sicklejaw-rebuild/candidates/manifest.json",
+      "source_location": "L9",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "candidates_manifest",
+      "target": "candidates_manifest_status"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "art/wip/sicklejaw-rebuild/candidates/manifest.json",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "candidates_manifest",
+      "target": "candidates_manifest_task_id"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "art/wip/sicklejaw-rebuild/candidates/manifest.json",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "candidates_manifest",
+      "target": "candidates_manifest_type"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ASSET-LEDGER.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_asset_ledger",
+      "target": "docs_asset_ledger_primalfauna_asset_ledger"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ASSET-LEDGER.md",
+      "source_location": "L16",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "docs_asset_ledger_primalfauna_asset_ledger",
+      "target": "docs_asset_ledger_placeholder_rig_technical_notes_for_the_systems_lane"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/ASSET-LEDGER.md",
+      "source_location": "L20",
+      "weight": 1.0,
+      "source": "docs_asset_ledger_primalfauna_asset_ledger",
+      "target": "docs_asset_ledger_w2_1b_sicklejaw_quality_rebuild_2026_07_24",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
       "source_location": "L30",
       "weight": 1.0,
@@ -2851,9 +2971,9 @@
       "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
       "source_location": "L214",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "private_pfacreaturecontroller",
-      "target": "private_pfacreaturecontroller_passesabsoluteneverrules",
-      "confidence_score": 1.0
+      "target": "private_pfacreaturecontroller_passesabsoluteneverrules"
     },
     {
       "relation": "contains",
@@ -2893,9 +3013,9 @@
       "source_location": "L25",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "private_pfacreaturecontroller_logruleverdict",
-      "target": "aactor",
-      "confidence_score": 1.0
+      "target": "aactor"
     },
     {
       "relation": "references",
@@ -2904,9 +3024,9 @@
       "source_location": "L25",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "private_pfacreaturecontroller_logruleverdict",
-      "target": "afgcreature",
-      "confidence_score": 1.0
+      "target": "afgcreature"
     },
     {
       "relation": "references",
@@ -2926,9 +3046,9 @@
       "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
       "source_location": "L244",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "private_pfacreaturecontroller_passesabsoluteneverrules",
-      "target": "private_pfacreaturecontroller_logruleverdict",
-      "confidence_score": 1.0
+      "target": "private_pfacreaturecontroller_logruleverdict"
     },
     {
       "relation": "references",
@@ -2937,9 +3057,9 @@
       "source_location": "L354",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "private_pfacreaturecontroller_canbealertedbytarget_implementation",
-      "target": "aactor",
-      "confidence_score": 1.0
+      "target": "aactor"
     },
     {
       "relation": "references",
@@ -2948,9 +3068,9 @@
       "source_location": "L280",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "private_pfacreaturecontroller_canbehostiletowards",
-      "target": "aactor",
-      "confidence_score": 1.0
+      "target": "aactor"
     },
     {
       "relation": "references",
@@ -2959,9 +3079,9 @@
       "source_location": "L337",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "private_pfacreaturecontroller_isvalidtarget",
-      "target": "aactor",
-      "confidence_score": 1.0
+      "target": "aactor"
     },
     {
       "relation": "references",
@@ -2970,9 +3090,9 @@
       "source_location": "L214",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "private_pfacreaturecontroller_passesabsoluteneverrules",
-      "target": "aactor",
-      "confidence_score": 1.0
+      "target": "aactor"
     },
     {
       "relation": "references",
@@ -2981,9 +3101,9 @@
       "source_location": "L359",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "private_pfacreaturecontroller_passesaggressionmodegate",
-      "target": "aactor",
-      "confidence_score": 1.0
+      "target": "aactor"
     },
     {
       "relation": "references",
@@ -2992,9 +3112,9 @@
       "source_location": "L409",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "private_pfacreaturecontroller_wasrecentlydamagedby",
-      "target": "aactor",
-      "confidence_score": 1.0
+      "target": "aactor"
     },
     {
       "relation": "references",
@@ -3036,9 +3156,9 @@
       "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
       "source_location": "L290",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "private_pfacreaturecontroller_canbehostiletowards",
-      "target": "private_pfacreaturecontroller_passesabsoluteneverrules",
-      "confidence_score": 1.0
+      "target": "private_pfacreaturecontroller_passesabsoluteneverrules"
     },
     {
       "relation": "calls",
@@ -3047,9 +3167,9 @@
       "source_file": "Source/PrimalFauna/Private/PFACreatureController.cpp",
       "source_location": "L351",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "private_pfacreaturecontroller_isvalidtarget",
-      "target": "private_pfacreaturecontroller_passesabsoluteneverrules",
-      "confidence_score": 1.0
+      "target": "private_pfacreaturecontroller_passesabsoluteneverrules"
     },
     {
       "relation": "calls",
@@ -3122,89 +3242,9 @@
       "source_location": "L27",
       "weight": 1.0,
       "context": "return_type",
-      "source": "public_pfacreaturecontroller_apfacreaturecontroller",
-      "target": "primalfauna_api",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "art/wip/sicklejaw-rebuild/candidates/manifest.json",
-      "source_location": "L6",
-      "weight": 1.0,
-      "source": "candidates_manifest",
-      "target": "candidates_manifest_credits",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "art/wip/sicklejaw-rebuild/candidates/manifest.json",
-      "source_location": "L3",
-      "weight": 1.0,
-      "source": "candidates_manifest",
-      "target": "candidates_manifest_file",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "art/wip/sicklejaw-rebuild/candidates/manifest.json",
-      "source_location": "L3",
-      "weight": 1.0,
       "confidence_score": 1.0,
-      "source": "candidates_manifest",
-      "target": "candidates_manifest_label"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "art/wip/sicklejaw-rebuild/candidates/manifest.json",
-      "source_location": "L8",
-      "weight": 1.0,
-      "source": "candidates_manifest",
-      "target": "candidates_manifest_model",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "art/wip/sicklejaw-rebuild/candidates/manifest.json",
-      "source_location": "L2",
-      "weight": 1.0,
-      "source": "candidates_manifest",
-      "target": "candidates_manifest_rendered",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "art/wip/sicklejaw-rebuild/candidates/manifest.json",
-      "source_location": "L9",
-      "weight": 1.0,
-      "source": "candidates_manifest",
-      "target": "candidates_manifest_status",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "art/wip/sicklejaw-rebuild/candidates/manifest.json",
-      "source_location": "L5",
-      "weight": 1.0,
-      "source": "candidates_manifest",
-      "target": "candidates_manifest_task_id",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "art/wip/sicklejaw-rebuild/candidates/manifest.json",
-      "source_location": "L7",
-      "weight": 1.0,
-      "source": "candidates_manifest",
-      "target": "candidates_manifest_type",
-      "confidence_score": 1.0
+      "source": "public_pfacreaturecontroller_apfacreaturecontroller",
+      "target": "primalfauna_api"
     },
     {
       "relation": "contains",
@@ -5416,26 +5456,6 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "docs/ASSET-LEDGER.md",
-      "source_location": "L1",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_asset_ledger",
-      "target": "docs_asset_ledger_primalfauna_asset_ledger"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/ASSET-LEDGER.md",
-      "source_location": "L16",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "docs_asset_ledger_primalfauna_asset_ledger",
-      "target": "docs_asset_ledger_placeholder_rig_technical_notes_for_the_systems_lane"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
       "source_file": "Source/PrimalFauna/Private/PFARootInstance.cpp",
       "source_location": "L4",
       "weight": 1.0,
@@ -5847,5 +5867,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "2d11d347f32432d2b017ffea6f98bc031b322ae9"
+  "built_at_commit": "84d13be8793dcec2fd0eb1c786ad099e6acd5552"
 }

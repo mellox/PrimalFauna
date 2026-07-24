@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "AI/FGCreatureController.h"
+#include "UObject/ObjectKey.h"
 #include "PFACreatureController.generated.h"
 
 // ---------------------------------------------------------------------------
@@ -134,4 +135,12 @@ private:
 	// fallback for this controller, so it logs once instead of once per
 	// evaluation. Mutable because CanBeHostileTowards and friends are const.
 	mutable bool bLoggedNoSpawnerFallback = false;
+
+	// w18-3: doc 02 §2 contract logger (format frozen -- see the .cpp),
+	// throttled to log a target only when its (rule, verdict) result CHANGES.
+	// w18-2 logged every evaluation tick: ~400 lines/s in-game, 46% of the
+	// session log. Diag-gated (pfa.Diag). Mutable map: written from the const
+	// evaluation path, same convention as bLoggedNoSpawnerFallback above.
+	void LogRuleVerdict(const AFGCreature* SelfCreature, const AActor* Target, int32 RuleNumber, bool bHostile) const;
+	mutable TMap<FObjectKey, uint8> mLastLoggedRuleVerdict;
 };

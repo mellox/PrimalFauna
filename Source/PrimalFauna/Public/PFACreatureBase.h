@@ -107,6 +107,12 @@ public:
 	void ClearNativeOrphanTimer();
 
 protected:
+	// w18-3: next-tick spawn-position sanitizer (scheduled from BeginPlay,
+	// server-only). Lifts a creature whose feet ended below the terrain
+	// surface (lowland nest spawns) onto the ground. See the .cpp for the
+	// canopy-safe probe geometry and the always-on rescue log contract.
+	void RescueBuriedSpawn();
+
 	// W1.6 (docs/08 packet, Phase-1 gate finding): fresh nest-spawned
 	// creatures were observed reading CurrentHealth=0/MaxHealth=200 (Section B
 	// item 8 of the gate) -- SetBaseHealth/SetMaxHealth (ctor) only sets the

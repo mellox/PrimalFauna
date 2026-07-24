@@ -62,6 +62,8 @@
 #include "GameFramework/Pawn.h"
 #include "GameFramework/PlayerController.h"
 #include "Engine/World.h"
+#include "Components/CapsuleComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "EngineUtils.h"
 #include "HAL/IConsoleManager.h"
 
@@ -201,6 +203,51 @@ namespace
 			*CreatureStateEnumToString(Controller->GetCurrentCreatureState()),
 			Controller->GetAggroTargets().Num(),
 			CurrentTarget ? *CurrentTarget->GetName() : TEXT("none"));
+
+		// w18-3 (invisible-spawn diagnosis): position + ground probe + mesh
+		// render state in ONE dump, so the log alone distinguishes "buried
+		// under terrain" / "mesh not rendering" / "displaced" without needing
+		// eyes on the creature. The probe starts just above the creature's
+		// head (NOT sky-high) so a bridge/canopy overhead can't masquerade as
+		// ground; burial deeper than capsule+50cm reads as ground=NONE.
+		const FVector CreatureLoc = Creature->GetActorLocation();
+		float CapsuleHalfCm = 90.0f;
+		if (const UCapsuleComponent* Capsule = Creature->GetCapsuleComponent())
+		{
+			CapsuleHalfCm = Capsule->GetScaledCapsuleHalfHeight();
+		}
+		const float FeetZ = CreatureLoc.Z - CapsuleHalfCm;
+		const APlayerController* ProbePC = World->GetFirstPlayerController();
+		const APawn* ProbePlayerPawn = ProbePC ? ProbePC->GetPawn() : nullptr;
+
+		FHitResult GroundHit;
+		FCollisionQueryParams ProbeParams(FName(TEXT("PFADumpGroundProbe")), false, Creature);
+		const FVector ProbeStart(CreatureLoc.X, CreatureLoc.Y, CreatureLoc.Z + CapsuleHalfCm + 50.0f);
+		const FVector ProbeEnd(CreatureLoc.X, CreatureLoc.Y, CreatureLoc.Z - 3000.0f);
+		const bool bGroundHit = World->LineTraceSingleByChannel(GroundHit, ProbeStart, ProbeEnd, ECC_Visibility, ProbeParams);
+		const float SunkenCm = bGroundHit ? (GroundHit.ImpactPoint.Z - FeetZ) : 0.0f;
+		UE_LOG(LogPrimalFauna, Display,
+			TEXT("[PFA]   loc=%s zVsPlayer=%+.0fcm ground=%s sunken=%+.0fcm (positive = feet below ground)"),
+			*CreatureLoc.ToCompactString(),
+			ProbePlayerPawn ? (CreatureLoc.Z - ProbePlayerPawn->GetActorLocation().Z) : 0.0f,
+			bGroundHit ? TEXT("hit") : TEXT("NONE-in-probe(deep-buried-or-void)"),
+			SunkenCm);
+
+		if (const USkeletalMeshComponent* MeshComp = Creature->GetMesh())
+		{
+			UE_LOG(LogPrimalFauna, Display,
+				TEXT("[PFA]   mesh=%s registered=%s visible=%s actorHidden=%s recentlyRendered(5s)=%s boundsRadius=%.0fcm"),
+				MeshComp->GetSkinnedAsset() ? *MeshComp->GetSkinnedAsset()->GetName() : TEXT("NONE"),
+				MeshComp->IsRegistered() ? TEXT("true") : TEXT("false"),
+				MeshComp->IsVisible() ? TEXT("true") : TEXT("false"),
+				Creature->IsHidden() ? TEXT("true") : TEXT("false"),
+				Creature->WasRecentlyRendered(5.0f) ? TEXT("true") : TEXT("false"),
+				MeshComp->Bounds.SphereRadius);
+		}
+		else
+		{
+			UE_LOG(LogPrimalFauna, Display, TEXT("[PFA]   mesh=<no USkeletalMeshComponent>"));
+		}
 	}
 
 	// -------------------------------------------------------------------------

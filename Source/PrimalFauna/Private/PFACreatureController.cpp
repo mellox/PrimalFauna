@@ -20,22 +20,37 @@
 // under the 500-line workspace limit (this class owns both). See that file for
 // the full root-cause + symbol/export analysis.
 
-namespace
+void APFACreatureController::LogRuleVerdict(const AFGCreature* SelfCreature, const AActor* Target, int32 RuleNumber, bool bHostile) const
 {
-	void LogRuleVerdict(const AFGCreature* SelfCreature, const AActor* Target, int32 RuleNumber, bool bHostile)
+	if (!PFADiag::IsEnabled())
 	{
-		if (!PFADiag::IsEnabled())
+		return;
+	}
+
+	// w18-3 verdict-change throttle: w18-2 logged EVERY evaluation tick --
+	// in-game evidence 2026-07-24: ~400 verdict lines/s with 3 live
+	// Sicklejaws, 46% of the entire session log (30454/66210 lines), all
+	// game-thread log I/O. A (target -> rule+verdict) pair now logs only when
+	// its result CHANGES; steady-state re-evaluation is silent. Map lifetime =
+	// controller lifetime; FObjectKey stays unique across target death/reuse.
+	const uint8 Encoded = static_cast<uint8>((RuleNumber << 1) | (bHostile ? 1 : 0));
+	const FObjectKey TargetKey(Target);
+	if (const uint8* Prev = mLastLoggedRuleVerdict.Find(TargetKey))
+	{
+		if (*Prev == Encoded)
 		{
 			return;
 		}
-		// Contract format per docs/02-hostility-and-factions.md §2 -- do not
-		// reformat (this is NOT the [PFA][TEST] self-test grammar).
-		UE_LOG(LogPrimalFauna, Display, TEXT("[PFA] %s vs %s: rule%d -> %s"),
-			SelfCreature ? *SelfCreature->GetName() : TEXT("<null>"),
-			Target ? *Target->GetName() : TEXT("<null>"),
-			RuleNumber,
-			bHostile ? TEXT("HOSTILE") : TEXT("NOT_HOSTILE"));
 	}
+	mLastLoggedRuleVerdict.Add(TargetKey, Encoded);
+
+	// Contract format per docs/02-hostility-and-factions.md §2 -- do not
+	// reformat (this is NOT the [PFA][TEST] self-test grammar).
+	UE_LOG(LogPrimalFauna, Display, TEXT("[PFA] %s vs %s: rule%d -> %s"),
+		SelfCreature ? *SelfCreature->GetName() : TEXT("<null>"),
+		Target ? *Target->GetName() : TEXT("<null>"),
+		RuleNumber,
+		bHostile ? TEXT("HOSTILE") : TEXT("NOT_HOSTILE"));
 }
 
 APFACreatureController::APFACreatureController(const FObjectInitializer& ObjectInitializer)

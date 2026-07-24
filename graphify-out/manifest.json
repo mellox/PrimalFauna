@@ -105,8 +105,8 @@
     "semantic_hash": ""
   },
   "docs/ASSET-LEDGER.md": {
-    "mtime": 1784815783.2351387,
-    "ast_hash": "8dc371c850cc5ae8e982e0621c640cc0",
+    "mtime": 1784874010.4063015,
+    "ast_hash": "6ecdf4fc64c35728b07ea62d8ad91075",
     "semantic_hash": ""
   },
   "art/wip/placeholder/preview_BLOCKOUT_bindpose.png": {
@@ -452,6 +452,91 @@
   "art/wip/sicklejaw-rebuild/tex/keeper_retopo_textured_Normal.png": {
     "mtime": 1784871474.692472,
     "ast_hash": "39a16d501bae48a7314a98b36478eb6b",
+    "semantic_hash": ""
+  },
+  "art/review/2026-07-24-sicklejaw-rebuild/review-board.html": {
+    "mtime": 1784873932.0502887,
+    "ast_hash": "deef3b00525ee19f5faba47d737318a1",
+    "semantic_hash": ""
+  },
+  "art/review/2026-07-24-sicklejaw-rebuild/D_ref_3q.png": {
+    "mtime": 1784815371.602724,
+    "ast_hash": "77c511f4703a05712b81b0cdd71eefa4",
+    "semantic_hash": ""
+  },
+  "art/review/2026-07-24-sicklejaw-rebuild/D_ref_aggro.png": {
+    "mtime": 1784815440.9023476,
+    "ast_hash": "a2a6512ddde22d2035f59e89aea38690",
+    "semantic_hash": ""
+  },
+  "art/review/2026-07-24-sicklejaw-rebuild/D_ref_hero.png": {
+    "mtime": 1784815695.367659,
+    "ast_hash": "8329c3b32897c1774ed74e19b1aa0da1",
+    "semantic_hash": ""
+  },
+  "art/review/2026-07-24-sicklejaw-rebuild/D_ref_side.png": {
+    "mtime": 1784815371.7793043,
+    "ast_hash": "57c246e7572e82e9a3589492656bf887",
+    "semantic_hash": ""
+  },
+  "art/review/2026-07-24-sicklejaw-rebuild/D_ref_silhouette.png": {
+    "mtime": 1784815474.0944874,
+    "ast_hash": "c5d1a5f156d4af6cf72d9b08bd5c7b95",
+    "semantic_hash": ""
+  },
+  "art/review/2026-07-24-sicklejaw-rebuild/aggro_OFF_hero.png": {
+    "mtime": 1784873416.8137937,
+    "ast_hash": "36f3904aab9803ebb7c0335339abaa6f",
+    "semantic_hash": ""
+  },
+  "art/review/2026-07-24-sicklejaw-rebuild/aggro_ON_hero.png": {
+    "mtime": 1784873476.5599566,
+    "ast_hash": "09315cc2ae74dfe9944ca4019dfd3047",
+    "semantic_hash": ""
+  },
+  "art/review/2026-07-24-sicklejaw-rebuild/anim_hurt.png": {
+    "mtime": 1784873732.9452107,
+    "ast_hash": "91ba3d8821031adb15238174e0210029",
+    "semantic_hash": ""
+  },
+  "art/review/2026-07-24-sicklejaw-rebuild/anim_idle.png": {
+    "mtime": 1784873570.3091896,
+    "ast_hash": "75eb6366026e18f2e2613e94339cabd4",
+    "semantic_hash": ""
+  },
+  "art/review/2026-07-24-sicklejaw-rebuild/anim_run.png": {
+    "mtime": 1784873573.9190252,
+    "ast_hash": "876b0f59c51e7efcbe80d09c86c4a8cc",
+    "semantic_hash": ""
+  },
+  "art/review/2026-07-24-sicklejaw-rebuild/anim_slash.png": {
+    "mtime": 1784873731.1390388,
+    "ast_hash": "0cc37663bb3a3518c4e219446b8933a9",
+    "semantic_hash": ""
+  },
+  "art/review/2026-07-24-sicklejaw-rebuild/anim_walk.png": {
+    "mtime": 1784873734.7373822,
+    "ast_hash": "79dc7f92a12b1d2ecc4f2754f0fdf9b5",
+    "semantic_hash": ""
+  },
+  "art/review/2026-07-24-sicklejaw-rebuild/cand_C1.png": {
+    "mtime": 1784870250.7349517,
+    "ast_hash": "7ab26431a70deed6c78266c06dd91368",
+    "semantic_hash": ""
+  },
+  "art/review/2026-07-24-sicklejaw-rebuild/cand_C2.png": {
+    "mtime": 1784870290.2474089,
+    "ast_hash": "e362f2017afc1ddb5bc49dd1e1ae19cb",
+    "semantic_hash": ""
+  },
+  "art/review/2026-07-24-sicklejaw-rebuild/cand_C3.png": {
+    "mtime": 1784870294.9518876,
+    "ast_hash": "c00f6579dd101a5ac998dab3754d198a",
+    "semantic_hash": ""
+  },
+  "art/review/2026-07-24-sicklejaw-rebuild/cand_C3b.png": {
+    "mtime": 1784870862.0072727,
+    "ast_hash": "e4250497a8389bca085f0352acea5c5a",
     "semantic_hash": ""
   }
 }

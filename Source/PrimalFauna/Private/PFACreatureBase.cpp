@@ -8,6 +8,11 @@
 #include "FGHealthComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "Net/UnrealNetwork.h"
+#include "Components/CapsuleComponent.h"
+#include "Engine/HitResult.h"
+#include "Engine/World.h"
+#include "TimerManager.h"
+#include "HAL/IConsoleManager.h"
 
 namespace
 {
@@ -26,6 +31,31 @@ namespace
 	// set its own in its ctor. Only Territorial-mode species (none in W1.3 --
 	// Sicklejaw defaults to Hostile) actually consult this value.
 	constexpr float DefaultTerritoryRadiusCm = 3000.0f;
+
+	// w18-3 buried-spawn rescue tuning (RescueBuriedSpawn below). Probe TOP is
+	// head + 50cm -- deliberately low so overhead geometry (bridge/canopy)
+	// can't read as "ground"; the cost is that burial deeper than that reads
+	// ground=NONE and is only logged, not rescued.
+	constexpr float BuriedProbeAboveHeadCm = 50.0f;
+	constexpr float BuriedProbeBelowCm = 3000.0f;
+	constexpr float BuriedRescueThresholdCm = 30.0f;
+	constexpr float BuriedLiftClearanceCm = 5.0f;
+
+	// w18-4 (cold-review mandatory guard): only an up-facing, walkable surface
+	// is valid rescue ground. A downward-facing first hit inside the 50cm
+	// above-head window (low ceiling / foundation underside / rock overhang)
+	// has ImpactNormal.Z <= 0 and would otherwise read as "buried by ~2m" and
+	// launch a correctly-grounded creature up onto the roof. 0.7 admits
+	// slopes to ~45 deg; real lowland nest terrain reads ~1.0.
+	constexpr float BuriedWalkableNormalZ = 0.7f;
+
+	// w18-4 (cold-review recommendation): live kill-switch for the rescue
+	// TELEPORT (the probe + logging always run) -- follows the pfa.Diag
+	// pattern so a misbehaving rescue can be silenced in-game, no rebuild.
+	static TAutoConsoleVariable<int32> CVarPFARescueBuriedSpawn(
+		TEXT("pfa.RescueBuriedSpawn"), 1,
+		TEXT("1 (default): lift creatures whose feet spawned below the terrain surface onto the ground. 0: probe + log only, never teleport."),
+		ECVF_Default);
 
 	// ---------------------------------------------------------------------
 	// mIsPassiveCreature / mSpawnDistance / mDespawnDistance are PRIVATE on
@@ -100,6 +130,89 @@ void APFACreatureBase::BeginPlay()
 		UE_LOG(LogPrimalFauna, Warning,
 			TEXT("[PFA] %s: BeginPlay found no health component to check for the current-health init gap."),
 			*GetName());
+	}
+
+	// w18-3 buried-spawn rescue (in-game evidence 2026-07-24: nest spawns at
+	// lowland nests -- e.g. Test_5 at Z=-2756 -- left creatures present and
+	// perceiving through ImmediateVisibilityRadius, but invisible and stuck
+	// CS_Alert ~2m under the terrain; the flat-plateau nests w15/w17 validated
+	// on masked this). The native spawn flow projects spawn points
+	// asynchronously (FSpawnData::WaitingForSpawnLocation,
+	// FGCreatureSpawner.h:45-49) and evidently falls back unprojected. Probe
+	// on the NEXT tick -- after the spawner/possession has finalized
+	// placement, so it can't be overwritten -- and lift the creature onto the
+	// surface if its feet ended below ground. Raw member fn on the templated
+	// timer API (heartbeat precedent: no UFUNCTION wanted -- stays off the
+	// reflection/export surface).
+	GetWorldTimerManager().SetTimerForNextTick(this, &APFACreatureBase::RescueBuriedSpawn);
+}
+
+void APFACreatureBase::RescueBuriedSpawn()
+{
+	UWorld* World = GetWorld();
+	if (!World || !HasAuthority())
+	{
+		return;
+	}
+
+	const FVector Loc = GetActorLocation();
+	float CapsuleHalfCm = 90.0f;
+	if (const UCapsuleComponent* Capsule = GetCapsuleComponent())
+	{
+		CapsuleHalfCm = Capsule->GetScaledCapsuleHalfHeight();
+	}
+	const float FeetZ = Loc.Z - CapsuleHalfCm;
+
+	FHitResult Hit;
+	FCollisionQueryParams Params(FName(TEXT("PFABuriedSpawnProbe")), false, this);
+	const FVector Start(Loc.X, Loc.Y, Loc.Z + CapsuleHalfCm + BuriedProbeAboveHeadCm);
+	const FVector End(Loc.X, Loc.Y, Loc.Z - BuriedProbeBelowCm);
+	if (!World->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, Params))
+	{
+		// Always-on Warning: either deep-buried (below probe reach) or spawned
+		// over a void -- both are anomalies the log must surface.
+		UE_LOG(LogPrimalFauna, Warning,
+			TEXT("[PFA] %s: buried-spawn probe found NO ground from head+%.0fcm down to -%.0fcm (loc=%s) -- deep-buried or over void; left as-is."),
+			*GetName(), BuriedProbeAboveHeadCm, BuriedProbeBelowCm, *Loc.ToCompactString());
+		return;
+	}
+
+	const float SunkenCm = Hit.ImpactPoint.Z - FeetZ;
+	if (SunkenCm > BuriedRescueThresholdCm)
+	{
+		// w18-4 cold-review guard: reject non-walkable/overhead first hits --
+		// see BuriedWalkableNormalZ above. Warn-only: a real deep burial under
+		// an overhang stays put and stays visible in the log.
+		if (Hit.ImpactNormal.Z < BuriedWalkableNormalZ)
+		{
+			UE_LOG(LogPrimalFauna, Warning,
+				TEXT("[PFA] %s: buried-spawn probe hit a non-walkable/overhead surface (normalZ=%.2f impact=%s sunken=%.0fcm) -- not ground; NOT rescuing."),
+				*GetName(), Hit.ImpactNormal.Z, *Hit.ImpactPoint.ToCompactString(), SunkenCm);
+			return;
+		}
+
+		if (CVarPFARescueBuriedSpawn.GetValueOnGameThread() == 0)
+		{
+			UE_LOG(LogPrimalFauna, Display,
+				TEXT("[PFA] %s: buried-spawn rescue SUPPRESSED by pfa.RescueBuriedSpawn=0 (feet %.0fcm below ground at %s) -- probe-only mode."),
+				*GetName(), SunkenCm, *Loc.ToCompactString());
+			return;
+		}
+
+		const FVector NewLoc(Loc.X, Loc.Y, Hit.ImpactPoint.Z + CapsuleHalfCm + BuriedLiftClearanceCm);
+		const bool bMoved = SetActorLocation(NewLoc, false, nullptr, ETeleportType::TeleportPhysics);
+		// Always-on Display: a corrective world mutation must announce itself
+		// in every log, not only under pfa.Diag.
+		UE_LOG(LogPrimalFauna, Display,
+			TEXT("[PFA] %s: buried-spawn rescue: feet were %.0fcm BELOW ground (spawn=%s groundZ=%.0f) -> lifted to %s (moved=%s)"),
+			*GetName(), SunkenCm, *Loc.ToCompactString(), Hit.ImpactPoint.Z,
+			*NewLoc.ToCompactString(), bMoved ? TEXT("true") : TEXT("false"));
+	}
+	else if (PFADiag::IsEnabled())
+	{
+		UE_LOG(LogPrimalFauna, Display,
+			TEXT("[PFA] %s: buried-spawn probe: on surface (feet %+.0fcm relative to ground) -- no rescue needed."),
+			*GetName(), -SunkenCm);
 	}
 }
 
