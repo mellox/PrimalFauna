@@ -49,6 +49,11 @@ namespace
 
 	const TCHAR* PlaceholderMeshPath = TEXT("/PrimalFauna/Placeholder/SK_PFA_Placeholder.SK_PFA_Placeholder");
 
+	// W2.2: the user-approved rebuild (48-bone tail rig, 42.6k tris, 2048
+	// textures) imported by tools/import_sicklejaw_ue.py. Primary mesh; the
+	// placeholder above stays as the graceful fallback.
+	const TCHAR* SicklejawMeshPath = TEXT("/PrimalFauna/Sicklejaw/SK_Sicklejaw.SK_Sicklejaw");
+
 	// w18-8: designed standing height (doc 01 §1, matches the 1.65m rig the
 	// asset was authored at) -- the auto-scale target for the mis-scaled
 	// placeholder (FBX meter-units imported as cm; see AssignPlaceholderMesh).
@@ -62,6 +67,16 @@ namespace
 	static TAutoConsoleVariable<float> CVarPFAPlaceholderMeshScale(
 		TEXT("pfa.PlaceholderMeshScale"), 0.0f,
 		TEXT("Placeholder Sicklejaw mesh scale factor. 0 = auto (165cm target / measured mesh height). >0 = explicit multiplier."),
+		ECVF_Default);
+
+	// w23-2 (review hardening #3): live vertical-plant adjustment. The feet
+	// formula plants the BOUNDING-BOX bottom at the capsule bottom; a 48-bone
+	// ref pose whose tail droops below the feet plane lifts the body by the
+	// tail-to-feet gap (creature floats). This knob turns that residual
+	// visual failure into a console tweak + respawn instead of a rebuild.
+	static TAutoConsoleVariable<float> CVarPFAMeshZOffset(
+		TEXT("pfa.MeshZOffset"), 0.0f,
+		TEXT("Additional Z offset (cm) applied to the Sicklejaw mesh after feet planting. Negative sinks, positive lifts. Respawn to apply."),
 		ECVF_Default);
 }
 
@@ -146,12 +161,34 @@ void APFASicklejaw::BeginPlay()
 	// registration (cookbook gotcha #33). tools/import_placeholder_ue.py is
 	// what creates this asset; running this BEFORE that script has run is
 	// the expected, tolerated "not found" case.
-	USkeletalMesh* PlaceholderMesh = LoadObject<USkeletalMesh>(nullptr, PlaceholderMeshPath);
+	// W2.2: real asset first, placeholder as loud fallback -- a missing or
+	// broken rebuild import degrades to the proven dummy (visible, testable)
+	// instead of silence, and the log states which asset is live. The
+	// variable keeps its placeholder-era name to minimize diff churn; it
+	// holds whichever asset was chosen.
+	// w23-2 (review hardening): the real mesh must be non-null AND carry a
+	// skeleton to be accepted -- a skeletonless "broken import" now falls
+	// back to the placeholder as the comment promises, instead of slipping
+	// past to the meshless guard below.
+	USkeletalMesh* PlaceholderMesh = LoadObject<USkeletalMesh>(nullptr, SicklejawMeshPath);
+	if (PlaceholderMesh && PlaceholderMesh->GetSkeleton())
+	{
+		UE_LOG(LogPrimalFauna, Display,
+			TEXT("[PFA] %s: REAL Sicklejaw mesh loaded (%s)."), *GetName(), SicklejawMeshPath);
+	}
+	else
+	{
+		UE_LOG(LogPrimalFauna, Warning,
+			TEXT("[PFA] %s: real mesh %s %s -- FALLING BACK to the placeholder (run tools/import_sicklejaw_ue.py)."),
+			*GetName(), SicklejawMeshPath,
+			PlaceholderMesh ? TEXT("loaded but has NO Skeleton") : TEXT("not found"));
+		PlaceholderMesh = LoadObject<USkeletalMesh>(nullptr, PlaceholderMeshPath);
+	}
 	if (!PlaceholderMesh)
 	{
 		UE_LOG(LogPrimalFauna, Warning,
-			TEXT("[PFA] %s: placeholder mesh %s not found -- creature will run meshless/invisible. Run tools/import_placeholder_ue.py first, or this is expected before that import has run."),
-			*GetName(), PlaceholderMeshPath);
+			TEXT("[PFA] %s: NO mesh available (real + placeholder both missing) -- creature will run meshless/invisible."),
+			*GetName());
 		return;
 	}
 
@@ -215,7 +252,8 @@ void APFASicklejaw::BeginPlay()
 	// it corrects the offset so a centered-origin rig can't spawn waist-deep
 	// -- the one failure mode the scale CVar could not tune away.
 	const float FeetLocalZ = MeasuredBounds.Origin.Z - MeasuredBounds.BoxExtent.Z;
-	MeshComponent->SetRelativeLocation(FVector(0.0f, 0.0f, -CapsuleHalfForMesh - ScaleFactor * FeetLocalZ));
+	MeshComponent->SetRelativeLocation(FVector(0.0f, 0.0f,
+		-CapsuleHalfForMesh - ScaleFactor * FeetLocalZ + CVarPFAMeshZOffset.GetValueOnGameThread()));
 	MeshComponent->UpdateBounds();
 
 	UE_LOG(LogPrimalFauna, Display,
