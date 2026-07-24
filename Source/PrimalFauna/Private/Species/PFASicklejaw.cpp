@@ -146,8 +146,42 @@ void APFASicklejaw::BeginPlay()
 		return;
 	}
 
+	// w18-5 -- ROOT CAUSE of the invisible-Sicklejaw saga (proven by the
+	// w18-4 dump forensics: mesh=SK_PFA_Placeholder registered=true
+	// visible=true actorHidden=false recentlyRendered(5s)=false
+	// boundsRadius=0cm, creature on-surface sunken=-3cm): the headlessly
+	// imported placeholder asset carries ZERO imported bounds, so the
+	// renderer frustum-culls the component as an empty primitive -- it has
+	// never been drawn in ANY build (w15/w17 "mesh renders" verifications
+	// were unsound). Repair the shared asset's bounds in-place BEFORE
+	// assigning: generous 1.65m-raptor envelope, feet at component origin.
+	// Self-disabling: only fires on degenerate (<1cm) bounds, so a future
+	// properly-imported asset (W2.2) passes through untouched.
+	if (PlaceholderMesh->GetImportedBounds().SphereRadius < 1.0f)
+	{
+		const FBoxSphereBounds RepairedBounds(FBox(FVector(-150.0f, -150.0f, -10.0f), FVector(150.0f, 150.0f, 200.0f)));
+		PlaceholderMesh->SetImportedBounds(RepairedBounds);
+		UE_LOG(LogPrimalFauna, Display,
+			TEXT("[PFA] %s: placeholder mesh had ZERO imported bounds (frustum-culled -> never rendered) -- repaired to r=%.0fcm before assign."),
+			*GetName(), PlaceholderMesh->GetImportedBounds().SphereRadius);
+	}
+
 	MeshComponent->SetSkinnedAsset(PlaceholderMesh);
-	UE_LOG(LogPrimalFauna, Display, TEXT("[PFA] %s: placeholder mesh assigned (%s)."), *GetName(), *PlaceholderMesh->GetName());
+	// w18-6 (cold review): SetSkinnedAsset is the TRIVIAL setter -- it does
+	// not recreate render state, and this component was registered with a
+	// null asset (no scene proxy at all). Rebuild explicitly so the render
+	// thread gets the mesh + the repaired non-zero bounds; deliberately NOT
+	// SetSkinnedAssetAndUpdate (its pose-reinit is extra crash surface on a
+	// headless-imported skeleton -- sf-skeletal-mesh-import-crash).
+	MeshComponent->UpdateBounds();
+	MeshComponent->MarkRenderStateDirty();
+	// compR is the COMPONENT bounds -- the value the renderer culls with.
+	// compR~237 = fix took; compR=0 = proxy never rebuilt (escalate to
+	// SetSkinnedAssetAndUpdate).
+	UE_LOG(LogPrimalFauna, Display,
+		TEXT("[PFA] %s: placeholder mesh assigned (%s, assetR=%.0fcm, compR=%.0fcm)."),
+		*GetName(), *PlaceholderMesh->GetName(),
+		PlaceholderMesh->GetBounds().SphereRadius, MeshComponent->Bounds.SphereRadius);
 }
 
 // ---- PFA.SpawnTest: the "SicklejawSpawnRoundtrip" stretch item from the
