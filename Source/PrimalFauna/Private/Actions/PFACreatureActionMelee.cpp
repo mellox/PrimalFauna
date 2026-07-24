@@ -177,6 +177,14 @@ void UPFACreatureActionMelee::PerformAction_Implementation()
 
 void UPFACreatureActionMelee::TryDirectMeleeHit()
 {
+	// w18-12 (review rider): defensive server-authority gate -- actions run
+	// server-side by construction, but damage must never apply client-side
+	// if that construction ever changes (MP, doc 06).
+	if (!HasAuthority())
+	{
+		return;
+	}
+
 	AFGCreature* Creature = mCreature.Get();
 	AActor* Target = GetCurrentTarget();
 	if (!Creature || !Target)

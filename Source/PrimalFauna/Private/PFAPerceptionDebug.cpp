@@ -141,6 +141,13 @@ namespace
 		// (GetPerceptionSettings is inline on AFGCreature). Reference baseline:
 		// vanilla creatures have Sight/Hearing authored here too.
 		const FFGCreaturePerceptionSettings& Settings = Creature->GetPerceptionSettings();
+		// w18-12: curve presence -- NULL curves on a C++-only CDO were the
+		// sight-aggro root cause (aggro/sec multiplies with the curve); this
+		// line also baselines vanilla creatures (both should read present).
+		UE_LOG(LogPrimalFauna, Display,
+			TEXT("[PFA]   aggroCurves: visibilityGain=%s aggroGain=%s (null = sight-aggro cannot accrue)"),
+			Creature->GetVisibilityGainCurve() ? TEXT("present") : TEXT("NULL"),
+			Creature->GetAggroGainRateCurve() ? TEXT("present") : TEXT("NULL"));
 		UE_LOG(LogPrimalFauna, Display,
 			TEXT("[PFA]   Creature.mPerceptionSettings: Sight=%s Hearing=%s ImmediateVisibilityRadius=%.0f"),
 			Settings.SightConfig ? TEXT("present") : TEXT("null"),

@@ -9,7 +9,7 @@
       "source_file": "Source/PrimalFauna/Private/Actions/PFACreatureActionMelee.cpp",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "source_primalfauna_private_actions_pfacreatureactionmelee_cpp_actions_pfacreatureactionmelee",
+      "id": "actions_pfacreatureactionmelee",
       "community": 29,
       "norm_label": "pfacreatureactionmelee.cpp"
     },
@@ -17,7 +17,7 @@
       "label": "UPFACreatureActionMelee()",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/Actions/PFACreatureActionMelee.cpp",
-      "source_location": "L28",
+      "source_location": "L32",
       "_origin": "ast",
       "id": "actions_pfacreatureactionmelee_upfacreatureactionmelee",
       "community": 29,
@@ -27,7 +27,7 @@
       "label": "FObjectInitializer",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/Actions/PFACreatureActionMelee.cpp",
-      "source_location": "L28",
+      "source_location": "L32",
       "_origin": "ast",
       "id": "fobjectinitializer",
       "community": 29,
@@ -37,7 +37,7 @@
       "label": "GetConfiguredBiteDamage()",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/Actions/PFACreatureActionMelee.cpp",
-      "source_location": "L65",
+      "source_location": "L69",
       "_origin": "ast",
       "id": "actions_pfacreatureactionmelee_getconfiguredbitedamage",
       "community": 29,
@@ -47,7 +47,7 @@
       "label": "ScoreAction_Implementation()",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/Actions/PFACreatureActionMelee.cpp",
-      "source_location": "L84",
+      "source_location": "L88",
       "_origin": "ast",
       "id": "actions_pfacreatureactionmelee_scoreaction_implementation",
       "community": 29,
@@ -57,7 +57,7 @@
       "label": "CanPerformAction_Implementation()",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/Actions/PFACreatureActionMelee.cpp",
-      "source_location": "L137",
+      "source_location": "L141",
       "_origin": "ast",
       "id": "actions_pfacreatureactionmelee_canperformaction_implementation",
       "community": 29,
@@ -67,7 +67,7 @@
       "label": "PerformAction_Implementation()",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/Actions/PFACreatureActionMelee.cpp",
-      "source_location": "L151",
+      "source_location": "L155",
       "_origin": "ast",
       "id": "actions_pfacreatureactionmelee_performaction_implementation",
       "community": 29,
@@ -77,7 +77,7 @@
       "label": "TryDirectMeleeHit()",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/Actions/PFACreatureActionMelee.cpp",
-      "source_location": "L174",
+      "source_location": "L178",
       "_origin": "ast",
       "id": "actions_pfacreatureactionmelee_trydirectmeleehit",
       "community": 29,
@@ -87,7 +87,7 @@
       "label": "CleanupAction_Implementation()",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/Actions/PFACreatureActionMelee.cpp",
-      "source_location": "L222",
+      "source_location": "L279",
       "_origin": "ast",
       "id": "actions_pfacreatureactionmelee_cleanupaction_implementation",
       "community": 29,
@@ -97,7 +97,7 @@
       "label": "ProcessHit_Implementation()",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/Actions/PFACreatureActionMelee.cpp",
-      "source_location": "L236",
+      "source_location": "L293",
       "_origin": "ast",
       "id": "actions_pfacreatureactionmelee_processhit_implementation",
       "community": 29,
@@ -107,7 +107,7 @@
       "label": "AFGCharacterBase",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/Actions/PFACreatureActionMelee.cpp",
-      "source_location": "L236",
+      "source_location": "L293",
       "_origin": "ast",
       "id": "afgcharacterbase",
       "community": 29,
@@ -117,7 +117,7 @@
       "label": "FHitResult",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/Actions/PFACreatureActionMelee.cpp",
-      "source_location": "L236",
+      "source_location": "L293",
       "_origin": "ast",
       "id": "fhitresult",
       "community": 29,
@@ -149,9 +149,9 @@
       "source_file": "Source/PrimalFauna/Public/Actions/PFACreatureActionMelee.h",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "source_primalfauna_public_actions_pfacreatureactionmelee_h_actions_pfacreatureactionmelee",
       "community": 33,
-      "norm_label": "pfacreatureactionmelee.h"
+      "norm_label": "pfacreatureactionmelee.h",
+      "id": "source_primalfauna_public_actions_pfacreatureactionmelee_h_actions_pfacreatureactionmelee"
     },
     {
       "label": "UFGCreatureActionMeleeAttack()",
@@ -159,9 +159,9 @@
       "source_file": "Source/PrimalFauna/Public/Actions/PFACreatureActionMelee.h",
       "source_location": "L49",
       "_origin": "ast",
-      "id": "actions_pfacreatureactionmelee_ufgcreatureactionmeleeattack",
       "community": 33,
-      "norm_label": "ufgcreatureactionmeleeattack()"
+      "norm_label": "ufgcreatureactionmeleeattack()",
+      "id": "actions_pfacreatureactionmelee_ufgcreatureactionmeleeattack"
     },
     {
       "label": "PRIMALFAUNA_API",
@@ -169,9 +169,9 @@
       "source_file": "Source/PrimalFauna/Public/Actions/PFACreatureActionMelee.h",
       "source_location": "L49",
       "_origin": "ast",
-      "id": "primalfauna_api",
       "community": 33,
-      "norm_label": "primalfauna_api"
+      "norm_label": "primalfauna_api",
+      "id": "primalfauna_api"
     },
     {
       "label": "PFASicklejaw.cpp",
@@ -2789,69 +2789,69 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Source/PrimalFauna/Private/Actions/PFACreatureActionMelee.cpp",
-      "source_location": "L128",
+      "source_location": "L141",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "source_primalfauna_private_actions_pfacreatureactionmelee_cpp_actions_pfacreatureactionmelee",
-      "target": "actions_pfacreatureactionmelee_canperformaction_implementation"
+      "source": "actions_pfacreatureactionmelee",
+      "target": "actions_pfacreatureactionmelee_canperformaction_implementation",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Source/PrimalFauna/Private/Actions/PFACreatureActionMelee.cpp",
-      "source_location": "L153",
+      "source_location": "L279",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "source_primalfauna_private_actions_pfacreatureactionmelee_cpp_actions_pfacreatureactionmelee",
-      "target": "actions_pfacreatureactionmelee_cleanupaction_implementation"
+      "source": "actions_pfacreatureactionmelee",
+      "target": "actions_pfacreatureactionmelee_cleanupaction_implementation",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Source/PrimalFauna/Private/Actions/PFACreatureActionMelee.cpp",
-      "source_location": "L65",
+      "source_location": "L69",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "source_primalfauna_private_actions_pfacreatureactionmelee_cpp_actions_pfacreatureactionmelee",
-      "target": "actions_pfacreatureactionmelee_getconfiguredbitedamage"
+      "source": "actions_pfacreatureactionmelee",
+      "target": "actions_pfacreatureactionmelee_getconfiguredbitedamage",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Source/PrimalFauna/Private/Actions/PFACreatureActionMelee.cpp",
-      "source_location": "L142",
+      "source_location": "L155",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "source_primalfauna_private_actions_pfacreatureactionmelee_cpp_actions_pfacreatureactionmelee",
-      "target": "actions_pfacreatureactionmelee_performaction_implementation"
+      "source": "actions_pfacreatureactionmelee",
+      "target": "actions_pfacreatureactionmelee_performaction_implementation",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Source/PrimalFauna/Private/Actions/PFACreatureActionMelee.cpp",
-      "source_location": "L167",
+      "source_location": "L293",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "source_primalfauna_private_actions_pfacreatureactionmelee_cpp_actions_pfacreatureactionmelee",
-      "target": "actions_pfacreatureactionmelee_processhit_implementation"
+      "source": "actions_pfacreatureactionmelee",
+      "target": "actions_pfacreatureactionmelee_processhit_implementation",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Source/PrimalFauna/Private/Actions/PFACreatureActionMelee.cpp",
-      "source_location": "L84",
+      "source_location": "L88",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "source_primalfauna_private_actions_pfacreatureactionmelee_cpp_actions_pfacreatureactionmelee",
-      "target": "actions_pfacreatureactionmelee_scoreaction_implementation"
+      "source": "actions_pfacreatureactionmelee",
+      "target": "actions_pfacreatureactionmelee_scoreaction_implementation",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Source/PrimalFauna/Private/Actions/PFACreatureActionMelee.cpp",
-      "source_location": "L174",
+      "source_location": "L178",
       "weight": 1.0,
-      "source": "source_primalfauna_private_actions_pfacreatureactionmelee_cpp_actions_pfacreatureactionmelee",
+      "source": "actions_pfacreatureactionmelee",
       "target": "actions_pfacreatureactionmelee_trydirectmeleehit",
       "confidence_score": 1.0
     },
@@ -2859,11 +2859,11 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Source/PrimalFauna/Private/Actions/PFACreatureActionMelee.cpp",
-      "source_location": "L28",
+      "source_location": "L32",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "source_primalfauna_private_actions_pfacreatureactionmelee_cpp_actions_pfacreatureactionmelee",
-      "target": "actions_pfacreatureactionmelee_upfacreatureactionmelee"
+      "source": "actions_pfacreatureactionmelee",
+      "target": "actions_pfacreatureactionmelee_upfacreatureactionmelee",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
@@ -2872,9 +2872,9 @@
       "source_location": "L28",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "actions_pfacreatureactionmelee_upfacreatureactionmelee",
-      "target": "fobjectinitializer",
-      "confidence_score": 1.0
+      "target": "fobjectinitializer"
     },
     {
       "relation": "references",
@@ -2905,9 +2905,9 @@
       "source_file": "Source/PrimalFauna/Private/Actions/PFACreatureActionMelee.cpp",
       "source_location": "L118",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "actions_pfacreatureactionmelee_scoreaction_implementation",
-      "target": "actions_pfacreatureactionmelee_canperformaction_implementation",
-      "confidence_score": 1.0
+      "target": "actions_pfacreatureactionmelee_canperformaction_implementation"
     },
     {
       "relation": "calls",
@@ -2916,9 +2916,9 @@
       "source_file": "Source/PrimalFauna/Private/Actions/PFACreatureActionMelee.cpp",
       "source_location": "L170",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "actions_pfacreatureactionmelee_performaction_implementation",
-      "target": "actions_pfacreatureactionmelee_trydirectmeleehit",
-      "confidence_score": 1.0
+      "target": "actions_pfacreatureactionmelee_trydirectmeleehit"
     },
     {
       "relation": "references",
@@ -2969,9 +2969,9 @@
       "source_location": "L49",
       "weight": 1.0,
       "context": "return_type",
+      "confidence_score": 1.0,
       "source": "actions_pfacreatureactionmelee_ufgcreatureactionmeleeattack",
-      "target": "primalfauna_api",
-      "confidence_score": 1.0
+      "target": "primalfauna_api"
     },
     {
       "relation": "references",
@@ -5899,5 +5899,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "4214da1253191e863fb086251251d9037481f292"
+  "built_at_commit": "118640fd2976d65de790a1e0e1bfb46e3588c96e"
 }

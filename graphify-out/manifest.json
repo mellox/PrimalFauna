@@ -75,8 +75,8 @@
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Private/PrimalFauna.cpp": {
-    "mtime": 1784879053.169312,
-    "ast_hash": "a120df0ea2a188b71c2de6558eaec92d",
+    "mtime": 1784880011.0665095,
+    "ast_hash": "4b9099b235aa0a41c55c849c2335d1e5",
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Public/PFAConfig.h": {
@@ -285,8 +285,8 @@
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Private/Actions/PFACreatureActionMelee.cpp": {
-    "mtime": 1784879051.1661804,
-    "ast_hash": "f8da086d720103d24cb1a7f4cc2197da",
+    "mtime": 1784880009.1606188,
+    "ast_hash": "89ac084ab46cd0d38d9e7f7a78d57d47",
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Private/PFABehaviorBorrower.cpp": {

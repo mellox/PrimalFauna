@@ -9,6 +9,7 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "Net/UnrealNetwork.h"
 #include "Components/CapsuleComponent.h"
+#include "Curves/CurveFloat.h"
 #include "Engine/HitResult.h"
 #include "Engine/World.h"
 #include "TimerManager.h"
@@ -77,6 +78,32 @@ APFACreatureBase::APFACreatureBase(const FObjectInitializer& ObjectInitializer)
 	, mAggressionMode(EPFAAggression::Hostile)
 {
 	AIControllerClass = APFACreatureController::StaticClass();
+
+	// w18-12 -- SIGHT-AGGRO root cause (in-game sessions 6-9: creatures never
+	// initiated without being damaged): AFGCreature's aggro pipeline is
+	// curve-driven -- mVisibilityGainRateCurve ("considered visible once its
+	// visibility value reaches 1.0", FGCreature.h:609-611) and
+	// mAggroGainRateCurve (aggro/sec "Gets multiplied with AggroGainRateCurve",
+	// :605-607/:613-615). Vanilla creatures reference curve ASSETS from their
+	// BP; a C++-only CDO leaves both NULL, so sight-visibility never accrues
+	// and the aggro product is zero -- only the curve-free damage-aggro path
+	// ever fired. Author constant-1.0 curves as CDO subobjects: runtime-built
+	// keys, NOT a content load, so cookbook gotcha #33 (no ctor content
+	// loads) does not apply. Result: visibility accrues at 1.0/s at any
+	// distance inside sight range (the 5m ImmediateVisibilityRadius still
+	// short-circuits up close), and aggro accrues at the authored
+	// mAggroGainRate x 1.0 -- restoring the doc 01 numbers (10/s -> Fight at
+	// 50 after ~5s of being seen). Species can override with real shaped
+	// curves later (W2.3 tuning).
+	UCurveFloat* VisibilityCurve = CreateDefaultSubobject<UCurveFloat>(TEXT("PFAVisibilityGainCurve"));
+	VisibilityCurve->FloatCurve.AddKey(0.0f, 1.0f);
+	VisibilityCurve->FloatCurve.AddKey(10000.0f, 1.0f);
+	mVisibilityGainRateCurve = VisibilityCurve;
+
+	UCurveFloat* AggroCurve = CreateDefaultSubobject<UCurveFloat>(TEXT("PFAAggroGainCurve"));
+	AggroCurve->FloatCurve.AddKey(0.0f, 1.0f);
+	AggroCurve->FloatCurve.AddKey(10000.0f, 1.0f);
+	mAggroGainRateCurve = AggroCurve;
 }
 
 void APFACreatureBase::BeginPlay()
