@@ -75,8 +75,8 @@
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Private/PrimalFauna.cpp": {
-    "mtime": 1784869588.731362,
-    "ast_hash": "3c20dd649981c8d59e8212bd4e8e159a",
+    "mtime": 1784872912.3928628,
+    "ast_hash": "e369225f00f4232c5bc545cceeb0c882",
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Public/PFAConfig.h": {
@@ -250,8 +250,8 @@
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Private/PFACreatureController.cpp": {
-    "mtime": 1784869321.6768532,
-    "ast_hash": "88be36f6cb93623f4110a77f605868b5",
+    "mtime": 1784872893.8388312,
+    "ast_hash": "1390969ff97bbb9256d29581a74fdad4",
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp": {
@@ -265,8 +265,8 @@
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Public/PFACreatureController.h": {
-    "mtime": 1784869114.6805685,
-    "ast_hash": "a20abb82f578282296195166f8ace5e9",
+    "mtime": 1784872910.674206,
+    "ast_hash": "f6749434213d47d9c0a1c8451197d703",
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Public/Species/PFASicklejaw.h": {
@@ -335,8 +335,8 @@
     "semantic_hash": ""
   },
   "art/wip/sicklejaw-rebuild/candidates/manifest.json": {
-    "mtime": 1784870545.7453008,
-    "ast_hash": "3ffd9f0fdb7429fd51acfef41bfece30",
+    "mtime": 1784870839.9492612,
+    "ast_hash": "b55dece487efe47a211e0129936e547c",
     "semantic_hash": ""
   },
   "art/wip/sicklejaw-rebuild/ref/D_hero_3q.png": {
@@ -367,6 +367,91 @@
   "art/wip/sicklejaw-rebuild/ref/D_turntable_270_side.png": {
     "mtime": 1784815372.4673147,
     "ast_hash": "e4cbff1947abd128874726f5548bea31",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-rebuild/anims/retarget_manifest.json": {
+    "mtime": 1784871824.0735865,
+    "ast_hash": "521c17297a1cfef86f438179d115241b",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-rebuild/retopo/keeper_report.txt": {
+    "mtime": 1784871076.6197567,
+    "ast_hash": "197feceaf8fb79959fc0369c1711aa1f",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-rebuild/retopo/keeper_report_lo.txt": {
+    "mtime": 1784871180.7040956,
+    "ast_hash": "956a9830134159184bf443de2b4f1510",
+    "semantic_hash": ""
+  },
+  "art/review/2026-07-24-sicklejaw-rebuild/silhouette_090.png": {
+    "mtime": 1784873418.6318035,
+    "ast_hash": "627bcbc83bdfdc817af9dd14378f2091",
+    "semantic_hash": ""
+  },
+  "art/review/2026-07-24-sicklejaw-rebuild/turntable_000.png": {
+    "mtime": 1784873415.8410378,
+    "ast_hash": "54dad10a06c1bb33bc2abcca4907ffd7",
+    "semantic_hash": ""
+  },
+  "art/review/2026-07-24-sicklejaw-rebuild/turntable_045.png": {
+    "mtime": 1784873415.9794412,
+    "ast_hash": "e28e823549f98ed6936fc37540ee3502",
+    "semantic_hash": ""
+  },
+  "art/review/2026-07-24-sicklejaw-rebuild/turntable_090.png": {
+    "mtime": 1784873416.125029,
+    "ast_hash": "bdf0e0d463b6176a18d292ff43d07051",
+    "semantic_hash": ""
+  },
+  "art/review/2026-07-24-sicklejaw-rebuild/turntable_135.png": {
+    "mtime": 1784873416.2696872,
+    "ast_hash": "aefab37c456563551f2f077cfaa02f35",
+    "semantic_hash": ""
+  },
+  "art/review/2026-07-24-sicklejaw-rebuild/turntable_180.png": {
+    "mtime": 1784873416.4027276,
+    "ast_hash": "64224ec38c9946d958dd116aa3cba625",
+    "semantic_hash": ""
+  },
+  "art/review/2026-07-24-sicklejaw-rebuild/turntable_225.png": {
+    "mtime": 1784873416.5395143,
+    "ast_hash": "33e3edefd9a396fa0f7a83fad84e3402",
+    "semantic_hash": ""
+  },
+  "art/review/2026-07-24-sicklejaw-rebuild/turntable_270.png": {
+    "mtime": 1784873416.6809056,
+    "ast_hash": "3f8b4c8fb7499fce89292f90e5345f84",
+    "semantic_hash": ""
+  },
+  "art/review/2026-07-24-sicklejaw-rebuild/turntable_315.png": {
+    "mtime": 1784873416.8137937,
+    "ast_hash": "36f3904aab9803ebb7c0335339abaa6f",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-rebuild/tex/SK_Sicklejaw_BaseColor.png": {
+    "mtime": 1784872645.3809092,
+    "ast_hash": "0138b0ad8ffe90f7bedfc12ab864b9d5",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-rebuild/tex/SK_Sicklejaw_Emissive.png": {
+    "mtime": 1784873309.0020232,
+    "ast_hash": "927bb51d10cfab1911dd770d68e98a20",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-rebuild/tex/SK_Sicklejaw_Normal.png": {
+    "mtime": 1784872272.9469104,
+    "ast_hash": "5d155aa8edc97b115c77c743a2e5804b",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-rebuild/tex/keeper_retopo_textured_BaseColor.png": {
+    "mtime": 1784871474.400106,
+    "ast_hash": "476a209aa7de5373285c0f72e86ba2ab",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-rebuild/tex/keeper_retopo_textured_Normal.png": {
+    "mtime": 1784871474.692472,
+    "ast_hash": "39a16d501bae48a7314a98b36478eb6b",
     "semantic_hash": ""
   }
 }

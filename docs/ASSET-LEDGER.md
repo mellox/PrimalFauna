@@ -17,6 +17,22 @@ Working sources live under `art/wip/`; review renders under `art/review/`.
 | 2026-07-23 | Sicklejaw D anims ×5 | Animation FBX (placeholder-grade) | Tripo `animate_retarget` presets on `377f815f` | Tripo-generated | 50 (idle/walk/run/slash/hurt @10) | `art/wip/sicklejaw/anims/<name>/…_model.fbx`. Humanoid-styled — usable for bring-up, need raptor-motion refinement (rung 2/4). |
 | 2026-07-23 | Sicklejaw review renders | Turntable + telegraph + silhouette + anim proofs | Blender EEVEE, emissive mask Blender-derived | Ours | 0 | `art/review/2026-07-11-sicklejaw/` (+ `review-board.html`). Textured base = Tripo native; ArmorPaint/StableProjectorz stripe pass deferred (GPU-contention + GUI-only). |
 
+## W2.1b — Sicklejaw QUALITY REBUILD (2026-07-24)
+
+Adopted candidate D was rebuilt clean (neutral A-pose + closed mouth → AutoRemesher retopo per
+doc 05 §2 → Tripo v3 re-rig biped/`spec=tripo` → 5-preset re-retarget → look re-baked/graded).
+Working sources in `art/wip/sicklejaw-rebuild/`; review board `art/review/2026-07-24-sicklejaw-rebuild/`.
+
+| Date | Asset | Type | Source / Tool | License | Credits | Notes |
+|---|---|---|---|---|---|---|
+| 2026-07-24 | Sicklejaw rebuild candidates (C1–C3, C3b) | Base-mesh candidates | Tripo v3 `image-to-model` ×2 + `text-to-model` ×2 (`v3.1-20260211`) | Tripo-generated (our account, commercial ok) | 140 (40+40+30+30) | `art/wip/sicklejaw-rebuild/candidates/`. C1/C2 image-to-model copied D's rearing/open-mouth pose (cut); **C3b text D-tuned = KEEPER** (muted grey-blue, subtle teal, low scutes, lean, closed mouth). C3 kept as runner-up. |
+| 2026-07-24 | `keeper_retopo.glb` / `SK_Sicklejaw` mesh | Skeletal-mesh base (KEEPER) | AutoRemesher 1.0.0 retopo of C3b | Ours (derived) | 0 | 1,424,686 tris → **20,520 quads + 590 tris (97.2% quad) = 42.6k tris**. Single non-overlapping UV (smart-project). Real-meters 1.70 m, transforms applied. |
+| 2026-07-24 | Sicklejaw rebuild rig | Rig FBX (KEEPER) | Tripo v3 `/models/import` → `/animations/rig` (`v2.5-20260210`, `rig_type=biped`, `spec=tripo`) | Tripo-generated | 25 (+0 rig-check, +0 import) | `art/wip/sicklejaw-rebuild/rigs/139fa2ac…_rig.fbx`. **48-bone creature rig incl. 6-bone tail chain** (the original mixamo rig had none) + 8-bone head. rig-check: riggable=true, biped. |
+| 2026-07-24 | Sicklejaw rebuild anims ×5 | Animation FBX (placeholder-grade) | Tripo v3 `/animations/retarget` presets | Tripo-generated | 50 (idle/walk/run/slash/hurt @10) | `art/wip/sicklejaw-rebuild/anims/<name>/`. Humanoid-styled — bring-up only, need raptor-motion refinement (Blender hand-author on the tail rig, or Kubold pack). |
+| 2026-07-24 | `SK_Sicklejaw` textures | BaseColor + Normal + Emissive (2048) | Blender bake/grade from C3b + numpy teal emissive mask | Ours | 0 | `art/wip/sicklejaw-rebuild/tex/`. Look preserved on the retopo UVs; emissive mask = teal markings for the aggro telegraph (scalar `MID` in UE). |
+| 2026-07-24 | `SK_Sicklejaw.fbx` / `.glb` | Final textured+rigged skeletal mesh (DELIVERABLE) | Blender assembly | Ours (Tripo-derived, commercial ok) | 0 | `art/wip/sicklejaw-rebuild/final/`. Mesh + 48-bone rig + BaseColor/Normal/Emissive. **W2.2 import target once the rebuild board is user-approved.** |
+| 2026-07-24 | Sicklejaw rebuild review board | Turntable ×8 + likeness-vs-D + silhouette + aggro + anim proofs | Blender EEVEE, fixed rig; numpy bloom for aggro | Ours | 0 | `art/review/2026-07-24-sicklejaw-rebuild/review-board.html`. **Rebuild total: 215 API credits (pool 8375→8160), $0 purchases.** |
+
 ## Placeholder rig — technical notes (for the systems lane)
 
 - **Files:** `art/wip/placeholder/SK_PFA_Placeholder.fbx` (mesh + skeleton, bind pose) plus two

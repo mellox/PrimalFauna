@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sicklejaw — Quality Rebuild Review Board (W2.1b)</title>
+<style>
+  :root{
+    --bg:#f4f5f7; --panel:#fff; --ink:#1a1d21; --mut:#5c636e; --line:#e2e5ea;
+    --accent:#12b5c9; --good:#1f9d57; --warn:#c77d19; --chip:#eef1f5;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{--bg:#14161a; --panel:#1c1f25; --ink:#e9edf2; --mut:#9aa3b0; --line:#2b2f37;
+          --accent:#25c6da; --good:#3ec07a; --warn:#e0a14a; --chip:#242832;}
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:15px/1.55 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;}
+  .wrap{max-width:1180px;margin:0 auto;padding:28px 20px 60px}
+  header h1{margin:0 0 4px;font-size:26px;letter-spacing:.2px}
+  header .sub{color:var(--mut);font-size:14px}
+  .verdict{margin:18px 0 8px;padding:16px 18px;background:var(--panel);
+    border:1px solid var(--line);border-left:4px solid var(--good);border-radius:10px}
+  .verdict b{color:var(--good)}
+  .gate{margin:10px 0 8px;padding:14px 18px;background:var(--panel);
+    border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:10px;font-size:14.5px}
+  .gate b{color:var(--accent)}
+  h2{font-size:17px;margin:34px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+  .grid{display:grid;gap:14px}
+  .g4{grid-template-columns:repeat(4,1fr)}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  @media(max-width:820px){.g4{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:520px){.g4,.g3,.g2{grid-template-columns:1fr}}
+  figure{margin:0;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  figure img{display:block;width:100%;height:auto;background:#8a8f98}
+  figcap{padding:8px 10px;font-size:12.5px;color:var(--mut)}
+  figcap b{color:var(--ink)}
+  .pick{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 40%,transparent)}
+  .pair{display:grid;grid-template-columns:1fr 1fr;gap:0}
+  .pair figure{border-radius:0;border:none}
+  .pairwrap{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .pairwrap .lbl{display:flex;justify-content:space-between;padding:7px 12px;font-size:12px;color:var(--mut);border-top:1px solid var(--line)}
+  .pairwrap .lbl b{color:var(--ink)}
+  .tag{display:inline-block;font-size:11px;padding:1px 7px;border-radius:20px;background:var(--chip);color:var(--mut);margin-left:6px;vertical-align:middle}
+  .tag.keep{background:color-mix(in srgb,var(--good) 22%,transparent);color:var(--good)}
+  .tag.cut{background:color-mix(in srgb,#c0392b 20%,transparent);color:#d9695c}
+  .tag.new{background:color-mix(in srgb,var(--accent) 22%,transparent);color:var(--accent)}
+  .notes{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:6px 20px}
+  .notes li{margin:9px 0}
+  .warnbox{border-left:4px solid var(--warn)}
+  code{background:var(--chip);padding:1px 5px;border-radius:5px;font-size:12.5px}
+  .kv{display:flex;flex-wrap:wrap;gap:8px 22px;color:var(--mut);font-size:13px;margin-top:6px}
+  .kv b{color:var(--ink)}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line)}
+  th{color:var(--mut);font-weight:600}
+  tr:last-child td{border-bottom:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Sicklejaw — Quality Rebuild Review Board</h1>
+  <div class="sub">PrimalFauna W2.1b · adopted candidate&nbsp;D rebuilt clean · Tripo v3 → AutoRemesher → Blender · rendered 2026-07-24 · all shots fully textured (EEVEE, fixed 3-pt rig)</div>
+</header>
+
+<div class="verdict">
+  <b>Rebuild delivered.</b> Candidate&nbsp;D was re-generated in a clean neutral pose, retopologised to
+  <b>42.6k tris / 97.2% quads</b> (from a 1.42M-tri generation), UV-unwrapped, re-rigged as a
+  <b>48-bone Tripo creature rig with a real 6-bone tail chain</b> (the original mixamo rig had none), and
+  re-textured to preserve D's look (muted grey-blue hide, cream belly, teal bio-markings, dorsal spines,
+  curved raptor jaw). Aggro-glow telegraph rebuilt as a scalar emissive mask. Full 5-preset anim set
+  re-retargeted. <b>Styled against</b> the vanilla hog/stinger fauna our borrowed <code>BT_CreatureBehavior</code> drives.
+</div>
+
+<div class="gate">
+  <b>THIS BOARD IS THE GATE.</b> W2.2 (UE import) does not start until you re-approve this rebuild.
+  Compare §1 (side-by-side vs the original D you adopted) and confirm it still reads as the same Sicklejaw.
+</div>
+
+<h2>1 · Likeness — rebuild vs. the original candidate&nbsp;D <span class="tag">required side-by-side</span></h2>
+<div class="grid g2">
+  <div class="pairwrap">
+    <div class="pair"><figure><img src="D_ref_3q.png" alt="D orig"></figure><figure><img src="turntable_315.png" alt="rebuild"></figure></div>
+    <div class="lbl"><span>Original D — 3/4 hero (rearing, open mouth)</span><b>Rebuild — 3/4 hero (neutral, closed)</b></div>
+  </div>
+  <div class="pairwrap">
+    <div class="pair"><figure><img src="D_ref_side.png" alt="D orig side"></figure><figure><img src="turntable_090.png" alt="rebuild side"></figure></div>
+    <div class="lbl"><span>Original D — side</span><b>Rebuild — side</b></div>
+  </div>
+  <div class="pairwrap">
+    <div class="pair"><figure><img src="D_ref_silhouette.png" alt="D orig sil"></figure><figure><img src="silhouette_090.png" alt="rebuild sil"></figure></div>
+    <div class="lbl"><span>Original D — silhouette</span><b>Rebuild — silhouette</b></div>
+  </div>
+  <div class="pairwrap">
+    <div class="pair"><figure><img src="D_ref_aggro.png" alt="D orig aggro"></figure><figure><img src="aggro_ON_hero.png" alt="rebuild aggro"></figure></div>
+    <div class="lbl"><span>Original D — aggro ON</span><b>Rebuild — aggro ON</b></div>
+  </div>
+</div>
+<div class="notes" style="margin-top:14px">
+  <ul>
+    <li><b>Preserved:</b> the aggressive theropod silhouette, oversized curved lower jaw + tooth line, the
+      serrated dorsal-spine ridge from neck to tail, the long counter-balancing tail, digitigrade clawed
+      legs, the cool grey-blue hide over a cream ventral, and the pale-teal bioluminescent stripe/speckle markings.</li>
+    <li><b>Deliberately changed (the point of the rebuild):</b> the pose. D's adopted render is a rearing,
+      open-mouth action pose (baked into the mesh — bad for a rig bind). The rebuild is a neutral,
+      near-A-pose, <b>closed-mouth</b> stance so the rig binds cleanly and animations read from a rest state.</li>
+    <li><b>Honest drift:</b> the rebuild is a hair leaner and its dorsal scutes slightly more regular than D;
+      base saturation is tuned to D's muted <i>aggro-off</i> state (D's brighter reference was closer to its
+      aggro-on look). Judgement call — flag it if you want it pushed closer either way.</li>
+  </ul>
+</div>
+
+<h2>2 · Rebuild turntable <span class="tag">fully textured · aggro off · 42.6k tris</span></h2>
+<div class="grid g4">
+  <figure><img src="turntable_000.png"><figcap>Front (0&deg;)</figcap></figure>
+  <figure><img src="turntable_045.png"><figcap>Front 3/4 (45&deg;)</figcap></figure>
+  <figure><img src="turntable_090.png"><figcap>Side (90&deg;)</figcap></figure>
+  <figure><img src="turntable_135.png"><figcap>Rear-side (135&deg;)</figcap></figure>
+  <figure><img src="turntable_180.png"><figcap>Back (180&deg;)</figcap></figure>
+  <figure><img src="turntable_225.png"><figcap>Back 3/4 (225&deg;)</figcap></figure>
+  <figure><img src="turntable_270.png"><figcap>Side (270&deg;)</figcap></figure>
+  <figure class="pick"><img src="turntable_315.png"><figcap><b>Front-side (315&deg;) — hero</b></figcap></figure>
+</div>
+
+<h2>3 · Aggro-glow telegraph <span class="tag">emissive mask · doc-01 tell</span></h2>
+<div class="grid g2">
+  <figure><img src="aggro_OFF_hero.png"><figcap><b>Aggro OFF</b> — muted teal flecks, base state.</figcap></figure>
+  <figure><img src="aggro_ON_hero.png"><figcap><b>Aggro ON</b> — bio-markings flare cyan. Driven by one scalar emissive parameter (C++ <code>MID</code>), no extra VFX; in-engine bloom sells the glow.</figcap></figure>
+</div>
+
+<h2>4 · Silhouette read</h2>
+<div class="grid g2">
+  <figure><img src="silhouette_090.png"><figcap><b>Black-fill silhouette</b> — curved jaw, dorsal spines, tail, digitigrade legs read instantly.</figcap></figure>
+  <figure style="display:flex;align-items:center"><figcap style="font-size:14px;color:var(--ink)">
+    Unmistakably an aggressive theropod predator from pure outline — the "first-contact hog-moment" read the brief asks for, on clean quad topology now.
+  </figcap></figure>
+</div>
+
+<h2>5 · Animation proof <span class="tag">Tripo v3 presets · rung 1 · placeholder-grade</span></h2>
+<div class="notes warnbox" style="margin-bottom:14px">
+  <ul>
+    <li><b>All 5 target presets re-obtained</b> (idle · walk · run · slash · hurt) on the new 48-bone
+      <code>spec=tripo</code> creature rig — which, unlike the original, has a real tail chain.</li>
+    <li><b>Caveat (unchanged from v1):</b> the presets are <i>humanoid-styled</i> — upright idle, human-ish
+      gait, some skin stretching. Fine for systems bring-up; <b>not final content.</b> Raptor-motion refinement
+      (Blender hand-author on this rig, or the Kubold pack) is the recommended next step for gait quality.</li>
+  </ul>
+</div>
+<div class="grid g3">
+  <figure><img src="anim_idle.png"><figcap><b>idle</b> — upright rest (meerkat-ish).</figcap></figure>
+  <figure><img src="anim_walk.png"><figcap><b>walk</b> — stride contact.</figcap></figure>
+  <figure><img src="anim_run.png"><figcap><b>run</b> — gallop frame.</figcap></figure>
+  <figure><img src="anim_slash.png"><figcap><b>slash</b> — lunge/bite attack.</figcap></figure>
+  <figure><img src="anim_hurt.png"><figcap><b>hurt</b> — flinch.</figcap></figure>
+</div>
+
+<h2>6 · How we got here — candidate journey <span class="tag">4 generated · judged vs D</span></h2>
+<div class="grid g4">
+  <figure><img src="cand_C1.png"><figcap><b>C1 · image&rarr;model (front)</b> <span class="tag cut">cut</span><br>Image-to-model faithfully <i>reproduced D's rearing/open-mouth pose</i>. Weak teal. Wrong pose = defeats the rebuild.</figcap></figure>
+  <figure><img src="cand_C2.png"><figcap><b>C2 · image&rarr;model (hero)</b> <span class="tag cut">cut</span><br>Same problem — copied the action pose + open mouth; washed-out markings.</figcap></figure>
+  <figure><img src="cand_C3.png"><figcap><b>C3 · text (A-pose)</b> <span class="tag">runner-up</span><br>Clean neutral pose + strong teal, but too saturated / spiky vs D.</figcap></figure>
+  <figure class="pick"><img src="cand_C3b.png"><figcap><b>C3b · text (D-tuned)</b> <span class="tag keep">KEEPER</span><br>Muted grey-blue, subtle teal, low scutes, lean build — best D match with a clean closed-mouth stance.</figcap></figure>
+</div>
+<div class="notes" style="margin-top:12px">
+  <ul>
+    <li><b>Method note (conscious deviation from the packet):</b> the brief said "image-to-model." I tried it
+      (C1/C2) and proved it copies D's rearing, open-mouth <i>source</i> pose — and D's old rig has no jaw bone
+      to close the mouth. So a <b>text-to-model</b> pass tuned from D's renders (C3b) was the only route that hit the
+      neutral&nbsp;A-pose + closed-mouth bar while holding the look. One targeted re-roll (C3&rarr;C3b), then stop.</li>
+  </ul>
+</div>
+
+<h2>7 · Pipeline stats, spend &amp; next tweak</h2>
+<table>
+  <tr><th>Stage</th><th>Result</th></tr>
+  <tr><td>Generate</td><td>Tripo v3.1 text-to-model, D-tuned prompt (keeper C3b)</td></tr>
+  <tr><td>Retopo (new §2 standard)</td><td>AutoRemesher: 1,424,686 tris &rarr; <b>20,520 quads + 590 tris (97.2% quad)</b> = 42.6k tris</td></tr>
+  <tr><td>UV</td><td>Single non-overlapping set (smart-project)</td></tr>
+  <tr><td>Scale</td><td>1.70 m (verify/tune in UE against the 1.65 m placeholder capsule)</td></tr>
+  <tr><td>Rig-check</td><td>riggable = <b>true</b>, rig_type = <b>biped</b> (design intent met)</td></tr>
+  <tr><td>Rig</td><td>Tripo v2.5 creature rig, <code>spec=tripo</code>, 48 bones incl. <b>6-bone tail</b>, 8-bone head</td></tr>
+  <tr><td>Texture</td><td>2048 BaseColor + Normal + Emissive mask; look re-baked/graded from C3b</td></tr>
+  <tr><td>Animate</td><td>5 v3 presets (idle/walk/run/slash/hurt) — placeholder-grade, humanoid-styled</td></tr>
+</table>
+<div class="notes" style="margin-top:12px">
+  <ul>
+    <li><b>Next tweak (one change):</b> refine the raptor gait. Cheapest = hand-author walk/run in Blender on
+      this tail-chained rig (now possible — the tail can move). If a horizontal-spine sprint is must-have,
+      the pre-licensed <b>Kubold "Raptor Dinosaur Animated" pack ($59.99)</b> retargets onto this rig — surfaced
+      as the fallback, <b>your call, no purchase made.</b></li>
+    <li><b>Known compromises:</b> anims are placeholder-grade; base saturation tuned to D's muted state (push
+      if you want it punchier); a couple of anim frames show retarget skin-stretch (cosmetic, retarget-inherent).</li>
+  </ul>
+  <div class="kv">
+    <span><b>Tripo API spend:</b> 215 cr (pool 8375&rarr;8160)</span>
+    <span><b>Studio pool:</b> separate — web dashboard only</span>
+    <span><b>Marketplace:</b> $0 (no purchases)</span>
+    <span><b>Files:</b> art/wip/sicklejaw-rebuild/final/SK_Sicklejaw.fbx</span>
+  </div>
+</div>
+
+</div>
+</body>
+</html>
