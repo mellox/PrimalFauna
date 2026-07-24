@@ -4,6 +4,8 @@
 #include "PFACreatureBase.h"
 #include "PFASicklejaw.generated.h"
 
+class UAnimSequence;
+
 // ---------------------------------------------------------------------------
 // APFASicklejaw -- the vertical-slice species (docs/01-creature-roster.md §1,
 // docs/07-technical-architecture.md §3). Raptor-class pack hunter, default
@@ -51,4 +53,29 @@ protected:
 	// of degrading. Tolerates a missing mesh entirely: a meshless creature
 	// must still function (movement/AI/health are all mesh-independent).
 	virtual void BeginPlay() override;
+
+private:
+	// w24-1 locomotion driver ("they just slide along the ground"): a
+	// speed-driven idle/walk/run player on the component's single-node anim
+	// path (SetAnimationMode + PlayAnimation) -- deliberately NO AnimBP
+	// (event graphs are not headless-authorable; direct playback is). Only
+	// armed when the REAL mesh loaded (the anims target SK_Sicklejaw_Skeleton;
+	// the placeholder's skeleton is a different asset). Montage-driven
+	// slash/hurt stay a later packet -- the bite keeps the proven
+	// montage-less direct-hit path.
+	void StartLocomotionAnim();
+	void TickLocomotionAnim();
+
+	// UPROPERTY-rooted so the runtime-loaded sequences can't be GC'd from
+	// under the playing component (cookbook GC-rooting convention).
+	UPROPERTY(Transient)
+	TObjectPtr<UAnimSequence> LocomotionIdleAnim;
+	UPROPERTY(Transient)
+	TObjectPtr<UAnimSequence> LocomotionWalkAnim;
+	UPROPERTY(Transient)
+	TObjectPtr<UAnimSequence> LocomotionRunAnim;
+
+	FTimerHandle LocomotionTimerHandle;
+	// 0=idle 1=walk 2=run, -1 = nothing playing yet (forces the first apply).
+	int32 LocomotionState = -1;
 };

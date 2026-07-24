@@ -1,16 +1,16 @@
 # Graph Report - PrimalFauna  (2026-07-24)
 
 ## Corpus Check
-- 46 files · ~1,995,472 words
+- 47 files · ~1,996,793 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 287 nodes · 309 edges · 36 communities (31 shown, 5 thin omitted)
+- 299 nodes · 329 edges · 37 communities (32 shown, 5 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 5 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `8ca88f26`
+- Built from commit: `d148d63f`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -42,6 +42,7 @@
 - [[_COMMUNITY_Community 28|Community 28]]
 - [[_COMMUNITY_Community 29|Community 29]]
 - [[_COMMUNITY_Community 30|Community 30]]
+- [[_COMMUNITY_Community 31|Community 31]]
 - [[_COMMUNITY_Community 32|Community 32]]
 - [[_COMMUNITY_Community 33|Community 33]]
 - [[_COMMUNITY_Community 35|Community 35]]
@@ -55,25 +56,25 @@
 6. `08 — Implementation Plan (team execution)` - 8 edges
 7. `02 — Hostility & Factions` - 8 edges
 8. `CanBeHostileTowards()` - 7 edges
-9. `LogRuleVerdict()` - 6 edges
-10. `FindNearestPFACreature()` - 6 edges
+9. `log()` - 6 edges
+10. `LogRuleVerdict()` - 6 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `SpawnTestCommand()` --references--> `UWorld`  [EXTRACTED]
-  Source/PrimalFauna/Private/Species/PFASicklejaw.cpp → Source/PrimalFauna/Private/PFACheats.cpp
-- `RefreshTick()` --calls--> `PFA_RunSelfTests()`  [INFERRED]
-  Source/PrimalFauna/Private/PFASubsystem.cpp → Source/PrimalFauna/Private/PFACheats.cpp
-- `DumpControllerCommand()` --references--> `UWorld`  [EXTRACTED]
-  Source/PrimalFauna/Private/PFAPerceptionDebug.cpp → Source/PrimalFauna/Private/PFACheats.cpp
 - `APFASicklejaw()` --calls--> `SetBaseHealth()`  [INFERRED]
   Source/PrimalFauna/Private/Species/PFASicklejaw.cpp → Source/PrimalFauna/Private/PFACreatureBase.cpp
 - `APFASicklejaw()` --calls--> `SetSpawnDespawnDistance()`  [INFERRED]
   Source/PrimalFauna/Private/Species/PFASicklejaw.cpp → Source/PrimalFauna/Private/PFACreatureBase.cpp
+- `DumpAllCreaturesCommand()` --references--> `UWorld`  [EXTRACTED]
+  Source/PrimalFauna/Private/PFACheats.cpp → Source/PrimalFauna/Private/Species/PFASicklejaw.cpp
+- `KillAllCommand()` --references--> `UWorld`  [EXTRACTED]
+  Source/PrimalFauna/Private/PFACheats.cpp → Source/PrimalFauna/Private/Species/PFASicklejaw.cpp
+- `PFA_RunSelfTests()` --references--> `UWorld`  [EXTRACTED]
+  Source/PrimalFauna/Private/PFACheats.cpp → Source/PrimalFauna/Private/Species/PFASicklejaw.cpp
 
 ## Import Cycles
 - None detected.
 
-## Communities (36 total, 5 thin omitted)
+## Communities (37 total, 5 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.20
@@ -136,8 +137,8 @@ Cohesion: 0.25
 Nodes (4): namespace, PFABehaviorBorrower(), PFADiag(), PFAFactionConfig()
 
 ### Community 22 - "Community 22"
-Cohesion: 0.11
-Nodes (16): EPFAAggression, FLifetimeProperty, AggressionModeToString(), APFACreatureBase(), BeginPlay(), GetLifetimeReplicatedProps(), SetAggressionMode(), SetBaseHealth() (+8 more)
+Cohesion: 0.10
+Nodes (17): EPFAAggression, FLifetimeProperty, FObjectInitializer, AggressionModeToString(), APFACreatureBase(), BeginPlay(), GetLifetimeReplicatedProps(), SetAggressionMode() (+9 more)
 
 ### Community 23 - "Community 23"
 Cohesion: 0.19
@@ -163,6 +164,10 @@ Nodes (10): CanPerformAction_Implementation(), GetConfiguredBiteDamage(), Perfor
 Cohesion: 0.22
 Nodes (8): After either path — re-verify, Assigning `BT_PFAGeneric` to our creatures, BT-FALLBACK-RECIPE — authoring `BT_PFAGeneric`, Path A — hardcode a discovered vanilla path (try this before Path B), Path B — author `BT_PFAGeneric` from scratch, Prerequisites, Step 0 — read the census the borrower already logged (do this first), The structure (best-effort — verify against a census BT)
 
+### Community 31 - "Community 31"
+Cohesion: 0.35
+Nodes (10): disk_verify(), fail(), import_sk_fresh(), log(), make_anim_task(), make_sk_task(), measure_height_cm(), r""" import_sicklejaw_ue.py -- W2.2: import the APPROVED Sicklejaw rebuild (art/ (+2 more)
+
 ### Community 32 - "Community 32"
 Cohesion: 0.13
 Nodes (13): FName, FString, PFA_RunSelfTests(), ConfigureNest(), CheckNestRegistryConsistency(), PostLoadGame_Implementation(), ReconcileNests(), RefreshTick() (+5 more)
@@ -176,7 +181,7 @@ Cohesion: 0.22
 Nodes (8): credits, file, label, model, rendered, status, task_id, type
 
 ## Knowledge Gaps
-- **114 isolated node(s):** `FObjectInitializer`, `AFGCharacterBase`, `FHitResult`, `FPFASelfTest`, `AFGCreature` (+109 more)
+- **115 isolated node(s):** `FObjectInitializer`, `FObjectInitializer`, `AFGCharacterBase`, `FHitResult`, `FPFASelfTest` (+110 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **5 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -184,14 +189,14 @@ Nodes (8): credits, file, label, model, rendered, status, task_id, type
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `UWorld` connect `Community 11` to `Community 32`, `Community 22`?**
-  _High betweenness centrality (0.073) - this node is a cross-community bridge._
+  _High betweenness centrality (0.069) - this node is a cross-community bridge._
 - **Why does `PFA_RunSelfTests()` connect `Community 32` to `Community 11`?**
-  _High betweenness centrality (0.047) - this node is a cross-community bridge._
-- **What connects `FObjectInitializer`, `AFGCharacterBase`, `FHitResult` to the rest of the system?**
-  _116 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _High betweenness centrality (0.044) - this node is a cross-community bridge._
+- **What connects `FObjectInitializer`, `r""" import_sicklejaw_ue.py -- W2.2: import the APPROVED Sicklejaw rebuild (art/`, `Delete-then-import so replace-in-place can never hand back stale     bounds/rend` to the rest of the system?**
+  _119 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 11` be split into smaller, more focused modules?**
   _Cohesion score 0.12307692307692308 - nodes in this community are weakly interconnected._
 - **Should `Community 22` be split into smaller, more focused modules?**
-  _Cohesion score 0.10822510822510822 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.10276679841897234 - nodes in this community are weakly interconnected._
 - **Should `Community 32` be split into smaller, more focused modules?**
   _Cohesion score 0.13071895424836602 - nodes in this community are weakly interconnected._

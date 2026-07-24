@@ -14,8 +14,11 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Engine/SkeletalMesh.h"
 #include "Animation/Skeleton.h"
+#include "Animation/AnimSequence.h"
 #include "Rendering/SkeletalMeshRenderData.h"
 #include "Rendering/SkeletalMeshLODRenderData.h"
+#include "TimerManager.h"
+#include "FGHealthComponent.h"
 
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/Pawn.h"
@@ -78,6 +81,18 @@ namespace
 		TEXT("pfa.MeshZOffset"), 0.0f,
 		TEXT("Additional Z offset (cm) applied to the Sicklejaw mesh after feet planting. Negative sinks, positive lifts. Respawn to apply."),
 		ECVF_Default);
+
+	// w24-1 locomotion anims (imported + skeleton-verified by
+	// tools/import_sicklejaw_ue.py; only valid on the REAL mesh's skeleton).
+	const TCHAR* SicklejawIdleAnimPath = TEXT("/PrimalFauna/Sicklejaw/Anims/A_Sicklejaw_Idle.A_Sicklejaw_Idle");
+	const TCHAR* SicklejawWalkAnimPath = TEXT("/PrimalFauna/Sicklejaw/Anims/A_Sicklejaw_Walk.A_Sicklejaw_Walk");
+	const TCHAR* SicklejawRunAnimPath = TEXT("/PrimalFauna/Sicklejaw/Anims/A_Sicklejaw_Run.A_Sicklejaw_Run");
+
+	// Speed thresholds (cm/s) for the idle/walk/run pick. Walk 400 / run 600
+	// per the ctor's authored speeds; the boundaries sit between states.
+	constexpr float LocomotionWalkThresholdCms = 30.0f;
+	constexpr float LocomotionRunThresholdCms = 480.0f;
+	constexpr float LocomotionTickSeconds = 0.2f;
 }
 
 APFASicklejaw::APFASicklejaw(const FObjectInitializer& ObjectInitializer)
@@ -170,9 +185,11 @@ void APFASicklejaw::BeginPlay()
 	// skeleton to be accepted -- a skeletonless "broken import" now falls
 	// back to the placeholder as the comment promises, instead of slipping
 	// past to the meshless guard below.
+	bool bRealMeshLive = false;
 	USkeletalMesh* PlaceholderMesh = LoadObject<USkeletalMesh>(nullptr, SicklejawMeshPath);
 	if (PlaceholderMesh && PlaceholderMesh->GetSkeleton())
 	{
+		bRealMeshLive = true;
 		UE_LOG(LogPrimalFauna, Display,
 			TEXT("[PFA] %s: REAL Sicklejaw mesh loaded (%s)."), *GetName(), SicklejawMeshPath);
 	}
@@ -265,6 +282,100 @@ void APFASicklejaw::BeginPlay()
 		MeshComponent->GetComponentTransform().GetScale3D().Z,
 		*OldRelLoc.ToCompactString(), *MeshComponent->GetRelativeLocation().ToCompactString(),
 		CapsuleHalfForMesh);
+
+	// w24-1: arm the locomotion driver ONLY on the real mesh -- the anims
+	// target SK_Sicklejaw_Skeleton; playing them on the placeholder's
+	// different skeleton would be undefined.
+	if (bRealMeshLive)
+	{
+		StartLocomotionAnim();
+	}
+}
+
+void APFASicklejaw::StartLocomotionAnim()
+{
+	LocomotionIdleAnim = LoadObject<UAnimSequence>(nullptr, SicklejawIdleAnimPath);
+	LocomotionWalkAnim = LoadObject<UAnimSequence>(nullptr, SicklejawWalkAnimPath);
+	LocomotionRunAnim = LoadObject<UAnimSequence>(nullptr, SicklejawRunAnimPath);
+	if (!LocomotionIdleAnim || !LocomotionWalkAnim || !LocomotionRunAnim)
+	{
+		UE_LOG(LogPrimalFauna, Warning,
+			TEXT("[PFA] %s: locomotion anims incomplete (idle=%s walk=%s run=%s) -- ref-pose slide remains; run tools/import_sicklejaw_ue.py."),
+			*GetName(),
+			LocomotionIdleAnim ? TEXT("ok") : TEXT("MISSING"),
+			LocomotionWalkAnim ? TEXT("ok") : TEXT("MISSING"),
+			LocomotionRunAnim ? TEXT("ok") : TEXT("MISSING"));
+		return;
+	}
+
+	if (USkeletalMeshComponent* MeshComponent = GetMesh())
+	{
+		MeshComponent->SetAnimationMode(EAnimationMode::AnimationSingleNode);
+	}
+	// Raw member fn on the templated timer API (heartbeat/rescue precedent:
+	// no UFUNCTION -- stays off the reflection/export surface).
+	GetWorldTimerManager().SetTimer(LocomotionTimerHandle, this, &APFASicklejaw::TickLocomotionAnim, LocomotionTickSeconds, true);
+	TickLocomotionAnim();
+	UE_LOG(LogPrimalFauna, Display,
+		TEXT("[PFA] %s: locomotion driver armed (idle/walk/run, %.1fs cadence, thresholds %.0f/%.0f cm/s)."),
+		*GetName(), LocomotionTickSeconds, LocomotionWalkThresholdCms, LocomotionRunThresholdCms);
+}
+
+void APFASicklejaw::TickLocomotionAnim()
+{
+	USkeletalMeshComponent* MeshComponent = GetMesh();
+	if (!MeshComponent)
+	{
+		return;
+	}
+
+	// Dead creatures keep their last pose (or the native death handling's
+	// ragdoll) -- stop driving anims and let the timer die with the actor.
+	if (UFGHealthComponent* Health = GetHealthComponent())
+	{
+		if (Health->IsDead())
+		{
+			GetWorldTimerManager().ClearTimer(LocomotionTimerHandle);
+			return;
+		}
+	}
+
+	const float SpeedCms = GetVelocity().Size2D();
+	int32 DesiredState = 0;
+	if (SpeedCms >= LocomotionRunThresholdCms)
+	{
+		DesiredState = 2;
+	}
+	else if (SpeedCms >= LocomotionWalkThresholdCms)
+	{
+		DesiredState = 1;
+	}
+
+	if (DesiredState == LocomotionState)
+	{
+		return;
+	}
+	LocomotionState = DesiredState;
+
+	UAnimSequence* Chosen = LocomotionIdleAnim;
+	if (DesiredState == 1)
+	{
+		Chosen = LocomotionWalkAnim;
+	}
+	else if (DesiredState == 2)
+	{
+		Chosen = LocomotionRunAnim;
+	}
+	MeshComponent->PlayAnimation(Chosen, true);
+
+	if (PFADiag::IsEnabled())
+	{
+		UE_LOG(LogPrimalFauna, Display,
+			TEXT("[PFA] %s: locomotion -> %s (speed=%.0f cm/s)"),
+			*GetName(),
+			DesiredState == 0 ? TEXT("idle") : (DesiredState == 1 ? TEXT("walk") : TEXT("run")),
+			SpeedCms);
+	}
 }
 
 // ---- PFA.SpawnTest: the "SicklejawSpawnRoundtrip" stretch item from the
