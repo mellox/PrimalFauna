@@ -9,6 +9,7 @@
 #include "Creature/FGCreatureSpawner.h"
 #include "FGCreatureSubsystem.h"
 #include "FGCharacterPlayer.h"
+#include "PFAFactionConfig.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardData.h"
 #include "BrainComponent.h"
@@ -326,18 +327,21 @@ bool APFACreatureController::CanBeHostileTowards(const AActor* actor) const
 
 	// Rules 6/7: a vanilla creature (not tamed/protected/ours -- already
 	// filtered by rules 1-4 above). Split on IsPassiveCreature(); both apply
-	// the same species aggression gate as rule 5.
+	// the same species aggression gate as rule 5. W2.3: the gate values are
+	// now LIVE config (PFAFactionConfig statics, pushed each subsystem
+	// refresh tick); the constexpr *Default anchors remain the doc-04
+	// compile-time source the statics initialize from.
 	if (TargetCreature)
 	{
 		if (!TargetCreature->IsPassiveCreature())
 		{
-			const bool bResult = HuntVanillaHostilesDefault && PassesAggressionModeGate(actor);
+			const bool bResult = PFAFactionConfig::HuntVanillaHostiles() && PassesAggressionModeGate(actor);
 			LogRuleVerdict(SelfCreature, actor, 6, bResult);
 			return bResult;
 		}
 		else
 		{
-			const bool bResult = HuntPassiveFaunaDefault && PassesAggressionModeGate(actor);
+			const bool bResult = PFAFactionConfig::HuntPassiveFauna() && PassesAggressionModeGate(actor);
 			LogRuleVerdict(SelfCreature, actor, 7, bResult);
 			return bResult;
 		}
@@ -458,10 +462,12 @@ namespace
 					(APFACreatureController::HuntVanillaHostilesDefault == true) &&
 					(APFACreatureController::HuntPassiveFaunaDefault == false);
 
-				OutDetail = FString::Printf(TEXT("AIControllerClass=%s HuntVanillaHostiles(default)=%s HuntPassiveFauna(default)=%s"),
+				OutDetail = FString::Printf(TEXT("AIControllerClass=%s HuntVanillaHostiles(default)=%s HuntPassiveFauna(default)=%s live=(%s,%s)"),
 					ControllerClass ? *ControllerClass->GetName() : TEXT("none"),
 					APFACreatureController::HuntVanillaHostilesDefault ? TEXT("true") : TEXT("false"),
-					APFACreatureController::HuntPassiveFaunaDefault ? TEXT("true") : TEXT("false"));
+					APFACreatureController::HuntPassiveFaunaDefault ? TEXT("true") : TEXT("false"),
+					PFAFactionConfig::HuntVanillaHostiles() ? TEXT("true") : TEXT("false"),
+					PFAFactionConfig::HuntPassiveFauna() ? TEXT("true") : TEXT("false"));
 				return bControllerWired && bDefaultsMatchDoc04;
 			}});
 		return true;

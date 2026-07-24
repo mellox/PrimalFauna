@@ -2,6 +2,7 @@
 #include "PrimalFauna.h"
 #include "PFACreatureController.h"
 #include "PFACheats.h"
+#include "PFAConfig.h"
 
 #include "AI/FGCreatureController.h"
 #include "Creature/FGCreature.h"
@@ -172,6 +173,16 @@ void APFACreatureBase::BeginPlay()
 	// timer API (heartbeat precedent: no UFUNCTION wanted -- stays off the
 	// reflection/export surface).
 	GetWorldTimerManager().SetTimerForNextTick(this, &APFACreatureBase::RescueBuriedSpawn);
+
+	// W2.3: stamp the configured aggression on spawn (server-only section).
+	// The subsystem retargets LIVE creatures only when the config value
+	// CHANGES, so a fresh spawn must self-apply the current value.
+	// v1 single-species: the Sicklejaw key governs every APFACreatureBase
+	// until per-species keys ship with the roster. SetAggressionMode no-ops
+	// on same-mode, so the default (2=Hostile) is a silent pass-through.
+	const int32 ConfiguredAggression = FMath::Clamp(
+		FPFAConfigStruct::GetActiveConfig(this).SicklejawAggression, 0, 2);
+	SetAggressionMode(static_cast<EPFAAggression>(ConfiguredAggression));
 }
 
 void APFACreatureBase::RescueBuriedSpawn()

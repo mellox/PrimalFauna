@@ -1,9 +1,11 @@
 #include "PFASubsystem.h"
 #include "PrimalFauna.h"
 #include "PFAConfig.h"
+#include "PFAFactionConfig.h"
 #include "PFACheats.h"
 #include "PFABehaviorBorrower.h"
 #include "PFANestSpawner.h"
+#include "PFACreatureBase.h"
 #include "Species/PFASicklejaw.h"
 
 #include "BehaviorTree/BehaviorTree.h"
@@ -89,13 +91,44 @@ void APFASubsystem::RefreshTick()
     // (PFAConfig.cpp). Cheap -- one config-manager lookup per 10s.
     PFADiag::SetConfigDiagnostics(Config.EnableDiagnostics);
 
+    // W2.3: push the Factions/balance keys into their file-static snapshot
+    // (PFAFactionConfig) -- the same live-apply pattern as the diagnostics
+    // gate above; controller rules 6/7 + the bite's damage fallback read the
+    // statics per evaluation with zero config-manager lookups.
+    PFAFactionConfig::Push(Config);
+
+    // W2.3: live aggression retarget. Stamp every live PrimalFauna creature
+    // only when the configured value CHANGES (first tick always applies the
+    // persisted config once via the -1 sentinel); fresh spawns self-stamp in
+    // APFACreatureBase::BeginPlay. Passive transitions de-aggro through
+    // SetAggressionMode's own NullifyAllAggro (doc 02 §3).
+    const int32 ConfigAggression = FMath::Clamp(Config.SicklejawAggression, 0, 2);
+    if (ConfigAggression != LastPushedAggression)
+    {
+        int32 RetargetedCount = 0;
+        for (TActorIterator<APFACreatureBase> It(GetWorld()); It; ++It)
+        {
+            It->SetAggressionMode(static_cast<EPFAAggression>(ConfigAggression));
+            ++RetargetedCount;
+        }
+        UE_LOG(LogPrimalFauna, Display,
+            TEXT("[PFA] Config: SicklejawAggression -> %d applied to %d live creature(s)."),
+            ConfigAggression, RetargetedCount);
+        LastPushedAggression = ConfigAggression;
+    }
+
     if (!bLoggedConfigSnapshot)
     {
         UE_LOG(LogPrimalFauna, Display,
-            TEXT("[PFA] Config: Enabled=%s NestDensity=%.2f Diagnostics=%s"),
+            TEXT("[PFA] Config: Enabled=%s NestDensity=%.2f Diagnostics=%s SicklejawAggression=%d SicklejawDmgMult=%.2f HuntVanillaHostiles=%s HuntPassiveFauna=%s PackAssist=%s"),
             Config.Enabled ? TEXT("true") : TEXT("false"),
             Config.NestDensity,
-            Config.EnableDiagnostics ? TEXT("true") : TEXT("false"));
+            Config.EnableDiagnostics ? TEXT("true") : TEXT("false"),
+            ConfigAggression,
+            Config.SicklejawDamageMultiplier,
+            Config.HuntVanillaHostiles ? TEXT("true") : TEXT("false"),
+            Config.HuntPassiveFauna ? TEXT("true") : TEXT("false"),
+            Config.PackAssist ? TEXT("true") : TEXT("false"));
         bLoggedConfigSnapshot = true;
     }
 

@@ -8,6 +8,7 @@
 #include "DamageTypes/FGDamageType.h"     // UFGDamageType::mDamageAmount (public)
 #include "FGCharacterBase.h"              // ProcessHit param GetName()
 #include "FGHealthComponent.h"            // w18-11 health-delta damage verification
+#include "PFAFactionConfig.h"             // W2.3 live damage multiplier
 #include "GameFramework/Pawn.h"           // GetPawn()->GetName()
 #include "GameFramework/Controller.h"     // w18-11 TakeDamage instigator
 #include "Components/PrimitiveComponent.h" // w18-11 synthetic-hit component fill
@@ -250,6 +251,14 @@ void UPFACreatureActionMelee::TryDirectMeleeHit()
 		const float HealthAfterBase = TargetHealth ? TargetHealth->GetCurrentHealth() : -1.0f;
 		const bool bBaseApplied = TargetHealth && (HealthAfterBase < HealthBefore);
 		bool bFallbackApplied = false;
+		// W2.3: our balance knob applies at the SOURCE (doc 04 §1 / doc 07
+		// §6) -- scales the outgoing base before the pipeline, composing
+		// independently with HostileScaling's own incoming-damage hook.
+		// TODO(W2.2): this multiplier lives INSIDE the montage-less fallback
+		// -- when a real attack montage is authored, TryDirectMeleeHit stops
+		// running and the knob goes dead unless it is re-homed onto the
+		// montage/anim-notify damage path (W2.3a cold review, carry-forward).
+		const float DamageMultiplier = PFAFactionConfig::SicklejawDamageMultiplier();
 		if (!bBaseApplied && TargetHealth)
 		{
 			AController* InstigatorController = Creature->GetController();
@@ -257,8 +266,9 @@ void UPFACreatureActionMelee::TryDirectMeleeHit()
 			{
 				if (DamageType && DamageType->mDamageAmount > 0.0f)
 				{
-					FPointDamageEvent DamageEvent(DamageType->mDamageAmount, SyntheticHit, ToTarget2D, DamageType->GetClass());
-					HitCharacter->TakeDamage(DamageType->mDamageAmount, DamageEvent, InstigatorController, Creature);
+					const float Amount = DamageType->mDamageAmount * DamageMultiplier;
+					FPointDamageEvent DamageEvent(Amount, SyntheticHit, ToTarget2D, DamageType->GetClass());
+					HitCharacter->TakeDamage(Amount, DamageEvent, InstigatorController, Creature);
 					bFallbackApplied = true;
 				}
 			}
@@ -268,10 +278,11 @@ void UPFACreatureActionMelee::TryDirectMeleeHit()
 		{
 			const float HealthFinal = TargetHealth ? TargetHealth->GetCurrentHealth() : -1.0f;
 			UE_LOG(LogPrimalFauna, Display,
-				TEXT("[PFA] Sicklejaw action=Melee direct-hit RESULT target=%s health %.1f -> %.1f (baseApplied=%s fallbackApplied=%s)"),
+				TEXT("[PFA] Sicklejaw action=Melee direct-hit RESULT target=%s health %.1f -> %.1f (baseApplied=%s fallbackApplied=%s dmgMult=%.2f)"),
 				*Target->GetName(), HealthBefore, HealthFinal,
 				bBaseApplied ? TEXT("true") : TEXT("false"),
-				bFallbackApplied ? TEXT("true") : TEXT("false"));
+				bFallbackApplied ? TEXT("true") : TEXT("false"),
+				DamageMultiplier);
 		}
 	}
 	else if (PFADiag::IsEnabled())

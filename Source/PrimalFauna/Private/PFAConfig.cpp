@@ -3,7 +3,9 @@
 #include "Configuration/Properties/ConfigPropertySection.h"
 #include "Configuration/Properties/ConfigPropertyBool.h"
 #include "Configuration/Properties/ConfigPropertyFloat.h"
+#include "Configuration/Properties/ConfigPropertyInteger.h"
 #include "Configuration/Properties/WidgetExtension/CP_Float.h"
+#include "Configuration/Properties/WidgetExtension/CP_Integer.h"
 #include "Configuration/Properties/WidgetExtension/CP_Section.h"
 #include "Engine/Engine.h"
 #include "Engine/World.h"
@@ -62,6 +64,10 @@ void UPFAConfig::PostInitProperties()
         TEXT("/SML/Interface/UI/Menu/Mods/ConfigProperties/BP_ConfigPropertyFloat.BP_ConfigPropertyFloat_C"));
     if (!FloatClass) { FloatClass = UConfigPropertyFloat::StaticClass(); }
 
+    UClass* IntegerClass = LoadClass<UConfigPropertyInteger>(nullptr,
+        TEXT("/SML/Interface/UI/Menu/Mods/ConfigProperties/BP_ConfigPropertyInteger.BP_ConfigPropertyInteger_C"));
+    if (!IntegerClass) { IntegerClass = UConfigPropertyInteger::StaticClass(); }
+
     UConfigPropertySection* Root = NewObject<UConfigPropertySection>(this, SectionClass, TEXT("RootSection"));
     if (UCP_Section* RootWidget = Cast<UCP_Section>(Root))
     {
@@ -75,21 +81,15 @@ void UPFAConfig::PostInitProperties()
     // Properties are outer'd to the section (NOT to this config object) so
     // that MarkDirty's Outer-chain walk reaches the save handler.
     //
-    // NOTE for whoever adds the next config section (per-species / Factions
-    // / Sandwyrm, docs/04-config-and-ui.md §1): this packet keeps every
-    // property directly under Root -- the flat layout proven compiling and
-    // working in HostileScalingConfig.cpp -- rather than nesting a second
-    // UConfigPropertySection (e.g. "General") inside Root. SML's reflection
-    // does support nested sections (UConfigPropertySection::
-    // FillConfigStruct_Implementation resolves through
-    // FReflectedObject::GetStructProperty, which just needs a matching
-    // nested USTRUCT field on the destination struct), but that path is
-    // UNPROVEN in any mod in this workspace and untestable by the agent
-    // that wrote this scaffold (no build/in-game access in this packet).
-    // Decide flat-with-prefixed-keys (e.g. "SicklejawEnabled") vs true
-    // nested sections deliberately before extending this file -- the two
-    // are a breaking schema change relative to each other (SML discards
-    // stored values once when a config's property shape changes).
+    // LAYOUT DECISION (W2.3, 2026-07-24, resolves the scaffold's open note):
+    // FLAT with prefixed keys ("SicklejawAggression", not a nested Sicklejaw
+    // section). Rationale: flat is the layout PROVEN in HostileScaling and in
+    // this file's own shipped General keys; nested sections are unproven in
+    // this workspace and the two layouts are a breaking schema change
+    // relative to each other. Prefixed DisplayNames ("Sicklejaw: ...",
+    // "Factions: ...") give the UI grouping cheaply. Revisit only if the v1
+    // roster makes the flat page unwieldy -- BEFORE release (keys freeze at
+    // v1; pre-release schema churn is free, SML resets stored values once).
     const auto AddBool = [&](const TCHAR* Key, bool Default, const TCHAR* Display, const TCHAR* Tip)
     {
         UConfigPropertyBool* Prop = NewObject<UConfigPropertyBool>(Root, BoolClass, FName(Key));
@@ -137,6 +137,48 @@ void UPFAConfig::PostInitProperties()
     AddBool(TEXT("EnableDiagnostics"), false,
         TEXT("Enable Diagnostics"),
         TEXT("Writes verbose [PFA] diagnostic logging (per-entity/decision detail) to the game log. Currently gates PFA.DumpCreature's per-action detail; more diagnostic paths join as creature systems ship. Leave off for clean logs during normal play. Takes effect within ~10s, no reload."));
+
+    // --- W2.3: Sicklejaw + Factions keys (doc 04 §1; flat layout, see the
+    // decision note above). Integer property mirrors AddFloat's widget
+    // pattern with a spinbox range.
+    const auto AddInteger = [&](const TCHAR* Key, int32 Default, int32 Min, int32 Max, const TCHAR* Display, const TCHAR* Tip)
+    {
+        UConfigPropertyInteger* Prop = NewObject<UConfigPropertyInteger>(Root, IntegerClass, FName(Key));
+        Prop->Value = Default;
+        // The in-game Reset button does Value = DefaultValue, so DefaultValue
+        // must be set explicitly or reset snaps to zero/minimum instead.
+        Prop->DefaultValue = Default;
+        Prop->DisplayName = FText::FromString(Display);
+        Prop->Tooltip = FText::FromString(Tip);
+        Prop->bRequiresWorldReload = false;
+        if (UCP_Integer* IntWidget = Cast<UCP_Integer>(Prop))
+        {
+            IntWidget->WidgetType = ECP_IntegerWidgetType::CPI_Spinbox;
+            IntWidget->MinValue = Min;
+            IntWidget->MaxValue = Max;
+        }
+        Root->SectionProperties.Add(Key, Prop);
+    };
+
+    AddInteger(TEXT("SicklejawAggression"), 2, 0, 2,
+        TEXT("Sicklejaw: Aggression"),
+        TEXT("0 = Passive (exists, never initiates -- other mods' scaling correctly skips passive creatures). 1 = Territorial (initiates only inside its nest territory or when provoked). 2 = Hostile (initiates on detection; default). Applies to live creatures within ~10s, no reload."));
+
+    AddFloat(TEXT("SicklejawDamageMultiplier"), 1.0f, 0.25f, 2.0f,
+        TEXT("Sicklejaw: Damage Multiplier"),
+        TEXT("Scales the Sicklejaw's outgoing attack damage at the source (bite base 20). Composes independently with Hostile Scaling's own damage setting (theirs scales incoming damage processing; ours sets the outgoing base). 1.0 = default. Takes effect within ~10s, no reload."));
+
+    AddBool(TEXT("HuntVanillaHostiles"), true,
+        TEXT("Factions: Hunt Vanilla Hostiles"),
+        TEXT("Predators may fight vanilla hostile creatures (hogs, stingers, spitters) -- the creature-vs-creature spectacle switch. Takes effect within ~10s, no reload."));
+
+    AddBool(TEXT("HuntPassiveFauna"), false,
+        TEXT("Factions: Hunt Passive Fauna"),
+        TEXT("Allow targeting passive wildlife. Default off -- protects lizard doggos and ambient fauna. Tamed creatures are NEVER targets regardless of this setting (hardcoded). Takes effect within ~10s, no reload."));
+
+    AddBool(TEXT("PackAssist"), true,
+        TEXT("Factions: Pack Assist"),
+        TEXT("Same-species pack members share aggro. The pack-behavior system arrives in a later update -- until then this switch has no effect (kept here so saved settings carry forward)."));
 
     RootSection = Root;
 }

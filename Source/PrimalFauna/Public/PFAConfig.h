@@ -9,10 +9,11 @@
 // section property keys registered in UPFAConfig exactly --
 // UConfigManager::FillConfigurationStruct maps them by name.
 //
-// Only the "General" section (docs/04-config-and-ui.md §1) ships in this
-// packet (W0.1). Per-species / Factions / Sandwyrm sections arrive in later
-// packets -- see the flat-vs-nested-section note in PFAConfig.cpp before
-// extending this struct.
+// Shipped sections (docs/04-config-and-ui.md §1): General (W0.1) + Sicklejaw
+// + Factions (W2.3, FLAT prefixed keys -- decision note in PFAConfig.cpp).
+// Sandwyrm keys + per-species Enabled (despawn machinery) arrive with their
+// systems -- pre-release schema churn is free (SML resets stored values once
+// on shape change); keys freeze at v1 release.
 USTRUCT(BlueprintType)
 struct PRIMALFAUNA_API FPFAConfigStruct
 {
@@ -29,6 +30,26 @@ struct PRIMALFAUNA_API FPFAConfigStruct
 
     UPROPERTY(BlueprintReadWrite)
     bool EnableDiagnostics{false};
+
+    // --- W2.3: Sicklejaw section (flat keys; doc 04 §1 per-species table) ---
+
+    // 0 = Passive, 1 = Territorial, 2 = Hostile (doc 02 §3).
+    UPROPERTY(BlueprintReadWrite)
+    int32 SicklejawAggression{2};
+
+    UPROPERTY(BlueprintReadWrite)
+    float SicklejawDamageMultiplier{1.0f};
+
+    // --- W2.3: Factions section (doc 04 §1 / doc 02) ---
+
+    UPROPERTY(BlueprintReadWrite)
+    bool HuntVanillaHostiles{true};
+
+    UPROPERTY(BlueprintReadWrite)
+    bool HuntPassiveFauna{false};
+
+    UPROPERTY(BlueprintReadWrite)
+    bool PackAssist{true};
 
     // Retrieves the active configuration values for this mod.
     static FPFAConfigStruct GetActiveConfig(UObject* WorldContext);

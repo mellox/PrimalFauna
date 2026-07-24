@@ -523,14 +523,22 @@ namespace
 			[](UWorld* World, FString& OutDetail) -> bool
 			{
 				const FPFAConfigStruct Config = FPFAConfigStruct::GetActiveConfig(World);
-				OutDetail = FString::Printf(TEXT("Enabled=%s NestDensity=%.2f ExperimentalFeatures=%s Diagnostics=%s"),
+				OutDetail = FString::Printf(TEXT("Enabled=%s NestDensity=%.2f ExperimentalFeatures=%s Diagnostics=%s SicklejawAggression=%d SicklejawDmgMult=%.2f HuntVanillaHostiles=%s HuntPassiveFauna=%s PackAssist=%s"),
 					Config.Enabled ? TEXT("true") : TEXT("false"),
 					Config.NestDensity,
 					Config.EnableExperimentalFeatures ? TEXT("true") : TEXT("false"),
-					Config.EnableDiagnostics ? TEXT("true") : TEXT("false"));
+					Config.EnableDiagnostics ? TEXT("true") : TEXT("false"),
+					Config.SicklejawAggression,
+					Config.SicklejawDamageMultiplier,
+					Config.HuntVanillaHostiles ? TEXT("true") : TEXT("false"),
+					Config.HuntPassiveFauna ? TEXT("true") : TEXT("false"),
+					Config.PackAssist ? TEXT("true") : TEXT("false"));
 				// GetActiveConfig() never null/crashes (defaults on lookup
-				// failure); the bar is a sane positive density, not zeroed garbage.
-				return Config.NestDensity > 0.0f;
+				// failure); the bar is sane non-garbage values -- positive
+				// density and the W2.3 keys inside their doc-04 ranges.
+				return Config.NestDensity > 0.0f
+					&& Config.SicklejawAggression >= 0 && Config.SicklejawAggression <= 2
+					&& Config.SicklejawDamageMultiplier > 0.0f;
 			}});
 		return true;
 	}();

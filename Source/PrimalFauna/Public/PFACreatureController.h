@@ -55,13 +55,12 @@ public:
 	// virtual, so running CanBeHostileTowards from here recursed; w18-1).
 	virtual bool IsValidTarget(const AActor* actor) const override;
 
-	// TODO(W2.3): these stand in for the not-yet-existing "Factions" config
-	// section (docs/04-config-and-ui.md §1, keys HuntVanillaHostiles /
-	// HuntPassiveFauna) until the flat-vs-nested-section config layout
-	// question (PFAConfig.cpp's note) is settled and the keys exist. Values
-	// are doc 04's documented DEFAULTS, copied exactly -- also read by
-	// PFASicklejaw.cpp's SicklejawControllerPolicy self-test as a drift guard
-	// against this comment going stale.
+	// W2.3 SHIPPED the Factions keys (flat layout, PFAConfig.cpp) -- these
+	// constexprs are no longer the runtime values. Their remaining roles:
+	// (1) compile-time doc-04 anchors the SicklejawControllerPolicy self-test
+	// pins against drift; (2) the initializers PFAFactionConfig's live
+	// statics start from before the first config push. Runtime reads go
+	// through PFAFactionConfig::HuntVanillaHostiles()/HuntPassiveFauna().
 	static constexpr bool HuntVanillaHostilesDefault = true;
 	static constexpr bool HuntPassiveFaunaDefault = false;
 

@@ -147,6 +147,11 @@ private:
     // MP diagnosability -- only the server's config affects gameplay).
     bool bLoggedConfigSnapshot = false;
 
+    // W2.3: last SicklejawAggression value pushed to live creatures; -1 =
+    // never pushed, so the first RefreshTick always applies the persisted
+    // config once (new spawns self-stamp in APFACreatureBase::BeginPlay).
+    int32 LastPushedAggression = -1;
+
     // Set once the pfa.AutoTest self-test run has fired, so it runs at most
     // once per world (docs/08 W1.1: "hook via the subsystem's first
     // RefreshTick, NOT a new engine hook").
