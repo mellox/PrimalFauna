@@ -37,12 +37,18 @@ import unreal
 
 ART = r"C:\Claude\Projects\PrimalFauna\art\wip\sicklejaw-rebuild"
 SK_FBX = os.path.join(ART, "final", "SK_Sicklejaw.fbx")
+# 2026-07-24 REBOUND sources (mod-artist rebind_report.md): armature-only
+# (48-bone rig = exact match to the mesh FBX, leaf bones dropped), ONE baked
+# in-place rotation-only take each, meter-native. Mesh-free sources are what
+# kills the mesh-twin-package failure at the root; the raw Tripo FBXs in
+# anims/{take}/ are retained as provenance but must NOT be imported (60-bone
+# leaf-inflated + embedded 21k-vert mesh).
 ANIM_FBXS = [
-    ("A_Sicklejaw_Idle",  os.path.join(ART, "anims", "idle",  "3a5ab6c7-12bc-426c-9a97-d2845cbb546c_idle.fbx")),
-    ("A_Sicklejaw_Walk",  os.path.join(ART, "anims", "walk",  "9cd351db-96a4-43e1-95b1-00797bad8472_walk.fbx")),
-    ("A_Sicklejaw_Run",   os.path.join(ART, "anims", "run",   "202a3803-c98e-43cf-be7e-85745de71e29_run.fbx")),
-    ("A_Sicklejaw_Slash", os.path.join(ART, "anims", "slash", "15d216bb-7cf5-4dff-94ff-1bea77c2b87f_slash.fbx")),
-    ("A_Sicklejaw_Hurt",  os.path.join(ART, "anims", "hurt",  "3e1db95d-3c93-4955-9a06-34456d3b0cbd_hurt.fbx")),
+    ("A_Sicklejaw_Idle",  os.path.join(ART, "anims_rebound", "A_Sicklejaw_Idle.fbx")),
+    ("A_Sicklejaw_Walk",  os.path.join(ART, "anims_rebound", "A_Sicklejaw_Walk.fbx")),
+    ("A_Sicklejaw_Run",   os.path.join(ART, "anims_rebound", "A_Sicklejaw_Run.fbx")),
+    ("A_Sicklejaw_Slash", os.path.join(ART, "anims_rebound", "A_Sicklejaw_Slash.fbx")),
+    ("A_Sicklejaw_Hurt",  os.path.join(ART, "anims_rebound", "A_Sicklejaw_Hurt.fbx")),
 ]
 
 DEST = "/PrimalFauna/Sicklejaw"
@@ -123,7 +129,13 @@ def make_anim_task(dest_name, fbx_path, target_skeleton, uniform_scale):
 
     anim = o.anim_sequence_import_data
     safe_set(anim, "import_bone_tracks", True)
-    safe_set(anim, "use_default_sample_rate", True)
+    # 2026-07-24: keep the SOURCE frame rate (24fps, artist-authored timing)
+    # instead of resampling to the 30fps default -- Run (1.25s @ 24fps) lands
+    # on a half-frame at 30fps and the importer HARD-FAILS ("animation has to
+    # be frame-border aligned"; Slash would too at 197.5 frames). Boundary
+    # snap stays on as the belt for any future oddly-cut clip.
+    safe_set(anim, "use_default_sample_rate", False)
+    safe_set(anim, "snap_to_closest_frame_boundary", True)
     safe_set(anim, "animation_length", unreal.FBXAnimationLengthImportType.FBXALIT_EXPORTED_TIME)
     safe_set(anim, "convert_scene", True)
     # Anims must ride the SAME unit correction as the mesh or root motion /

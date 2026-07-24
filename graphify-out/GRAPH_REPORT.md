@@ -1,7 +1,7 @@
 # Graph Report - PrimalFauna  (2026-07-24)
 
 ## Corpus Check
-- 47 files · ~1,997,963 words
+- 47 files · ~1,998,183 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `a629f69f`
+- Built from commit: `e70ca09f`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -59,6 +59,8 @@
 10. `log()` - 6 edges
 
 ## Surprising Connections (you probably didn't know these)
+- `OnPossess()` --calls--> `WireCreaturePerception()`  [INFERRED]
+  Source/PrimalFauna/Private/PFACreatureController.cpp → Source/PrimalFauna/Private/PFACreatureControllerPerception.cpp
 - `APFASicklejaw()` --calls--> `SetBaseHealth()`  [INFERRED]
   Source/PrimalFauna/Private/Species/PFASicklejaw.cpp → Source/PrimalFauna/Private/PFACreatureBase.cpp
 - `APFASicklejaw()` --calls--> `SetSpawnDespawnDistance()`  [INFERRED]
@@ -66,8 +68,6 @@
 - `PickCandidate()` --references--> `FString`  [EXTRACTED]
   Source/PrimalFauna/Private/PFABehaviorBorrower.cpp → Source/PrimalFauna/Private/Species/PFASicklejaw.cpp
 - `DumpAllCreaturesCommand()` --references--> `UWorld`  [EXTRACTED]
-  Source/PrimalFauna/Private/PFACheats.cpp → Source/PrimalFauna/Private/Species/PFASicklejaw.cpp
-- `KillAllCommand()` --references--> `UWorld`  [EXTRACTED]
   Source/PrimalFauna/Private/PFACheats.cpp → Source/PrimalFauna/Private/Species/PFASicklejaw.cpp
 
 ## Import Cycles
@@ -121,7 +121,7 @@ Nodes (3): GetActiveConfig(), FPFAConfigStruct, UObject
 
 ### Community 11 - "Community 11"
 Cohesion: 0.12
-Nodes (22): AFGCreatureController, APFACreatureBase, FPFASelfTest, FVector, DumpAllCreaturesCommand(), DumpCreatureCommand(), FindLookedAtOrNearestCreature(), IsEnabled() (+14 more)
+Nodes (23): AFGCreatureController, APFACreatureBase, FPFASelfTest, FVector, DumpAllCreaturesCommand(), DumpCreatureCommand(), FindLookedAtOrNearestCreature(), IsEnabled() (+15 more)
 
 ### Community 12 - "Community 12"
 Cohesion: 0.40
@@ -136,12 +136,12 @@ Cohesion: 0.25
 Nodes (4): namespace, PFABehaviorBorrower(), PFADiag(), PFAFactionConfig()
 
 ### Community 22 - "Community 22"
-Cohesion: 0.09
-Nodes (23): EPFAAggression, FLifetimeProperty, FObjectInitializer, int32, AggressionModeToString(), APFACreatureBase(), BeginPlay(), GetLifetimeReplicatedProps() (+15 more)
+Cohesion: 0.10
+Nodes (22): EPFAAggression, FLifetimeProperty, FObjectInitializer, int32, AggressionModeToString(), APFACreatureBase(), BeginPlay(), GetLifetimeReplicatedProps() (+14 more)
 
 ### Community 23 - "Community 23"
 Cohesion: 0.19
-Nodes (16): AActor, APawn, APFACreatureController(), CanBeAlertedByTarget_Implementation(), CanBeHostileTowards(), IsValidTarget(), LogRuleVerdict(), OnPossess() (+8 more)
+Nodes (16): AActor, AFGCreature, APawn, APFACreatureController(), CanBeAlertedByTarget_Implementation(), CanBeHostileTowards(), IsValidTarget(), LogRuleVerdict() (+8 more)
 
 ### Community 24 - "Community 24"
 Cohesion: 0.39
@@ -180,24 +180,24 @@ Cohesion: 0.22
 Nodes (8): credits, file, label, model, rendered, status, task_id, type
 
 ## Knowledge Gaps
-- **115 isolated node(s):** `FObjectInitializer`, `UAnimSequence`, `int32`, `FObjectInitializer`, `AFGCharacterBase` (+110 more)
+- **115 isolated node(s):** `AFGCreature`, `FObjectInitializer`, `UAnimSequence`, `int32`, `FObjectInitializer` (+110 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **4 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `UWorld` connect `Community 11` to `Community 32`, `Community 22`?**
+- **Why does `UWorld` connect `Community 11` to `Community 32`?**
   _High betweenness centrality (0.059) - this node is a cross-community bridge._
-- **Why does `SpawnTestCommand()` connect `Community 22` to `Community 11`?**
+- **Why does `SpawnTestCommand()` connect `Community 11` to `Community 22`?**
   _High betweenness centrality (0.037) - this node is a cross-community bridge._
 - **Why does `ReadbackAggroFor()` connect `Community 11` to `Community 23`?**
   _High betweenness centrality (0.036) - this node is a cross-community bridge._
-- **What connects `FObjectInitializer`, `UAnimSequence`, `int32` to the rest of the system?**
+- **What connects `AFGCreature`, `FObjectInitializer`, `UAnimSequence` to the rest of the system?**
   _119 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 11` be split into smaller, more focused modules?**
-  _Cohesion score 0.12307692307692308 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.1168091168091168 - nodes in this community are weakly interconnected._
 - **Should `Community 22` be split into smaller, more focused modules?**
-  _Cohesion score 0.09259259259259259 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.09686609686609686 - nodes in this community are weakly interconnected._
 - **Should `Community 32` be split into smaller, more focused modules?**
   _Cohesion score 0.13071895424836602 - nodes in this community are weakly interconnected._
