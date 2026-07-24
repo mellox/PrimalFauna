@@ -7,7 +7,11 @@
 #include "Creature/FGCreatureAction.h"    // FCreatureActionTargetParams, ECreatureActionTargetSelectionType
 #include "DamageTypes/FGDamageType.h"     // UFGDamageType::mDamageAmount (public)
 #include "FGCharacterBase.h"              // ProcessHit param GetName()
+#include "FGHealthComponent.h"            // w18-11 health-delta damage verification
 #include "GameFramework/Pawn.h"           // GetPawn()->GetName()
+#include "GameFramework/Controller.h"     // w18-11 TakeDamage instigator
+#include "Components/PrimitiveComponent.h" // w18-11 synthetic-hit component fill
+#include "Engine/DamageEvents.h"          // w18-11 FPointDamageEvent
 
 namespace
 {
@@ -198,16 +202,69 @@ void UPFACreatureActionMelee::TryDirectMeleeHit()
 
 	if (HitCharacter && bInRange && bInCone)
 	{
-		// Synthetic hit at the target -- the base ProcessHit consumes the
-		// character + a hit location for damage/knockback; there is no real
-		// sweep trace to source one from on this path.
+		// Synthetic hit at the target -- there is no real sweep trace to
+		// source one from on this path. w18-11: FULLY populated (actor
+		// handle, component, trace endpoints) -- session 8 showed base
+		// ProcessHit applied KNOCKBACK but no damage; one candidate cause is
+		// the base damaging via HitResult.GetActor(), which the w18-10
+		// synthetic hit left null.
 		FHitResult SyntheticHit;
 		SyntheticHit.bBlockingHit = true;
 		SyntheticHit.Location = Target->GetActorLocation();
 		SyntheticHit.ImpactPoint = Target->GetActorLocation();
 		SyntheticHit.Normal = -ToTarget2D;
 		SyntheticHit.ImpactNormal = -ToTarget2D;
+		SyntheticHit.HitObjectHandle = FActorInstanceHandle(HitCharacter);
+		SyntheticHit.TraceStart = Creature->GetActorLocation();
+		SyntheticHit.TraceEnd = Target->GetActorLocation();
+		if (UPrimitiveComponent* TargetRoot = Cast<UPrimitiveComponent>(HitCharacter->GetRootComponent()))
+		{
+			SyntheticHit.Component = TargetRoot;
+		}
+
+		// w18-11 health-delta verification + standard-pipeline fallback.
+		// Session 8 in-game: CONNECTED dmg=20.0 logged repeatedly, knockback
+		// felt, HP unchanged -- so the closed-source base ProcessHit applies
+		// knockback but its damage application does not land from our call
+		// site (either damage lives in the unreachable private sweep, or the
+		// old null actor-handle starved it -- both closed-source). Rather
+		// than guess: measure the target's health across the base call and,
+		// ONLY if it did not drop, apply mDamageTypes ourselves via
+		// AActor::TakeDamage with a FPointDamageEvent (instigator = creature
+		// controller, causer = creature) -- the standard pipeline, so the
+		// HostileScaling contract (doc 06) holds on either path. Never both:
+		// the fallback is gated on the base having provably applied nothing.
+		UFGHealthComponent* TargetHealth = HitCharacter->GetHealthComponent();
+		const float HealthBefore = TargetHealth ? TargetHealth->GetCurrentHealth() : -1.0f;
+
 		ProcessHit(HitCharacter, SyntheticHit);
+
+		const float HealthAfterBase = TargetHealth ? TargetHealth->GetCurrentHealth() : -1.0f;
+		const bool bBaseApplied = TargetHealth && (HealthAfterBase < HealthBefore);
+		bool bFallbackApplied = false;
+		if (!bBaseApplied && TargetHealth)
+		{
+			AController* InstigatorController = Creature->GetController();
+			for (const TObjectPtr<UFGDamageType>& DamageType : mDamageTypes)
+			{
+				if (DamageType && DamageType->mDamageAmount > 0.0f)
+				{
+					FPointDamageEvent DamageEvent(DamageType->mDamageAmount, SyntheticHit, ToTarget2D, DamageType->GetClass());
+					HitCharacter->TakeDamage(DamageType->mDamageAmount, DamageEvent, InstigatorController, Creature);
+					bFallbackApplied = true;
+				}
+			}
+		}
+
+		if (PFADiag::IsEnabled())
+		{
+			const float HealthFinal = TargetHealth ? TargetHealth->GetCurrentHealth() : -1.0f;
+			UE_LOG(LogPrimalFauna, Display,
+				TEXT("[PFA] Sicklejaw action=Melee direct-hit RESULT target=%s health %.1f -> %.1f (baseApplied=%s fallbackApplied=%s)"),
+				*Target->GetName(), HealthBefore, HealthFinal,
+				bBaseApplied ? TEXT("true") : TEXT("false"),
+				bFallbackApplied ? TEXT("true") : TEXT("false"));
+		}
 	}
 	else if (PFADiag::IsEnabled())
 	{
