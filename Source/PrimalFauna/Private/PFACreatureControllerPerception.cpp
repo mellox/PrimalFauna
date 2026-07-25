@@ -220,7 +220,31 @@ void APFACreatureController::WireCreaturePerception(AFGCreature* PossessedCreatu
 
 void APFACreatureController::TickFocusSync()
 {
+	// w26-3: cheap live re-check so pfa.RotationMode can be A/B'd in-game
+	// without a respawn (no-op when the mode hasn't changed).
+	if (APFACreatureBase* ControlledCreature = Cast<APFACreatureBase>(GetPawn()))
+	{
+		ControlledCreature->ApplyRotationPolicy();
+	}
+
 	AActor* Target = GetCurrentTarget();
+
+	// w26-3 FOCUS GRACE: in-game (session-18) the current target flickers to
+	// null and back 1-2x/SECOND while a creature is actively engaging. With
+	// focus-driven rotation that would swing the body away and back every
+	// flicker, so hold the last valid target briefly and let genuine target
+	// loss settle out over the grace window instead.
+	const double Now = GetWorld() ? GetWorld()->GetTimeSeconds() : 0.0;
+	if (Target)
+	{
+		LastValidFocusTarget = Target;
+		LastValidFocusTimeSeconds = Now;
+	}
+	else if (LastValidFocusTarget.IsValid() && (Now - LastValidFocusTimeSeconds) < FocusGraceSeconds)
+	{
+		Target = LastValidFocusTarget.Get();
+	}
+
 	AActor* Previous = LastFocusTarget.Get();
 	if (Target == Previous)
 	{

@@ -152,6 +152,13 @@ private:
 	FTimerHandle FocusSyncTimerHandle;
 	TWeakObjectPtr<AActor> LastFocusTarget;
 
+	// w26-3 focus grace (see the .cpp): the native current-target flickers
+	// null and back ~1-2x/second during a live engagement; without this the
+	// focus-driven body yaw would swing away and back on every flicker.
+	TWeakObjectPtr<AActor> LastValidFocusTarget;
+	double LastValidFocusTimeSeconds = 0.0;
+	static constexpr double FocusGraceSeconds = 3.0;
+
 	// Repeating 30s timer driving LogCreatureStateHeartbeat; set once in
 	// WireCreaturePerception (guarded against re-set on re-possession), and
 	// auto-cleared by the world when this controller actor is destroyed on

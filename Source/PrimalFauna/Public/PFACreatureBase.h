@@ -106,12 +106,23 @@ public:
 	// gate (see _team/test-logs/2026-07-23-phase1-gate/ROOTCAUSE-*.txt).
 	void ClearNativeOrphanTimer();
 
+public:
+	// w26-3: applies the body-yaw mechanism selected by pfa.RotationMode
+	// (1 = controller-desired/focus-driven, 0 = orient-to-movement). Called
+	// from BeginPlay and re-checked by the controller's focus-sync timer, so
+	// the mode can be switched live in-game; a no-op when unchanged.
+	void ApplyRotationPolicy();
+
 protected:
 	// w18-3: next-tick spawn-position sanitizer (scheduled from BeginPlay,
 	// server-only). Lifts a creature whose feet ended below the terrain
 	// surface (lowland nest spawns) onto the ground. See the .cpp for the
 	// canopy-safe probe geometry and the always-on rescue log contract.
 	void RescueBuriedSpawn();
+
+	// w26-3: last pfa.RotationMode value actually applied (-1 = never), so
+	// the live re-check costs one int compare per 0.25s tick.
+	int32 LastAppliedRotationMode = -1;
 
 	// W1.6 (docs/08 packet, Phase-1 gate finding): fresh nest-spawned
 	// creatures were observed reading CurrentHealth=0/MaxHealth=200 (Section B

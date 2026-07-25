@@ -52,10 +52,22 @@ namespace
 	// slopes to ~45 deg; real lowland nest terrain reads ~1.0.
 	constexpr float BuriedWalkableNormalZ = 0.7f;
 
-	// w26-1: yaw rate for orient-to-movement. 360 deg/s = a predator can
-	// come about in one second; fast enough to keep a strafing player inside
-	// the 90-degree melee cone without looking like a turret.
+	// w26-1: yaw rate. 360 deg/s = a predator can come about in one second;
+	// fast enough to keep a strafing player inside the 90-degree melee cone
+	// without looking like a turret.
 	constexpr float CreatureYawRateDegPerSec = 360.0f;
+
+	// w26-3: which of UE's two mutually-exclusive yaw mechanisms drives the
+	// body. In-game evidence (session-18) killed mode 0 as the default: with
+	// orient-to-movement the body only turns while ACCELERATING, and these
+	// creatures move in ~200ms bursts with a target that flickers, so they
+	// never settle facing the player. Mode 1 aims at the controller's focus
+	// (set on the current target), which works standing still AND moving.
+	// Live-switchable so both can be judged in one session, no rebuild.
+	static TAutoConsoleVariable<int32> CVarPFARotationMode(
+		TEXT("pfa.RotationMode"), 1,
+		TEXT("Creature body-yaw mechanism. 1 (default) = controller-desired rotation (aims at the AI focus; turns while stationary). 0 = orient-to-movement (turns only while accelerating). Applies within ~0.25s, no respawn."),
+		ECVF_Default);
 
 	// w18-4 (cold-review recommendation): live kill-switch for the rescue
 	// TELEPORT (the probe + logging always run) -- follows the pfa.Diag
@@ -186,34 +198,7 @@ void APFACreatureBase::BeginPlay()
 	// the fix is bUseControllerDesiredRotation=true with
 	// bOrientRotationToMovement=false (mutually exclusive in
 	// UCharacterMovementComponent::PhysicsRotation -- pick one).
-	if (UCharacterMovementComponent* Movement = GetCharacterMovement())
-	{
-		const bool bOrientBefore = Movement->bOrientRotationToMovement;
-		const bool bYawBefore = bUseControllerRotationYaw;
-		const FRotator RateBefore = Movement->RotationRate;
-
-		Movement->bOrientRotationToMovement = true;
-		// YAW ONLY. Keep whatever pitch/roll rate the FG movement component
-		// shipped with: mAlignRotationToFloor (FGCreatureController.h:475 --
-		// "don't forget to set rotation rates in movement component to use
-		// this values! Only pitch is supported") dies if the pitch rate is
-		// 0, and a zero rate means "preserve current", not "force zero".
-		Movement->RotationRate = FRotator(RateBefore.Pitch, CreatureYawRateDegPerSec, RateBefore.Roll);
-		bUseControllerRotationYaw = false;
-
-		UE_LOG(LogPrimalFauna, Display,
-			TEXT("[PFA] %s: rotation policy -> orientToMovement %s->true, yawRate %.0f->%.0f deg/s (pitch/roll rate kept %.0f/%.0f), useControllerYaw %s->false"),
-			*GetName(),
-			bOrientBefore ? TEXT("true") : TEXT("false"),
-			RateBefore.Yaw, CreatureYawRateDegPerSec, RateBefore.Pitch, RateBefore.Roll,
-			bYawBefore ? TEXT("true") : TEXT("false"));
-	}
-	else
-	{
-		UE_LOG(LogPrimalFauna, Warning,
-			TEXT("[PFA] %s: no CharacterMovementComponent -- rotation policy NOT applied (creature may never face its target)."),
-			*GetName());
-	}
+	ApplyRotationPolicy();
 
 	// w18-3 buried-spawn rescue (in-game evidence 2026-07-24: nest spawns at
 	// lowland nests -- e.g. Test_5 at Z=-2756 -- left creatures present and
@@ -238,6 +223,54 @@ void APFACreatureBase::BeginPlay()
 	const int32 ConfiguredAggression = FMath::Clamp(
 		FPFAConfigStruct::GetActiveConfig(this).SicklejawAggression, 0, 2);
 	SetAggressionMode(static_cast<EPFAAggression>(ConfiguredAggression));
+}
+
+void APFACreatureBase::ApplyRotationPolicy()
+{
+	const int32 Mode = CVarPFARotationMode.GetValueOnGameThread() != 0 ? 1 : 0;
+	if (Mode == LastAppliedRotationMode)
+	{
+		return;
+	}
+
+	UCharacterMovementComponent* Movement = GetCharacterMovement();
+	if (!Movement)
+	{
+		UE_LOG(LogPrimalFauna, Warning,
+			TEXT("[PFA] %s: no CharacterMovementComponent -- rotation policy NOT applied (creature will never face its target)."),
+			*GetName());
+		LastAppliedRotationMode = Mode;
+		return;
+	}
+
+	const bool bOrientBefore = Movement->bOrientRotationToMovement;
+	const bool bDesiredBefore = Movement->bUseControllerDesiredRotation;
+	const FRotator RateBefore = Movement->RotationRate;
+
+	// The two mechanisms are mutually exclusive inside
+	// UCharacterMovementComponent::PhysicsRotation -- exactly one may be on.
+	// Controller-yaw stays off in both modes (APawn::FaceRotation would
+	// fight whichever one is driving).
+	Movement->bUseControllerDesiredRotation = (Mode == 1);
+	Movement->bOrientRotationToMovement = (Mode == 0);
+	bUseControllerRotationYaw = false;
+
+	// YAW ONLY. Keep whatever pitch/roll rate the FG movement component
+	// shipped with: mAlignRotationToFloor (FGCreatureController.h:475 --
+	// "don't forget to set rotation rates in movement component to use this
+	// values! Only pitch is supported") dies if the pitch rate is 0, and a
+	// zero rate means "preserve current", not "force zero".
+	Movement->RotationRate = FRotator(RateBefore.Pitch, CreatureYawRateDegPerSec, RateBefore.Roll);
+
+	UE_LOG(LogPrimalFauna, Display,
+		TEXT("[PFA] %s: rotation policy -> mode %d (%s): orientToMovement %s->%s, controllerDesired %s->%s, yawRate %.0f->%.0f (pitch/roll kept %.0f/%.0f)"),
+		*GetName(), Mode,
+		Mode == 1 ? TEXT("focus-driven, turns while stationary") : TEXT("orient-to-movement, turns only while accelerating"),
+		bOrientBefore ? TEXT("true") : TEXT("false"), Movement->bOrientRotationToMovement ? TEXT("true") : TEXT("false"),
+		bDesiredBefore ? TEXT("true") : TEXT("false"), Movement->bUseControllerDesiredRotation ? TEXT("true") : TEXT("false"),
+		RateBefore.Yaw, CreatureYawRateDegPerSec, RateBefore.Pitch, RateBefore.Roll);
+
+	LastAppliedRotationMode = Mode;
 }
 
 void APFACreatureBase::RescueBuriedSpawn()
