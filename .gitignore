@@ -1,3 +1,8 @@
 
 # FBX-embedded media unpack folders (importer side effect, never source)
 art/**/*.fbm/
+
+# Blender/Python bytecode + autosaves from the art scripts -- noise in every art commit
+__pycache__/
+*.pyc
+*.blend1
