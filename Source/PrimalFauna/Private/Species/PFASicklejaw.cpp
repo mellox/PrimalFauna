@@ -88,6 +88,16 @@ namespace
 	// ref pose whose tail droops below the feet plane lifts the body by the
 	// tail-to-feet gap (creature floats). This knob turns that residual
 	// visual failure into a console tweak + respawn instead of a rebuild.
+	// w32-2: yaw applied to the mesh component so the creature's authored
+	// forward (+Y in the rig: Jaw at y=+0.37, Tail05 at y=-0.67, all bones at
+	// x=0) lines up with the actor's forward (+X). -90 maps +Y onto +X.
+	// Live-tunable because "does it face me" is an eyeball judgement: respawn
+	// after changing, then bake the winning value into the default here.
+	static TAutoConsoleVariable<float> CVarPFAMeshYaw(
+		TEXT("pfa.MeshYaw"), -90.0f,
+		TEXT("Yaw (deg) applied to the Sicklejaw mesh component so its authored +Y forward matches the actor's +X forward. -90 is the derived value; try 90/0/180 if the creature still faces wrong. Respawn to apply."),
+		ECVF_Default);
+
 	static TAutoConsoleVariable<float> CVarPFAMeshZOffset(
 		TEXT("pfa.MeshZOffset"), 0.0f,
 		TEXT("Additional Z offset (cm) applied to the Sicklejaw mesh after feet planting. Negative sinks, positive lifts. Respawn to apply."),
@@ -357,7 +367,38 @@ void APFASicklejaw::BeginPlay()
 	const float FeetLocalZ = MeasuredBounds.Origin.Z - MeasuredBounds.BoxExtent.Z;
 	MeshComponent->SetRelativeLocation(FVector(0.0f, 0.0f,
 		-CapsuleHalfForMesh - ScaleFactor * FeetLocalZ + CVarPFAMeshZOffset.GetValueOnGameThread()));
+
+	// ---- w32-2 MESH FACING. User, in game: "The creatures do turn, they just
+	// don't face me. Kinda like their asset front is not at where they face."
+	// That sentence moved this from "rotation is broken" (which I had been
+	// chasing through the controller for two builds) to "rotation works and the
+	// mesh is mounted at the wrong yaw" -- a different bug with a different fix.
+	//
+	// Measured rather than guessed: in the source rig the Jaw sits at y=+0.37m
+	// and Tail05 at y=-0.67m, with EVERY bone at x=0. The creature is authored
+	// facing +Y. UE's imported bounds agree (176cm along Y, 67cm across X). An
+	// actor's forward is +X, so the mesh needs a -90 yaw to line its nose up
+	// with the direction the actor is actually facing -- and we never set one,
+	// so the body pointed 90 degrees off the way it was travelling and looking.
+	//
+	// CVar-tunable because facing is judged by eye, not by arithmetic: if -90 is
+	// the wrong sign for this asset, `pfa.MeshYaw 90` settles it in-game in
+	// seconds with no rebuild, then the value gets baked here (the same
+	// live-tune-then-bake pattern as the laser rifle's aim correction).
+	const float MeshYawDeg = CVarPFAMeshYaw.GetValueOnGameThread();
+	const FRotator OldMeshRot = MeshComponent->GetRelativeRotation();
+	MeshComponent->SetRelativeRotation(FRotator(0.0f, MeshYawDeg, 0.0f));
 	MeshComponent->UpdateBounds();
+
+	// Log both forward vectors so the log alone says whether they agree: the dot
+	// is +1 when the mesh's nose points where the actor is facing.
+	const FVector ActorForward = GetActorForwardVector();
+	const FVector MeshForward = MeshComponent->GetComponentTransform().TransformVectorNoScale(FVector::YAxisVector);
+	UE_LOG(LogPrimalFauna, Display,
+		TEXT("[PFA] %s: mesh yaw %s -> %.0f deg (cvar pfa.MeshYaw); actorFwd=%s meshNoseFwd=%s dot=%.2f (want ~+1.00)"),
+		*GetName(), *OldMeshRot.ToCompactString(), MeshYawDeg,
+		*ActorForward.ToCompactString(), *MeshForward.ToCompactString(),
+		FVector::DotProduct(ActorForward.GetSafeNormal2D(), MeshForward.GetSafeNormal2D()));
 
 	UE_LOG(LogPrimalFauna, Display,
 		TEXT("[PFA] %s: placeholder mesh assigned+scaled (%s): measuredHeight=%.2fcm scaleFactor=%.1f (%s) -> compR=%.0fcm worldScaleZ=%.1f relLoc=(%s -> %s) capsuleHalf=%.0f"),
