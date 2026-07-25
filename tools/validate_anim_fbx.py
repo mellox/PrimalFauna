@@ -43,6 +43,10 @@ from mathutils import Vector
 
 FOOT_PATTERNS = ("foot", "ankle", "toebase", "toe_")
 ROOT_PATTERNS = ("root",)
+# anything matching these is ALLOWED at/below the ground plane -- it is what stands on it
+GROUNDED_PATTERNS = ("foot", "ankle", "toe", "finger", "hand", "root")
+GROUND_PENETRATION_WARN_M = 0.005     # a bone this far under the floor: report it
+GROUND_PENETRATION_FAIL_M = 0.030     # this far under: the mesh is visibly through it
 
 LEFT_TOKENS = ("left", "_l_", ".l", "-l-", "l_")
 RIGHT_TOKENS = ("right", "_r_", ".r", "-r-", "r_")
@@ -88,13 +92,38 @@ def parse_args():
         sys.exit(1)
     args = argv[argv.index("--") + 1:]
     fbx = args[0]
-    expect_speed = None
-    report = None
+    opt = {"expect_speed": None, "report": None, "ref_rig": None,
+           "sickle": None, "claw_down": False}
     if "--expect-speed-cms" in args:
-        expect_speed = float(args[args.index("--expect-speed-cms") + 1])
+        opt["expect_speed"] = float(args[args.index("--expect-speed-cms") + 1])
     if "--report" in args:
-        report = args[args.index("--report") + 1]
-    return fbx, expect_speed, report
+        opt["report"] = args[args.index("--report") + 1]
+    if "--ref-rig" in args:
+        opt["ref_rig"] = args[args.index("--ref-rig") + 1]
+    if "--sickle-digit" in args:
+        opt["sickle"] = args[args.index("--sickle-digit") + 1]
+    if "--claw-down" in args:
+        opt["claw_down"] = True
+    return fbx, opt
+
+
+def reference_joints(ref_fbx):
+    """Rest-pose joint positions from the SKELETAL MESH fbx -- the skeleton UE actually
+    binds to. Needed because an animation-only FBX does NOT round-trip a rest pose:
+    with no skin deformer in the file, Blender's importer takes the bones' rest from
+    the node defaults, which is the pose at export time. Measured on this rig, the anim
+    FBXs' apparent rest sits up to 7.3 cm from the real one -- so 'is frame 1 the
+    reference pose?' cannot be asked of an animation file on its own, and the check
+    that tried (comparing matrix_basis to identity at frame 1) was a TAUTOLOGY: the
+    importer defines rest AS frame 1, so identity is exactly what it always found."""
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    bpy.ops.import_scene.fbx(filepath=ref_fbx)
+    arms = [o for o in bpy.data.objects if o.type == "ARMATURE"]
+    if len(arms) != 1:
+        return None
+    armature = arms[0]
+    return {pb.name: (armature.matrix_world @ pb.head).copy()
+            for pb in armature.pose.bones}
 
 
 def sample_world_positions(armature, bone_name, frames):
@@ -108,10 +137,21 @@ def sample_world_positions(armature, bone_name, frames):
 
 
 def main():
-    fbx_path, expect_speed_cms, report_path = parse_args()
+    fbx_path, opt = parse_args()
+    expect_speed_cms, report_path = opt["expect_speed"], opt["report"]
     if not os.path.isfile(fbx_path):
         fail("FBX not found: %s" % fbx_path)
         sys.exit(1)
+
+    ref_joints = None
+    if opt["ref_rig"]:
+        if os.path.isfile(opt["ref_rig"]):
+            ref_joints = reference_joints(opt["ref_rig"])
+            log("reference skeleton loaded from %s (%d bones)"
+                % (os.path.basename(opt["ref_rig"]), len(ref_joints or {})))
+        else:
+            warn("--ref-rig not found (%s) -- blend-safety cannot be judged against "
+                 "the real skeleton" % opt["ref_rig"])
 
     bpy.ops.wm.read_factory_settings(use_empty=True)
     bpy.ops.import_scene.fbx(filepath=fbx_path)
@@ -155,19 +195,33 @@ def main():
         log("ADDITIVE layer detected -- gait checks (dead-leg/antiphase/speed/cadence) "
             "do not apply; judging blend-safety instead")
 
+        # BLEND SAFETY, measured against the REAL skeleton (see reference_joints).
+        # The old version of this check read matrix_basis at frame 1 and compared it to
+        # identity. Because Blender's importer defines an anim-only FBX's rest pose AS
+        # frame 1, that comparison could never fail -- it passed 12 layers, one of which
+        # (Add_Saccade) was shipping a foot 34.8 cm out of place.
         bpy.context.scene.frame_set(frames[0])
-        worst_bone, worst_dev = None, 0.0
-        for pose_bone in armature.pose.bones:
-            translation = pose_bone.matrix_basis.to_translation().length
-            angle = abs(pose_bone.matrix_basis.to_quaternion().angle)
-            deviation = max(translation, angle)
-            if deviation > worst_dev:
-                worst_bone, worst_dev = pose_bone.name, deviation
-        log("frame-1 deviation from reference pose: %.6f (worst bone: %s)"
-            % (worst_dev, worst_bone or "none"))
-        if worst_dev > 0.02:
-            fail("additive does not START at the reference pose (worst %.4f on '%s') -- it will "
-                 "POP the instant it blends in" % (worst_dev, worst_bone))
+        if ref_joints:
+            worst = (0.0, None)
+            for pose_bone in armature.pose.bones:
+                ref = ref_joints.get(pose_bone.name)
+                if ref is None:
+                    continue
+                dev = ((armature.matrix_world @ pose_bone.head) - ref).length
+                if dev > worst[0]:
+                    worst = (dev, pose_bone.name)
+            log("frame-1 joint deviation from the SKELETON's reference pose: "
+                "%.4fm (worst bone: %s)" % (worst[0], worst[1] or "none"))
+            if worst[0] > 0.01:
+                fail("additive does not START at the skeleton's reference pose (worst "
+                     "%.4fm on '%s') -- as an additive layer that is a CONSTANT offset "
+                     "added to every clip it rides over, not just a pop on blend-in. "
+                     "Usual cause: the export baked a stale pose onto bones this layer "
+                     "does not key." % (worst[0], worst[1]))
+        else:
+            warn("additive blend-safety NOT checked: pass --ref-rig <SK_*.fbx>. "
+                 "Checking matrix_basis at frame 1 instead is a tautology on an "
+                 "animation-only FBX and tells you nothing.")
 
         moved_any = False
         foot_movers = []
@@ -186,6 +240,17 @@ def main():
         else:
             log("feet correctly untouched by this additive layer")
 
+        # The additive path used to return WITHOUT writing a report, so a report file
+        # from an earlier sweep survived on disk and read as current -- including FAILs
+        # from the era when additives were (wrongly) judged by the gait rules. A stale
+        # report is worse than no report: it is evidence that lies.
+        if report_path:
+            os.makedirs(os.path.dirname(report_path), exist_ok=True)
+            with open(report_path, "w", encoding="utf-8") as handle:
+                json.dump({"source_fbx": fbx_path, "action": action.name,
+                           "frames": frame_count, "fps": fps, "additive": True,
+                           "failures": failures, "warnings": warnings}, handle, indent=2)
+            log("report written: %s" % report_path)
         log("SUMMARY failures=%d warnings=%d" % (len(failures), len(warnings)))
         if failures:
             log("VERDICT: REJECT -- do not import this layer")
@@ -270,6 +335,72 @@ def main():
     if abs(lowest_z) > GROUND_PLANE_TOLERANCE_M:
         warn("lowest foot sits %.3fm from the rig's ground plane -- the creature will look like "
              "it floats or sinks unless the runtime foot-plant compensates" % lowest_z)
+
+    # --- 4b. GROUND PENETRATION of everything that is NOT a foot -------------
+    # Added W2.9. Check 4 above asks whether the feet REACH the ground; nothing asked
+    # whether the rest of the animal stays above it. Measured across the shipped set,
+    # five clips had the tail tip 4.5-22.7 cm UNDER the floor (Death -22.7, Stagger
+    # -20.4, Lunge -18.9, Hurt -11.0, Bite -4.6) and every one of them was ACCEPTed by
+    # this validator. The number even existed in the authoring self-check -- but only
+    # for the ten clips authored AFTER the measurement was added, which is the whole
+    # lesson: a measurement that does not run on everything is not a gate.
+    deepest = (1e9, None, None)
+    for name in bone_names:
+        if any(p in name.lower() for p in GROUNDED_PATTERNS):
+            continue
+        for frame, position in zip(frames, sample_world_positions(armature, name, frames)):
+            if position.z < deepest[0]:
+                deepest = (position.z, name, frame)
+    log("deepest non-foot bone: %s at %.3fm (frame %s)"
+        % (deepest[1], deepest[0], deepest[2]))
+    if deepest[0] < -GROUND_PENETRATION_FAIL_M:
+        fail("GROUND PENETRATION: '%s' reaches %.3fm BELOW the ground plane at frame %s "
+             "(limit %.3fm). Bones sit inside the mesh, so the surface is deeper still -- "
+             "this reads as the creature clipping through the floor."
+             % (deepest[1], deepest[0], deepest[2], -GROUND_PENETRATION_FAIL_M))
+    elif deepest[0] < -GROUND_PENETRATION_WARN_M:
+        warn("'%s' dips %.3fm below the ground plane at frame %s -- acceptable for a body "
+             "part that is meant to rest on the ground, wrong for anything else"
+             % (deepest[1], deepest[0], deepest[2]))
+
+    # --- 4c. SICKLE CLAW (digit II) -----------------------------------------
+    # Research 2.3 and 6 [M]: the dromaeosaur sickle claw is held CLEAR of the ground at
+    # all times except the pin. Measured relatively rather than absolutely, because a
+    # childless bone's tip does not survive the FBX round trip -- but "digit II's last
+    # joint is the highest of the three toes" is exactly the research requirement and it
+    # is round-trip safe. Skipped unless the caller names the digit: the token is
+    # species-specific and a gate that guesses is a gate that cries wolf.
+    if opt["sickle"]:
+        for side in ("L", "R"):
+            distal = [n for n in bone_names
+                      if "_toe" in n.lower() and n.endswith("_02") and side_of(n) == side]
+            if len(distal) < 2:
+                continue
+            mins = {}
+            for name in distal:
+                mins[name] = min(p.z for p in sample_world_positions(armature, name, frames))
+            sickle = [n for n in distal if opt["sickle"] in n]
+            if not sickle:
+                warn("no digit matching '%s' on side %s" % (opt["sickle"], side))
+                continue
+            sk = sickle[0]
+            others = {n: v for n, v in mins.items() if n != sk}
+            highest = max(mins, key=lambda n: mins[n])
+            log("%s toes' lowest joint Z: %s  (sickle=%s)"
+                % (side, ", ".join("%s %.3f" % (n.split("_")[-2], mins[n])
+                                   for n in sorted(mins)), sk.split("_")[-2]))
+            if opt["claw_down"]:
+                log("  claw-down clip: digit II is MEANT to come down here, reported only")
+            elif highest != sk:
+                fail("digit II (%s) is NOT the highest toe (%s sits %.3fm higher) -- the "
+                     "sickle claw must ride clear of the ground at all times except the "
+                     "pin (research 2.3/6). A claw ploughing alongside the weight-bearing "
+                     "digits is the single cheapest 'this is a raptor' read, thrown away."
+                     % (sk, highest, mins[highest] - mins[sk]))
+            elif mins[sk] - max(others.values()) < 0.01:
+                warn("digit II (%s) is the highest toe but only by %.3fm -- the clearance "
+                     "will not read at gameplay distance"
+                     % (sk, mins[sk] - max(others.values())))
 
     # --- 5. implied ground speed --------------------------------------------
     implied_speeds = []
@@ -383,6 +514,7 @@ def main():
             "foot_travel_m": {k: round(v, 4) for k, v in travel.items()},
             "phase_offset_half_cycles": round(phase, 3),
             "lowest_foot_z_m": round(lowest_z, 4),
+            "deepest_nonfoot": [round(deepest[0], 4), deepest[1], deepest[2]],
             "implied_ground_speed_cms": round(implied_avg, 1),
             "failures": failures,
             "warnings": warnings,
