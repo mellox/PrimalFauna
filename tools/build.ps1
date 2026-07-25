@@ -24,8 +24,16 @@ anything, and each one has silently broken a build on this machine before:
      if a new call hit a non-exported shipping symbol
      ([[sf-shipping-export-trap]]).
 
+  5. AND THE MARKER SAYS NOTHING ABOUT ASSETS. A clip that failed to import,
+     or a cook that skipped new content, ships silently -- correct DLL, and the
+     creature just quietly falls back down its animation chain. Every authored
+     clip is asserted present in the cook. (This cannot be checked in the
+     .pak/.ucas: IoStore hashes asset names, so a string search there reads
+     False even for clips that demonstrably work in game.)
+
 Usage:  powershell -File tools\build.ps1  [-SkipSync] [-SkipImportCheck]
-Exit 0 only if the build succeeded AND the marker is in the deployed DLL.
+Exit 0 only if the build succeeded, the marker is in the deployed DLL, and
+every authored clip is in the cook.
 #>
 param(
     [switch]$SkipSync,
@@ -33,6 +41,7 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+$BuildStart = Get-Date
 
 $Repo      = 'C:\Claude\Projects\PrimalFauna'
 $SmlRoot   = 'C:\Claude\Projects\SatisfactoryModLoader'
@@ -115,6 +124,34 @@ if (-not (Test-Path $DeployDll)) { Fail "deployed DLL missing at $DeployDll" }
 $hit = Select-String -Path $DeployDll -Pattern $Marker -Encoding unicode -ErrorAction SilentlyContinue
 if (-not $hit) { Fail "marker $Marker NOT found in the deployed DLL -- the game would load an older build" }
 Write-Host "PFABUILD MARKER_${Marker}=True in $(Split-Path $DeployDll -Leaf)"
+
+# --- gate 4c: CONTENT freshness. The marker proves the CODE is fresh and says
+# nothing about assets. A clip that failed to import, or a cook that skipped
+# new content, ships silently: the DLL is right, the creature just quietly
+# falls back down its animation chain and the log says MISSING. Assert every
+# source clip made it through the cook, and that the cook ran in THIS build.
+# (Cannot be checked in the .pak/.ucas -- IoStore hashes names, so a plain
+# string search there returns False even for clips known to work in game.)
+$AnimSrcDir = Join-Path $Repo 'art\wip\sicklejaw-d-v2'
+$CookAnimDir = Join-Path $SmlRoot 'Mods\PrimalFauna\Saved\Cooked\Windows\FactoryGame\Mods\PrimalFauna\Content\Sicklejaw\Anims'
+if ((Test-Path $AnimSrcDir) -and (Test-Path $CookAnimDir)) {
+    $srcClips = Get-ChildItem $AnimSrcDir -Filter 'A_Sicklejaw_*.fbx' -EA SilentlyContinue
+    $cookClips = Get-ChildItem $CookAnimDir -Filter 'A_Sicklejaw_*.uexp' -EA SilentlyContinue
+    $cookNames = @($cookClips | ForEach-Object { $_.BaseName })
+    $missingClips = @($srcClips | Where-Object { $cookNames -notcontains $_.BaseName })
+    if ($missingClips.Count -gt 0) {
+        Fail ("clips authored but NOT in the cook: " + ($missingClips.BaseName -join ', ') +
+              " -- re-run tools\import_sicklejaw_ue.py, then rebuild")
+    }
+    $staleClips = @($cookClips | Where-Object { $_.LastWriteTime -lt $BuildStart })
+    if ($staleClips.Count -eq $cookClips.Count -and $cookClips.Count -gt 0) {
+        Write-Host ("PFABUILD NOTE: no clip was re-cooked this build ({0} clips, all older than build start) -- fine if content did not change." -f $cookClips.Count)
+    }
+    Write-Host ("PFABUILD content OK: {0}/{1} authored clips present in the cook" -f $cookClips.Count, $srcClips.Count)
+}
+else {
+    Write-Host 'PFABUILD NOTE: anim source or cook dir not found -- content freshness NOT checked' -ForegroundColor Yellow
+}
 
 # --- gate 4b: shipping-export check -------------------------------------
 if (-not $SkipImportCheck) {
