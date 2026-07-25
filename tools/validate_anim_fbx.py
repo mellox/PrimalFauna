@@ -142,6 +142,57 @@ def main():
     frames = list(range(start, end + 1))
     bone_names = [b.name for b in armature.pose.bones]
 
+    # --- ADDITIVE LAYERS take a different gate entirely -----------------------
+    # An additive layer (breathing, head saccades, tail drift, per-mood tail
+    # attitude) is designed to blend OVER a base clip. It deliberately keys no
+    # foot bones -- if it did, it would inject that foot motion into every clip
+    # it rides on. Judging it by the gait rules (dead-leg, antiphase, ground
+    # speed, cadence) is a category error, and mine was failing 12 correct
+    # assets for it. The real correctness criteria for an additive are:
+    # something moves, feet DON'T, and frame 1 sits at the reference pose so
+    # blending in produces no pop.
+    if "add_" in os.path.basename(fbx_path).lower():
+        log("ADDITIVE layer detected -- gait checks (dead-leg/antiphase/speed/cadence) "
+            "do not apply; judging blend-safety instead")
+
+        bpy.context.scene.frame_set(frames[0])
+        worst_bone, worst_dev = None, 0.0
+        for pose_bone in armature.pose.bones:
+            translation = pose_bone.matrix_basis.to_translation().length
+            angle = abs(pose_bone.matrix_basis.to_quaternion().angle)
+            deviation = max(translation, angle)
+            if deviation > worst_dev:
+                worst_bone, worst_dev = pose_bone.name, deviation
+        log("frame-1 deviation from reference pose: %.6f (worst bone: %s)"
+            % (worst_dev, worst_bone or "none"))
+        if worst_dev > 0.02:
+            fail("additive does not START at the reference pose (worst %.4f on '%s') -- it will "
+                 "POP the instant it blends in" % (worst_dev, worst_bone))
+
+        moved_any = False
+        foot_movers = []
+        for name in bone_names:
+            positions = sample_world_positions(armature, name, frames)
+            span = max((positions[i] - positions[0]).length for i in range(len(positions)))
+            if span > 0.002:
+                moved_any = True
+                if any(p in name.lower() for p in FOOT_PATTERNS):
+                    foot_movers.append("%s(%.3fm)" % (name, span))
+        if not moved_any:
+            fail("additive layer animates NOTHING -- every bone is static across the clip")
+        if foot_movers:
+            fail("additive layer moves FOOT bones (%s) -- that motion would be injected into "
+                 "every clip this layer rides over" % ", ".join(foot_movers))
+        else:
+            log("feet correctly untouched by this additive layer")
+
+        log("SUMMARY failures=%d warnings=%d" % (len(failures), len(warnings)))
+        if failures:
+            log("VERDICT: REJECT -- do not import this layer")
+            sys.exit(1)
+        log("VERDICT: ACCEPT (additive)")
+        return
+
     # --- locate feet (prefer the deepest foot-ish bone per side) -------------
     feet = {}
     for side in ("L", "R"):
@@ -255,6 +306,70 @@ def main():
                 fail("animation implies %.0f cm/s but the creature is configured to move at %.0f cm/s "
                      "(%.0f%% off) -- feet WILL slide in game. Fix the clip's cadence or the move speed."
                      % (implied_avg, expect_speed_cms, abs(ratio - 1.0) * 100.0))
+
+    # --- 6. CADENCE (Alexander's stride relation) ----------------------------
+    # Added after the behaviour research found Walk ~52% and Run ~29% too fast
+    # in STEP FREQUENCY while both still passed every check above. They passed
+    # because foot-slide only proves stride_length x frequency == speed: a
+    # creature taking tiny mincing steps very fast covers exactly the right
+    # ground and reads completely wrong. Alexander (1976) relates stride length
+    # to hip height and speed across animals of wildly different size:
+    #     S / h = 2.3 * (v^2 / (g*h))^0.3
+    # so the correct cycle duration for a given speed falls straight out. This
+    # is the difference between "moves at the right speed" and "moves like an
+    # animal of this size".
+    GRAVITY = 9.81
+    CADENCE_TOLERANCE = 0.25   # +/-25% before the gait reads as wrong-sized
+
+    if implied_speeds and implied_avg > 1.0:
+        # Hip height = the pelvis/hip bone's rest height above the lowest foot,
+        # which is the 'h' Alexander's relation is defined against.
+        hip_bone = None
+        for name in bone_names:
+            lowered = name.lower()
+            if "pelvis" in lowered or ("hip" in lowered and side_of(name) is None):
+                hip_bone = name
+                break
+        if hip_bone:
+            bpy.context.scene.frame_set(frames[0])
+            hip_world = armature.matrix_world @ armature.pose.bones[hip_bone].head
+            hip_height_m = hip_world.z - lowest_z
+            speed_ms = implied_avg / 100.0
+            if hip_height_m > 0.05 and speed_ms > 0.05:
+                froude = (speed_ms * speed_ms) / (GRAVITY * hip_height_m)
+                stride_m = 2.3 * hip_height_m * (froude ** 0.3)
+                expected_cycle_s = stride_m / speed_ms
+                actual_cycle_s = duration
+                ratio = actual_cycle_s / expected_cycle_s
+                log("cadence: hip height %.2fm, Froude %.2f -> expected stride %.2fm, "
+                    "expected cycle %.2fs vs actual %.2fs (ratio %.2f)"
+                    % (hip_height_m, froude, stride_m, expected_cycle_s, actual_cycle_s, ratio))
+                # Gaits that are DELIBERATELY off natural cadence: a stalk is
+                # slow and careful by intent, a limp is asymmetric by injury.
+                # Alexander's relation describes efficient natural locomotion,
+                # so judging these against it is a category error -- report the
+                # number, don't fail the clip.
+                deliberate = any(token in os.path.basename(fbx_path).lower()
+                                 for token in ("prowl", "stalk", "sneak", "limp", "creep"))
+                if abs(ratio - 1.0) > CADENCE_TOLERANCE and deliberate:
+                    warn("cadence is %.0f%% off the natural stride for this speed, but this clip "
+                         "reads as a DELIBERATE gait (stalk/limp) -- off-cadence is the intent, "
+                         "so this is reported, not failed. Confirm it looks purposeful, not broken."
+                         % (abs(ratio - 1.0) * 100.0))
+                elif abs(ratio - 1.0) > CADENCE_TOLERANCE:
+                    faster_slower = "TOO FAST" if ratio < 1.0 else "TOO SLOW"
+                    fail("cadence %s: this clip steps at %.2fs/cycle but an animal with a %.2fm "
+                         "hip height moving at %.0f cm/s strides every %.2fs (%.0f%% off). The "
+                         "speed is right but the STEP SIZE is wrong -- it will read as mincing "
+                         "or lumbering. Re-time to ~%d frames @%dfps."
+                         % (faster_slower, actual_cycle_s, hip_height_m, implied_avg,
+                            expected_cycle_s, abs(ratio - 1.0) * 100.0,
+                            int(round(expected_cycle_s * fps)), fps))
+            else:
+                warn("cadence check skipped: hip height %.2fm / speed %.2fm/s out of range"
+                     % (hip_height_m, speed_ms))
+        else:
+            warn("cadence check skipped: no pelvis/hip bone found to measure hip height")
 
     # --- verdict -------------------------------------------------------------
     if report_path:

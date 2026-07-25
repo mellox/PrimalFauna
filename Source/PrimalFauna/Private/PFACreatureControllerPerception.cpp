@@ -218,6 +218,76 @@ void APFACreatureController::WireCreaturePerception(AFGCreature* PossessedCreatu
 	}
 }
 
+void APFACreatureController::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	// The mode CVar lives in PFACreatureBase.cpp's anonymous namespace; look
+	// it up by name so neither file has to export it.
+	static IConsoleVariable* RotationModeVar =
+		IConsoleManager::Get().FindConsoleVariable(TEXT("pfa.RotationMode"));
+	const int32 Mode = RotationModeVar ? RotationModeVar->GetInt() : 2;
+
+	APawn* ControlledPawn = GetPawn();
+	if (!ControlledPawn)
+	{
+		return;
+	}
+
+	// Focus target with the same grace window the focus sync uses, so a
+	// flickering native target can't make the body swing away and back.
+	AActor* Target = GetCurrentTarget();
+	if (!Target)
+	{
+		Target = LastValidFocusTarget.Get();
+	}
+
+	// ---- Diagnostic (throttled to ~1Hz, diag-gated): the ONE readout that
+	// explains why modes 0/1 are inert. If desiredYaw and controlYaw agree but
+	// pawnYaw never converges, the movement component is ignoring the
+	// controller; if controlYaw itself tracks pawnYaw, the base's
+	// UpdateControlRotation is slaving control rotation TO the pawn (the
+	// bSetControlRotationFromPawnOrientation pattern) and no focus we set can
+	// ever steer it.
+	RotationDiagAccumulator += DeltaTime;
+	if (PFADiag::IsEnabled() && Target && RotationDiagAccumulator >= 1.0f)
+	{
+		RotationDiagAccumulator = 0.0f;
+		FVector ToTarget = Target->GetActorLocation() - ControlledPawn->GetActorLocation();
+		ToTarget.Z = 0.0f;
+		const float DesiredYaw = ToTarget.Rotation().Yaw;
+		const float PawnYaw = ControlledPawn->GetActorRotation().Yaw;
+		UE_LOG(LogPrimalFauna, Display,
+			TEXT("[PFA] %s: yaw-diag mode=%d desired=%.0f pawn=%.0f control=%.0f delta=%.0f target=%s"),
+			*GetName(), Mode, DesiredYaw, PawnYaw, GetControlRotation().Yaw,
+			FMath::FindDeltaAngleDegrees(PawnYaw, DesiredYaw), *Target->GetName());
+	}
+
+	if (Mode != 2 || !Target)
+	{
+		return;
+	}
+
+	// ---- Mode 2: drive the body yaw ourselves, at the same rate the other
+	// modes were configured for. Yaw only -- pitch/roll are left to the game
+	// (mAlignRotationToFloor territory).
+	FVector ToTarget = Target->GetActorLocation() - ControlledPawn->GetActorLocation();
+	ToTarget.Z = 0.0f;
+	if (ToTarget.SizeSquared() < 1.0f)
+	{
+		return;
+	}
+
+	const FRotator CurrentRotation = ControlledPawn->GetActorRotation();
+	const FRotator DesiredRotation(CurrentRotation.Pitch, ToTarget.Rotation().Yaw, CurrentRotation.Roll);
+	if (FMath::Abs(FMath::FindDeltaAngleDegrees(CurrentRotation.Yaw, DesiredRotation.Yaw)) < 1.0f)
+	{
+		return;   // already facing; don't fight other systems for sub-degree noise
+	}
+	ControlledPawn->SetActorRotation(
+		FMath::RInterpConstantTo(CurrentRotation, DesiredRotation, DeltaTime, ManualYawRateDegPerSec));
+}
+
 void APFACreatureController::TickFocusSync()
 {
 	// w26-3: cheap live re-check so pfa.RotationMode can be A/B'd in-game

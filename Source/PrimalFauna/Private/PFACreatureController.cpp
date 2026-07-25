@@ -57,6 +57,11 @@ void APFACreatureController::LogRuleVerdict(const AFGCreature* SelfCreature, con
 APFACreatureController::APFACreatureController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
+	// w27-1: mode-2 body yaw is driven from Tick, so it must actually run.
+	// Set explicitly rather than trusting an inherited default.
+	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bStartWithTickEnabled = true;
+
 }
 
 // ===========================================================================

@@ -46,6 +46,17 @@ public:
 	// existing override automatically).
 	virtual void OnPossess(APawn* InPawn) override;
 
+	// w27-1: per-frame body yaw toward the target (pfa.RotationMode 2, the new
+	// default). Two attempts at using UE's built-in mechanisms both failed
+	// in-game: orient-to-movement only turns while accelerating (and these
+	// creatures move in bursts), and controller-desired rotation was found to
+	// be ALREADY ENABLED before we set it (log: "controllerDesired true->true")
+	// yet the body still never turned -- so the closed-source
+	// AFGCreatureController::UpdateControlRotation override is not consuming
+	// our AI focus. Rather than keep guessing at engine plumbing, mode 2 sets
+	// the pawn's yaw itself at a fixed rate; modes 0/1 are kept for A/B.
+	virtual void Tick(float DeltaTime) override;
+
 	// Doc 02 §2 rules 1-8, evaluated in order, first match wins. See the .cpp
 	// for the full ladder and per-rule [PFA] verdict logging.
 	virtual bool CanBeHostileTowards(const AActor* actor) const override;
@@ -158,6 +169,12 @@ private:
 	TWeakObjectPtr<AActor> LastValidFocusTarget;
 	double LastValidFocusTimeSeconds = 0.0;
 	static constexpr double FocusGraceSeconds = 3.0;
+
+	// w27-1 manual-yaw mode: turn rate and the ~1Hz throttle for the yaw
+	// diagnostic (desired vs pawn vs control rotation -- the readout that
+	// identifies which layer is swallowing the rotation).
+	static constexpr float ManualYawRateDegPerSec = 360.0f;
+	float RotationDiagAccumulator = 0.0f;
 
 	// Repeating 30s timer driving LogCreatureStateHeartbeat; set once in
 	// WireCreaturePerception (guarded against re-set on re-possession), and

@@ -100,6 +100,256 @@ def mirror_name(name):
     return None
 
 
+# --- skin-weight gate ------------------------------------------------------
+# Added W2.7, after the user reported "a disconnect in the leg at times". The cause
+# was NOT a hard weight boundary: `Hip`/`Pelvis` are 4.58 cm stubs while `L/R_Thigh`
+# are 28 cm bones, so heat weighting gave the two thigh bones the whole pelvic mass
+# -- 233 verts ABOVE the hip line were majority leg-driven, and every clip swings the
+# femur 59-92 deg, dragging torso geometry away with the leg.
+#
+# Note deliberately: a purely GEOMETRIC heuristic cannot catch that. The thigh bone
+# really is close to the flank -- only anatomy says it must not own it, and every
+# distance/reach ratio I calibrated scored the broken bind and the fixed bind the
+# same. So the gate EXERCISES the rig instead of inspecting it: flex each joint
+# through a plausible range, skin the mesh, and measure how far the surface is pulled
+# apart. That is scale-free (gain is judged against the bone's own length), needs no
+# per-species tuning, and generalises to every joint of every future creature.
+MAX_INFLUENCES = 12          # UE5 skeletal mesh hard limit
+WEIGHT_SUM_TOL = 1e-3
+HARD_BOUNDARY_FAIL_PCT = 0.5   # % of verts allowed to be hard-1.0 on a dominance seam
+
+# LIMB OVERHANG -- the check that categorically separates the broken bind from the
+# fixed one (233 verts -> 0). A limb chain may cap back over its own root joint by
+# about a third of the root bone's length; past that it is holding the BODY, and the
+# body will be dragged away with the limb. Scale-free (judged against the bone's own
+# length) and computed from the chain, so it needs no per-species tuning.
+LIMB_ROOT_ROLES = {
+    "thigh": ("thigh", "upperleg", "upper_leg", "femur"),
+    "upperarm": ("upperarm", "upper_arm", "humerus"),
+}
+OVERHANG_FRAC_OF_LEN = 0.30
+OVERHANG_FAIL_PCT = 0.25     # % of all verts allowed to be limb-majority past that line
+
+# JOINT FLEX -- reported for every joint, every run, so a regression shows up in the
+# diff. Calibrated honestly: at +/-75 deg the BROKEN hip scored 0.149/0.158 and the
+# FIXED hip 0.093, while several untouched joints on this Tripo mesh (clavicle 0.33,
+# upperarm 0.28, jaw 0.57 at the modelled mouth opening, which legitimately separates)
+# sit above both. So a single threshold cannot both catch the hip and spare those:
+# FAIL is set to catch GROSS tearing only, and the printed table carries the detail.
+FLEX_DEG = 75.0
+FLEX_GAIN_FAIL = 0.40
+FLEX_MIN_DOMINANT = 100      # only test bones that actually own geometry
+# A jaw hinges across a MODELLED opening: the mouth corner is supposed to separate when
+# it swings, and 75 deg over-rotates a jaw whose authored range is ~31 deg. Measured and
+# printed like every other joint, but it cannot fail the run on that basis alone.
+FLEX_OPENING_ROLES = ("jaw", "mouth", "mandible")
+
+
+def check_skin(armature):
+    """Weight hygiene + a joint-flex deformation test. Appends to failures/warnings."""
+    import numpy as np
+    from mathutils import Matrix
+
+    meshes = [o for o in bpy.data.objects
+              if o.type == "MESH" and any(m.type == "ARMATURE" for m in o.modifiers)]
+    if not meshes:
+        meshes = [o for o in bpy.data.objects if o.type == "MESH"]
+    if len(meshes) != 1:
+        fail("expected exactly ONE skinned mesh, found %d -- cannot validate skin weights"
+             % len(meshes))
+        return {}
+    mesh = meshes[0]
+    gnames = [vg.name for vg in mesh.vertex_groups]
+    nv = len(mesh.data.vertices)
+    if not gnames or not nv:
+        fail("mesh '%s' has no vertex groups / no vertices -- it is not skinned" % mesh.name)
+        return {}
+
+    W = np.zeros((nv, len(gnames)))
+    for v in mesh.data.vertices:
+        for g in v.groups:
+            W[v.index, g.group] = g.weight
+    co = np.array([list(v.co) for v in mesh.data.vertices])
+    wsum = W.sum(axis=1)
+    infl = (W > 1e-6).sum(axis=1)
+    dom = W.argmax(axis=1)
+    domw = W.max(axis=1)
+    out = {"verts": nv, "groups": len(gnames),
+           "influence_hist": {int(k): int((infl == k).sum()) for k in np.unique(infl)}}
+    log("skin: %d verts, %d vertex groups, influences/vert max=%d hist=%s"
+        % (nv, len(gnames), int(infl.max()), out["influence_hist"]))
+
+    # (a) unweighted vertices -- they collapse to the origin when the mesh deforms
+    n_zero = int((wsum < 1e-4).sum())
+    out["zero_influence_verts"] = n_zero
+    if n_zero:
+        fail("%d vertices have NO skin influence -- they will collapse to the "
+             "component origin as soon as the mesh deforms" % n_zero)
+    else:
+        log("skin: zero-influence verts = 0")
+
+    # (b) unnormalised weight sums -- the mesh shrinks or explodes toward bones
+    bad = np.abs(wsum - 1.0) > WEIGHT_SUM_TOL
+    out["unnormalised_verts"] = int(bad.sum())
+    out["weight_sum_range"] = [round(float(wsum.min()), 6), round(float(wsum.max()), 6)]
+    if bad.any():
+        fail("%d vertices have unnormalised weights (sum range %.6f..%.6f, tolerance %g)"
+             % (bad.sum(), wsum.min(), wsum.max(), WEIGHT_SUM_TOL))
+    else:
+        log("skin: all weight sums normalised to 1.0 +/- %g" % WEIGHT_SUM_TOL)
+
+    # (c) influence count vs the engine limit
+    if int(infl.max()) > MAX_INFLUENCES:
+        fail("a vertex has %d influences; UE5 supports at most %d -- the extra ones are "
+             "silently dropped at import and the bind changes under you"
+             % (int(infl.max()), MAX_INFLUENCES))
+
+    # (d) hard single influences sitting on a dominance seam: two neighbouring verts
+    #     riding two different rigid transforms, which is what visibly tears.
+    edges = np.array([list(e.vertices) for e in mesh.data.edges], dtype=np.int64)
+    e0, e1 = edges[:, 0], edges[:, 1]
+    hard = domw > 0.999
+    seam = dom[e0] != dom[e1]
+    hb = np.zeros(nv, dtype=bool)
+    sel = edges[seam & (hard[e0] | hard[e1])]
+    for a, b in sel:
+        if hard[a]:
+            hb[a] = True
+        if hard[b]:
+            hb[b] = True
+    pct = 100.0 * float(hb.sum()) / nv
+    out["hard_on_seam"] = int(hb.sum())
+    out["hard_on_seam_pct"] = round(pct, 3)
+    if pct > HARD_BOUNDARY_FAIL_PCT:
+        fail("%d verts (%.2f%%) hold a single hard 1.0 weight while touching a vert owned "
+             "by a different bone -- that seam tears when the joint moves (limit %.2f%%)"
+             % (hb.sum(), pct, HARD_BOUNDARY_FAIL_PCT))
+    elif hb.any():
+        warn("%d verts (%.3f%%) are hard-1.0 on a dominance seam (under the %.2f%% limit)"
+             % (hb.sum(), pct, HARD_BOUNDARY_FAIL_PCT))
+    else:
+        log("skin: no hard-1.0 verts on a dominance seam")
+
+    # (e) LIMB OVERHANG -- the W2.7 hip defect, stated generically.
+    bones_by_name = {b.name: b for b in armature.data.bones}
+    gi = {n: i for i, n in enumerate(gnames)}
+    out["limb_overhang"] = []
+    for role, patterns in LIMB_ROOT_ROLES.items():
+        for name in gnames:
+            b = bones_by_name.get(name)
+            if b is None or not any(p in name.lower() for p in patterns):
+                continue
+            chain = [b] + list(b.children_recursive)
+            ids = [gi[c.name] for c in chain if c.name in gi]
+            if not ids:
+                continue
+            chain_w = W[:, ids].sum(axis=1)
+            head = np.array(list(b.head_local))
+            axis = np.array(list(b.tail_local)) - head
+            blen = float(np.linalg.norm(axis))
+            if blen < 1e-6:
+                continue
+            axis = axis / blen
+            t = (co - head) @ axis
+            bad_v = (chain_w > 0.5) & (t < -OVERHANG_FRAC_OF_LEN * blen)
+            pct = 100.0 * float(bad_v.sum()) / nv
+            out["limb_overhang"].append({"bone": name, "role": role, "n": int(bad_v.sum()),
+                                         "pct": round(pct, 3), "chain": len(ids)})
+            log("skin: limb '%s' (%d-bone chain) holds majority weight on %d verts (%.3f%%) "
+                "more than %.0f%% of its own length PROXIMAL to its root joint"
+                % (name, len(ids), int(bad_v.sum()), pct, 100 * OVERHANG_FRAC_OF_LEN))
+            if pct > OVERHANG_FAIL_PCT:
+                fail("limb '%s' owns the BODY: %d verts (%.2f%%) sit proximal to its own root "
+                     "joint yet are majority-driven by the limb chain (limit %.2f%%). Every "
+                     "time this limb swings, that torso geometry is dragged with it and tears "
+                     "away from the parts that stay -- a visible seam at the joint."
+                     % (name, int(bad_v.sum()), pct, OVERHANG_FAIL_PCT))
+
+    # (f) JOINT FLEX TEST -- exercised, not inspected; reported for every joint.
+    rest = co.copy()
+    rest_len = np.linalg.norm(rest[e1] - rest[e0], axis=1)
+    real = rest_len > 0.002 * armature.dimensions.z    # ignore micro-edges: ratios there are noise
+    bones = {b.name: b for b in armature.data.bones}
+    for pb in armature.pose.bones:
+        pb.matrix_basis = Matrix.Identity(4)
+
+    def evaluated():
+        dg = bpy.context.evaluated_depsgraph_get()
+        eo = mesh.evaluated_get(dg)
+        me = eo.to_mesh()
+        p = np.array([list(v.co) for v in me.vertices])
+        eo.to_mesh_clear()
+        return p
+
+    worst = []
+    for name in gnames:
+        b = bones.get(name)
+        if b is None or b.parent is None:
+            continue
+        ndom = int((dom == gnames.index(name)).sum())
+        if ndom < FLEX_MIN_DOMINANT:
+            continue
+        head = b.head_local
+        blen = b.length
+        if blen < 1e-4:
+            continue
+        bdir = (b.tail_local - head).normalized()
+        pdir = (b.parent.tail_local - b.parent.head_local).normalized()
+        axis = bdir.cross(pdir)
+        if axis.length < 1e-3:                     # collinear with the parent
+            axis = bdir.cross(mathutils_up())
+            if axis.length < 1e-3:
+                axis = mathutils_x()
+        axis.normalize()
+        near = np.linalg.norm(rest - np.array(list(head)), axis=1) < 1.25 * blen
+        sub = real & (near[e0] | near[e1])
+        if sub.sum() < 20:
+            continue
+        gain = 0.0
+        for sign in (1.0, -1.0):
+            rot = Matrix.Rotation(math.radians(FLEX_DEG) * sign, 4, axis)
+            world = (Matrix.Translation(head) @ rot @ Matrix.Translation(-head)
+                     @ b.matrix_local)
+            armature.pose.bones[name].matrix_basis = b.matrix_local.inverted() @ world
+            bpy.context.view_layer.update()
+            p = evaluated()
+            gain = max(gain, float((np.linalg.norm(p[e1] - p[e0], axis=1) - rest_len)[sub].max()))
+        armature.pose.bones[name].matrix_basis = Matrix.Identity(4)
+        bpy.context.view_layer.update()
+        worst.append((gain / blen, name, gain, blen, ndom))
+
+    worst.sort(reverse=True)
+    out["flex"] = [{"bone": n, "gain_cm": round(g, 2), "bone_len": round(L, 2),
+                    "gain_over_len": round(r, 3), "n_dominant": d}
+                   for r, n, g, L, d in worst[:10]]
+    log("skin: joint-flex test at +/-%.0f deg over %d bones:"
+        % (FLEX_DEG, len(worst)))
+    for r, n, g, L, d in worst[:99]:
+        log("  flex %-14s gain %5.2f over bone length %5.2f = %.3f  (%d dominant verts)"
+            % (n, g, L, r, d))
+    for r, n, g, L, d in worst:
+        if r > FLEX_GAIN_FAIL and any(p in n.lower() for p in FLEX_OPENING_ROLES):
+            warn("joint '%s' spreads %.2f units (%.0f%% of its length) at %.0f deg, but it "
+                 "hinges across a MODELLED opening whose authored range is far smaller -- "
+                 "measured, not failed" % (n, g, 100.0 * r, FLEX_DEG))
+        elif r > FLEX_GAIN_FAIL:
+            fail("joint '%s' tears its own skin: flexing it %.0f deg pulls neighbouring "
+                 "vertices %.2f units apart, %.0f%% of the bone's own length (limit %.0f%%) "
+                 "-- the geometry around this joint is owned by the wrong bones"
+                 % (n, FLEX_DEG, g, 100.0 * r, 100.0 * FLEX_GAIN_FAIL))
+    return out
+
+
+def mathutils_up():
+    from mathutils import Vector
+    return Vector((0.0, 0.0, 1.0))
+
+
+def mathutils_x():
+    from mathutils import Vector
+    return Vector((1.0, 0.0, 0.0))
+
+
 def parse_args():
     argv = sys.argv
     if "--" not in argv:
@@ -254,6 +504,9 @@ def main():
         fail("rig height %.3fm is outside the sane creature range [%.1f, %.1f]m -- unit-scale/export problem"
              % (height, MIN_RIG_HEIGHT_M, MAX_RIG_HEIGHT_M))
 
+    # --- 8. SKIN WEIGHTS -----------------------------------------------------
+    skin = check_skin(armature)
+
     # --- verdict -------------------------------------------------------------
     if manifest_path and not failures:
         manifest = {
@@ -264,6 +517,7 @@ def main():
             "root": roots[0] if len(roots) == 1 else None,
             "bones": [{"name": b.name, "parent": b.parent.name if b.parent else None} for b in bones],
             "mirrored_pairs": mirrored_pairs,
+            "skin": skin,
         }
         os.makedirs(os.path.dirname(manifest_path), exist_ok=True)
         with open(manifest_path, "w", encoding="utf-8") as handle:

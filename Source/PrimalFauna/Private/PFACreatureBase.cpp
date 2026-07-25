@@ -65,8 +65,8 @@ namespace
 	// (set on the current target), which works standing still AND moving.
 	// Live-switchable so both can be judged in one session, no rebuild.
 	static TAutoConsoleVariable<int32> CVarPFARotationMode(
-		TEXT("pfa.RotationMode"), 1,
-		TEXT("Creature body-yaw mechanism. 1 (default) = controller-desired rotation (aims at the AI focus; turns while stationary). 0 = orient-to-movement (turns only while accelerating). Applies within ~0.25s, no respawn."),
+		TEXT("pfa.RotationMode"), 2,
+		TEXT("Creature body-yaw mechanism. 2 (default) = MANUAL: the controller rotates the pawn itself each frame toward its target. 1 = controller-desired rotation (was already enabled by the game and still never turned the body -- kept for A/B). 0 = orient-to-movement (turns only while accelerating). Applies within ~0.25s, no respawn."),
 		ECVF_Default);
 
 	// w18-4 (cold-review recommendation): live kill-switch for the rescue
