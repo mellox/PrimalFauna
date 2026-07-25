@@ -203,6 +203,13 @@ private:
 	// Part of the state identity, not a separate state: see TickLocomotionAnim.
 	bool bLocomotionWoundedActive = false;
 
+	// w35-1: this creature's own phase in a looping clip, [0,1), rolled ONCE at
+	// spawn. Without it every creature that enters a state on the same frame
+	// plays the identical frame forever, and a spawned group reads as one
+	// machine rather than several animals. Stable per creature so it reads as an
+	// individual rather than as noise.
+	float LocomotionPhaseOffset = 0.0f;
+
 	// w31-1 animation-driver state. Latched on failure. If the AnimInstance was requested but the component
 	// did not end up with one, this creature stops asking and runs the proven
 	// single-node path for the rest of its life. Without the latch, every pose

@@ -504,6 +504,11 @@ void APFASicklejaw::StartLocomotionAnim()
 	LocomotionIdleAlertAnim = FindSequenceInPackages(SicklejawIdleAlertAnimPackages, UE_ARRAY_COUNT(SicklejawIdleAlertAnimPackages), TEXT("idleAlert"), OwnerName);
 	LocomotionIdleAggressiveAnim = FindSequenceInPackages(SicklejawIdleAggressiveAnimPackages, UE_ARRAY_COUNT(SicklejawIdleAggressiveAnimPackages), TEXT("idleAggressive"), OwnerName);
 	LocomotionProwlAnim = FindSequenceInPackages(SicklejawProwlAnimPackages, UE_ARRAY_COUNT(SicklejawProwlAnimPackages), TEXT("prowl"), OwnerName);
+	// w35-1: roll this creature's animation phase ONCE. Rolled here rather than
+	// per-apply so the creature keeps its own phase across state changes -- it
+	// reads as an individual with its own rhythm, not as per-frame jitter.
+	LocomotionPhaseOffset = FMath::FRand();
+
 	// w29-1: the one-shot set (comfort breaks, threat display, limp). Resolved
 	// here so ALL clip loading happens in one place at arm time -- a creature
 	// must never stall mid-tick loading a package the moment it decides to preen.

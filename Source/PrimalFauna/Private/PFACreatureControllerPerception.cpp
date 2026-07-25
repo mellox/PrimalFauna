@@ -271,11 +271,54 @@ void APFACreatureController::Tick(float DeltaTime)
 	// ---- Mode 2: drive the body yaw ourselves, at the same rate the other
 	// modes were configured for. Yaw only -- pitch/roll are left to the game
 	// (mAlignRotationToFloor territory).
-	FVector ToTarget = Target->GetActorLocation() - ControlledPawn->GetActorLocation();
+	// w35-1 (user, in game): "sometimes they will be pointed at the other
+	// creature but slide backwards to get to me."
+	//
+	// Exactly what this code did. It always aimed the body at GetCurrentTarget(),
+	// while the behaviour tree independently decided where to WALK. When those
+	// two disagree -- a creature fighting another creature while the player is
+	// its aggro target, or mid-switch between targets -- the body locks onto one
+	// and travels toward the other, so it moonwalks.
+	//
+	// An animal turns to face where it is GOING while it is going there, and
+	// only turns to face a target when it stops. So: above a walking pace, aim
+	// down the velocity; below it, aim at the target. This also means the gait
+	// clips finally point the way the creature travels, which is what they were
+	// authored for.
+	const FVector Velocity = ControlledPawn->GetVelocity();
+	const float Speed2D = Velocity.Size2D();
+	// Below the roam/prowl band -- i.e. genuinely not travelling anywhere.
+	constexpr float FaceTravelSpeedCms = 60.0f;
+
+	FVector ToTarget;
+	const bool bFaceTravel = (Speed2D >= FaceTravelSpeedCms);
+	if (bFaceTravel)
+	{
+		ToTarget = Velocity;
+	}
+	else
+	{
+		ToTarget = Target->GetActorLocation() - ControlledPawn->GetActorLocation();
+	}
 	ToTarget.Z = 0.0f;
 	if (ToTarget.SizeSquared() < 1.0f)
 	{
 		return;
+	}
+
+	if (PFADiag::IsEnabled() && bFaceTravel)
+	{
+		const FVector ToTargetDbg = (Target->GetActorLocation() - ControlledPawn->GetActorLocation()).GetSafeNormal2D();
+		const float TargetVsTravelDeg = FMath::RadiansToDegrees(FMath::Acos(
+			FMath::Clamp(FVector::DotProduct(ToTargetDbg, Velocity.GetSafeNormal2D()), -1.0f, 1.0f)));
+		// A large angle here IS the moonwalk: it says the creature is travelling
+		// somewhere other than at the thing it has targeted.
+		if (TargetVsTravelDeg > 60.0f)
+		{
+			UE_LOG(LogPrimalFauna, Display,
+				TEXT("[PFA] %s: facing TRAVEL (speed=%.0f) -- target lies %.0f deg off the direction of travel (target=%s)"),
+				*GetName(), Speed2D, TargetVsTravelDeg, *Target->GetName());
+		}
 	}
 
 	const FRotator CurrentRotation = ControlledPawn->GetActorRotation();

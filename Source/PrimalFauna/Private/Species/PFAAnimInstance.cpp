@@ -391,6 +391,26 @@ void APFASicklejaw::ApplyChosenPose(UAnimSequence* Sequence, bool bLoop)
 	}
 
 	MeshComponent->PlayAnimation(Sequence, bLoop);
+
+	// w35-1 (user, in game): "It looks like they do the same things at the same
+	// time, not as independent entities."
+	//
+	// They were synchronised because nothing ever desynchronised them.
+	// PlayAnimation starts every clip at position 0, so two creatures that enter
+	// the same state on the same frame -- which is exactly what happens when a
+	// nest spawns a group, or when a pack all notices the player at once -- walk
+	// in lockstep forever. Correct code, no error, and instantly readable as
+	// machinery rather than animals.
+	//
+	// A per-creature phase offset, generated ONCE at spawn, fixes it: the same
+	// creature keeps its own phase across state changes (so it reads as an
+	// individual rather than as jitter), while two creatures never share one.
+	// LOOPS only -- a one-shot must start at frame 0 or its authored impact
+	// frames land at the wrong time, which would silently break the bite.
+	if (bLoop && LocomotionPhaseOffset > 0.0f)
+	{
+		MeshComponent->SetPosition(LocomotionPhaseOffset * Sequence->GetPlayLength(), /*bFireNotifies*/ false);
+	}
 }
 
 void APFASicklejaw::RefreshAnimationDriver()
