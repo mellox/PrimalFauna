@@ -247,6 +247,34 @@ log("materials on SK: %d slot(s)" % (len(mats) if mats is not None else -1))
 if not mats or len(mats) == 0:
     fail("SK imported with ZERO material slots -- embedded-texture import failed; wire the standalone 2048 PNGs instead")
 
+# w32: assign the authored surface material if it exists. It lives OUTSIDE this
+# script's DEST on purpose (see author_sicklejaw_material_ue.py), so the
+# delete-fresh above cannot destroy it -- but that also means the freshly
+# imported mesh comes back pointing at the FBX's embedded generator material
+# every time, and the assignment has to be re-made here or the creature silently
+# reverts to the old wet-plastic look with nothing reporting a problem.
+SURFACE_MI = "/PrimalFauna/SicklejawSurface/MI_Sicklejaw"
+surface_mi = eal.load_asset(SURFACE_MI) if eal.does_asset_exist(SURFACE_MI) else None
+if surface_mi:
+    # Build a FRESH FSkeletalMaterial rather than mutating the existing one.
+    # Unreal Python structs are VALUE types: `slots[0].material_interface = x`
+    # mutates a temporary copy and is silently discarded -- the first run of
+    # this code did exactly that, and only the readback assert below caught it
+    # (slot 0 still read tripo_mat_7174a7d7, the generator material).
+    slots = sk.get_editor_property("materials")
+    slots[0] = unreal.SkeletalMaterial(
+        material_interface=surface_mi,
+        material_slot_name=slots[0].material_slot_name)
+    sk.set_editor_property("materials", slots)
+    eal.save_asset(DEST + "/" + SK_NAME, only_if_is_dirty=False)
+    check = eal.load_asset(DEST + "/" + SK_NAME).get_editor_property("materials")[0].material_interface
+    if not check or check.get_name() != "MI_Sicklejaw":
+        fail("surface material assignment did not stick (slot 0 = %s)" % (check.get_name() if check else "<none>"))
+    log("surface material assigned+verified: slot 0 = MI_Sicklejaw")
+else:
+    log("WARN: %s not found -- SK keeps the FBX's embedded generator material. "
+        "Run tools/author_sicklejaw_material_ue.py to build the authored surface." % SURFACE_MI)
+
 # --- pass 2: the 5 animations against the SK's skeleton, same scale ---
 for dest_name, fbx_path in ANIM_FBXS:
     log("importing %s (animation, scale %.0f)" % (dest_name, chosen_scale))
@@ -267,6 +295,41 @@ for dest_name, fbx_path in ANIM_FBXS:
     anim_skeleton = anim_asset.get_editor_property("skeleton")
     if not anim_skeleton or anim_skeleton.get_name() != skeleton.get_name():
         fail("%s skeleton mismatch (got %s, want %s)" % (dest_name, anim_skeleton.get_name() if anim_skeleton else "<none>", skeleton.get_name()))
+    # 2026-07-25 (w31 AnimInstance packet): the twelve A_Sicklejaw_Add_* clips
+    # are AUTHORED as additive deltas from the skeleton's reference pose -- that
+    # is exactly what validate_anim_fbx.py --ref-rig verifies. But the FBX
+    # importer has no idea, so every one of them landed with
+    # AdditiveAnimType = AAT_None: ordinary full-pose sequences whose NAMES say
+    # "Add". FAnimNode_ApplyAdditive treats its input as a delta, so blending
+    # one of those doubles every bone transform -- the layer would evaluate and
+    # look catastrophically wrong, with nothing anywhere reporting a problem.
+    #
+    # Two traps, both learned the expensive way:
+    #   - FAnimNode_ApplyAdditive::Evaluate_AnyThread hard-codes
+    #     AAT_LocalSpaceBase. A mesh-space additive is applied in the WRONG
+    #     SPACE with no warning from the engine, the node, or the asset.
+    #   - AdditiveAnimType set without a coherent RefPoseType passes a naive
+    #     check and still fails the engine's. ABPT_REF_POSE needs no RefPoseSeq;
+    #     any other base type does, and a null one is the silent-failure case.
+    if "_Add_" in dest_name:
+        anim_asset.modify(True)
+        safe_set(anim_asset, "additive_anim_type", unreal.AdditiveAnimationType.AAT_LOCAL_SPACE_BASE)
+        safe_set(anim_asset, "ref_pose_type", unreal.AdditiveBasePoseType.ABPT_REF_POSE)
+        safe_set(anim_asset, "ref_pose_seq", None)
+        eal.save_asset(DEST + "/Anims/" + dest_name, only_if_is_dirty=False)
+        # ASSERT the readback. Setting a property that does not stick is the
+        # whole failure mode here, and it is invisible until a creature blends
+        # the layer in game.
+        reloaded = eal.load_asset(DEST + "/Anims/" + dest_name)
+        got_type = reloaded.get_editor_property("additive_anim_type")
+        got_base = reloaded.get_editor_property("ref_pose_type")
+        if got_type != unreal.AdditiveAnimationType.AAT_LOCAL_SPACE_BASE:
+            fail("%s: additive_anim_type did not stick (got %s, want AAT_LOCAL_SPACE_BASE) -- "
+                 "the layer would be blended as a full pose and double every bone" % (dest_name, got_type))
+        if got_base != unreal.AdditiveBasePoseType.ABPT_REF_POSE:
+            fail("%s: ref_pose_type did not stick (got %s, want ABPT_REF_POSE)" % (dest_name, got_base))
+        log("ADDITIVE flags set+verified on %s (local-space base, ref-pose)" % dest_name)
+
     log("imported ANIM=%s class=AnimSequence length=%.2fs skeleton-match=True" % (dest_name, play_len))
 
 # --- CRITICAL: persist EVERYTHING (skeleton/physics/textures/materials) ---

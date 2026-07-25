@@ -29,7 +29,14 @@ both assets, then asserts every parameter is present before saving.
 """
 import unreal
 
-PKG = '/PrimalFauna/Sicklejaw'          # matches tools/import_sicklejaw_ue.py DEST
+# DELIBERATELY OUTSIDE tools/import_sicklejaw_ue.py's DEST (/PrimalFauna/Sicklejaw).
+# That script does delete_directory(DEST) on every run -- the delete-fresh rule
+# that stops a replace-in-place import handing back stale bounds. If the
+# material lived in there, the next mesh re-import would silently destroy it and
+# leave the skeletal mesh pointing at a missing material, with the only symptom
+# being a creature that renders grey. Surface assets get their own package so
+# the two scripts compose in any order.
+PKG = '/PrimalFauna/SicklejawSurface'
 TEXDIR = PKG + '/Textures'
 SRC_TEX = 'C:/Claude/Projects/PrimalFauna/art/wip/sicklejaw-d-v2/textures'
 MAT_PATH = PKG + '/M_Sicklejaw'
@@ -246,7 +253,12 @@ link(n_flare, '', n_sum, 'B')
 n_level = expr(unreal.MaterialExpressionClamp, -320, 760)
 n_level.set_editor_property('min_default', 0.0)
 n_level.set_editor_property('max_default', 1.0)
-link(n_sum, '', n_level, 'Input')
+# UMaterialExpressionClamp's primary input is UNNAMED in the graph (its Min/Max
+# are the named ones), so connect_material_expressions wants '' here, not
+# 'Input' -- the C++ member is called Input but the pin is not. This is the one
+# connection in the whole graph that takes an unnamed input, which is why it was
+# the only one that failed on the first real run of this script.
+link(n_sum, '', n_level, '')
 
 # boost = BOOST_MIN + (1-BOOST_MIN) * A*A
 n_a2 = mul(-1150, 1160)
