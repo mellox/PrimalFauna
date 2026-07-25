@@ -224,6 +224,17 @@ void APFACreatureController::Tick(float DeltaTime)
 
 	// The mode CVar lives in PFACreatureBase.cpp's anonymous namespace; look
 	// it up by name so neither file has to export it.
+	// w40-1 disengage knobs. Live-tunable because "how long before it loses
+	// interest" is a feel judgement that can only be settled in game.
+	static TAutoConsoleVariable<float> CVarPFAGiveUpDistance(
+		TEXT("pfa.GiveUpDistance"), 4500.0f,
+		TEXT("Distance (cm) beyond which a Sicklejaw starts losing interest in its target. 0 disables disengaging (it will watch you forever)."),
+		ECVF_Default);
+	static TAutoConsoleVariable<float> CVarPFAGiveUpSeconds(
+		TEXT("pfa.GiveUpSeconds"), 8.0f,
+		TEXT("How long (s) the target must stay beyond pfa.GiveUpDistance before the creature disengages and goes back to roaming."),
+		ECVF_Default);
+
 	static IConsoleVariable* RotationModeVar =
 		IConsoleManager::Get().FindConsoleVariable(TEXT("pfa.RotationMode"));
 	const int32 Mode = RotationModeVar ? RotationModeVar->GetInt() : 2;
@@ -240,6 +251,53 @@ void APFACreatureController::Tick(float DeltaTime)
 	if (!Target)
 	{
 		Target = LastValidFocusTarget.Get();
+	}
+
+	// ---- w40-1 DISENGAGE: lose interest in a target that has walked away. ----
+	// The user went far away and the creatures kept standing and turning to
+	// watch. That is not a roaming bug -- a creature that never stops being
+	// alert can never enter the roam branch at all, so the w32-1 roam-band fix
+	// was downstream of the real cause.
+	//
+	// Give-up distance and dwell are deliberately generous: a predator that
+	// forgets you the instant you step back is as wrong as one that stares
+	// forever. Research puts real hunts at 85-90% abandoned, and abandonment is
+	// about the payoff no longer being worth the effort -- so the trigger is
+	// "you are far away AND have stayed far away", not a flicker of distance.
+	static IConsoleVariable* GiveUpDistVar =
+		IConsoleManager::Get().FindConsoleVariable(TEXT("pfa.GiveUpDistance"));
+	static IConsoleVariable* GiveUpTimeVar =
+		IConsoleManager::Get().FindConsoleVariable(TEXT("pfa.GiveUpSeconds"));
+	const float GiveUpDistCm = GiveUpDistVar ? GiveUpDistVar->GetFloat() : 4500.0f;
+	const float GiveUpSeconds = GiveUpTimeVar ? GiveUpTimeVar->GetFloat() : 8.0f;
+
+	if (Target && GiveUpDistCm > 0.0f)
+	{
+		const double Now = GetWorld() ? GetWorld()->GetTimeSeconds() : 0.0;
+		const float Dist = FVector::Dist(Target->GetActorLocation(), ControlledPawn->GetActorLocation());
+		if (Dist > GiveUpDistCm)
+		{
+			if (OutOfRangeSinceSeconds <= 0.0)
+			{
+				OutOfRangeSinceSeconds = Now;
+			}
+			else if ((Now - OutOfRangeSinceSeconds) >= GiveUpSeconds)
+			{
+				UE_LOG(LogPrimalFauna, Display,
+					TEXT("[PFA] %s: DISENGAGING -- %s has been %.0fm away for %.0fs. Going back to its own business."),
+					*GetName(), *Target->GetName(), Dist / 100.0f, GiveUpSeconds);
+				OutOfRangeSinceSeconds = 0.0;
+				LastValidFocusTarget = nullptr;
+				ResetTargetingState(TEXT("target out of range too long -- disengaged"));
+				return;   // no yaw this tick; the creature is done watching
+			}
+		}
+		else
+		{
+			// Came back into range: the clock restarts, so a player who leaves
+			// and returns does not get a half-expired grace period.
+			OutOfRangeSinceSeconds = 0.0;
+		}
 	}
 
 	// ---- Diagnostic (throttled to ~1Hz, diag-gated): the ONE readout that

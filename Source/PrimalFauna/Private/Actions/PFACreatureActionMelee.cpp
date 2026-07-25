@@ -225,9 +225,33 @@ void UPFACreatureActionMelee::PerformAction_Implementation()
 		// damage path bails (out of range, dead target) the creature is still
 		// visibly seen to lunge and miss, which is what a near-miss should
 		// look like.
+		// ---- w40-1 POUNCE (user: "How about a pounce sometimes when
+		// attacking?"). Lunge has been authored, validated and imported since
+		// w26 and nothing has ever played it.
+		//
+		// Chosen by RANGE, not by a coin flip, so it reads as a decision rather
+		// than as randomness: a predator closes the last stretch with a leap
+		// when it still has ground to cover, and simply bites when it is already
+		// on top of you. The random share on top of that stops it being a
+		// mechanical rule the player can time exactly.
+		const TCHAR* AttackClip = TEXT("Bite");
+		if (AActor* PounceTarget = GetCurrentTarget())
+		{
+			if (const AFGCreature* Attacker = mCreature.Get())
+			{
+				const float Reach = Attacker->GetDistanceTo(PounceTarget);
+				// The far half of our own attack range, i.e. still closing.
+				const bool bHasGroundToCover = Reach > (mAttackRange * 0.55f);
+				if (bHasGroundToCover && FMath::FRand() < 0.45f)
+				{
+					AttackClip = TEXT("Lunge");
+				}
+			}
+		}
+
 		if (APFASicklejaw* Sicklejaw = Cast<APFASicklejaw>(mCreature.Get()))
 		{
-			Sicklejaw->PlayAttackOneShot(TEXT("Bite"));
+			Sicklejaw->PlayAttackOneShot(AttackClip);
 		}
 
 		const float ImpactDelay = FMath::Max(0.0f, CVarPFABiteImpactDelay.GetValueOnGameThread());

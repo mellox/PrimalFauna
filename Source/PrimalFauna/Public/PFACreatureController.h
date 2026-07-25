@@ -167,6 +167,18 @@ private:
 	// null and back ~1-2x/second during a live engagement; without this the
 	// focus-driven body yaw would swing away and back on every flicker.
 	TWeakObjectPtr<AActor> LastValidFocusTarget;
+
+	// --- w40-1 DISENGAGE ------------------------------------------------------
+	// User: "When I went far away, they would still just stand there and watch
+	// me, turning to just watch me. So they didn't really wander around."
+	//
+	// They were not failing to roam -- they never STOPPED being alert, and the
+	// roam branch cannot run on a creature that is permanently watching you. So
+	// w32-1's roam-band fix was solving something downstream of the real cause.
+	// This is the named anti-pattern "unwavering pursuit, never loses interest":
+	// a real predator assesses, loses interest, and goes back to its own life.
+	// Tracked as world-seconds, not a countdown, so a hitch cannot strand it.
+	double OutOfRangeSinceSeconds = 0.0;
 	double LastValidFocusTimeSeconds = 0.0;
 	static constexpr double FocusGraceSeconds = 3.0;
 
