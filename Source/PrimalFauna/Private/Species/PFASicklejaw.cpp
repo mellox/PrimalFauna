@@ -11,6 +11,7 @@
 #include "Perception/AISenseConfig_Sight.h"
 #include "Perception/AISenseConfig_Hearing.h"
 
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Engine/SkeletalMesh.h"
 #include "Animation/Skeleton.h"
@@ -508,6 +509,42 @@ void APFASicklejaw::StartLocomotionAnim()
 	// per-apply so the creature keeps its own phase across state changes -- it
 	// reads as an individual with its own rhythm, not as per-frame jitter.
 	LocomotionPhaseOffset = FMath::FRand();
+
+	// ---- w39-1 PER-INDIVIDUAL TRAITS ---------------------------------------
+	// User: "they all seem to do the same thing, there should be some
+	// differences or perhaps randomness."
+	//
+	// Every creature has been running byte-identical numbers, so a group is N
+	// copies of one animal. These are the traits a player can actually perceive
+	// within seconds of watching, and all of them are settable from OUTSIDE the
+	// borrowed BehaviorTree -- movement and perception are plain component
+	// properties the tree reads live, so this needs no tree edit at all.
+	//
+	// Rolled ONCE at spawn and kept, so it is a personality rather than noise:
+	// the same creature is consistently the faster/bolder/sharper-eyed one, and
+	// that consistency is what makes a player say "that one" instead of
+	// "they're twitchy".
+	const float SpeedTrait = FMath::FRandRange(0.92f, 1.08f);   // +/-8%: visible, not silly
+	const float TurnTrait  = FMath::FRandRange(0.85f, 1.20f);   // sluggish vs snappy
+
+	float AppliedWalkSpeed = 0.0f;
+	if (UCharacterMovementComponent* Movement = GetCharacterMovement())
+	{
+		Movement->MaxWalkSpeed *= SpeedTrait;
+		Movement->RotationRate.Yaw *= TurnTrait;
+		AppliedWalkSpeed = Movement->MaxWalkSpeed;
+	}
+
+	// NOTE: per-individual PERCEPTION (so they don't all notice the player on the
+	// same frame -- one of the loudest hive-mind tells) is deliberately NOT here.
+	// The sense configs are CDO-authored instanced subobjects and scaling them
+	// safely per-instance needs its own look; inventing plumbing for it inside a
+	// trait roll is how a "small variation feature" becomes a spawn-path bug.
+	// Tracked as a follow-up rather than half-done.
+
+	UE_LOG(LogPrimalFauna, Display,
+		TEXT("[PFA] %s: traits rolled -- speed x%.2f (%.0f cm/s), turn x%.2f, animPhase %.2f"),
+		*GetName(), SpeedTrait, AppliedWalkSpeed, TurnTrait, LocomotionPhaseOffset);
 
 	// w29-1: the one-shot set (comfort breaks, threat display, limp). Resolved
 	// here so ALL clip loading happens in one place at arm time -- a creature

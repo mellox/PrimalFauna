@@ -86,6 +86,30 @@ UPFACreatureActionMelee::UPFACreatureActionMelee(const FObjectInitializer& Objec
 	// UFGCreatureAction, FGCreatureAction.h:123 -- inherited, set directly.)
 	mTargetRequirements.TargetType = ECreatureActionTargetSelectionType::HighestAggro;
 
+	// ---- w39-1: STOP THE PACK BITING ON ONE METRONOME ---------------------
+	// User: "they all seem to do the same thing... over and over" and "should
+	// some of them work toward my sides and not straight on".
+	//
+	// Part of that is not a missing feature -- it is three engine-provided
+	// randomisation knobs we never set. mActionCooldown defaults to a FLAT 5s
+	// with mActionCooldownMax at 0, so every Sicklejaw in a pack re-attacks on
+	// the identical fixed interval; and mActionStartDelay is an FFloatInterval
+	// -- a built-in randomised REACTION LATENCY -- left at zero, so all of them
+	// commit on the same frame with inhuman instant reflexes.
+	//
+	// Two independent research passes converged on this: instant reactions read
+	// as "chaotic and frustrating" rather than skilful, and a deliberate delay
+	// is what gives a player the readable window that makes an attack feel fair.
+	// Human visual reaction time is ~150-300ms; a large ambush predator that has
+	// to decide should sit at the slow end of that and vary.
+	//
+	// The randomisation is PER ACTION INSTANCE, so it also desynchronises the
+	// pack for free -- the same trick as the per-creature animation phase
+	// offset, applied to decisions instead of to poses.
+	mActionStartDelay = FFloatInterval(0.25f, 0.65f);
+	mActionCooldown = 2.5f;
+	mActionCooldownMax = 6.0f;
+
 	// mActionMontage (FGCreatureActionAnimated.h:31) LEFT NULL on purpose --
 	// montage-less bring-up (docs/08 §4 assumption item 2). No animation field is
 	// touched; their defaults + the null montage are exactly what the test probes.
