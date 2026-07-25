@@ -93,9 +93,23 @@ namespace
 	// x=0) lines up with the actor's forward (+X). -90 maps +Y onto +X.
 	// Live-tunable because "does it face me" is an eyeball judgement: respawn
 	// after changing, then bake the winning value into the default here.
+	// w32-3: +90, corrected from -90 (user: "the tail keeps coming to me" -- 180
+	// degrees out). The -90 was derived from the BLENDER file, where the jaw sits
+	// at +Y and the tail at -Y. That reasoning was invalid: the FBX export +
+	// import apply an axis conversion, and measuring one coordinate system while
+	// reasoning about the other is the whole bug. Measured in UE space instead --
+	// the imported bounds put the box centre at Y=+10cm where Blender's sits at
+	// -15cm, so Y is FLIPPED: in UE the head is at -Y and the tail at +Y.
+	// Mapping -Y onto the actor's +X forward needs +90.
+	//
+	// NOTE (user, and they are right): a per-creature magic offset is a bandaid.
+	// The template fix is to author/export every creature facing one agreed axis
+	// so this constant is the SAME for all of them -- or zero -- and to have the
+	// rig validator assert it so no future species can get it wrong silently.
+	// Tracked as its own packet; this constant is correct in the meantime.
 	static TAutoConsoleVariable<float> CVarPFAMeshYaw(
-		TEXT("pfa.MeshYaw"), -90.0f,
-		TEXT("Yaw (deg) applied to the Sicklejaw mesh component so its authored +Y forward matches the actor's +X forward. -90 is the derived value; try 90/0/180 if the creature still faces wrong. Respawn to apply."),
+		TEXT("pfa.MeshYaw"), 90.0f,
+		TEXT("Yaw (deg) applied to the Sicklejaw mesh component so its imported -Y forward matches the actor's +X forward. 90 is the measured value. Respawn to apply."),
 		ECVF_Default);
 
 	static TAutoConsoleVariable<float> CVarPFAMeshZOffset(
@@ -393,7 +407,11 @@ void APFASicklejaw::BeginPlay()
 	// Log both forward vectors so the log alone says whether they agree: the dot
 	// is +1 when the mesh's nose points where the actor is facing.
 	const FVector ActorForward = GetActorForwardVector();
-	const FVector MeshForward = MeshComponent->GetComponentTransform().TransformVectorNoScale(FVector::YAxisVector);
+	// The nose is at -Y in UE mesh space (measured, see the CVar comment), so the
+	// nose direction is the component's NEGATIVE Y axis. Using +Y here would have
+	// made the dot read +1.00 while the creature faced backwards -- a diagnostic
+	// that agrees with a bug is worse than none.
+	const FVector MeshForward = MeshComponent->GetComponentTransform().TransformVectorNoScale(-FVector::YAxisVector);
 	UE_LOG(LogPrimalFauna, Display,
 		TEXT("[PFA] %s: mesh yaw %s -> %.0f deg (cvar pfa.MeshYaw); actorFwd=%s meshNoseFwd=%s dot=%.2f (want ~+1.00)"),
 		*GetName(), *OldMeshRot.ToCompactString(), MeshYawDeg,
