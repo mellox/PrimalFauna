@@ -385,9 +385,31 @@ bool APFASicklejaw::MaybeStartOneShot(int32 DesiredState)
 		return false;
 	}
 
-	// Leaving alert re-arms the display. Without this a creature that spots
-	// you, loses you, and spots you again would never display a second time.
-	bThreatenedThisEpisode = false;
+	// w38-2 BUG FIX -- this is a direct cause of the user's "they all seem to do
+	// the same thing... over and over".
+	//
+	// The intent was "re-arm when the creature stops being alert". What it
+	// actually did was re-arm on ANY DesiredState != 3 -- and DesiredState is a
+	// GAIT-and-intent composite, so simply WALKING (state 1) while alert cleared
+	// the flag. An investigating creature that walks, stops, walks, stops
+	// replayed the whole 1.6s threat display on every single stop. The display
+	// meant to fire once per encounter fired continuously.
+	//
+	// The flag has to key off the creature's actual ALERTNESS, not off a value
+	// that also encodes how fast it happens to be moving. Re-arm only when it
+	// has genuinely disengaged -- back to a calm idle or to roaming.
+	// Lesson for the state machine generally: DesiredState conflates gait with
+	// intent, so any "have I done X this episode" flag hung off it will re-arm
+	// on movement. See ASSET-COORDINATION's note about checks that cannot fail.
+	if (DesiredState == 0)
+	{
+		if (bThreatenedThisEpisode && PFADiag::IsEnabled())
+		{
+			UE_LOG(LogPrimalFauna, Display,
+				TEXT("[PFA] %s: threat display re-armed (creature returned to a calm idle)."), *GetName());
+		}
+		bThreatenedThisEpisode = false;
+	}
 
 	// ---- calm idle (state 0) only: comfort and vigilance breaks. -----------
 	// Deliberately NOT while alert or fighting: a creature that grooms itself

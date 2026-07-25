@@ -207,6 +207,14 @@ public:
 	// semantics of the call it replaces (see AppliedPoseSerial).
 	void SetPose(UAnimSequence* InSequence, bool bInLoop);
 
+	// GAME THREAD ONLY. w38-2 parity with the single-node path, which had both of
+	// these and this one did not -- so `pfa.UseAnimInstance 1` silently undid the
+	// two fixes the user had already reported and seen fixed (lockstep movement,
+	// sliding at a charge). Snapshotted like every other input and consumed by
+	// the proxy on the worker thread; never read live from there.
+	void SetPhaseOffset(float InPhase01);      // [0,1) start position within a looping clip
+	void SetPlayRateScale(float InRate);       // actual ground speed / authored speed
+
 	// GAME THREAD ONLY. w31-2: the additive tail-mood layer. A null sequence or
 	// a zero alpha switches the layer off, and off means the ApplyAdditive node
 	// is an exact pass-through of the locomotion pose.
@@ -259,6 +267,11 @@ private:
 	// is a live-tunable knob (pfa.TailMoodAlpha) and a float copy is cheaper
 	// than the comparison that would avoid it.
 	float DesiredTailAlpha = 0.0f;
+
+	// w38-2 parity inputs. Snapshotted on the game thread like everything else
+	// the proxy reads; never touched from the worker thread.
+	float DesiredPhaseOffset = 0.0f;   // [0,1) this creature's place in a looping clip
+	float DesiredPlayRate = 1.0f;      // actual ground speed / authored speed
 
 	// Bumped only when the tail CLIP changes, so re-pushing the same mood every
 	// pose change does not restart the layer mid-swing.

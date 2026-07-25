@@ -100,10 +100,15 @@ void FPFAAnimInstanceProxy::PreUpdate(UAnimInstance* InAnimInstance, float Delta
 			AppliedPoseSerial = PFAInstance->DesiredPoseSerial;
 			LocomotionPlayer.SetSequence(PFAInstance->DesiredPose);
 			LocomotionPlayer.SetLoopAnimation(PFAInstance->bDesiredPoseLoops);
-			// Rewind. Without this the new clip inherits the previous one's
-			// accumulated time and starts partway through -- and for a repeat
-			// of the same clip it would not restart at all.
-			LocomotionPlayer.SetAccumulatedTime(0.0f);
+			// Rewind -- but to THIS CREATURE'S phase, not to zero. Without the
+			// rewind a new clip inherits the previous one's accumulated time; with
+			// a rewind to a flat zero, every creature entering a state on the same
+			// frame plays the identical frame forever, which is the lockstep the
+			// user reported and w35-1 fixed on the other path (w38-2 parity).
+			const float PhaseSeconds = (PFAInstance->bDesiredPoseLoops && PFAInstance->DesiredPose)
+				? PFAInstance->DesiredPhaseOffset * PFAInstance->DesiredPose->GetPlayLength()
+				: 0.0f;
+			LocomotionPlayer.SetAccumulatedTime(PhaseSeconds);
 
 			if (PFADiag::IsEnabled())
 			{
@@ -114,6 +119,12 @@ void FPFAAnimInstanceProxy::PreUpdate(UAnimInstance* InAnimInstance, float Delta
 					AppliedPoseSerial, UpdatedFrames);
 			}
 		}
+
+		// In: the gait play rate, copied EVERY frame rather than serial-gated --
+		// speed changes continuously while the pose does not, and the whole point
+		// is that the feet track the ground at whatever speed the creature is
+		// currently moving (w38-1, brought to this path by w38-2).
+		LocomotionPlayer.SetPlayRate(PFAInstance->DesiredPlayRate);
 
 		// In: the additive tail layer. Alpha is copied every frame because it is
 		// a live-tunable knob; the CLIP is serial-gated so that re-pushing the
@@ -153,6 +164,24 @@ void UPFAAnimInstance::SetPose(UAnimSequence* InSequence, bool bInLoop)
 	DesiredPose = InSequence;
 	bDesiredPoseLoops = bInLoop;
 	++DesiredPoseSerial;
+}
+
+void UPFAAnimInstance::SetPhaseOffset(float InPhase01)
+{
+	// Consumed on the NEXT pose application, matching the single-node path where
+	// the offset is applied right after PlayAnimation. Stored as a fraction so it
+	// is independent of clip length -- a creature keeps its own place in the
+	// cycle whichever gait it switches to.
+	DesiredPhaseOffset = FMath::Frac(FMath::Max(0.0f, InPhase01));
+}
+
+void UPFAAnimInstance::SetPlayRateScale(float InRate)
+{
+	// Same clamp as the single-node path. Parity here is not cosmetic: the two
+	// paths are A/B'd live via pfa.UseAnimInstance, so any difference in these
+	// numbers would show up as the creature changing behaviour when the CVar is
+	// toggled, and be read as the AnimInstance being broken.
+	DesiredPlayRate = FMath::Clamp(InRate, 0.5f, 2.0f);
 }
 
 void UPFAAnimInstance::SetTailMood(UAnimSequence* InSequence, float InAlpha)
@@ -394,6 +423,37 @@ void APFASicklejaw::ApplyChosenPose(UAnimSequence* Sequence, bool bLoop)
 		if (UPFAAnimInstance* AnimInstance = Cast<UPFAAnimInstance>(MeshComponent->AnimScriptInstance))
 		{
 			AnimInstance->SetPose(Sequence, bLoop);
+
+			// w38-2 PARITY FIX. The per-creature phase offset (w35-1) and the
+			// speed-matched play rate (w38-1) were written into the single-node
+			// fallback ONLY, below. So `pfa.UseAnimInstance 1` silently reverted
+			// both: creatures went back to moving in lockstep and to sliding at a
+			// charge, with no error and no log line -- and the AnimInstance path
+			// is the prerequisite for every tail-mood and additive feature, so
+			// the moment we switch to it we would have re-shipped two bugs the
+			// user had already reported and seen fixed.
+			//
+			// This is exactly the failure class the workspace's differential /
+			// parity review rule exists for: a NEW path must be shown to provide
+			// every invariant the OLD one guaranteed. I wrote the new path and
+			// still put the fixes in only one branch, which is why the rule says
+			// enumerate rather than remember.
+			if (bLoop)
+			{
+				if (LocomotionPhaseOffset > 0.0f)
+				{
+					AnimInstance->SetPhaseOffset(LocomotionPhaseOffset);
+				}
+				const float AuthoredCms = AuthoredSpeedForSequence(Sequence);
+				AnimInstance->SetPlayRateScale(AuthoredCms > 0.0f
+					? FMath::Clamp(GetVelocity().Size2D() / AuthoredCms, 0.5f, 2.0f)
+					: 1.0f);
+			}
+			else
+			{
+				AnimInstance->SetPlayRateScale(1.0f);
+			}
+
 			PushTailMood(AnimInstance);
 			return;
 		}
