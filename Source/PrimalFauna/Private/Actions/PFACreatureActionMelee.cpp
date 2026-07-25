@@ -19,14 +19,25 @@
 namespace
 {
 	// w30-1: seconds from the strike starting to the frame the jaws shut.
-	// 0.792 = the authored Bite HitNotify at frame 19 of a 24fps clip -- the
-	// number the animation was built around, not a tuned guess.
+	// 0.633 = the authored Bite HitNotify at frame 19 of a **30fps** clip.
+	//
+	// This shipped as 0.792 for four builds because I assumed 24fps and nobody
+	// checked. The authoring scripts say `FPS = 30` (100_animate_alive.py:45),
+	// and the arithmetic confirms it: the Bite clip is 1.17s, which is 35.1
+	// frames at 30fps and a nonsensical 28.1 at 24. So the damage was landing
+	// 0.159s AFTER the jaws shut -- the exact desync this delay exists to
+	// remove, just smaller and in the other direction.
+	//
+	// The lesson is the one this project keeps re-learning: a frame number is
+	// meaningless without its rate, and "f19" was handed across the art/code
+	// seam without one. ASSET-COORDINATION §2 now requires notify frames to be
+	// handed over WITH the fps they were measured at.
 	// SET TO 0 to restore the exact w18-10 behaviour (damage on action start,
 	// no impact timing). That escape hatch exists because this is the first
 	// change to combat TIMING rather than combat numbers.
 	static TAutoConsoleVariable<float> CVarPFABiteImpactDelay(
-		TEXT("pfa.BiteImpactDelay"), 0.792f,
-		TEXT("Seconds between a Sicklejaw's strike starting and its damage landing (authored impact frame = 0.792). 0 = damage immediately on action start, the pre-w30 behaviour."),
+		TEXT("pfa.BiteImpactDelay"), 0.633f,
+		TEXT("Seconds between a Sicklejaw's strike starting and its damage landing (authored impact frame = 0.633 = f19 @ 30fps). 0 = damage immediately on action start, the pre-w30 behaviour."),
 		ECVF_Default);
 
 	// ---- TODO(W1.2-census): every value is a PLACEHOLDER anchor. doc 01 §1
