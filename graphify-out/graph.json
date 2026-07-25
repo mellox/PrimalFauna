@@ -29,7 +29,7 @@
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
       "source_location": "L22",
       "_origin": "ast",
-      "id": "source_primalfauna_private_pfacreaturebase_cpp_tchar",
+      "id": "tchar",
       "community": 22,
       "norm_label": "tchar"
     },
@@ -47,7 +47,7 @@
       "label": "APFACreatureBase()",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
-      "source_location": "L82",
+      "source_location": "L94",
       "_origin": "ast",
       "id": "private_pfacreaturebase_apfacreaturebase",
       "community": 22,
@@ -57,9 +57,9 @@
       "label": "FObjectInitializer",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
-      "source_location": "L82",
+      "source_location": "L94",
       "_origin": "ast",
-      "id": "source_primalfauna_private_pfacreaturebase_cpp_fobjectinitializer",
+      "id": "fobjectinitializer",
       "community": 22,
       "norm_label": "fobjectinitializer"
     },
@@ -67,17 +67,27 @@
       "label": "BeginPlay()",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
-      "source_location": "L116",
+      "source_location": "L128",
       "_origin": "ast",
       "id": "private_pfacreaturebase_beginplay",
       "community": 22,
       "norm_label": "beginplay()"
     },
     {
+      "label": "ApplyRotationPolicy()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
+      "source_location": "L228",
+      "_origin": "ast",
+      "id": "private_pfacreaturebase_applyrotationpolicy",
+      "community": 22,
+      "norm_label": "applyrotationpolicy()"
+    },
+    {
       "label": "RescueBuriedSpawn()",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
-      "source_location": "L243",
+      "source_location": "L276",
       "_origin": "ast",
       "id": "private_pfacreaturebase_rescueburiedspawn",
       "community": 22,
@@ -87,7 +97,7 @@
       "label": "GetLifetimeReplicatedProps()",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
-      "source_location": "L312",
+      "source_location": "L345",
       "_origin": "ast",
       "id": "private_pfacreaturebase_getlifetimereplicatedprops",
       "community": 22,
@@ -97,7 +107,7 @@
       "label": "TArray",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
-      "source_location": "L312",
+      "source_location": "L345",
       "_origin": "ast",
       "id": "tarray",
       "community": 22,
@@ -107,7 +117,7 @@
       "label": "FLifetimeProperty",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
-      "source_location": "L312",
+      "source_location": "L345",
       "_origin": "ast",
       "id": "flifetimeproperty",
       "community": 22,
@@ -117,7 +127,7 @@
       "label": "SetAggressionMode()",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
-      "source_location": "L318",
+      "source_location": "L351",
       "_origin": "ast",
       "id": "private_pfacreaturebase_setaggressionmode",
       "community": 22,
@@ -127,7 +137,7 @@
       "label": "SetBaseHealth()",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
-      "source_location": "L368",
+      "source_location": "L401",
       "_origin": "ast",
       "id": "private_pfacreaturebase_setbasehealth",
       "community": 22,
@@ -137,7 +147,7 @@
       "label": "SetSpawnDespawnDistance()",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
-      "source_location": "L385",
+      "source_location": "L418",
       "_origin": "ast",
       "id": "private_pfacreaturebase_setspawndespawndistance",
       "community": 22,
@@ -147,7 +157,7 @@
       "label": "SetBorrowedBehaviorTree()",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
-      "source_location": "L399",
+      "source_location": "L432",
       "_origin": "ast",
       "id": "private_pfacreaturebase_setborrowedbehaviortree",
       "community": 22,
@@ -157,9 +167,9 @@
       "label": "UBehaviorTree",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
-      "source_location": "L399",
+      "source_location": "L432",
       "_origin": "ast",
-      "id": "source_primalfauna_private_pfacreaturebase_cpp_ubehaviortree",
+      "id": "ubehaviortree",
       "community": 22,
       "norm_label": "ubehaviortree"
     },
@@ -167,7 +177,7 @@
       "label": "ClearNativeOrphanTimer()",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
-      "source_location": "L416",
+      "source_location": "L449",
       "_origin": "ast",
       "id": "private_pfacreaturebase_clearnativeorphantimer",
       "community": 22,
@@ -177,7 +187,7 @@
       "label": "SpawnDeathItem_Implementation()",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
-      "source_location": "L426",
+      "source_location": "L459",
       "_origin": "ast",
       "id": "private_pfacreaturebase_spawndeathitem_implementation",
       "community": 22,
@@ -227,121 +237,11 @@
       "label": "LogCreatureStateHeartbeat()",
       "file_type": "code",
       "source_file": "Source/PrimalFauna/Private/PFACreatureControllerPerception.cpp",
-      "source_location": "L250",
+      "source_location": "L274",
       "_origin": "ast",
       "id": "private_pfacreaturecontrollerperception_logcreaturestateheartbeat",
       "community": 23,
       "norm_label": "logcreaturestateheartbeat()"
-    },
-    {
-      "label": "PFASpatialRegression.cpp",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFASpatialRegression.cpp",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "private_pfaspatialregression",
-      "community": 40,
-      "norm_label": "pfaspatialregression.cpp"
-    },
-    {
-      "label": "PFASubsystem.cpp",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFASubsystem.cpp",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "private_pfasubsystem",
-      "community": 32,
-      "norm_label": "pfasubsystem.cpp"
-    },
-    {
-      "label": "APFASubsystem()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFASubsystem.cpp",
-      "source_location": "L45",
-      "_origin": "ast",
-      "id": "private_pfasubsystem_apfasubsystem",
-      "community": 32,
-      "norm_label": "apfasubsystem()"
-    },
-    {
-      "label": "BeginPlay()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFASubsystem.cpp",
-      "source_location": "L50",
-      "_origin": "ast",
-      "id": "private_pfasubsystem_beginplay",
-      "community": 32,
-      "norm_label": "beginplay()"
-    },
-    {
-      "label": "RefreshTick()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFASubsystem.cpp",
-      "source_location": "L81",
-      "_origin": "ast",
-      "id": "private_pfasubsystem_refreshtick",
-      "community": 32,
-      "norm_label": "refreshtick()"
-    },
-    {
-      "label": "PostLoadGame_Implementation()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFASubsystem.cpp",
-      "source_location": "L191",
-      "_origin": "ast",
-      "id": "private_pfasubsystem_postloadgame_implementation",
-      "community": 32,
-      "norm_label": "postloadgame_implementation()"
-    },
-    {
-      "label": "int32",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFASubsystem.cpp",
-      "source_location": "L191",
-      "_origin": "ast",
-      "id": "source_primalfauna_private_pfasubsystem_cpp_int32",
-      "community": 32,
-      "norm_label": "int32"
-    },
-    {
-      "label": "ReconcileNests()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFASubsystem.cpp",
-      "source_location": "L226",
-      "_origin": "ast",
-      "id": "private_pfasubsystem_reconcilenests",
-      "community": 32,
-      "norm_label": "reconcilenests()"
-    },
-    {
-      "label": "SpawnNestAtPlayer()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFASubsystem.cpp",
-      "source_location": "L426",
-      "_origin": "ast",
-      "id": "private_pfasubsystem_spawnnestatplayer",
-      "community": 32,
-      "norm_label": "spawnnestatplayer()"
-    },
-    {
-      "label": "FString",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFASubsystem.cpp",
-      "source_location": "L426",
-      "_origin": "ast",
-      "id": "source_primalfauna_private_pfasubsystem_cpp_fstring",
-      "community": 32,
-      "norm_label": "fstring"
-    },
-    {
-      "label": "CheckNestRegistryConsistency()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/PFASubsystem.cpp",
-      "source_location": "L502",
-      "_origin": "ast",
-      "id": "private_pfasubsystem_checknestregistryconsistency",
-      "community": 32,
-      "norm_label": "checknestregistryconsistency()"
     },
     {
       "label": "PrimalFauna.cpp",
@@ -364,134 +264,34 @@
       "norm_label": "startupmodule()"
     },
     {
-      "label": "PFASicklejaw.cpp",
+      "label": "PFACreatureBase.h",
       "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
+      "source_file": "Source/PrimalFauna/Public/PFACreatureBase.h",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "source_primalfauna_private_species_pfasicklejaw_cpp_species_pfasicklejaw",
-      "community": 37,
-      "norm_label": "pfasicklejaw.cpp"
+      "id": "public_pfacreaturebase",
+      "community": 12,
+      "norm_label": "pfacreaturebase.h"
     },
     {
-      "label": "APFASicklejaw()",
+      "label": "EPFAAggression()",
       "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
-      "source_location": "L149",
+      "source_file": "Source/PrimalFauna/Public/PFACreatureBase.h",
+      "source_location": "L12",
       "_origin": "ast",
-      "id": "species_pfasicklejaw_apfasicklejaw",
-      "community": 22,
-      "norm_label": "apfasicklejaw()"
+      "id": "public_pfacreaturebase_epfaaggression",
+      "community": 12,
+      "norm_label": "epfaaggression()"
     },
     {
-      "label": "FObjectInitializer",
+      "label": "class",
       "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
-      "source_location": "L149",
+      "source_file": "Source/PrimalFauna/Public/PFACreatureBase.h",
+      "source_location": "L12",
       "_origin": "ast",
-      "id": "source_primalfauna_private_species_pfasicklejaw_cpp_fobjectinitializer",
-      "community": 22,
-      "norm_label": "fobjectinitializer"
-    },
-    {
-      "label": "BeginPlay()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
-      "source_location": "L211",
-      "_origin": "ast",
-      "id": "species_pfasicklejaw_beginplay",
-      "community": 37,
-      "norm_label": "beginplay()"
-    },
-    {
-      "label": "FindSequenceInPackages()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
-      "source_location": "L351",
-      "_origin": "ast",
-      "id": "species_pfasicklejaw_findsequenceinpackages",
-      "community": 37,
-      "norm_label": "findsequenceinpackages()"
-    },
-    {
-      "label": "UAnimSequence",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
-      "source_location": "L351",
-      "_origin": "ast",
-      "id": "uanimsequence",
-      "community": 37,
-      "norm_label": "uanimsequence"
-    },
-    {
-      "label": "TCHAR",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
-      "source_location": "L351",
-      "_origin": "ast",
-      "id": "source_primalfauna_private_species_pfasicklejaw_cpp_tchar",
-      "community": 37,
-      "norm_label": "tchar"
-    },
-    {
-      "label": "int32",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
-      "source_location": "L351",
-      "_origin": "ast",
-      "id": "source_primalfauna_private_species_pfasicklejaw_cpp_int32",
-      "community": 37,
-      "norm_label": "int32"
-    },
-    {
-      "label": "FString",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
-      "source_location": "L351",
-      "_origin": "ast",
-      "id": "source_primalfauna_private_species_pfasicklejaw_cpp_fstring",
-      "community": 37,
-      "norm_label": "fstring"
-    },
-    {
-      "label": "StartLocomotionAnim()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
-      "source_location": "L393",
-      "_origin": "ast",
-      "id": "species_pfasicklejaw_startlocomotionanim",
-      "community": 37,
-      "norm_label": "startlocomotionanim()"
-    },
-    {
-      "label": "TickLocomotionAnim()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
-      "source_location": "L444",
-      "_origin": "ast",
-      "id": "species_pfasicklejaw_ticklocomotionanim",
-      "community": 37,
-      "norm_label": "ticklocomotionanim()"
-    },
-    {
-      "label": "SpawnTestCommand()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
-      "source_location": "L576",
-      "_origin": "ast",
-      "id": "species_pfasicklejaw_spawntestcommand",
-      "community": 37,
-      "norm_label": "spawntestcommand()"
-    },
-    {
-      "label": "UWorld",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
-      "source_location": "L576",
-      "_origin": "ast",
-      "id": "uworld",
-      "community": 11,
-      "norm_label": "uworld"
+      "id": "class",
+      "community": 12,
+      "norm_label": "class"
     },
     {
       "label": "PFACreatureController.h",
@@ -519,9 +319,249 @@
       "source_file": "Source/PrimalFauna/Public/PFACreatureController.h",
       "source_location": "L28",
       "_origin": "ast",
-      "id": "source_primalfauna_public_pfacreaturecontroller_h_primalfauna_api",
+      "id": "primalfauna_api",
       "community": 33,
       "norm_label": "primalfauna_api"
+    },
+    {
+      "label": "PFASpatialRegression.cpp",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFASpatialRegression.cpp",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 40,
+      "norm_label": "pfaspatialregression.cpp",
+      "id": "private_pfaspatialregression"
+    },
+    {
+      "label": "PFASubsystem.cpp",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFASubsystem.cpp",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 32,
+      "norm_label": "pfasubsystem.cpp",
+      "id": "private_pfasubsystem"
+    },
+    {
+      "label": "APFASubsystem()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFASubsystem.cpp",
+      "source_location": "L45",
+      "_origin": "ast",
+      "community": 32,
+      "norm_label": "apfasubsystem()",
+      "id": "private_pfasubsystem_apfasubsystem"
+    },
+    {
+      "label": "BeginPlay()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFASubsystem.cpp",
+      "source_location": "L50",
+      "_origin": "ast",
+      "community": 32,
+      "norm_label": "beginplay()",
+      "id": "private_pfasubsystem_beginplay"
+    },
+    {
+      "label": "RefreshTick()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFASubsystem.cpp",
+      "source_location": "L81",
+      "_origin": "ast",
+      "community": 32,
+      "norm_label": "refreshtick()",
+      "id": "private_pfasubsystem_refreshtick"
+    },
+    {
+      "label": "PostLoadGame_Implementation()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFASubsystem.cpp",
+      "source_location": "L191",
+      "_origin": "ast",
+      "community": 32,
+      "norm_label": "postloadgame_implementation()",
+      "id": "private_pfasubsystem_postloadgame_implementation"
+    },
+    {
+      "label": "int32",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFASubsystem.cpp",
+      "source_location": "L191",
+      "_origin": "ast",
+      "community": 32,
+      "norm_label": "int32",
+      "id": "source_primalfauna_private_pfasubsystem_cpp_int32"
+    },
+    {
+      "label": "ReconcileNests()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFASubsystem.cpp",
+      "source_location": "L226",
+      "_origin": "ast",
+      "community": 32,
+      "norm_label": "reconcilenests()",
+      "id": "private_pfasubsystem_reconcilenests"
+    },
+    {
+      "label": "SpawnNestAtPlayer()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFASubsystem.cpp",
+      "source_location": "L426",
+      "_origin": "ast",
+      "community": 32,
+      "norm_label": "spawnnestatplayer()",
+      "id": "private_pfasubsystem_spawnnestatplayer"
+    },
+    {
+      "label": "FString",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFASubsystem.cpp",
+      "source_location": "L426",
+      "_origin": "ast",
+      "community": 32,
+      "norm_label": "fstring",
+      "id": "source_primalfauna_private_pfasubsystem_cpp_fstring"
+    },
+    {
+      "label": "CheckNestRegistryConsistency()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/PFASubsystem.cpp",
+      "source_location": "L502",
+      "_origin": "ast",
+      "community": 32,
+      "norm_label": "checknestregistryconsistency()",
+      "id": "private_pfasubsystem_checknestregistryconsistency"
+    },
+    {
+      "label": "PFASicklejaw.cpp",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 37,
+      "norm_label": "pfasicklejaw.cpp",
+      "id": "source_primalfauna_private_species_pfasicklejaw_cpp_species_pfasicklejaw"
+    },
+    {
+      "label": "APFASicklejaw()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
+      "source_location": "L149",
+      "_origin": "ast",
+      "community": 22,
+      "norm_label": "apfasicklejaw()",
+      "id": "species_pfasicklejaw_apfasicklejaw"
+    },
+    {
+      "label": "FObjectInitializer",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
+      "source_location": "L149",
+      "_origin": "ast",
+      "community": 22,
+      "norm_label": "fobjectinitializer",
+      "id": "source_primalfauna_private_species_pfasicklejaw_cpp_fobjectinitializer"
+    },
+    {
+      "label": "BeginPlay()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
+      "source_location": "L211",
+      "_origin": "ast",
+      "community": 37,
+      "norm_label": "beginplay()",
+      "id": "species_pfasicklejaw_beginplay"
+    },
+    {
+      "label": "FindSequenceInPackages()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
+      "source_location": "L351",
+      "_origin": "ast",
+      "community": 37,
+      "norm_label": "findsequenceinpackages()",
+      "id": "species_pfasicklejaw_findsequenceinpackages"
+    },
+    {
+      "label": "UAnimSequence",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
+      "source_location": "L351",
+      "_origin": "ast",
+      "community": 37,
+      "norm_label": "uanimsequence",
+      "id": "uanimsequence"
+    },
+    {
+      "label": "TCHAR",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
+      "source_location": "L351",
+      "_origin": "ast",
+      "community": 37,
+      "norm_label": "tchar",
+      "id": "source_primalfauna_private_species_pfasicklejaw_cpp_tchar"
+    },
+    {
+      "label": "int32",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
+      "source_location": "L351",
+      "_origin": "ast",
+      "community": 37,
+      "norm_label": "int32",
+      "id": "source_primalfauna_private_species_pfasicklejaw_cpp_int32"
+    },
+    {
+      "label": "FString",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
+      "source_location": "L351",
+      "_origin": "ast",
+      "community": 37,
+      "norm_label": "fstring",
+      "id": "source_primalfauna_private_species_pfasicklejaw_cpp_fstring"
+    },
+    {
+      "label": "StartLocomotionAnim()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
+      "source_location": "L393",
+      "_origin": "ast",
+      "community": 37,
+      "norm_label": "startlocomotionanim()",
+      "id": "species_pfasicklejaw_startlocomotionanim"
+    },
+    {
+      "label": "TickLocomotionAnim()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
+      "source_location": "L444",
+      "_origin": "ast",
+      "community": 37,
+      "norm_label": "ticklocomotionanim()",
+      "id": "species_pfasicklejaw_ticklocomotionanim"
+    },
+    {
+      "label": "SpawnTestCommand()",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
+      "source_location": "L576",
+      "_origin": "ast",
+      "community": 11,
+      "norm_label": "spawntestcommand()",
+      "id": "species_pfasicklejaw_spawntestcommand"
+    },
+    {
+      "label": "UWorld",
+      "file_type": "code",
+      "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
+      "source_location": "L576",
+      "_origin": "ast",
+      "community": 11,
+      "norm_label": "uworld",
+      "id": "uworld"
     },
     {
       "label": "PFASubsystem.h",
@@ -529,9 +569,9 @@
       "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "public_pfasubsystem",
       "community": 9,
-      "norm_label": "pfasubsystem.h"
+      "norm_label": "pfasubsystem.h",
+      "id": "public_pfasubsystem"
     },
     {
       "label": "GetBorrowedBehaviorTree()",
@@ -539,9 +579,9 @@
       "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
       "source_location": "L86",
       "_origin": "ast",
-      "id": "public_pfasubsystem_getborrowedbehaviortree",
       "community": 9,
-      "norm_label": "getborrowedbehaviortree()"
+      "norm_label": "getborrowedbehaviortree()",
+      "id": "public_pfasubsystem_getborrowedbehaviortree"
     },
     {
       "label": "UBehaviorTree",
@@ -549,9 +589,9 @@
       "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
       "source_location": "L86",
       "_origin": "ast",
-      "id": "source_primalfauna_public_pfasubsystem_h_ubehaviortree",
       "community": 9,
-      "norm_label": "ubehaviortree"
+      "norm_label": "ubehaviortree",
+      "id": "source_primalfauna_public_pfasubsystem_h_ubehaviortree"
     },
     {
       "label": "NeedTransform_Implementation()",
@@ -559,9 +599,9 @@
       "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
       "source_location": "L94",
       "_origin": "ast",
-      "id": "public_pfasubsystem_needtransform_implementation",
       "community": 9,
-      "norm_label": "needtransform_implementation()"
+      "norm_label": "needtransform_implementation()",
+      "id": "public_pfasubsystem_needtransform_implementation"
     },
     {
       "label": "virtual",
@@ -569,9 +609,9 @@
       "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
       "source_location": "L94",
       "_origin": "ast",
-      "id": "virtual",
       "community": 9,
-      "norm_label": "virtual"
+      "norm_label": "virtual",
+      "id": "virtual"
     },
     {
       "label": "PreSaveGame_Implementation()",
@@ -579,9 +619,9 @@
       "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
       "source_location": "L95",
       "_origin": "ast",
-      "id": "public_pfasubsystem_presavegame_implementation",
       "community": 9,
-      "norm_label": "presavegame_implementation()"
+      "norm_label": "presavegame_implementation()",
+      "id": "public_pfasubsystem_presavegame_implementation"
     },
     {
       "label": "int32",
@@ -589,9 +629,9 @@
       "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
       "source_location": "L95",
       "_origin": "ast",
-      "id": "source_primalfauna_public_pfasubsystem_h_int32",
       "community": 9,
-      "norm_label": "int32"
+      "norm_label": "int32",
+      "id": "source_primalfauna_public_pfasubsystem_h_int32"
     },
     {
       "label": "PostSaveGame_Implementation()",
@@ -599,9 +639,9 @@
       "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
       "source_location": "L96",
       "_origin": "ast",
-      "id": "public_pfasubsystem_postsavegame_implementation",
       "community": 9,
-      "norm_label": "postsavegame_implementation()"
+      "norm_label": "postsavegame_implementation()",
+      "id": "public_pfasubsystem_postsavegame_implementation"
     },
     {
       "label": "PreLoadGame_Implementation()",
@@ -609,9 +649,9 @@
       "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
       "source_location": "L97",
       "_origin": "ast",
-      "id": "public_pfasubsystem_preloadgame_implementation",
       "community": 9,
-      "norm_label": "preloadgame_implementation()"
+      "norm_label": "preloadgame_implementation()",
+      "id": "public_pfasubsystem_preloadgame_implementation"
     },
     {
       "label": "PFASicklejaw.h",
@@ -619,9 +659,9 @@
       "source_file": "Source/PrimalFauna/Public/Species/PFASicklejaw.h",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "source_primalfauna_public_species_pfasicklejaw_h_species_pfasicklejaw",
       "community": 38,
-      "norm_label": "pfasicklejaw.h"
+      "norm_label": "pfasicklejaw.h",
+      "id": "source_primalfauna_public_species_pfasicklejaw_h_species_pfasicklejaw"
     },
     {
       "label": "APFACreatureBase()",
@@ -629,9 +669,9 @@
       "source_file": "Source/PrimalFauna/Public/Species/PFASicklejaw.h",
       "source_location": "L41",
       "_origin": "ast",
-      "id": "species_pfasicklejaw_apfacreaturebase",
       "community": 38,
-      "norm_label": "apfacreaturebase()"
+      "norm_label": "apfacreaturebase()",
+      "id": "species_pfasicklejaw_apfacreaturebase"
     },
     {
       "label": "PRIMALFAUNA_API",
@@ -639,9 +679,9 @@
       "source_file": "Source/PrimalFauna/Public/Species/PFASicklejaw.h",
       "source_location": "L41",
       "_origin": "ast",
-      "id": "source_primalfauna_public_species_pfasicklejaw_h_primalfauna_api",
       "community": 38,
-      "norm_label": "primalfauna_api"
+      "norm_label": "primalfauna_api",
+      "id": "source_primalfauna_public_species_pfasicklejaw_h_primalfauna_api"
     },
     {
       "label": "PFACreatureController.cpp",
@@ -1309,7 +1349,7 @@
       "source_file": "Source/PrimalFauna/Private/PFACheats.cpp",
       "source_location": "L71",
       "_origin": "ast",
-      "community": 32,
+      "community": 11,
       "norm_label": "pfa_runselftests()",
       "id": "private_pfacheats_pfa_runselftests"
     },
@@ -1612,36 +1652,6 @@
       "community": 39,
       "norm_label": "ufgcreatureactionmeleeattack()",
       "id": "actions_pfacreatureactionmelee_ufgcreatureactionmeleeattack"
-    },
-    {
-      "label": "PFACreatureBase.h",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Public/PFACreatureBase.h",
-      "source_location": "L1",
-      "_origin": "ast",
-      "community": 12,
-      "norm_label": "pfacreaturebase.h",
-      "id": "public_pfacreaturebase"
-    },
-    {
-      "label": "EPFAAggression()",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Public/PFACreatureBase.h",
-      "source_location": "L12",
-      "_origin": "ast",
-      "community": 12,
-      "norm_label": "epfaaggression()",
-      "id": "public_pfacreaturebase_epfaaggression"
-    },
-    {
-      "label": "class",
-      "file_type": "code",
-      "source_file": "Source/PrimalFauna/Public/PFACreatureBase.h",
-      "source_location": "L12",
-      "_origin": "ast",
-      "community": 12,
-      "norm_label": "class",
-      "id": "class"
     },
     {
       "label": "manifest.json",
@@ -3229,6 +3239,16 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
+      "source_location": "L228",
+      "weight": 1.0,
+      "source": "private_pfacreaturebase",
+      "target": "private_pfacreaturebase_applyrotationpolicy",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
       "source_location": "L52",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -3330,12 +3350,12 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
-      "source_location": "L21",
+      "source_location": "L22",
       "weight": 1.0,
       "context": "return_type",
-      "confidence_score": 1.0,
       "source": "private_pfacreaturebase_aggressionmodetostring",
-      "target": "source_primalfauna_private_pfacreaturebase_cpp_tchar"
+      "target": "tchar",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -3363,12 +3383,23 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
-      "source_location": "L43",
+      "source_location": "L94",
       "weight": 1.0,
       "context": "parameter_type",
-      "confidence_score": 1.0,
       "source": "private_pfacreaturebase_apfacreaturebase",
-      "target": "source_primalfauna_private_pfacreaturebase_cpp_fobjectinitializer"
+      "target": "fobjectinitializer",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
+      "source_location": "L201",
+      "weight": 1.0,
+      "source": "private_pfacreaturebase_beginplay",
+      "target": "private_pfacreaturebase_applyrotationpolicy",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -3429,11 +3460,11 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "Source/PrimalFauna/Private/PFACreatureBase.cpp",
-      "source_location": "L399",
+      "source_location": "L432",
       "weight": 1.0,
       "context": "parameter_type",
       "source": "private_pfacreaturebase_setborrowedbehaviortree",
-      "target": "source_primalfauna_private_pfacreaturebase_cpp_ubehaviortree",
+      "target": "ubehaviortree",
       "confidence_score": 1.0
     },
     {
@@ -3452,9 +3483,9 @@
       "source_file": "Source/PrimalFauna/Private/PFACreatureControllerPerception.cpp",
       "source_location": "L221",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "private_pfacreaturecontrollerperception",
-      "target": "private_pfacreaturecontrollerperception_tickfocussync",
-      "confidence_score": 1.0
+      "target": "private_pfacreaturecontrollerperception_tickfocussync"
     },
     {
       "relation": "contains",
@@ -3498,6 +3529,69 @@
       "confidence_score": 1.0,
       "source": "private_pfacreaturecontroller_logruleverdict",
       "target": "afgcreature"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Private/PrimalFauna.cpp",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "private_primalfauna",
+      "target": "private_primalfauna_startupmodule"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Public/PFACreatureBase.h",
+      "source_location": "L12",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "public_pfacreaturebase",
+      "target": "public_pfacreaturebase_epfaaggression"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Public/PFACreatureBase.h",
+      "source_location": "L12",
+      "weight": 1.0,
+      "context": "return_type",
+      "confidence_score": 1.0,
+      "source": "public_pfacreaturebase_epfaaggression",
+      "target": "class"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Public/PrimalFauna.h",
+      "source_location": "L16",
+      "weight": 1.0,
+      "context": "return_type",
+      "confidence_score": 1.0,
+      "source": "public_primalfauna_fdefaultgamemoduleimpl",
+      "target": "class"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Public/PFACreatureController.h",
+      "source_location": "L23",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "public_pfacreaturecontroller",
+      "target": "public_pfacreaturecontroller_apfacreaturecontroller"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "Source/PrimalFauna/Public/PFACreatureController.h",
+      "source_location": "L28",
+      "weight": 1.0,
+      "context": "return_type",
+      "source": "public_pfacreaturecontroller_apfacreaturecontroller",
+      "target": "primalfauna_api",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -3631,9 +3725,9 @@
       "source_location": "L426",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "private_pfasubsystem_spawnnestatplayer",
-      "target": "source_primalfauna_private_pfasubsystem_cpp_fstring",
-      "confidence_score": 1.0
+      "target": "source_primalfauna_private_pfasubsystem_cpp_fstring"
     },
     {
       "relation": "references",
@@ -3642,19 +3736,9 @@
       "source_location": "L502",
       "weight": 1.0,
       "context": "parameter_type",
-      "source": "private_pfasubsystem_checknestregistryconsistency",
-      "target": "source_primalfauna_private_pfasubsystem_cpp_fstring",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Private/PrimalFauna.cpp",
-      "source_location": "L5",
-      "weight": 1.0,
       "confidence_score": 1.0,
-      "source": "private_primalfauna",
-      "target": "private_primalfauna_startupmodule"
+      "source": "private_pfasubsystem_checknestregistryconsistency",
+      "target": "source_primalfauna_private_pfasubsystem_cpp_fstring"
     },
     {
       "relation": "contains",
@@ -3662,9 +3746,9 @@
       "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
       "source_location": "L149",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "source_primalfauna_private_species_pfasicklejaw_cpp_species_pfasicklejaw",
-      "target": "species_pfasicklejaw_apfasicklejaw",
-      "confidence_score": 1.0
+      "target": "species_pfasicklejaw_apfasicklejaw"
     },
     {
       "relation": "contains",
@@ -3672,9 +3756,9 @@
       "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
       "source_location": "L211",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "source_primalfauna_private_species_pfasicklejaw_cpp_species_pfasicklejaw",
-      "target": "species_pfasicklejaw_beginplay",
-      "confidence_score": 1.0
+      "target": "species_pfasicklejaw_beginplay"
     },
     {
       "relation": "contains",
@@ -3682,9 +3766,9 @@
       "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
       "source_location": "L351",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "source_primalfauna_private_species_pfasicklejaw_cpp_species_pfasicklejaw",
-      "target": "species_pfasicklejaw_findsequenceinpackages",
-      "confidence_score": 1.0
+      "target": "species_pfasicklejaw_findsequenceinpackages"
     },
     {
       "relation": "contains",
@@ -3692,9 +3776,9 @@
       "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
       "source_location": "L576",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "source_primalfauna_private_species_pfasicklejaw_cpp_species_pfasicklejaw",
-      "target": "species_pfasicklejaw_spawntestcommand",
-      "confidence_score": 1.0
+      "target": "species_pfasicklejaw_spawntestcommand"
     },
     {
       "relation": "contains",
@@ -3702,9 +3786,9 @@
       "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
       "source_location": "L393",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "source_primalfauna_private_species_pfasicklejaw_cpp_species_pfasicklejaw",
-      "target": "species_pfasicklejaw_startlocomotionanim",
-      "confidence_score": 1.0
+      "target": "species_pfasicklejaw_startlocomotionanim"
     },
     {
       "relation": "contains",
@@ -3712,9 +3796,9 @@
       "source_file": "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp",
       "source_location": "L444",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "source_primalfauna_private_species_pfasicklejaw_cpp_species_pfasicklejaw",
-      "target": "species_pfasicklejaw_ticklocomotionanim",
-      "confidence_score": 1.0
+      "target": "species_pfasicklejaw_ticklocomotionanim"
     },
     {
       "relation": "references",
@@ -3723,9 +3807,9 @@
       "source_location": "L149",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "species_pfasicklejaw_apfasicklejaw",
-      "target": "source_primalfauna_private_species_pfasicklejaw_cpp_fobjectinitializer",
-      "confidence_score": 1.0
+      "target": "source_primalfauna_private_species_pfasicklejaw_cpp_fobjectinitializer"
     },
     {
       "relation": "calls",
@@ -3756,9 +3840,9 @@
       "source_location": "L351",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "species_pfasicklejaw_findsequenceinpackages",
-      "target": "source_primalfauna_private_species_pfasicklejaw_cpp_fstring",
-      "confidence_score": 1.0
+      "target": "source_primalfauna_private_species_pfasicklejaw_cpp_fstring"
     },
     {
       "relation": "references",
@@ -3767,9 +3851,9 @@
       "source_location": "L351",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "species_pfasicklejaw_findsequenceinpackages",
-      "target": "source_primalfauna_private_species_pfasicklejaw_cpp_int32",
-      "confidence_score": 1.0
+      "target": "source_primalfauna_private_species_pfasicklejaw_cpp_int32"
     },
     {
       "relation": "references",
@@ -3778,9 +3862,9 @@
       "source_location": "L351",
       "weight": 1.0,
       "context": "parameter_type",
+      "confidence_score": 1.0,
       "source": "species_pfasicklejaw_findsequenceinpackages",
-      "target": "source_primalfauna_private_species_pfasicklejaw_cpp_tchar",
-      "confidence_score": 1.0
+      "target": "source_primalfauna_private_species_pfasicklejaw_cpp_tchar"
     },
     {
       "relation": "references",
@@ -3939,27 +4023,6 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Public/PFACreatureController.h",
-      "source_location": "L23",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "public_pfacreaturecontroller",
-      "target": "public_pfacreaturecontroller_apfacreaturecontroller"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Public/PFACreatureController.h",
-      "source_location": "L28",
-      "weight": 1.0,
-      "context": "return_type",
-      "source": "public_pfacreaturecontroller_apfacreaturecontroller",
-      "target": "source_primalfauna_public_pfacreaturecontroller_h_primalfauna_api",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
       "source_file": "Source/PrimalFauna/Public/PFASubsystem.h",
       "source_location": "L86",
       "weight": 1.0,
@@ -4112,9 +4175,9 @@
       "source_location": "L41",
       "weight": 1.0,
       "context": "return_type",
+      "confidence_score": 1.0,
       "source": "species_pfasicklejaw_apfacreaturebase",
-      "target": "source_primalfauna_public_species_pfasicklejaw_h_primalfauna_api",
-      "confidence_score": 1.0
+      "target": "source_primalfauna_public_species_pfasicklejaw_h_primalfauna_api"
     },
     {
       "relation": "contains",
@@ -5402,38 +5465,6 @@
       "confidence_score": 1.0,
       "source": "source_primalfauna_public_actions_pfacreatureactionmelee_h_actions_pfacreatureactionmelee",
       "target": "actions_pfacreatureactionmelee_ufgcreatureactionmeleeattack"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Public/PFACreatureBase.h",
-      "source_location": "L12",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "public_pfacreaturebase",
-      "target": "public_pfacreaturebase_epfaaggression"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Public/PFACreatureBase.h",
-      "source_location": "L12",
-      "weight": 1.0,
-      "context": "return_type",
-      "confidence_score": 1.0,
-      "source": "public_pfacreaturebase_epfaaggression",
-      "target": "class"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "source_file": "Source/PrimalFauna/Public/PrimalFauna.h",
-      "source_location": "L16",
-      "weight": 1.0,
-      "context": "return_type",
-      "confidence_score": 1.0,
-      "source": "public_primalfauna_fdefaultgamemoduleimpl",
-      "target": "class"
     },
     {
       "relation": "contains",
@@ -6849,5 +6880,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "4be824cdbf3ef511fb28b120766569f915fca89f"
+  "built_at_commit": "416e220d524b47e41ec0036a64d24e960339f6d4"
 }

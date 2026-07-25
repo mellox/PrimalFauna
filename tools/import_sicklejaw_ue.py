@@ -35,21 +35,27 @@ Failure = any  PFA_ ASSERT-FAIL  line (and no DONE).
 import os
 import unreal
 
-ART = r"C:\Claude\Projects\PrimalFauna\art\wip\sicklejaw-rebuild"
-SK_FBX = os.path.join(ART, "final", "SK_Sicklejaw.fbx")
-# 2026-07-24 REBOUND sources (mod-artist rebind_report.md): armature-only
-# (48-bone rig = exact match to the mesh FBX, leaf bones dropped), ONE baked
-# in-place rotation-only take each, meter-native. Mesh-free sources are what
-# kills the mesh-twin-package failure at the root; the raw Tripo FBXs in
-# anims/{take}/ are retained as provenance but must NOT be imported (60-bone
-# leaf-inflated + embedded 21k-vert mesh).
-ANIM_FBXS = [
-    ("A_Sicklejaw_Idle",  os.path.join(ART, "anims_rebound", "A_Sicklejaw_Idle.fbx")),
-    ("A_Sicklejaw_Walk",  os.path.join(ART, "anims_rebound", "A_Sicklejaw_Walk.fbx")),
-    ("A_Sicklejaw_Run",   os.path.join(ART, "anims_rebound", "A_Sicklejaw_Run.fbx")),
-    ("A_Sicklejaw_Slash", os.path.join(ART, "anims_rebound", "A_Sicklejaw_Slash.fbx")),
-    ("A_Sicklejaw_Hurt",  os.path.join(ART, "anims_rebound", "A_Sicklejaw_Hurt.fbx")),
-]
+# 2026-07-25: the CANDIDATE-D line. The user rejected the W2.1b rebuild mesh
+# ("goofy... not something to be afraid of") and the research separately found
+# its rig anatomically broken, so both were abandoned; sicklejaw-rebuild/ and
+# sicklejaw-rig-v2/ are documented dead ends kept only for their reports.
+# These assets carry a rig that PASSES tools/validate_rig_fbx.py and clips that
+# pass tools/validate_anim_fbx.py -- authored, not retargeted from presets.
+ART = r"C:\Claude\Projects\PrimalFauna\art\wip\sicklejaw-d-v2"
+SK_FBX = os.path.join(ART, "SK_Sicklejaw.fbx")
+RIG_MANIFEST = os.path.join(ART, "rig_manifest.json")
+
+# Clips are DISCOVERED, not listed: the animation set grows packet by packet
+# (P0 locomotion+attack, then turns/alert/aggressive/threaten/lunge/prowl...),
+# and a hardcoded list silently drops whatever was authored last.
+def discover_anim_fbxs():
+    found = []
+    for filename in sorted(os.listdir(ART)):
+        if filename.startswith("A_Sicklejaw_") and filename.lower().endswith(".fbx"):
+            found.append((os.path.splitext(filename)[0], os.path.join(ART, filename)))
+    return found
+
+ANIM_FBXS = discover_anim_fbxs()
 
 DEST = "/PrimalFauna/Sicklejaw"
 SK_NAME = "SK_Sicklejaw"
@@ -212,6 +218,28 @@ if not (EXPECT_MIN_CM <= height <= EXPECT_MAX_CM):
 skeleton = sk.get_editor_property("skeleton")
 if not skeleton:
     fail("%s imported with no Skeleton" % SK_NAME)
+
+# 2026-07-25 BONE-COUNT CONTRACT: Blender's validator wrote a manifest of the
+# rig it accepted; assert UE ended up with the SAME skeleton. This is what
+# catches a silent rig swap or an importer that quietly drops/adds bones --
+# the failure class that shipped a broken skeleton for three sessions.
+if os.path.isfile(RIG_MANIFEST):
+    import json
+    with open(RIG_MANIFEST, "r") as handle:
+        manifest = json.load(handle)
+    expected_bones = manifest.get("bone_count")
+    try:
+        actual_bones = len(skeleton.get_editor_property("bone_tree"))
+    except Exception as error:
+        actual_bones = None
+        log("WARN: could not read UE bone count (%s) -- contract not enforced this run" % error)
+    if expected_bones and actual_bones is not None:
+        if actual_bones != expected_bones:
+            fail("BONE-COUNT CONTRACT BROKEN: Blender accepted %d bones, UE imported %d"
+                 % (expected_bones, actual_bones))
+        log("bone-count contract OK: %d bones match the Blender manifest" % actual_bones)
+else:
+    log("WARN: no rig_manifest.json beside the mesh -- bone-count contract NOT enforced")
 log("imported SK=%s skeleton=%s height=%.1fcm scale=%.0f" % (sk.get_name(), skeleton.get_name(), height, chosen_scale))
 
 mats = sk.get_editor_property("materials")
