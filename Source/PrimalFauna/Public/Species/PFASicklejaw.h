@@ -102,6 +102,11 @@ public:
 	// on its own clock (or when the action cleans up).
 	bool PlayAttackOneShot(const FString& ClipName);
 	void StopAttackOneShot();
+	// Lets the impact timer confirm the strike is still on screen before it
+	// deals damage, so the two state machines can't drift apart silently. The
+	// safe failure is "no damage, loudly logged"; the unsafe one is "damage
+	// with no visible cause", which is the bug this whole packet exists to fix.
+	bool IsPlayingAttackOneShot() const;
 
 private:
 

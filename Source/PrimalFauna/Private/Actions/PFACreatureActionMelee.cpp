@@ -197,11 +197,19 @@ void UPFACreatureActionMelee::PerformAction_Implementation()
 
 		const float ImpactDelay = FMath::Max(0.0f, CVarPFABiteImpactDelay.GetValueOnGameThread());
 		UWorld* World = mCreature.IsValid() ? mCreature->GetWorld() : nullptr;
+
+		// Clear UNCONDITIONALLY, before branching (review W3). Clearing only
+		// inside the delayed branch left a pending impact armed if the very next
+		// PerformAction took the immediate branch -- which happens the moment
+		// someone sets pfa.BiteImpactDelay 0 mid-fight -- and that stale timer
+		// then landed a second, unearned hit ~0.8s later.
+		if (World)
+		{
+			World->GetTimerManager().ClearTimer(BiteImpactTimerHandle);
+		}
+
 		if (ImpactDelay > 0.0f && World)
 		{
-			// Re-arm rather than stack: a second PerformAction before the first
-			// impact fired would otherwise queue two hits off one bite.
-			World->GetTimerManager().ClearTimer(BiteImpactTimerHandle);
 			World->GetTimerManager().SetTimer(
 				BiteImpactTimerHandle, this, &UPFACreatureActionMelee::OnBiteImpact, ImpactDelay, false);
 			if (PFADiag::IsEnabled())
@@ -222,10 +230,27 @@ void UPFACreatureActionMelee::PerformAction_Implementation()
 
 void UPFACreatureActionMelee::OnBiteImpact()
 {
-	// Everything is re-validated inside TryDirectMeleeHit (creature, target,
-	// range, cone, authority), which is exactly why the delay is safe: by the
-	// time this fires the world may have moved on, and a bite at an absent or
-	// out-of-range target must simply miss.
+	// The impact timer and the one-shot clip layer are two independent state
+	// machines, and w30-1 proved they can drift apart (a sentinel bug cleared
+	// the strike pose while this timer happily went on to deal damage). So the
+	// damage asks the animation whether it is still on screen. If the strike is
+	// gone, the safe failure is no damage plus a loud log -- never damage the
+	// player cannot see the cause of, which is the exact bug this packet exists
+	// to fix.
+	if (APFASicklejaw* Sicklejaw = Cast<APFASicklejaw>(mCreature.Get()))
+	{
+		if (!Sicklejaw->IsPlayingAttackOneShot())
+		{
+			UE_LOG(LogPrimalFauna, Warning,
+				TEXT("[PFA] Sicklejaw action=Melee impact frame reached but the strike pose is GONE -- suppressing damage rather than hitting invisibly. Something cleared the one-shot early; check the released reason with pfa.Diag 1."));
+			return;
+		}
+	}
+
+	// Everything else is re-validated inside TryDirectMeleeHit (creature alive,
+	// target, range, cone, authority), which is exactly why the delay is safe:
+	// by the time this fires the world may have moved on, and a bite at an
+	// absent or out-of-range target must simply miss.
 	if (PFADiag::IsEnabled())
 	{
 		UE_LOG(LogPrimalFauna, Display, TEXT("[PFA] Sicklejaw action=Melee impact frame reached -- resolving hit"));
@@ -245,6 +270,27 @@ void UPFACreatureActionMelee::TryDirectMeleeHit()
 
 	AFGCreature* Creature = mCreature.Get();
 	AActor* Target = GetCurrentTarget();
+
+	// w30-2 (review, invariant 9 sub-case): the ATTACKER's own death was never
+	// checked. Harmless while damage applied synchronously on the same line as
+	// the decision -- there was no window. The impact delay opens a real one, so
+	// a creature killed mid-swing could land its bite from beyond the grave.
+	if (Creature)
+	{
+		if (const UFGHealthComponent* CreatureHealth = Creature->GetHealthComponent())
+		{
+			if (CreatureHealth->IsDead())
+			{
+				if (PFADiag::IsEnabled())
+				{
+					UE_LOG(LogPrimalFauna, Display,
+						TEXT("[PFA] Sicklejaw action=Melee hit ABORTED -- the attacker died before its impact frame."));
+				}
+				return;
+			}
+		}
+	}
+
 	if (!Creature || !Target)
 	{
 		if (PFADiag::IsEnabled())
@@ -371,15 +417,38 @@ void UPFACreatureActionMelee::CleanupAction_Implementation(bool actionSuccess)
 			actionSuccess ? TEXT("true") : TEXT("false"));
 	}
 
-	// w30-1: an action that ends before its impact frame must not land a hit
-	// afterwards -- otherwise a bite interrupted by death, a state change or a
-	// lost target still bites. Kill the pending impact and release the strike
-	// pose so the locomotion loop takes the creature back immediately.
+	// w30-2: if this action ends while an impact is STILL PENDING, resolve the
+	// hit now instead of dropping it.
+	//
+	// Why not just cancel: the review could not determine statically whether the
+	// closed-source action framework finishes a montage-less action before
+	// 0.792s elapses -- and this codebase's own w18-9 in-game finding says
+	// "PerformAction fired and completed instantly". If it does, cancelling here
+	// would silently cancel EVERY bite and creatures would deal zero damage
+	// forever. Draining the pending hit instead means the worst case degrades to
+	// the proven w18-10 timing (damage at action end) rather than to no combat
+	// at all, and the Warning below says exactly which regime we are in -- so
+	// one log read answers the question the review couldn't.
+	// TryDirectMeleeHit re-validates everything, including (as of w30-2) that
+	// the attacker is still alive, so draining cannot make a corpse bite.
 	if (mCreature.IsValid())
 	{
 		if (UWorld* World = mCreature->GetWorld())
 		{
-			World->GetTimerManager().ClearTimer(BiteImpactTimerHandle);
+			FTimerManager& Timers = World->GetTimerManager();
+			if (Timers.IsTimerActive(BiteImpactTimerHandle))
+			{
+				const float Remaining = Timers.GetTimerRemaining(BiteImpactTimerHandle);
+				Timers.ClearTimer(BiteImpactTimerHandle);
+				UE_LOG(LogPrimalFauna, Warning,
+					TEXT("[PFA] Sicklejaw action=Melee cleaned up with %.3fs still to run before the impact frame -- resolving the hit NOW so the bite is not silently dropped. If you see this on EVERY bite, the action framework finishes faster than the strike and pfa.BiteImpactDelay should go to 0."),
+					Remaining);
+				TryDirectMeleeHit();
+			}
+			else
+			{
+				Timers.ClearTimer(BiteImpactTimerHandle);
+			}
 		}
 		if (APFASicklejaw* Sicklejaw = Cast<APFASicklejaw>(mCreature.Get()))
 		{

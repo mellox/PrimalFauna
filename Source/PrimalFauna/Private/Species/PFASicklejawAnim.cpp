@@ -241,9 +241,18 @@ bool APFASicklejaw::UpdateOneShotLayer(int32 DesiredState)
 		return false;
 	}
 
-	// A dev-requested clip (PFA.PlayAnim) ignores state changes on purpose:
-	// it is being watched, not lived.
-	if (OneShotBaseState != DevOneShotBaseState && DesiredState != OneShotBaseState)
+	// NEGATIVE BaseStates are SENTINELS and are immune to this comparison; they
+	// expire only on their own clock. Real looping states are always 0..5.
+	//
+	// Written as `>= 0` rather than as a list of sentinels because the list
+	// version already failed once: w30-1 added AttackOneShotBaseState (-3) and
+	// left this test special-casing only DevOneShotBaseState (-2), so
+	// `DesiredState != -3` was trivially true on every tick and every attack
+	// strike was cleared within 0.2s -- the bite animation was killed at ~10%
+	// of its length while the damage still landed at 0.792s. Exactly the
+	// "damage with no visible cause" bug that packet existed to fix, reintroduced
+	// by the fix. A third sentinel would have broken it again.
+	if (OneShotBaseState >= 0 && DesiredState != OneShotBaseState)
 	{
 		ClearOneShot(TEXT("situation changed"));
 		return false;
@@ -502,6 +511,11 @@ void APFASicklejaw::StopAttackOneShot()
 	{
 		ClearOneShot(TEXT("attack action cleaned up"));
 	}
+}
+
+bool APFASicklejaw::IsPlayingAttackOneShot() const
+{
+	return ActiveOneShotAnim != nullptr && OneShotBaseState == AttackOneShotBaseState;
 }
 
 namespace
