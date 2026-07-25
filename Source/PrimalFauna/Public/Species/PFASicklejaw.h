@@ -66,6 +66,49 @@ private:
 	void StartLocomotionAnim();
 	void TickLocomotionAnim();
 
+	// --- w31-1 THE ONE PLACE A CHOSEN SEQUENCE BECOMES A PLAYED POSE ---------
+	// Every clip this creature plays -- gaits, state idles, comfort breaks,
+	// threat displays, limps, attack strikes, dev overrides -- goes through
+	// here. That is the whole of the AnimInstance change on the gameplay side:
+	// the SELECTION logic above is untouched, only the delivery is redirected.
+	//
+	// Funnelling matters beyond tidiness. USkeletalMeshComponent::PlayAnimation
+	// FORCES the component back to single-node mode as its first act, so a
+	// single surviving direct PlayAnimation call would silently tear the
+	// AnimInstance down mid-session and the driver would thrash between the two
+	// paths every tick. One funnel makes that unrepresentable.
+	void ApplyChosenPose(UAnimSequence* Sequence, bool bLoop);
+
+	// Installs or removes the native AnimInstance so the live driver matches
+	// pfa.UseAnimInstance. Returns TRUE if the AnimInstance path is live.
+	// Called from ApplyChosenPose, i.e. only when a pose is actually changing,
+	// so a session can be A/B'd by typing the CVar with no respawn and no
+	// rebuild -- the next pose change moves the creature over.
+	bool EnsureAnimationDriver();
+
+public:
+	// w31-3 (cold review D1): the animation CVars are read inside
+	// ApplyChosenPose, which only runs when a pose actually CHANGES -- and a
+	// creature standing still in Fight, or chasing at a constant speed, or
+	// holding a dev clip, may not change pose for minutes. Typing
+	// pfa.UseAnimInstance 1 then looked like it did nothing, which is worse
+	// than a lever that is documented as needing a respawn. Public because the
+	// CVar sink callbacks reach in from file scope, exactly like the PFA.*
+	// console commands below.
+	void RefreshAnimationDriver();
+
+private:
+	// w31-2: pushes the additive tail-mood layer's clip + weight into the anim
+	// graph. Every decision (is the layer on, is the clip really additive, what
+	// weight) is taken HERE on the game thread, so the animation worker thread
+	// only ever receives a sequence pointer and a float.
+	void PushTailMood(class UPFAAnimInstance* AnimInstance);
+
+	// Loads the tail-mood clip named by pfa.TailMoodClip, caching by name so a
+	// steady CVar never touches the package system twice. Returns true if
+	// TailMoodAnim is usable. Validates the console string at the boundary.
+	bool ResolveTailMoodClip(const FString& ClipSuffix);
+
 	// --- w29-1 ONE-SHOT CLIP LAYER (PFASicklejawAnim.cpp) ---------------------
 	// Rides on top of the looping state machine using the SAME single-node
 	// player: PlayOneShotClip swaps in a non-looping clip and marks the pose as
@@ -159,6 +202,48 @@ private:
 	int32 LocomotionState = -1;
 	// Part of the state identity, not a separate state: see TickLocomotionAnim.
 	bool bLocomotionWoundedActive = false;
+
+	// w31-1 animation-driver state. Latched on failure. If the AnimInstance was requested but the component
+	// did not end up with one, this creature stops asking and runs the proven
+	// single-node path for the rest of its life. Without the latch, every pose
+	// change would retry the install, fall back through PlayAnimation (which
+	// resets the mode to single-node), and retry again -- an invisible per-tick
+	// re-initialisation of the whole animation tree.
+	bool bAnimInstanceDriverFailed = false;
+
+	// w31-3 (cold review D2): the pose that was last handed to a driver, so a
+	// driver switch can hand the SAME pose straight to the new one. Recorded by
+	// ApplyChosenPose, which is the funnel every clip goes through, so this
+	// cannot drift from what is actually playing.
+	//
+	// Without it, SetAnimInstanceClass -> InitAnim(true) evaluates the fresh
+	// graph while its sequence is still null, which resolves to the REFERENCE
+	// POSE -- a T-pose frame, and worse, a bounds recompute that the foot-plant
+	// keeper would then "correct" against a pose the creature is not in. That
+	// is the visual signature of the w26-1 sunk-creature regression, and it is
+	// not acceptable to reintroduce it even transiently.
+	UPROPERTY(Transient)
+	TObjectPtr<UAnimSequence> ActivePoseAnim;
+	bool bActivePoseLoops = true;
+
+	// w31-3 (cold review D2): ticks for which the foot-plant keeper stands down
+	// after a driver switch. The switch tears down and rebuilds the animation
+	// tree, so for a moment the mesh's bounds describe a transient pose; the
+	// keeper must not treat that as a planting error and shove the mesh. It
+	// resumes on its own -- this is a stand-down, never a disable.
+	int32 FootPlantSkipTicks = 0;
+
+	// w31-2 additive tail-mood layer. GC-rooted like every other runtime-loaded
+	// clip -- the animation worker thread holds a raw pointer to whatever is in
+	// the additive branch.
+	UPROPERTY(Transient)
+	TObjectPtr<UAnimSequence> TailMoodAnim;
+	// Which pfa.TailMoodClip suffix TailMoodAnim was resolved from. Empty means
+	// "never resolved". Cached so the steady state costs a string compare, not
+	// a package lookup, on a path that runs 5x/second.
+	FString TailMoodClipResolved;
+	int32 TailMoodSkipLogCount = 0;
+	int32 TailMoodForceLogCount = 0;
 
 	// w26-1 (user report: creatures sunk into the terrain once anims played).
 	// The w18-8/w23-2 feet-plant offset was computed ONCE from the mesh's

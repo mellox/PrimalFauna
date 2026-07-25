@@ -498,7 +498,26 @@ void APFASicklejaw::TickLocomotionAnim()
 	// the capsule bottom and close the gap. Both move together, so this is a
 	// pose correction, never a terrain one -- falling, slopes and stairs are
 	// unaffected. Gain 1 with a tolerance band converges in a tick or two.
-	if (CVarPFAFootPlantAuto.GetValueOnGameThread() != 0)
+	// w31-3 (cold review D2): stand down for a couple of ticks right after an
+	// animation-driver switch. Swapping drivers tears down and rebuilds the
+	// anim tree, and the tree's first evaluation happens before the new graph
+	// has been told which clip to play -- so the mesh momentarily reports
+	// REFERENCE-POSE bounds. Left alone, the keeper would read that as a
+	// planting error and apply a real vertical shift: a visible pop, i.e. the
+	// w26-1 sunk-creature symptom, caused by the very code that fixed it.
+	// Counting down here rather than in the switch keeps the keeper's own state
+	// machine in one place.
+	if (FootPlantSkipTicks > 0)
+	{
+		--FootPlantSkipTicks;
+		if (PFADiag::IsEnabled())
+		{
+			UE_LOG(LogPrimalFauna, Display,
+				TEXT("[PFA] %s: foot-plant keeper standing down after a driver switch (%d tick(s) left)"),
+				*GetName(), FootPlantSkipTicks);
+		}
+	}
+	else if (CVarPFAFootPlantAuto.GetValueOnGameThread() != 0)
 	{
 		float CapsuleHalfCm = 88.0f;
 		if (const UCapsuleComponent* Capsule = GetCapsuleComponent())
@@ -673,7 +692,12 @@ void APFASicklejaw::TickLocomotionAnim()
 	{
 		return;
 	}
-	MeshComponent->PlayAnimation(Chosen, true);
+	// w31-1: was MeshComponent->PlayAnimation(Chosen, true). Everything above
+	// this line -- the foot-plant keeper, the speed bands, the creature-state
+	// mapping, the one-shot layer, the wounded-gait override, the fallback
+	// chains -- is UNCHANGED and runs identically on both animation drivers.
+	// The AnimInstance packet redirects delivery only (see ApplyChosenPose).
+	ApplyChosenPose(Chosen, true);
 
 	if (PFADiag::IsEnabled())
 	{

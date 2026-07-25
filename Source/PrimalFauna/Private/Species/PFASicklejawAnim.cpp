@@ -188,6 +188,63 @@ void APFASicklejaw::ResolveOneShotClips()
 		LimpAnim ? TEXT("ok") : TEXT("absent"));
 }
 
+// w31-2: the additive tail-mood layer's clip. Lives here with the other clip
+// resolution rather than beside its caller, so ResolveClip stays the single
+// package-probing routine -- w24 paid three builds for guessing at asset names
+// in more than one place.
+bool APFASicklejaw::ResolveTailMoodClip(const FString& ClipSuffix)
+{
+	if (ClipSuffix == TailMoodClipResolved)
+	{
+		return TailMoodAnim != nullptr;   // steady state: one string compare
+	}
+	TailMoodClipResolved = ClipSuffix;
+	TailMoodAnim = nullptr;
+
+	// Same boundary validation as PFA.PlayAnim (review W6): a CVar string is
+	// untrusted input and is concatenated straight into a package path below.
+	if (ClipSuffix.IsEmpty() || ClipSuffix.Contains(TEXT("/")) || ClipSuffix.Contains(TEXT("\\")) || ClipSuffix.Contains(TEXT("..")))
+	{
+		UE_LOG(LogPrimalFauna, Warning,
+			TEXT("[PFA] %s: pfa.TailMoodClip '%s' rejected -- expected a bare clip suffix like Add_Tail_Threat, no paths."),
+			*GetName(), *ClipSuffix);
+		return false;
+	}
+
+	UAnimSequence* Sequence = ResolveClip(*ClipSuffix, GetName());
+	if (!Sequence)
+	{
+		UE_LOG(LogPrimalFauna, Warning,
+			TEXT("[PFA] %s: pfa.TailMoodClip '%s' did not resolve -- expected package %s%s. The tail layer stays off."),
+			*GetName(), *ClipSuffix, AnimPackagePrefix, *ClipSuffix);
+		return false;
+	}
+
+	// Same skeleton guard as every other clip path (w29-2 review W3): an
+	// additive layer played against the wrong bone hierarchy is undefined, and
+	// unlike a gait it would be blended INTO a pose that otherwise looks right,
+	// making it much harder to attribute.
+	const USkeletalMeshComponent* MeshComponent = GetMesh();
+	const USkeletalMesh* SkeletalMesh = MeshComponent ? Cast<USkeletalMesh>(MeshComponent->GetSkinnedAsset()) : nullptr;
+	const USkeleton* MeshSkeleton = SkeletalMesh ? SkeletalMesh->GetSkeleton() : nullptr;
+	if (!MeshSkeleton || MeshSkeleton != Sequence->GetSkeleton())
+	{
+		UE_LOG(LogPrimalFauna, Warning,
+			TEXT("[PFA] %s: tail-mood clip '%s' SKIPPED -- skeleton mismatch (mesh=%s clip=%s)."),
+			*GetName(), *ClipSuffix,
+			MeshSkeleton ? *MeshSkeleton->GetName() : TEXT("<none>"),
+			Sequence->GetSkeleton() ? *Sequence->GetSkeleton()->GetName() : TEXT("<none>"));
+		return false;
+	}
+
+	TailMoodAnim = Sequence;
+	UE_LOG(LogPrimalFauna, Display,
+		TEXT("[PFA] %s: tail-mood clip resolved: %s (length=%.2fs additiveType=%d; 0 = NOT additive)"),
+		*GetName(), *Sequence->GetName(), Sequence->GetPlayLength(),
+		static_cast<int32>(Sequence->GetAdditiveAnimType()));
+	return true;
+}
+
 bool APFASicklejaw::PlayOneShotClip(UAnimSequence* Sequence, const TCHAR* Label, bool bHoldFinalFrame, int32 BaseState)
 {
 	USkeletalMeshComponent* MeshComponent = GetMesh();
@@ -197,9 +254,21 @@ bool APFASicklejaw::PlayOneShotClip(UAnimSequence* Sequence, const TCHAR* Label,
 		return false;
 	}
 
-	// bLooping=false: the single-node player runs the clip once and HOLDS its
-	// final frame, which is what "freeze and never blend back" needs (sleep).
-	MeshComponent->PlayAnimation(Sequence, false);
+	// bLooping=false: the player runs the clip once and HOLDS its final frame,
+	// which is what "freeze and never blend back" needs (sleep). Both drivers
+	// do that -- the single-node player by design, and the sequence-player node
+	// because a non-looping asset player CLAMPS its accumulated time to the
+	// clip length rather than wrapping (FAnimNode_SequencePlayerBase::
+	// UpdateAssetPlayer). Same observable behaviour, two different mechanisms,
+	// so it is on the in-game checklist rather than assumed.
+	//
+	// w31-1: was MeshComponent->PlayAnimation(Sequence, false). Routed through
+	// the funnel so one-shots -- comfort breaks, threat displays, attack
+	// strikes, dev clip previews -- keep working on BOTH drivers. Had this call
+	// been left direct, pfa.UseAnimInstance=1 would have torn the AnimInstance
+	// down on the first idle break (PlayAnimation forces single-node mode), and
+	// the A/B would have silently compared the old path against itself.
+	ApplyChosenPose(Sequence, false);
 	ActiveOneShotAnim = Sequence;
 	OneShotBaseState = BaseState;
 	bOneShotHoldsFinalFrame = bHoldFinalFrame;
