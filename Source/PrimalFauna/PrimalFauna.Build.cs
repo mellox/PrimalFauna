@@ -24,6 +24,13 @@ public class PrimalFauna : ModuleRules
             // vanilla UBehaviorTree at world load (no hostile-BT path was ever
             // censused). Runtime module, present in cooked/Shipping builds.
             "AssetRegistry",
+            // Wwise. Satisfactory's audio is Wwise (UAkAudioEvent), not UE audio --
+            // UGameplayStatics::PlaySound* does nothing here. BOTH this and the
+            // "Wwise" entry in PrimalFauna.uplugin are required: without the
+            // .uplugin entry the cook dies with
+            // "Plugin does not list plugin 'Wwise' as a dependency" ->
+            // CouldNotAutoloadMatchingModule, exit 6.
+            "AkAudio",
             // w31-2: UPFAAnimInstance's graph includes FAnimNode_ApplyAdditive
             // (AnimNodes/AnimNode_ApplyAdditive.h), which lives in
             // AnimGraphRuntime rather than Engine. FactoryGame already depends
