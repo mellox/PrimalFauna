@@ -75,6 +75,14 @@ private:
 	UPROPERTY(Transient)
 	TObjectPtr<UAnimSequence> LocomotionRunAnim;
 
+	// w28-1: state clips. Optional -- each degrades to Idle/Walk when absent.
+	UPROPERTY(Transient)
+	TObjectPtr<UAnimSequence> LocomotionIdleAlertAnim;
+	UPROPERTY(Transient)
+	TObjectPtr<UAnimSequence> LocomotionIdleAggressiveAnim;
+	UPROPERTY(Transient)
+	TObjectPtr<UAnimSequence> LocomotionProwlAnim;
+
 	FTimerHandle LocomotionTimerHandle;
 	// 0=idle 1=walk 2=run, -1 = nothing playing yet (forces the first apply).
 	int32 LocomotionState = -1;

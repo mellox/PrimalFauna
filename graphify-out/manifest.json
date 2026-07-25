@@ -75,8 +75,8 @@
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Private/PrimalFauna.cpp": {
-    "mtime": 1784959204.5034516,
-    "ast_hash": "d012e0c8520901368441f4f57a167fb0",
+    "mtime": 1784978976.6276157,
+    "ast_hash": "d8d30b8fad55e318c9a8c3c9c1142e9d",
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Public/PFAConfig.h": {
@@ -245,13 +245,13 @@
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Private/PFACreatureBase.cpp": {
-    "mtime": 1784949936.7045846,
-    "ast_hash": "3294b3394abf5f433bff4a3e5a14560b",
+    "mtime": 1784976289.7901676,
+    "ast_hash": "27d89199371b83a53b6949e95ab6b980",
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Private/PFACreatureController.cpp": {
-    "mtime": 1784905515.1484814,
-    "ast_hash": "907772c8c568fb22aaea3294469798a4",
+    "mtime": 1784976293.12172,
+    "ast_hash": "1ded80fb58fe02d0ef3f197ae7b83bd5",
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Private/Species/PFASicklejaw.cpp": {
@@ -265,8 +265,8 @@
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Public/PFACreatureController.h": {
-    "mtime": 1784949958.1806457,
-    "ast_hash": "9f2a8a1970f8de97d5f5402be5ff39ad",
+    "mtime": 1784976274.001914,
+    "ast_hash": "8da17d05c6bbea45d7a8d3dd9e4267b1",
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Public/Species/PFASicklejaw.h": {
@@ -325,8 +325,8 @@
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Private/PFACreatureControllerPerception.cpp": {
-    "mtime": 1784949954.2208812,
-    "ast_hash": "73947b33b9bcc3fd6aa2867d103592aa",
+    "mtime": 1784976270.5526297,
+    "ast_hash": "a7c72894483640e268889e7f75c3f520",
     "semantic_hash": ""
   },
   "Source/PrimalFauna/Private/PFAPerceptionDebug.cpp": {
@@ -840,8 +840,8 @@
     "semantic_hash": ""
   },
   "art/wip/sicklejaw-d-v2/rig_manifest.json": {
-    "mtime": 1784959127.156938,
-    "ast_hash": "1d36e975ed882a68fb8d3f96db16e6a3",
+    "mtime": 1784978874.0907724,
+    "ast_hash": "50cd4cb4ec69629c80586cf90149482a",
     "semantic_hash": ""
   },
   "art/wip/sicklejaw-d-v2/rig_manifest_verify.json": {
@@ -960,98 +960,98 @@
     "semantic_hash": ""
   },
   "art/wip/sicklejaw-d-v2/scripts/run_validators.ps1": {
-    "mtime": 1784958090.6761065,
-    "ast_hash": "b3d2bb24afe15f493f6b983b502325b1",
+    "mtime": 1784978205.130886,
+    "ast_hash": "862da155ee8f28f523292101eb12518e",
     "semantic_hash": ""
   },
   "art/wip/sicklejaw-d-v2/validation/Add_Breathe.json": {
-    "mtime": 1784958109.8188362,
+    "mtime": 1784978520.4808474,
     "ast_hash": "9678ac1228253ac48f16fb3155d8bb92",
     "semantic_hash": ""
   },
   "art/wip/sicklejaw-d-v2/validation/Add_HeadLook.json": {
-    "mtime": 1784958110.6166966,
+    "mtime": 1784978522.317494,
     "ast_hash": "7e7958fbc3e0ae437baefbc6c245613a",
     "semantic_hash": ""
   },
   "art/wip/sicklejaw-d-v2/validation/Add_TailIdle.json": {
-    "mtime": 1784958111.423031,
+    "mtime": 1784978524.3893855,
     "ast_hash": "e8adee8875d7769509f345a7f0a037d7",
     "semantic_hash": ""
   },
   "art/wip/sicklejaw-d-v2/validation/Bite.json": {
-    "mtime": 1784958104.3256974,
+    "mtime": 1784978512.0172083,
     "ast_hash": "755822df6276f3835e9087930301eda2",
     "semantic_hash": ""
   },
   "art/wip/sicklejaw-d-v2/validation/Death.json": {
-    "mtime": 1784958109.026691,
+    "mtime": 1784978517.6937704,
     "ast_hash": "e0ffcdde00b0b226c3a52e1bda8f9e59",
     "semantic_hash": ""
   },
   "art/wip/sicklejaw-d-v2/validation/Hurt.json": {
-    "mtime": 1784958105.0764987,
+    "mtime": 1784978512.8967888,
     "ast_hash": "b04b88b5d243d37284bc045238da380d",
     "semantic_hash": ""
   },
   "art/wip/sicklejaw-d-v2/validation/Idle.json": {
-    "mtime": 1784958098.2543657,
+    "mtime": 1784978503.59538,
     "ast_hash": "ee1a838adb1af1180ba58ff312a46877",
     "semantic_hash": ""
   },
   "art/wip/sicklejaw-d-v2/validation/IdleAggressive.json": {
-    "mtime": 1784958638.3938315,
+    "mtime": 1784978505.5030801,
     "ast_hash": "a82c60311a0d7e3f829c529148c574ad",
     "semantic_hash": ""
   },
   "art/wip/sicklejaw-d-v2/validation/IdleAlert.json": {
-    "mtime": 1784958099.0263536,
+    "mtime": 1784978504.573278,
     "ast_hash": "f8d20f8845d87aa9d9cb2926a984bfe6",
     "semantic_hash": ""
   },
   "art/wip/sicklejaw-d-v2/validation/Lunge.json": {
-    "mtime": 1784958106.6247604,
+    "mtime": 1784978514.8216727,
     "ast_hash": "df004dc5e223a8cbc810e4756ccea50a",
     "semantic_hash": ""
   },
   "art/wip/sicklejaw-d-v2/validation/Prowl.json": {
-    "mtime": 1784958102.033982,
-    "ast_hash": "23c2c74112c62f6905c3e9eda2377d19",
+    "mtime": 1784978509.2119987,
+    "ast_hash": "246e77f3a44c761d6ae63ed9f4e9b379",
     "semantic_hash": ""
   },
   "art/wip/sicklejaw-d-v2/validation/Run.json": {
-    "mtime": 1784958101.2770114,
-    "ast_hash": "12394c0175ac04b37f813148300435c7",
+    "mtime": 1784978508.2929595,
+    "ast_hash": "eca41394caa80707ea48c7e59b1fde39",
     "semantic_hash": ""
   },
   "art/wip/sicklejaw-d-v2/validation/Sniff.json": {
-    "mtime": 1784958107.4025738,
+    "mtime": 1784978515.7455456,
     "ast_hash": "924a3f120c5f5b9331e8c8fd7e9519da",
     "semantic_hash": ""
   },
   "art/wip/sicklejaw-d-v2/validation/Stagger.json": {
-    "mtime": 1784958108.2029011,
+    "mtime": 1784978516.6673827,
     "ast_hash": "7787da4d032c3849c61537b019fd3890",
     "semantic_hash": ""
   },
   "art/wip/sicklejaw-d-v2/validation/Threaten.json": {
-    "mtime": 1784958105.8490512,
+    "mtime": 1784978513.8107529,
     "ast_hash": "b2ed73cb7a0b85453a6a0f008f54dbc3",
     "semantic_hash": ""
   },
   "art/wip/sicklejaw-d-v2/validation/TurnInPlaceLeft.json": {
-    "mtime": 1784958102.798486,
+    "mtime": 1784978510.1943815,
     "ast_hash": "502d751f3ca4ce917d1ef86f73794ab9",
     "semantic_hash": ""
   },
   "art/wip/sicklejaw-d-v2/validation/TurnInPlaceRight.json": {
-    "mtime": 1784958103.5478728,
+    "mtime": 1784978511.1016505,
     "ast_hash": "adee4e88ab933fd6fa05e4a101bf8c59",
     "semantic_hash": ""
   },
   "art/wip/sicklejaw-d-v2/validation/Walk.json": {
-    "mtime": 1784958100.5442657,
-    "ast_hash": "dac59abd171ccb593d7cd335133fa2a7",
+    "mtime": 1784978507.4188974,
+    "ast_hash": "6f8c5d259ecdde611658b98e661ea8ef",
     "semantic_hash": ""
   },
   "art/wip/sicklejaw-rig-v2/anim_bite.json": {
@@ -1185,13 +1185,13 @@
     "semantic_hash": ""
   },
   "tools/validate_anim_fbx.py": {
-    "mtime": 1784951741.2685513,
-    "ast_hash": "83692057c7c5ba3bf40934fe2f58ff62",
+    "mtime": 1784978857.372628,
+    "ast_hash": "98b098285cd20e57a3abbc300a34940a",
     "semantic_hash": ""
   },
   "tools/validate_rig_fbx.py": {
-    "mtime": 1784951648.776842,
-    "ast_hash": "0baa56b4a39e7456577d767df77dd076",
+    "mtime": 1784977722.8578234,
+    "ast_hash": "c2c9e965fc61a6c2c0d312b698255ac3",
     "semantic_hash": ""
   },
   "art/wip/sicklejaw-d-v2/renders/review-board.html": {
@@ -1200,8 +1200,8 @@
     "semantic_hash": ""
   },
   "art/wip/sicklejaw-d-v2/rig_and_anim_report.md": {
-    "mtime": 1784959010.879547,
-    "ast_hash": "c119a781fddd2f22be7b449b6ca8b798",
+    "mtime": 1784978766.9651632,
+    "ast_hash": "642eb56d45e08a83ac6ce6945724f494",
     "semantic_hash": ""
   },
   "art/wip/sicklejaw-rig-v2/rig_and_anim_report.md": {
@@ -2222,6 +2222,636 @@
   "art/wip/sicklejaw-rig-v2/renders/walk/walk_p75.png": {
     "mtime": 1784954484.3681586,
     "ast_hash": "6a6b59637eee304dce604388339e89a9",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/anim_selfcheck_v3.json": {
+    "mtime": 1784978502.2583191,
+    "ast_hash": "33f3d031b9241d6573adb8ef79f2c1fd",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/digits.json": {
+    "mtime": 1784978263.5898292,
+    "ast_hash": "bd81969f33e2c6cd6f12f192fe61de26",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/hip_audit_before.json": {
+    "mtime": 1784976425.3159146,
+    "ast_hash": "aab630054181392c3be5b2203f59531d",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/hip_fix.json": {
+    "mtime": 1784977102.0264626,
+    "ast_hash": "9b3636aff859fc726916eca32cb6137f",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/hip_look_after.json": {
+    "mtime": 1784977109.4533865,
+    "ast_hash": "97de2f9f8d90c76b910a7a80865da954",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/hip_look_before.json": {
+    "mtime": 1784976682.3342822,
+    "ast_hash": "d2502fa65b988c7d4d2e072b9c475860",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/scripts/100_animate_alive.py": {
+    "mtime": 1784978487.8607357,
+    "ast_hash": "fc78346578f48164e94609475b50b0eb",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/scripts/101_render_new.py": {
+    "mtime": 1784978579.373453,
+    "ast_hash": "f19dfb894e2f6862eeba8b8a1908ed91",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/scripts/90_hip_audit.py": {
+    "mtime": 1784976413.5669332,
+    "ast_hash": "7ed7fd0a3650054581e911e7f227563f",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/scripts/91_tear_locate.py": {
+    "mtime": 1784976534.9428077,
+    "ast_hash": "5449101cc3524e0b2a0587d5ae6dacf2",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/scripts/92_hip_look.py": {
+    "mtime": 1784977087.3431726,
+    "ast_hash": "632a7c7e7c562d30d1527b0ec290f43b",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/scripts/93_fix_hip_bind.py": {
+    "mtime": 1784977077.739045,
+    "ast_hash": "33b635001351c45263d38728ff93ed04",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/scripts/94_hip_ab.py": {
+    "mtime": 1784977212.5239289,
+    "ast_hash": "36bd2dfec11b41d10cdb1113957fa9cf",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/scripts/95_ab_sheet.py": {
+    "mtime": 1784977160.9636145,
+    "ast_hash": "582cb31da1ce427cd58d8ab68029aa6b",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/scripts/96_export_sk.py": {
+    "mtime": 1784977445.232536,
+    "ast_hash": "7e25a8c1b58dd16bee4ebf8214d2f254",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/scripts/97_add_digits.py": {
+    "mtime": 1784978250.5438304,
+    "ast_hash": "bdacdaa62fc303093269f3ec75275180",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/scripts/digitlib.py": {
+    "mtime": 1784978010.6723664,
+    "ast_hash": "4bfcf2bfc6adb6e73d2bcfb3cdd242f1",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/tear_locate.json": {
+    "mtime": 1784976548.216743,
+    "ast_hash": "f26bd937d603d3bfa1c6be29d4aa27fb",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/validation/Add_Breathe_Fast.json": {
+    "mtime": 1784978521.381913,
+    "ast_hash": "fc61c4f0083981e13a531fb46b2e6e0b",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/validation/Add_Saccade.json": {
+    "mtime": 1784978523.3207912,
+    "ast_hash": "adcbdfaaf5fffd72d8a29b350df1541d",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/validation/Add_TailDrag.json": {
+    "mtime": 1784978525.4801707,
+    "ast_hash": "fba89d6322f6e16655166bb2c7c02758",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/validation/Add_Tail_Aggressive.json": {
+    "mtime": 1784978528.334355,
+    "ast_hash": "89fbb4ed995a12e7519a9983057ddbb6",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/validation/Add_Tail_Alert.json": {
+    "mtime": 1784978527.457079,
+    "ast_hash": "3b14d80e69121c4ddd2dcdd2078c3a2f",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/validation/Add_Tail_Calm.json": {
+    "mtime": 1784978526.4694486,
+    "ast_hash": "2dc0cf7b8d1feeccd4eb0b21493469b7",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/validation/Add_Tail_Fear.json": {
+    "mtime": 1784978530.2167017,
+    "ast_hash": "eeb8d4e2a1ecaee222a2a3d3b47bb713",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/validation/Add_Tail_Threat.json": {
+    "mtime": 1784978529.3117752,
+    "ast_hash": "2004da776db111d97162cbc24ec95105",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/validation/Add_Tail_Wounded.json": {
+    "mtime": 1784978531.258578,
+    "ast_hash": "8c00603e2e4c104c1d00554666b8ed0a",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/validation/LookAround.json": {
+    "mtime": 1784978506.5238452,
+    "ast_hash": "cb0b2ae5c31c3a97aaded9d70d70f7e0",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/validation/ShakeOff.json": {
+    "mtime": 1784978519.5563214,
+    "ast_hash": "9e4ee9c0f2d1a1c76e317f7e23caa3ef",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/validation/Stretch.json": {
+    "mtime": 1784978518.6448624,
+    "ast_hash": "f344e1a5c89d3aa8824361062acfcdf6",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/DIGITS_WALK.png": {
+    "mtime": 1784978606.6220765,
+    "ast_hash": "5ff6a670decb1c80d11cec55174e58e6",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/HIPLOOK_AFTER.png": {
+    "mtime": 1784977109.4448636,
+    "ast_hash": "8e531c461c49620a3d09a180be09a620",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/HIPLOOK_BEFORE.png": {
+    "mtime": 1784976682.3272254,
+    "ast_hash": "eace2a6fed546341edd07fc8723141bf",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/HIP_AB_PROOF.png": {
+    "mtime": 1784978597.0374284,
+    "ast_hash": "854d3312e74eb1c469a1ebd4aea0bfe2",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/HIP_BEFORE.png": {
+    "mtime": 1784976425.310623,
+    "ast_hash": "48f7bb483fc63f7792c4881155323233",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/SILHOUETTE_NEW.png": {
+    "mtime": 1784978608.0656774,
+    "ast_hash": "9721878dcbe697c8d3d9fd735b5e72db",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/contactsheet_lookaround.png": {
+    "mtime": 1784978600.6876144,
+    "ast_hash": "0c89da0ae9f0ddecc639b04b4f206365",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/contactsheet_shakeoff.png": {
+    "mtime": 1784978604.6228132,
+    "ast_hash": "f603a0c44cae4185d4639d5a514c3ea6",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/contactsheet_stretch.png": {
+    "mtime": 1784978602.6615193,
+    "ast_hash": "f7891b71e3e1c7a97ca3db92a81eb9ff",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/cs/LookAround_00.png": {
+    "mtime": 1784978598.8459256,
+    "ast_hash": "95cc0bd5ff153a783a299d873ee3ad57",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/cs/LookAround_01.png": {
+    "mtime": 1784978598.9722424,
+    "ast_hash": "b581118b41195a0ada151df6446996ae",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/cs/LookAround_02.png": {
+    "mtime": 1784978599.102346,
+    "ast_hash": "3ae17db385437a3afcd7c97071b38077",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/cs/LookAround_03.png": {
+    "mtime": 1784978599.2249267,
+    "ast_hash": "ccc6edb1706581441685c7354ed484e9",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/cs/LookAround_04.png": {
+    "mtime": 1784978599.3467543,
+    "ast_hash": "1c64dda014f37a0ce4c0210a597459c5",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/cs/LookAround_05.png": {
+    "mtime": 1784978599.4690468,
+    "ast_hash": "2c080830a3f7b5473d2574cc6c1c4313",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/cs/LookAround_06.png": {
+    "mtime": 1784978599.5891082,
+    "ast_hash": "20ea60a37e41785daec02eb23b34c21b",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/cs/LookAround_07.png": {
+    "mtime": 1784978599.7072616,
+    "ast_hash": "ce4cf7776a9eb57fde94c17d56ac9427",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/cs/ShakeOff_00.png": {
+    "mtime": 1784978602.7887912,
+    "ast_hash": "4a8a04c028d208c88f321f8243e7670f",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/cs/ShakeOff_01.png": {
+    "mtime": 1784978602.918204,
+    "ast_hash": "9f950fcf0f1856eaf733c88285c98cb2",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/cs/ShakeOff_02.png": {
+    "mtime": 1784978603.0469036,
+    "ast_hash": "ceaff6befe4b593b5f5d7e9ad38dc700",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/cs/ShakeOff_03.png": {
+    "mtime": 1784978603.1729553,
+    "ast_hash": "ce03c2ba219f684d506889ec44e619b8",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/cs/ShakeOff_04.png": {
+    "mtime": 1784978603.297311,
+    "ast_hash": "80c2d1f4905d67fa1e34a2c244a54b69",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/cs/ShakeOff_05.png": {
+    "mtime": 1784978603.4182215,
+    "ast_hash": "a0d2af0ad706594c73c5d520c86e9a33",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/cs/ShakeOff_06.png": {
+    "mtime": 1784978603.5398836,
+    "ast_hash": "d0a8cf3e8d262bf440b9b1aac594fe97",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/cs/ShakeOff_07.png": {
+    "mtime": 1784978603.6583302,
+    "ast_hash": "0743cbc6b1fc03985bdacab14e695903",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/cs/Stretch_00.png": {
+    "mtime": 1784978600.8189204,
+    "ast_hash": "abbe7a102fef805a6368f20422e346c5",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/cs/Stretch_01.png": {
+    "mtime": 1784978600.9437518,
+    "ast_hash": "dec284741519bea5fd67c1452e2efc6d",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/cs/Stretch_02.png": {
+    "mtime": 1784978601.0705607,
+    "ast_hash": "b9f2859ff18730917a62c1ecc39d60c3",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/cs/Stretch_03.png": {
+    "mtime": 1784978601.1924756,
+    "ast_hash": "793748aa2822d4c325678b666c4145b8",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/cs/Stretch_04.png": {
+    "mtime": 1784978601.3187478,
+    "ast_hash": "f79b9a208ca8dadd5f9733875c746f26",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/cs/Stretch_05.png": {
+    "mtime": 1784978601.442999,
+    "ast_hash": "4c89835ec2d4ad2892cb6f3ea71de8d6",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/cs/Stretch_06.png": {
+    "mtime": 1784978601.567829,
+    "ast_hash": "2328dff972a93060595fe46b1a3504ba",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/cs/Stretch_07.png": {
+    "mtime": 1784978601.692049,
+    "ast_hash": "18d115e16b90ecb6d5b91a42418b54ce",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/cs/digit_00.png": {
+    "mtime": 1784978604.7520866,
+    "ast_hash": "c4a8f6e5951ba53ef4b52f54c3b6ba7c",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/cs/digit_01.png": {
+    "mtime": 1784978604.8808155,
+    "ast_hash": "cc66507b15c38d7e3e19ee8147c964ed",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/cs/digit_02.png": {
+    "mtime": 1784978605.002577,
+    "ast_hash": "b0ececfaddac5fffbfcee48b03fb0950",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/cs/digit_03.png": {
+    "mtime": 1784978605.1277914,
+    "ast_hash": "207220f8fb64a4246a00fa5132dc24fc",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/cs/digit_04.png": {
+    "mtime": 1784978605.2531621,
+    "ast_hash": "cf45dc28bc7f9aa8e6149590a0f07ebb",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/cs/digit_05.png": {
+    "mtime": 1784978605.3730128,
+    "ast_hash": "6799509bd1bd5cd907d70e8d9fae7221",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/cs/digit_06.png": {
+    "mtime": 1784978605.4908307,
+    "ast_hash": "64a9fcffb810e7095c603f9f148ebabd",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/cs/digit_07.png": {
+    "mtime": 1784978605.6174064,
+    "ast_hash": "9ab3655a2bedb350958f17239366435d",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/cs/sil_Idle.png": {
+    "mtime": 1784978606.7459097,
+    "ast_hash": "a9f82420ac2203122233c62db0c84cb3",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/cs/sil_IdleAggressive.png": {
+    "mtime": 1784978607.3348947,
+    "ast_hash": "faee48314451ce31e1e479a627f03f1f",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/cs/sil_IdleAlert.png": {
+    "mtime": 1784978607.2207656,
+    "ast_hash": "353461781ae4eee0fca5ec42ea3c4dda",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/cs/sil_LookAround.png": {
+    "mtime": 1784978606.8638055,
+    "ast_hash": "c7131b88df0be9b309cd0e7deb32d7a7",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/cs/sil_ShakeOff.png": {
+    "mtime": 1784978607.0969677,
+    "ast_hash": "af1f7cdf387d4bf95d9b40790081a95b",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/cs/sil_Stretch.png": {
+    "mtime": 1784978606.9781556,
+    "ast_hash": "40d90fe77c12deb5d0f46aa62d73ec40",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hipab/AFTER_Death.png": {
+    "mtime": 1784978594.058815,
+    "ast_hash": "0b397cc62a859b18df6478a25778414b",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hipab/AFTER_Idle.png": {
+    "mtime": 1784978594.3407412,
+    "ast_hash": "a0e61a936d17586c8d557f9b1d04f926",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hipab/AFTER_Lunge.png": {
+    "mtime": 1784978593.7818158,
+    "ast_hash": "1a14ec844a817dc186a89bc8f2cba562",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hipab/AFTER_Run.png": {
+    "mtime": 1784978593.6378648,
+    "ast_hash": "82babc4ed19188dfdb165b57a5a8c4da",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hipab/AFTER_Threaten.png": {
+    "mtime": 1784978593.9217129,
+    "ast_hash": "15c0e8cce9b2da036853ee8d5495b6af",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hipab/AFTER_Walk.png": {
+    "mtime": 1784978594.1957016,
+    "ast_hash": "00121d4e6a357335e3daa6044373bd92",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hipab/BEFORE_Death.png": {
+    "mtime": 1784977225.222308,
+    "ast_hash": "14ccd5fc86a7cc3cf45eb462d29af720",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hipab/BEFORE_Idle.png": {
+    "mtime": 1784977225.4983408,
+    "ast_hash": "7a0c07e0b78c11c4de3b96e0a4d14696",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hipab/BEFORE_Lunge.png": {
+    "mtime": 1784977224.9407146,
+    "ast_hash": "210efe3a0fab4f3fda62435bf2c4a0a4",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hipab/BEFORE_Run.png": {
+    "mtime": 1784977224.793889,
+    "ast_hash": "3d786024529410c77cfa04e10e99e79b",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hipab/BEFORE_Threaten.png": {
+    "mtime": 1784977225.0848773,
+    "ast_hash": "9e193648404110fe85a69f89fbf64848",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hipab/BEFORE_Walk.png": {
+    "mtime": 1784977225.357594,
+    "ast_hash": "afb9d08678c0185940cbebf9a2ac3eaf",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hipaudit/BEFORE_Death.png": {
+    "mtime": 1784976423.0861008,
+    "ast_hash": "412b6f0e533c62dc941be4433ea91c63",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hipaudit/BEFORE_IdleAggressive.png": {
+    "mtime": 1784976423.3379295,
+    "ast_hash": "a48e4cf02f47913e944ddc0d3797b602",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hipaudit/BEFORE_Lunge.png": {
+    "mtime": 1784976422.8174584,
+    "ast_hash": "83b1ab72c059ed63506c8d34bd74cf14",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hipaudit/BEFORE_Run.png": {
+    "mtime": 1784976422.6846778,
+    "ast_hash": "24af2d3235b3720d3138327b6d49adde",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hipaudit/BEFORE_SYNTH_abduct_30.png": {
+    "mtime": 1784976423.7100053,
+    "ast_hash": "b7a130aeb72eea328e592781a01c5578",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hipaudit/BEFORE_SYNTH_back_60.png": {
+    "mtime": 1784976423.4652476,
+    "ast_hash": "693dcd61fbfa2cd3ad2259b3399d9ac4",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hipaudit/BEFORE_SYNTH_fwd_55.png": {
+    "mtime": 1784976423.586942,
+    "ast_hash": "dbc603e4b1478393bad3b4bbd6d7adbe",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hipaudit/BEFORE_Threaten.png": {
+    "mtime": 1784976422.965737,
+    "ast_hash": "8b6071de80cfed8d4df9390973bc4262",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hipaudit/BEFORE_Walk.png": {
+    "mtime": 1784976423.2131827,
+    "ast_hash": "b976ef530c7fd0d069d0f6c3e9176cdc",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hiplook/AFTER_Death_front34.png": {
+    "mtime": 1784977105.7684326,
+    "ast_hash": "411a5d81bcd815173d5842fa013e5d08",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hiplook/AFTER_Death_side.png": {
+    "mtime": 1784977105.623171,
+    "ast_hash": "50067fcef54a498b91e7bdcca46524f2",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hiplook/AFTER_Idle_front34.png": {
+    "mtime": 1784977104.2500937,
+    "ast_hash": "fd1a7b26f78b8db91eb630f0019d5017",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hiplook/AFTER_Idle_side.png": {
+    "mtime": 1784977104.1036696,
+    "ast_hash": "24c29ca174ed99db308c9f464b340d51",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hiplook/AFTER_Lunge_front34.png": {
+    "mtime": 1784977105.137849,
+    "ast_hash": "42b51358412569e385a90465a451affd",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hiplook/AFTER_Lunge_side.png": {
+    "mtime": 1784977104.9998238,
+    "ast_hash": "a82ee318646c56fc7529afbb9127ec4c",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hiplook/AFTER_Run_front34.png": {
+    "mtime": 1784977104.8458633,
+    "ast_hash": "daaf66fd3b827e71a56afd247923a554",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hiplook/AFTER_Run_side.png": {
+    "mtime": 1784977104.7071111,
+    "ast_hash": "8a678713828cd31a7e9389a1459536c4",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hiplook/AFTER_Threaten_front34.png": {
+    "mtime": 1784977105.469849,
+    "ast_hash": "d34ffabb6222107363634b8c017d3cb7",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hiplook/AFTER_Threaten_side.png": {
+    "mtime": 1784977105.333894,
+    "ast_hash": "afc78f4bc92211c9eacd8e4fbcbaa484",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hiplook/AFTER_WEIGHTS_front34.png": {
+    "mtime": 1784977106.1282845,
+    "ast_hash": "9700071c549e7604be34cfd2497c0c83",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hiplook/AFTER_WEIGHTS_side.png": {
+    "mtime": 1784977105.970655,
+    "ast_hash": "2053e7d502bbb58cfc7a861d03ebfe5f",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hiplook/AFTER_Walk_front34.png": {
+    "mtime": 1784977104.5548136,
+    "ast_hash": "b5b45e168eee2c6b6a01ec434d18f9de",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hiplook/AFTER_Walk_side.png": {
+    "mtime": 1784977104.4181716,
+    "ast_hash": "6cebc5c294d53391e9dd39c1f0b2cf07",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hiplook/BEFORE_Death_front34.png": {
+    "mtime": 1784976678.4702947,
+    "ast_hash": "d0cae45adc444b99246c15858085deee",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hiplook/BEFORE_Death_side.png": {
+    "mtime": 1784976678.3295357,
+    "ast_hash": "4e4c58b3180e25ea07867b5285143708",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hiplook/BEFORE_Idle_front34.png": {
+    "mtime": 1784976676.913597,
+    "ast_hash": "b54a2ba793d33460f6119dab1b67dcf2",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hiplook/BEFORE_Idle_side.png": {
+    "mtime": 1784976676.7623944,
+    "ast_hash": "178e90c3e208e7abab095bae9843bcae",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hiplook/BEFORE_Lunge_front34.png": {
+    "mtime": 1784976677.8233385,
+    "ast_hash": "4eb88e053ce1a37c2b29c1ceb65fa485",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hiplook/BEFORE_Lunge_side.png": {
+    "mtime": 1784976677.6832962,
+    "ast_hash": "3f9ffa63cbc27bf2752d4b8346a00147",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hiplook/BEFORE_Run_front34.png": {
+    "mtime": 1784976677.5282252,
+    "ast_hash": "2d85d39f356f25cc13387c9e3b1d7a00",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hiplook/BEFORE_Run_side.png": {
+    "mtime": 1784976677.3857193,
+    "ast_hash": "40bf0fea8daf182ead0aeb4d065612b6",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hiplook/BEFORE_Threaten_front34.png": {
+    "mtime": 1784976678.1714983,
+    "ast_hash": "ce3001a86bd3e4dacd27c5aadc9e733f",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hiplook/BEFORE_Threaten_side.png": {
+    "mtime": 1784976678.0317452,
+    "ast_hash": "c6beaf61f29b2baf721d8f174d97d5d3",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hiplook/BEFORE_WEIGHTS_front34.png": {
+    "mtime": 1784976678.9357421,
+    "ast_hash": "a9f6d7a19bb37138eb7eadd78548bf7a",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hiplook/BEFORE_WEIGHTS_side.png": {
+    "mtime": 1784976678.802405,
+    "ast_hash": "cf0fbdb61c3bbedac82967073d1ad813",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hiplook/BEFORE_Walk_front34.png": {
+    "mtime": 1784976677.2285154,
+    "ast_hash": "3d9caabc2c9c654c6f9cfda5d6bff000",
+    "semantic_hash": ""
+  },
+  "art/wip/sicklejaw-d-v2/renders/hiplook/BEFORE_Walk_side.png": {
+    "mtime": 1784976677.0868154,
+    "ast_hash": "e3b907b82ca45023e3af81fcbd0f31c0",
     "semantic_hash": ""
   }
 }

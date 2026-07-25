@@ -139,6 +139,25 @@ namespace
 		TEXT("/PrimalFauna/Sicklejaw/Anims/A_Sicklejaw_Run"),
 	};
 
+	// w28-1: the STATE clips. The driver has played idle/walk/run since w24;
+	// these are what make the creature read differently depending on what it
+	// is doing -- a calm roamer, a creature that has noticed you, and one
+	// that has decided to kill you should not share one idle.
+	const TCHAR* SicklejawIdleAlertAnimPackages[] = {
+		TEXT("/PrimalFauna/Sicklejaw/Anims/A_Sicklejaw_IdleAlert"),
+	};
+	const TCHAR* SicklejawIdleAggressiveAnimPackages[] = {
+		TEXT("/PrimalFauna/Sicklejaw/Anims/A_Sicklejaw_IdleAggressive"),
+	};
+	const TCHAR* SicklejawProwlAnimPackages[] = {
+		TEXT("/PrimalFauna/Sicklejaw/Anims/A_Sicklejaw_Prowl"),
+	};
+
+	// Prowl is authored at an implied 110 cm/s (validator-measured), so it
+	// owns the slow band. Anything between prowl and run speed is a walk.
+	constexpr float LocomotionProwlThresholdCms = 30.0f;
+	constexpr float LocomotionWalkBandStartCms = 200.0f;
+
 	// Speed thresholds (cm/s) for the idle/walk/run pick. Walk 400 / run 600
 	// per the ctor's authored speeds; the boundaries sit between states.
 	constexpr float LocomotionWalkThresholdCms = 30.0f;
@@ -404,6 +423,12 @@ void APFASicklejaw::StartLocomotionAnim()
 	LocomotionIdleAnim = FindSequenceInPackages(SicklejawIdleAnimPackages, UE_ARRAY_COUNT(SicklejawIdleAnimPackages), TEXT("idle"), OwnerName);
 	LocomotionWalkAnim = FindSequenceInPackages(SicklejawWalkAnimPackages, UE_ARRAY_COUNT(SicklejawWalkAnimPackages), TEXT("walk"), OwnerName);
 	LocomotionRunAnim = FindSequenceInPackages(SicklejawRunAnimPackages, UE_ARRAY_COUNT(SicklejawRunAnimPackages), TEXT("run"), OwnerName);
+	// w28-1 state clips -- optional by design: each falls back to plain Idle
+	// or Walk if absent, so an incomplete import degrades instead of going
+	// dark (the w24-3 partial-arm lesson, applied to the state layer).
+	LocomotionIdleAlertAnim = FindSequenceInPackages(SicklejawIdleAlertAnimPackages, UE_ARRAY_COUNT(SicklejawIdleAlertAnimPackages), TEXT("idleAlert"), OwnerName);
+	LocomotionIdleAggressiveAnim = FindSequenceInPackages(SicklejawIdleAggressiveAnimPackages, UE_ARRAY_COUNT(SicklejawIdleAggressiveAnimPackages), TEXT("idleAggressive"), OwnerName);
+	LocomotionProwlAnim = FindSequenceInPackages(SicklejawProwlAnimPackages, UE_ARRAY_COUNT(SicklejawProwlAnimPackages), TEXT("prowl"), OwnerName);
 	// w24-3 (overnight tester finding): the all-or-nothing gate kept the
 	// driver dark when only run was missing -- idle+walk resolved but NOT
 	// EVEN IDLE played. PARTIAL-ARM instead: any resolved sequence arms the
@@ -437,8 +462,12 @@ void APFASicklejaw::StartLocomotionAnim()
 	GetWorldTimerManager().SetTimer(LocomotionTimerHandle, this, &APFASicklejaw::TickLocomotionAnim, LocomotionTickSeconds, true);
 	TickLocomotionAnim();
 	UE_LOG(LogPrimalFauna, Display,
-		TEXT("[PFA] %s: locomotion driver armed (idle/walk/run, %.1fs cadence, thresholds %.0f/%.0f cm/s)."),
-		*GetName(), LocomotionTickSeconds, LocomotionWalkThresholdCms, LocomotionRunThresholdCms);
+		TEXT("[PFA] %s: locomotion driver armed (%.1fs cadence; gait bands prowl>=%.0f walk>=%.0f run>=%.0f cm/s; state clips alert=%s aggressive=%s prowl=%s)."),
+		*GetName(), LocomotionTickSeconds,
+		LocomotionProwlThresholdCms, LocomotionWalkBandStartCms, LocomotionRunThresholdCms,
+		LocomotionIdleAlertAnim ? TEXT("ok") : TEXT("absent"),
+		LocomotionIdleAggressiveAnim ? TEXT("ok") : TEXT("absent"),
+		LocomotionProwlAnim ? TEXT("ok") : TEXT("absent"));
 }
 
 void APFASicklejaw::TickLocomotionAnim()
@@ -509,14 +538,42 @@ void APFASicklejaw::TickLocomotionAnim()
 	}
 
 	const float SpeedCms = GetVelocity().Size2D();
-	int32 DesiredState = 0;
+
+	// ---- w28-1 STATE-DRIVEN SELECTION. Movement decides the gait; when the
+	// creature is standing still, its INTENT decides the idle. A roamer that
+	// has noticed you and one that has decided to kill you must not share a
+	// pose -- that difference is most of what makes a creature look like it
+	// is thinking rather than looping.
+	ECreatureState CreatureState = ECreatureState::CS_Default;
+	if (const AFGCreatureController* CreatureAI = GetCreatureController())
+	{
+		CreatureState = CreatureAI->GetCurrentCreatureState();
+	}
+
+	int32 DesiredState;
 	if (SpeedCms >= LocomotionRunThresholdCms)
 	{
-		DesiredState = 2;
+		DesiredState = 2;   // Run
 	}
-	else if (SpeedCms >= LocomotionWalkThresholdCms)
+	else if (SpeedCms >= LocomotionWalkBandStartCms)
 	{
-		DesiredState = 1;
+		DesiredState = 1;   // Walk
+	}
+	else if (SpeedCms >= LocomotionProwlThresholdCms)
+	{
+		DesiredState = 5;   // Prowl -- authored at 110cm/s, owns the slow band
+	}
+	else if (CreatureState == ECreatureState::CS_Fight)
+	{
+		DesiredState = 4;   // IdleAggressive: coiled, jaw parted, tail lashing
+	}
+	else if (CreatureState == ECreatureState::CS_Alert || CreatureState == ECreatureState::CS_Investigate)
+	{
+		DesiredState = 3;   // IdleAlert: taller, head up and tracking
+	}
+	else
+	{
+		DesiredState = 0;   // Idle
 	}
 
 	if (DesiredState == LocomotionState)
@@ -529,22 +586,52 @@ void APFASicklejaw::TickLocomotionAnim()
 	// (run->walk->idle, walk->idle, idle->walk as last resort) so partial
 	// asset coverage still animates. Guaranteed non-null: the arm gate
 	// requires at least one resolved sequence.
+	// First non-null wins: every state degrades along a sensible chain so a
+	// partial import animates rather than going dark (the w24-3 lesson,
+	// extended to the state clips).
+	const auto FirstAvailable = [](std::initializer_list<UAnimSequence*> Candidates) -> UAnimSequence*
+	{
+		for (UAnimSequence* Candidate : Candidates)
+		{
+			if (Candidate)
+			{
+				return Candidate;
+			}
+		}
+		return nullptr;
+	};
+
 	UAnimSequence* Chosen = nullptr;
-	if (DesiredState == 2)
+	const TCHAR* StateName = TEXT("idle");
+	switch (DesiredState)
 	{
-		Chosen = LocomotionRunAnim ? LocomotionRunAnim : (LocomotionWalkAnim ? LocomotionWalkAnim : LocomotionIdleAnim);
-	}
-	else if (DesiredState == 1)
-	{
-		Chosen = LocomotionWalkAnim ? LocomotionWalkAnim : LocomotionIdleAnim;
-	}
-	else
-	{
-		Chosen = LocomotionIdleAnim ? LocomotionIdleAnim : LocomotionWalkAnim;
+	case 2:
+		Chosen = FirstAvailable({LocomotionRunAnim, LocomotionWalkAnim, LocomotionIdleAnim});
+		StateName = TEXT("run");
+		break;
+	case 1:
+		Chosen = FirstAvailable({LocomotionWalkAnim, LocomotionProwlAnim, LocomotionIdleAnim});
+		StateName = TEXT("walk");
+		break;
+	case 5:
+		Chosen = FirstAvailable({LocomotionProwlAnim, LocomotionWalkAnim, LocomotionIdleAnim});
+		StateName = TEXT("prowl");
+		break;
+	case 4:
+		Chosen = FirstAvailable({LocomotionIdleAggressiveAnim, LocomotionIdleAlertAnim, LocomotionIdleAnim});
+		StateName = TEXT("idle-aggressive");
+		break;
+	case 3:
+		Chosen = FirstAvailable({LocomotionIdleAlertAnim, LocomotionIdleAnim});
+		StateName = TEXT("idle-alert");
+		break;
+	default:
+		Chosen = FirstAvailable({LocomotionIdleAnim, LocomotionWalkAnim});
+		break;
 	}
 	if (!Chosen)
 	{
-		Chosen = LocomotionRunAnim;
+		Chosen = FirstAvailable({LocomotionRunAnim, LocomotionProwlAnim, LocomotionIdleAlertAnim, LocomotionIdleAggressiveAnim});
 	}
 	if (!Chosen)
 	{
@@ -555,10 +642,9 @@ void APFASicklejaw::TickLocomotionAnim()
 	if (PFADiag::IsEnabled())
 	{
 		UE_LOG(LogPrimalFauna, Display,
-			TEXT("[PFA] %s: locomotion -> %s (speed=%.0f cm/s)"),
-			*GetName(),
-			DesiredState == 0 ? TEXT("idle") : (DesiredState == 1 ? TEXT("walk") : TEXT("run")),
-			SpeedCms);
+			TEXT("[PFA] %s: locomotion -> %s (speed=%.0f cm/s, creatureState=%s, clip=%s)"),
+			*GetName(), StateName, SpeedCms,
+			*CreatureStateEnumToString(CreatureState), *Chosen->GetName());
 	}
 }
 

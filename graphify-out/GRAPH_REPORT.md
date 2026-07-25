@@ -1,16 +1,16 @@
 # Graph Report - PrimalFauna  (2026-07-25)
 
 ## Corpus Check
-- 162 files · ~9,025,569 words
+- 192 files · ~11,853,656 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 654 nodes · 730 edges · 81 communities (59 shown, 22 thin omitted)
-- Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 26 edges (avg confidence: 0.8)
+- 739 nodes · 816 edges · 90 communities (62 shown, 28 thin omitted)
+- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 26 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `fdfe4deb`
+- Built from commit: `6d0595bc`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -85,6 +85,15 @@
 - [[_COMMUNITY_Community 75|Community 75]]
 - [[_COMMUNITY_Community 76|Community 76]]
 - [[_COMMUNITY_Community 77|Community 77]]
+- [[_COMMUNITY_Community 81|Community 81]]
+- [[_COMMUNITY_Community 82|Community 82]]
+- [[_COMMUNITY_Community 83|Community 83]]
+- [[_COMMUNITY_Community 84|Community 84]]
+- [[_COMMUNITY_Community 85|Community 85]]
+- [[_COMMUNITY_Community 86|Community 86]]
+- [[_COMMUNITY_Community 87|Community 87]]
+- [[_COMMUNITY_Community 88|Community 88]]
+- [[_COMMUNITY_Community 89|Community 89]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `W2.6b — the EXPRESSIVE set (2026-07-25)` - 13 edges
@@ -96,24 +105,24 @@
 7. `Sicklejaw animation rebind report` - 9 edges
 8. `05 — Asset Pipeline` - 9 edges
 9. `03 — Spawning & Territories` - 9 edges
-10. `Rig` - 8 edges
+10. `AActor` - 8 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `build_bite()` --calls--> `env()`  [INFERRED]
-  art/wip/sicklejaw-d-v2/scripts/60_animate_d.py → art/wip/sicklejaw-d-v2/scripts/exprlib.py
-- `build_hurt()` --calls--> `env()`  [INFERRED]
-  art/wip/sicklejaw-d-v2/scripts/60_animate_d.py → art/wip/sicklejaw-d-v2/scripts/exprlib.py
-- `build_bite()` --calls--> `env()`  [INFERRED]
-  art/wip/sicklejaw-rig-v2/scripts/20_animate.py → art/wip/sicklejaw-d-v2/scripts/exprlib.py
-- `build_hurt()` --calls--> `env()`  [INFERRED]
-  art/wip/sicklejaw-rig-v2/scripts/20_animate.py → art/wip/sicklejaw-d-v2/scripts/exprlib.py
+- `RefreshTick()` --calls--> `PFA_RunSelfTests()`  [INFERRED]
+  Source/PrimalFauna/Private/PFASubsystem.cpp → Source/PrimalFauna/Private/PFACheats.cpp
 - `APFASicklejaw()` --calls--> `SetBaseHealth()`  [INFERRED]
   Source/PrimalFauna/Private/Species/PFASicklejaw.cpp → Source/PrimalFauna/Private/PFACreatureBase.cpp
+- `APFASicklejaw()` --calls--> `SetSpawnDespawnDistance()`  [INFERRED]
+  Source/PrimalFauna/Private/Species/PFASicklejaw.cpp → Source/PrimalFauna/Private/PFACreatureBase.cpp
+- `FindSequenceInPackages()` --references--> `int32`  [EXTRACTED]
+  Source/PrimalFauna/Private/Species/PFASicklejaw.cpp → Source/PrimalFauna/Private/PFACreatureController.cpp
+- `OnPossess()` --calls--> `WireCreaturePerception()`  [INFERRED]
+  Source/PrimalFauna/Private/PFACreatureController.cpp → Source/PrimalFauna/Private/PFACreatureControllerPerception.cpp
 
 ## Import Cycles
 - None detected.
 
-## Communities (81 total, 22 thin omitted)
+## Communities (90 total, 28 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.20
@@ -160,8 +169,8 @@ Cohesion: 0.33
 Nodes (3): GetActiveConfig(), FPFAConfigStruct, UObject
 
 ### Community 11 - "Community 11"
-Cohesion: 0.12
-Nodes (23): AFGCreatureController, APFACreatureBase, FPFASelfTest, FVector, DumpAllCreaturesCommand(), DumpCreatureCommand(), FindLookedAtOrNearestCreature(), IsEnabled() (+15 more)
+Cohesion: 0.11
+Nodes (24): AFGCreatureController, APFACreatureBase, FPFASelfTest, FVector, DumpAllCreaturesCommand(), DumpCreatureCommand(), FindLookedAtOrNearestCreature(), IsEnabled() (+16 more)
 
 ### Community 12 - "Community 12"
 Cohesion: 0.40
@@ -176,12 +185,12 @@ Cohesion: 0.25
 Nodes (4): namespace, PFABehaviorBorrower(), PFADiag(), PFAFactionConfig()
 
 ### Community 22 - "Community 22"
-Cohesion: 0.12
-Nodes (17): EPFAAggression, FLifetimeProperty, FObjectInitializer, AggressionModeToString(), APFACreatureBase(), ApplyRotationPolicy(), BeginPlay(), GetLifetimeReplicatedProps() (+9 more)
+Cohesion: 0.08
+Nodes (27): EPFAAggression, FLifetimeProperty, int32, AggressionModeToString(), APFACreatureBase(), ApplyRotationPolicy(), BeginPlay(), GetLifetimeReplicatedProps() (+19 more)
 
 ### Community 23 - "Community 23"
-Cohesion: 0.17
-Nodes (17): AFGCreature, APawn, APFACreatureController(), CanBeAlertedByTarget_Implementation(), CanBeHostileTowards(), ForceAggro(), IsValidTarget(), LogRuleVerdict() (+9 more)
+Cohesion: 0.15
+Nodes (18): AActor, APawn, APFACreatureController(), CanBeAlertedByTarget_Implementation(), CanBeHostileTowards(), ForceAggro(), IsValidTarget(), LogRuleVerdict() (+10 more)
 
 ### Community 24 - "Community 24"
 Cohesion: 0.39
@@ -212,20 +221,20 @@ Cohesion: 0.30
 Nodes (10): disk_verify(), fail(), import_sk_fresh(), log(), make_anim_task(), make_sk_task(), measure_height_cm(), r""" import_sicklejaw_ue.py -- W2.2: import the APPROVED Sicklejaw rebuild (art/ (+2 more)
 
 ### Community 32 - "Community 32"
-Cohesion: 0.13
-Nodes (13): FName, PFA_RunSelfTests(), ConfigureNest(), CheckNestRegistryConsistency(), PostLoadGame_Implementation(), ReconcileNests(), RefreshTick(), SpawnNestAtPlayer() (+5 more)
+Cohesion: 0.14
+Nodes (12): FName, ConfigureNest(), CheckNestRegistryConsistency(), PostLoadGame_Implementation(), ReconcileNests(), RefreshTick(), SpawnNestAtPlayer(), AFGCreature (+4 more)
 
 ### Community 35 - "Community 35"
 Cohesion: 0.22
 Nodes (8): credits, file, label, model, rendered, status, task_id, type
 
 ### Community 37 - "Community 37"
-Cohesion: 0.24
-Nodes (10): int32, FString, int32, TCHAR, BeginPlay(), FindSequenceInPackages(), SpawnTestCommand(), StartLocomotionAnim() (+2 more)
+Cohesion: 0.15
+Nodes (9): AliveCtx, breathe_layer(), gaze(), W2.7 -- the ALIVE Sicklejaw set, authored on the digit rig (v5).  Changes agains, ClipCtx that hands the clip's normalised time to the digit driver., A lash, not a sine: phase modulation makes the reversal snap and the travel, Hold, snap, hold -- a two-channel scan. `keys` = [(at, yaw_deg, pitch_deg), ...], whip() (+1 more)
 
 ### Community 41 - "Community 41"
-Cohesion: 0.07
-Nodes (43): build_bite(), build_gait(), build_hurt(), build_idle(), bump_cyc(), Author the five Sicklejaw clips procedurally on rig-v2, self-check them, export., Coil -> committed forward strike -> snap -> follow-through -> recover.     The b, Sharp impact flinch -> brace stagger -> recover. (+35 more)
+Cohesion: 0.06
+Nodes (50): build_bite(), build_gait(), build_hurt(), build_idle(), bump_cyc(), Author the five Sicklejaw clips procedurally on rig-v2, self-check them, export., Coil -> committed forward strike -> snap -> follow-through -> recover.     The b, Sharp impact flinch -> brace stagger -> recover. (+42 more)
 
 ### Community 42 - "Community 42"
 Cohesion: 0.08
@@ -236,8 +245,8 @@ Cohesion: 0.07
 Nodes (21): bump_cyc(), ClipCtx, oneshot_window(), Expressive-clip forge: the shared machinery for the W2.6b Sicklejaw set.  The W2, Keys a clip from a parameter function and measures it in the same pass., Where the head can sit given the trunk lean -- kept inside the neck's reach, Head AND tip of every bone -- a point cloud that is sensitive to both         tr, Idle's mean pose + its own per-bone excursion. A one-shot that starts         in (+13 more)
 
 ### Community 44 - "Community 44"
-Cohesion: 0.08
-Nodes (25): 10. THE ONE NEXT IMPROVEMENT I WOULD MAKE, 11. FILES, 1. THE JAW: A BIND DEFECT, NOT A TUNING PROBLEM, 1. WHICH FILE IS D, AND HOW I ESTABLISHED IT, 2. CLIP TABLE — every number from `validate_anim_fbx.py`, 2. D'S EXISTING RIG — WHY IT COULD NOT BE KEPT, 3. EMOTIONAL REGISTER — the silhouette proof, 3. HOW D'S ANATOMY WAS MEASURED (from the mesh, not the broken rig) (+17 more)
+Cohesion: 0.05
+Nodes (39): 10. THE ONE NEXT IMPROVEMENT I WOULD MAKE, 11. FILES, 1. PRIORITY 1 — "a disconnect in the leg at times" (user, with a screenshot), 1. THE JAW: A BIND DEFECT, NOT A TUNING PROBLEM, 1. WHICH FILE IS D, AND HOW I ESTABLISHED IT, 2. CLIP TABLE — every number from `validate_anim_fbx.py`, 2. D'S EXISTING RIG — WHY IT COULD NOT BE KEPT, 2. The permanent gate — `tools/validate_rig_fbx.py` (+31 more)
 
 ### Community 45 - "Community 45"
 Cohesion: 0.14
@@ -260,12 +269,12 @@ Cohesion: 0.33
 Nodes (9): fail(), log(), main(), parse_args(), r""" validate_anim_fbx.py -- headless Blender gate that judges a creature ANIMAT, World-space head position of a bone per frame., sample_world_positions(), side_of() (+1 more)
 
 ### Community 50 - "Community 50"
-Cohesion: 0.33
-Nodes (9): fail(), log(), main(), mirror_name(), parse_args(), r""" validate_rig_fbx.py -- headless Blender gate that FAILS a creature FBX whos, Best-effort L<->R name flip, tolerant of the common conventions., side_of() (+1 more)
+Cohesion: 0.27
+Nodes (13): check_skin(), fail(), log(), main(), mathutils_up(), mathutils_x(), mirror_name(), parse_args() (+5 more)
 
 ### Community 51 - "Community 51"
-Cohesion: 0.25
-Nodes (7): build_gait(), build_idle(), build_turn(), Cycle + stance clips: gaits (Walk / Run / Prowl), the three idle registers, and, Stationary re-facing -- the fix for "a stopped creature cannot track a     straf, A biped gait cycle. The stance foot is SOLVED to track backward at exactly     `, One idle machine, three emotional registers (spec 3). The register is carried
+Cohesion: 0.20
+Nodes (9): AliveSolver, build_digit_table(), _chain(), extend_order(), Digit articulation for the Sicklejaw (W2.7).  The user asked for "flexing of lim, Digit bones must be in Rig.ORDER (parent before child) or they are never posed, Measure, once, everything the driver needs: which digits hang off which parent,, Write two phalanx poses per digit, chained off an already-solved parent. (+1 more)
 
 ### Community 52 - "Community 52"
 Cohesion: 0.43
@@ -307,25 +316,37 @@ Nodes (3): build(), Settle the export-scale contradiction empirically.  Three ca
 Cohesion: 0.50
 Nodes (3): W2.6b -- the EXPRESSIVE Sicklejaw set, authored on the jaw-fixed rig (v3).  Fift, Guarantee frame 1 is exactly the reference pose even for lagged curves., zeroed()
 
+### Community 81 - "Community 81"
+Cohesion: 0.29
+Nodes (5): measure(), W2.7 PRIORITY 1 -- AUDIT the hip/thigh/pelvis skin weights.  The user reports "a, Distance from every row of P to segment a-b., seg_dist(), tri_area()
+
+### Community 82 - "Community 82"
+Cohesion: 0.38
+Nodes (4): dihedral(), measure(), normals(), W2.7 -- LOOK at the hip. Wide-enough framing, real clip frames, plus a weight he
+
+### Community 84 - "Community 84"
+Cohesion: 0.50
+Nodes (4): plan_digits(), W2.7 PRIORITY 2 enabler -- give the Sicklejaw TOES and FINGERS.  The rig termina, Measure `ndig` digits fanning out from `parent`'s head. Returns     (root, [ (na, smoothstep()
+
 ## Knowledge Gaps
-- **158 isolated node(s):** `VERDICT`, `1. WHICH FILE IS D, AND HOW I ESTABLISHED IT`, `2. D'S EXISTING RIG — WHY IT COULD NOT BE KEPT`, `3. HOW D'S ANATOMY WAS MEASURED (from the mesh, not the broken rig)`, `4. BONE CANON + ASSERTION RESULTS` (+153 more)
+- **171 isolated node(s):** `TCHAR`, `FObjectInitializer`, `TArray`, `FLifetimeProperty`, `UBehaviorTree` (+166 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **22 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **28 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `UWorld` connect `Community 11` to `Community 32`, `Community 37`?**
-  _High betweenness centrality (0.013) - this node is a cross-community bridge._
-- **Why does `SpawnTestCommand()` connect `Community 37` to `Community 11`?**
-  _High betweenness centrality (0.011) - this node is a cross-community bridge._
-- **Why does `Rig` connect `Community 42` to `Community 41`?**
+- **Why does `UWorld` connect `Community 11` to `Community 22`?**
   _High betweenness centrality (0.010) - this node is a cross-community bridge._
-- **What connects `VERDICT`, `1. WHICH FILE IS D, AND HOW I ESTABLISHED IT`, `2. D'S EXISTING RIG — WHY IT COULD NOT BE KEPT` to the rest of the system?**
-  _263 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Why does `SpawnTestCommand()` connect `Community 22` to `Community 11`?**
+  _High betweenness centrality (0.009) - this node is a cross-community bridge._
+- **Why does `Rig` connect `Community 42` to `Community 41`?**
+  _High betweenness centrality (0.008) - this node is a cross-community bridge._
+- **What connects `TCHAR`, `FObjectInitializer`, `TArray` to the rest of the system?**
+  _297 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 11` be split into smaller, more focused modules?**
-  _Cohesion score 0.1168091168091168 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.11375661375661375 - nodes in this community are weakly interconnected._
 - **Should `Community 22` be split into smaller, more focused modules?**
-  _Cohesion score 0.11904761904761904 - nodes in this community are weakly interconnected._
-- **Should `Community 32` be split into smaller, more focused modules?**
-  _Cohesion score 0.13071895424836602 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.07862903225806452 - nodes in this community are weakly interconnected._
+- **Should `Community 23` be split into smaller, more focused modules?**
+  _Cohesion score 0.14624505928853754 - nodes in this community are weakly interconnected._
