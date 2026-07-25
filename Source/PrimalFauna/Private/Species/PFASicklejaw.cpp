@@ -429,6 +429,10 @@ void APFASicklejaw::StartLocomotionAnim()
 	LocomotionIdleAlertAnim = FindSequenceInPackages(SicklejawIdleAlertAnimPackages, UE_ARRAY_COUNT(SicklejawIdleAlertAnimPackages), TEXT("idleAlert"), OwnerName);
 	LocomotionIdleAggressiveAnim = FindSequenceInPackages(SicklejawIdleAggressiveAnimPackages, UE_ARRAY_COUNT(SicklejawIdleAggressiveAnimPackages), TEXT("idleAggressive"), OwnerName);
 	LocomotionProwlAnim = FindSequenceInPackages(SicklejawProwlAnimPackages, UE_ARRAY_COUNT(SicklejawProwlAnimPackages), TEXT("prowl"), OwnerName);
+	// w29-1: the one-shot set (comfort breaks, threat display, limp). Resolved
+	// here so ALL clip loading happens in one place at arm time -- a creature
+	// must never stall mid-tick loading a package the moment it decides to preen.
+	ResolveOneShotClips();
 	// w24-3 (overnight tester finding): the all-or-nothing gate kept the
 	// driver dark when only run was missing -- idle+walk resolved but NOT
 	// EVEN IDLE played. PARTIAL-ARM instead: any resolved sequence arms the
@@ -576,11 +580,33 @@ void APFASicklejaw::TickLocomotionAnim()
 		DesiredState = 0;   // Idle
 	}
 
-	if (DesiredState == LocomotionState)
+	// ---- w29-1 ONE-SHOT LAYER gets first refusal on the pose. A break or a
+	// threat display owns the mesh while it plays; it releases the moment the
+	// creature's situation changes (see UpdateOneShotLayer). Placed AFTER
+	// DesiredState is computed because "the situation changed" is defined as
+	// exactly that value moving.
+	if (UpdateOneShotLayer(DesiredState))
+	{
+		return;
+	}
+	if (MaybeStartOneShot(DesiredState))
+	{
+		return;
+	}
+
+	// Being wounded is part of the state IDENTITY, not just a post-pick swap:
+	// a creature already walking when its health crosses the limp threshold
+	// would otherwise keep the healthy gait until it happened to change state
+	// (i.e. the limp would appear only after it stopped and set off again).
+	UAnimSequence* WoundedGait = ResolveWoundedGait(DesiredState);
+	const bool bWantWounded = (WoundedGait != nullptr);
+
+	if (DesiredState == LocomotionState && bWantWounded == bLocomotionWoundedActive)
 	{
 		return;
 	}
 	LocomotionState = DesiredState;
+	bLocomotionWoundedActive = bWantWounded;
 
 	// w24-3 gait fallback chain: a missing clip borrows the next-slower one
 	// (run->walk->idle, walk->idle, idle->walk as last resort) so partial
@@ -629,6 +655,16 @@ void APFASicklejaw::TickLocomotionAnim()
 		Chosen = FirstAvailable({LocomotionIdleAnim, LocomotionWalkAnim});
 		break;
 	}
+	// w29-1: a badly hurt creature limps instead of walking or prowling --
+	// a MODIFIER on how you move, not a different intent, so it overrides the
+	// gait pick rather than being a state of its own. (Resolved above, where it
+	// also participates in the change detection.)
+	if (WoundedGait)
+	{
+		Chosen = WoundedGait;
+		StateName = TEXT("limp");
+	}
+
 	if (!Chosen)
 	{
 		Chosen = FirstAvailable({LocomotionRunAnim, LocomotionProwlAnim, LocomotionIdleAlertAnim, LocomotionIdleAggressiveAnim});

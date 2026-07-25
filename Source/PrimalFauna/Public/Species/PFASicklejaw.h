@@ -66,6 +66,35 @@ private:
 	void StartLocomotionAnim();
 	void TickLocomotionAnim();
 
+	// --- w29-1 ONE-SHOT CLIP LAYER (PFASicklejawAnim.cpp) ---------------------
+	// Rides on top of the looping state machine using the SAME single-node
+	// player: PlayOneShotClip swaps in a non-looping clip and marks the pose as
+	// owned until it finishes; the looping selection yields while that is true
+	// and re-applies afterwards. This is the limit of what one node can do --
+	// it plays exactly ONE sequence, so layered additives (breathing, tail
+	// mood) are NOT reachable this way and still need a real AnimInstance.
+	bool PlayOneShotClip(UAnimSequence* Sequence, const TCHAR* Label, bool bHoldFinalFrame, int32 BaseState);
+	// True => a one-shot owns the pose this tick; the caller must not touch it.
+	bool UpdateOneShotLayer(int32 DesiredState);
+	// Threat display when alert, comfort/vigilance breaks when calm.
+	bool MaybeStartOneShot(int32 DesiredState);
+	// Limp instead of the walk/prowl gait once badly hurt (never instead of Run).
+	UAnimSequence* ResolveWoundedGait(int32 DesiredState) const;
+	void ResolveOneShotClips();
+	void ClearOneShot(const TCHAR* Reason);
+	void ScheduleNextIdleBreak(float NowSeconds);
+
+public:
+	// PFA.PlayAnim <clip> [hold] [radius]: play ANY imported clip by name on
+	// this creature. The verification lever for the whole animation set --
+	// 36 clips exist and gameplay only reaches a handful, so without this the
+	// rest can only be judged in Blender renders, never in the actual game
+	// at the actual scale under the actual lighting.
+	bool DevPlayClipByName(const FString& ClipName, bool bHoldFinalFrame);
+	void DevClearClipOverride();
+
+private:
+
 	// UPROPERTY-rooted so the runtime-loaded sequences can't be GC'd from
 	// under the playing component (cookbook GC-rooting convention).
 	UPROPERTY(Transient)
@@ -83,9 +112,38 @@ private:
 	UPROPERTY(Transient)
 	TObjectPtr<UAnimSequence> LocomotionProwlAnim;
 
+	// w29-1 one-shot clips. Parallel to the weight table in PFASicklejawAnim.cpp;
+	// entries may be null (an unresolved clip is simply never picked).
+	UPROPERTY(Transient)
+	TArray<TObjectPtr<UAnimSequence>> IdleBreakClips;
+	UPROPERTY(Transient)
+	TObjectPtr<UAnimSequence> ThreatenAnim;
+	UPROPERTY(Transient)
+	TObjectPtr<UAnimSequence> LimpAnim;
+	// GC-rooted for the same reason as the loops: the single-node player holds a
+	// raw pointer to whatever is playing (cookbook GC-rooting convention).
+	UPROPERTY(Transient)
+	TObjectPtr<UAnimSequence> ActiveOneShotAnim;
+
+	// 0 = nothing playing. World-seconds deadline, not a countdown, so a timer
+	// hitch can't strand a one-shot forever.
+	float OneShotEndWorldSeconds = 0.0f;
+	bool bOneShotHoldsFinalFrame = false;
+	// The looping state that was true when the one-shot started; if the creature
+	// leaves it (starts moving, spots the player, commits to a fight) the pose is
+	// released immediately -- a creature must never finish preening at something
+	// that is trying to kill it.
+	int32 OneShotBaseState = -1;
+	float NextIdleBreakWorldSeconds = 0.0f;
+	// One ritualised threat display per alert episode, re-armed on leaving alert.
+	bool bThreatenedThisEpisode = false;
+
 	FTimerHandle LocomotionTimerHandle;
-	// 0=idle 1=walk 2=run, -1 = nothing playing yet (forces the first apply).
+	// 0=idle 1=walk 2=run 3=idle-alert 4=idle-aggressive 5=prowl,
+	// -1 = nothing playing yet (forces the first apply).
 	int32 LocomotionState = -1;
+	// Part of the state identity, not a separate state: see TickLocomotionAnim.
+	bool bLocomotionWoundedActive = false;
 
 	// w26-1 (user report: creatures sunk into the terrain once anims played).
 	// The w18-8/w23-2 feet-plant offset was computed ONCE from the mesh's
