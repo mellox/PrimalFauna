@@ -429,6 +429,30 @@ void APFACreatureBase::SetSpawnDespawnDistance(float NewSpawnDistanceCm, float N
 	}
 }
 
+void APFACreatureBase::SetRoaming(float MinDistanceCm, float MaxDistanceCm, float MinWaitSeconds, float MaxWaitSeconds)
+{
+	// w32-1 (user, in game): "They stand in the same place until aggroed, should
+	// they be wandering around a bit like creatures do usually".
+	//
+	// They were standing still because mRoamingDistance is an FFloatInterval and
+	// we never set it -- it default-constructs to (0, 0), so the roam behaviour
+	// dutifully picks a destination ZERO centimetres away and the creature
+	// arrives instantly, forever. Nothing errors; the AI is working perfectly on
+	// the numbers it was given.
+	//
+	// This is the vanilla-parity gap again (cookbook §22): these are EditAnywhere
+	// UPROPERTYs that the vanilla BP creature CDOs author, and a C++-only CDO
+	// leaves at zero -- the same shape as the null aggro curves that made sight
+	// aggro mathematically impossible in w18-12.
+	mRoamingDistance = FFloatInterval(MinDistanceCm, MaxDistanceCm);
+	mRoamingWaitTime = FFloatInterval(MinWaitSeconds, MaxWaitSeconds);
+
+	UE_LOG(LogPrimalFauna, Display,
+		TEXT("[PFA] %s: roaming set distance=[%.0f..%.0f]cm wait=[%.1f..%.1f]s (getter reads [%.0f..%.0f])"),
+		*GetName(), MinDistanceCm, MaxDistanceCm, MinWaitSeconds, MaxWaitSeconds,
+		GetRoamingDistance().Min, GetRoamingDistance().Max);
+}
+
 void APFACreatureBase::SetBorrowedBehaviorTree(UBehaviorTree* BehaviorTree)
 {
 	// mBehaviorTree is protected on AFGCreature (FGCreature.h:548) -- inherited,

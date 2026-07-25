@@ -150,6 +150,12 @@ protected:
 	// comment for why reflection instead of a Friend AccessTransformer).
 	void SetSpawnDespawnDistance(float NewSpawnDistanceCm, float NewDespawnDistanceCm);
 
+	// w32-1: roam distance/wait. Routed through the base for the same reason as
+	// the setter above -- mRoamingDistance/mRoamingWaitTime are protected on
+	// AFGCreature and the AccessTransformers Friend grant is to THIS class, and
+	// friendship does not inherit to APFASicklejaw.
+	void SetRoaming(float MinDistanceCm, float MaxDistanceCm, float MinWaitSeconds, float MaxWaitSeconds);
+
 	// Per-species territory radius (doc 02 §3). Species ctors set this
 	// directly (protected, plain UPROPERTY -- no Friend grant needed, this
 	// field lives on OUR class). Default is a generic placeholder so a

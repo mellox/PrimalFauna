@@ -48,6 +48,15 @@ namespace
 	constexpr float SicklejawAggroGainRate = 10.0f;
 	constexpr float SicklejawAggroReductionRate = 5.0f;
 
+	// w32-1 roam tuning. Wide enough that a creature visibly relocates rather
+	// than shuffling, short enough that it stays near its nest; the wait band is
+	// deliberately long and jittered so a group doesn't move in lockstep (the
+	// same reasoning as the idle-break jitter).
+	constexpr float SicklejawRoamMinCm = 600.0f;
+	constexpr float SicklejawRoamMaxCm = 2500.0f;
+	constexpr float SicklejawRoamWaitMinSec = 4.0f;
+	constexpr float SicklejawRoamWaitMaxSec = 14.0f;
+
 	constexpr float SicklejawSpawnDistanceCm = 6000.0f;
 	constexpr float SicklejawDespawnDistanceCm = 9000.0f;
 	constexpr float SicklejawTerritoryRadiusCm = 3500.0f;          // inert while default mode is Hostile (doc 04 §1); wired for when Territorial is selected
@@ -201,6 +210,13 @@ APFASicklejaw::APFASicklejaw(const FObjectInitializer& ObjectInitializer)
 	// --- Spawn/despawn (doc 07 §3, FGCreature.h:691-695 -- private, routed
 	// through APFACreatureBase's Friend-granted setter) ---
 	SetSpawnDespawnDistance(SicklejawSpawnDistanceCm, SicklejawDespawnDistanceCm);
+
+	// w32-1 (user, in game): creatures stood rooted until aggroed. Roam distance
+	// defaults to (0,0) on a C++-only CDO, so the roam behaviour was picking a
+	// destination zero centimetres away. A pack predator should drift.
+	// TODO(W1.2-census): anchors, like every other number in this ctor. A
+	// vanilla-creature census would tell us what a Hog or Stinger actually uses.
+	SetRoaming(SicklejawRoamMinCm, SicklejawRoamMaxCm, SicklejawRoamWaitMinSec, SicklejawRoamWaitMaxSec);
 
 	// --- Territory + default aggression (doc 02 §3, doc 04 §1: Sicklejaw = Hostile) ---
 	TerritoryRadiusCm = SicklejawTerritoryRadiusCm;
