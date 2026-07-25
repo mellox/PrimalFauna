@@ -359,6 +359,21 @@ bool APFASicklejaw::EnsureAnimationDriver()
 	return false;
 }
 
+float APFASicklejaw::AuthoredSpeedForSequence(const UAnimSequence* Sequence) const
+{
+	// The ground speed each gait clip was AUTHORED for, measured by the Blender
+	// validator (implied speed = how fast the stance foot tracks backward during
+	// contact). These are contract numbers handed across the art/code seam --
+	// see ASSET-COORDINATION.md §2 -- and they are the denominator that makes a
+	// clip slide-free. Anything not listed (idles, breaks, one-shots) returns 0,
+	// meaning "no ground speed to match".
+	if (Sequence == LocomotionRunAnim)   { return 600.0f; }
+	if (Sequence == LocomotionWalkAnim)  { return 400.0f; }
+	if (Sequence == LocomotionProwlAnim) { return 110.0f; }
+	if (Sequence == LimpAnim)            { return 180.0f; }
+	return 0.0f;
+}
+
 void APFASicklejaw::ApplyChosenPose(UAnimSequence* Sequence, bool bLoop)
 {
 	USkeletalMeshComponent* MeshComponent = GetMesh();
@@ -410,6 +425,44 @@ void APFASicklejaw::ApplyChosenPose(UAnimSequence* Sequence, bool bLoop)
 	if (bLoop && LocomotionPhaseOffset > 0.0f)
 	{
 		MeshComponent->SetPosition(LocomotionPhaseOffset * Sequence->GetPlayLength(), /*bFireNotifies*/ false);
+	}
+
+	// w38-1 (user: "Does it have a faster speed when charging? It looked like it
+	// was sliding when charging, that the legs weren't moving.")
+	//
+	// It does, and that was the bug. The heartbeat caught a creature at
+	// velocity=780cm/s -- the SPRINT speed -- while the Run clip is authored for
+	// an implied 600cm/s. Above the run threshold every gait plays at its
+	// authored cadence regardless of how fast the capsule is actually moving, so
+	// at a charge the feet were tracking 30% slower than the ground. Classic
+	// foot-slide, and the faster the creature the worse it looks.
+	//
+	// A gait clip is only slide-free at the ONE speed it was authored for. Scale
+	// the play rate by (actual ground speed / authored speed) and it is
+	// slide-free at every speed, which also means the charge finally reads as
+	// urgency rather than as gliding. Clamped so a stationary creature does not
+	// freeze its own idle and a teleport does not spin the legs into a blur.
+	if (bLoop)
+	{
+		const float AuthoredCms = AuthoredSpeedForSequence(Sequence);
+		if (AuthoredCms > 0.0f)
+		{
+			const float SpeedCms = GetVelocity().Size2D();
+			const float Rate = FMath::Clamp(SpeedCms / AuthoredCms, 0.5f, 2.0f);
+			MeshComponent->SetPlayRate(Rate);
+			if (PFADiag::IsEnabled() && !FMath::IsNearlyEqual(Rate, 1.0f, 0.05f))
+			{
+				UE_LOG(LogPrimalFauna, Display,
+					TEXT("[PFA] %s: gait play-rate %.2fx (moving %.0f cm/s on a clip authored for %.0f) -- keeps the feet on the ground."),
+					*GetName(), Rate, SpeedCms, AuthoredCms);
+			}
+		}
+		else
+		{
+			// Idles and one-shots have no ground speed to match; never leave a
+			// previous gait's rate applied to them.
+			MeshComponent->SetPlayRate(1.0f);
+		}
 	}
 }
 

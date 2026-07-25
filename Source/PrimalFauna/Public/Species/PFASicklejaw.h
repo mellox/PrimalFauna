@@ -79,6 +79,13 @@ private:
 	// paths every tick. One funnel makes that unrepresentable.
 	void ApplyChosenPose(UAnimSequence* Sequence, bool bLoop);
 
+	// w38-1: the ground speed a gait clip was AUTHORED for, or 0 for clips with
+	// no ground speed (idles, breaks, one-shots). The denominator that keeps the
+	// feet on the ground when the creature moves at a speed the clip was not
+	// built for -- e.g. charging at the 780cm/s sprint on a clip authored for
+	// 600, which is what the user saw as sliding.
+	float AuthoredSpeedForSequence(const UAnimSequence* Sequence) const;
+
 	// Installs or removes the native AnimInstance so the live driver matches
 	// pfa.UseAnimInstance. Returns TRUE if the AnimInstance path is live.
 	// Called from ApplyChosenPose, i.e. only when a pose is actually changing,

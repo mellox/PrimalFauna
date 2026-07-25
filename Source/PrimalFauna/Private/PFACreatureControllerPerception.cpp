@@ -431,14 +431,38 @@ void APFACreatureController::LogCreatureStateHeartbeat()
 				}
 			}
 		}
-		// w32-1: the roam branch is driven by the MinRoamingDistance /
-		// MaxRoamingDistance FLOAT keys (FGCreatureController.h), and setting
-		// mRoamingDistance on the CDO only helps if something actually copies it
-		// onto the blackboard. If these read 0 here while the creature's own
-		// getter reads the configured band, then the vanilla BP controller was
-		// what populated them and we have to do it ourselves -- exactly the shape
-		// of the W1.6 BT-launch discovery. Logging both sides means ONE test
-		// answers it instead of another build-and-play cycle.
+		// w38-1: ANSWERED, and it was the predicted answer. The w32-1 heartbeat
+		// shipped with `roamBB=[0..0] roamCDO=[600..2500]` -- our CDO values are
+		// correct and the BLACKBOARD keys the roam branch actually reads are
+		// zero. So the vanilla BP controller was populating them and we must do
+		// it ourselves. Third time this exact shape has appeared: the BT that
+		// vanilla's BP launched for us, the aggro curves its BP authored, and now
+		// the roam keys its BP wrote.
+		//
+		// Written here rather than once at possess time on purpose: this runs on
+		// the heartbeat, so it is self-healing. If anything re-initialises the
+		// blackboard later (a BT restart, a state reset), the keys come back
+		// within one heartbeat instead of silently staying zero for the rest of
+		// the creature's life -- which is exactly how this bug hid.
+		if (const AFGCreature* RoamSetter = Cast<AFGCreature>(GetPawn()))
+		{
+			const FFloatInterval& Band = RoamSetter->GetRoamingDistance();
+			if (Band.Max > 0.0f)
+			{
+				const float BBMax = BlackboardComp->GetValueAsFloat(FName(TEXT("MaxRoamingDistance")));
+				if (!FMath::IsNearlyEqual(BBMax, Band.Max))
+				{
+					BlackboardComp->SetValueAsFloat(FName(TEXT("MinRoamingDistance")), Band.Min);
+					BlackboardComp->SetValueAsFloat(FName(TEXT("MaxRoamingDistance")), Band.Max);
+					UE_LOG(LogPrimalFauna, Display,
+						TEXT("[PFA] %s: wrote roam band [%.0f..%.0f] to the blackboard (was %.0f max) -- vanilla's BP controller normally does this."),
+						*GetName(), Band.Min, Band.Max, BBMax);
+				}
+			}
+		}
+
+		// Both sides still logged, because the write above only matters if it
+		// STICKS -- and a key that reverts is the same bug wearing a hat.
 		BlackboardDump += FString::Printf(TEXT("| roamBB=[%.0f..%.0f] "),
 			BlackboardComp->GetValueAsFloat(FName(TEXT("MinRoamingDistance"))),
 			BlackboardComp->GetValueAsFloat(FName(TEXT("MaxRoamingDistance"))));
