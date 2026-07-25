@@ -70,7 +70,12 @@ if ($game) { Fail "Satisfactory is running (PID $($game.Id -join ',')) -- it loc
 # another build.ps1; a session driving RunUAT directly holds no lock, and two
 # concurrent builds corrupt the shared toolchain. Process check per
 # _team/BUILD-COORDINATION.md (review W5).
-$builders = Get-Process -Name 'UnrealBuildTool','AutomationTool','cl','link','MSBuild' -ErrorAction SilentlyContinue
+# UnrealEditor* included deliberately: a headless UnrealEditor-Cmd (asset import,
+# material authoring) holds ~28GB and hammers the same intermediates. Omitting it
+# was a hole in THIS wrapper -- the Satismagictory and LaserRifle wrappers both
+# list it, so a cross-session build would have been blocked by them and not by
+# us, which is the worst kind of asymmetry: safe in one direction only.
+$builders = Get-Process -Name 'UnrealBuildTool','AutomationTool','cl','link','MSBuild','UnrealEditor*' -ErrorAction SilentlyContinue
 if ($builders) {
     Fail ("a build is already running ({0}) -- builds MUST serialize; wait for it to finish." -f
           (($builders | ForEach-Object { "$($_.ProcessName):$($_.Id)" }) -join ', '))
