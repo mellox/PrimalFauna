@@ -30,7 +30,10 @@
 
 #include "Components/SkeletalMeshComponent.h"
 #include "Animation/AnimSequence.h"
+#include "Animation/Skeleton.h"
+#include "Engine/SkeletalMesh.h"
 #include "Engine/World.h"
+#include "TimerManager.h"
 #include "EngineUtils.h"
 #include "GameFramework/Pawn.h"
 #include "GameFramework/PlayerController.h"
@@ -244,9 +247,19 @@ bool APFASicklejaw::UpdateOneShotLayer(int32 DesiredState)
 		return true;   // holds until the situation changes or a dev clears it
 	}
 
+	// FAIL CLOSED on a null world (review W2). The obvious spelling of this --
+	// `World ? GetTimeSeconds() : 0.0f` -- pins now at 0.0, and 0.0 is forever
+	// less than a deadline set at a positive time, so a null world would mean
+	// "still playing" PERMANENTLY: the creature holds one pose for the rest of
+	// its life. Every other null-world path in this file returns false; this one
+	// silently did the opposite.
 	const UWorld* World = GetWorld();
-	const float NowSeconds = World ? World->GetTimeSeconds() : 0.0f;
-	if (NowSeconds < OneShotEndWorldSeconds)
+	if (!World)
+	{
+		ClearOneShot(TEXT("no world -- releasing rather than holding the pose forever"));
+		return false;
+	}
+	if (World->GetTimeSeconds() < OneShotEndWorldSeconds)
 	{
 		return true;
 	}
@@ -383,11 +396,58 @@ UAnimSequence* APFASicklejaw::ResolveWoundedGait(int32 DesiredState) const
 // ---------------------------------------------------------------------------
 bool APFASicklejaw::DevPlayClipByName(const FString& ClipName, bool bHoldFinalFrame)
 {
+	// Validate at the boundary (review W6): a console string is untrusted input,
+	// and it is concatenated straight into a package path below. Path separators
+	// and traversal would aim LoadPackage somewhere we never meant to look. This
+	// stays inside UE's virtual package space either way, but a command is a
+	// system boundary and gets checked like one.
+	if (ClipName.IsEmpty() || ClipName.Contains(TEXT("/")) || ClipName.Contains(TEXT("\\")) || ClipName.Contains(TEXT("..")))
+	{
+		UE_LOG(LogPrimalFauna, Warning,
+			TEXT("[PFA] %s: PFA.PlayAnim rejected clip name '%s' -- expected a bare clip suffix like ClawPin or IdleBreak_Preen, no paths."),
+			*GetName(), *ClipName);
+		return false;
+	}
+
 	UAnimSequence* Sequence = ResolveClip(*ClipName, GetName());
 	if (!Sequence)
 	{
 		return false;
 	}
+
+	// Skeleton guard (review W3). StartLocomotionAnim only arms the driver when
+	// the REAL mesh loaded, because these clips target SK_Sicklejaw_Skeleton and
+	// playing them on the placeholder's skeleton is undefined -- w24 paid for
+	// that lesson. The dev command bypassed that check entirely and could hand a
+	// mismatched sequence straight to PlayAnimation on a creature that lost the
+	// real-mesh race or fell back after a broken import.
+	const USkeletalMeshComponent* MeshComponent = GetMesh();
+	const USkeletalMesh* SkeletalMesh = MeshComponent ? Cast<USkeletalMesh>(MeshComponent->GetSkinnedAsset()) : nullptr;
+	const USkeleton* MeshSkeleton = SkeletalMesh ? SkeletalMesh->GetSkeleton() : nullptr;
+	const USkeleton* ClipSkeleton = Sequence->GetSkeleton();
+	if (!MeshSkeleton || !ClipSkeleton || MeshSkeleton != ClipSkeleton)
+	{
+		UE_LOG(LogPrimalFauna, Warning,
+			TEXT("[PFA] %s: PFA.PlayAnim '%s' SKIPPED -- skeleton mismatch (mesh skeleton=%s, clip skeleton=%s). ")
+			TEXT("This creature is not on the real Sicklejaw mesh, so the clip would be played against the wrong bone hierarchy."),
+			*GetName(), *ClipName,
+			MeshSkeleton ? *MeshSkeleton->GetName() : TEXT("<none>"),
+			ClipSkeleton ? *ClipSkeleton->GetName() : TEXT("<none>"));
+		return false;
+	}
+
+	// Review I2: the one-shot layer is driven BY the locomotion timer, so if that
+	// timer never armed (no gait clip resolved on this creature) nothing will
+	// ever notice this clip expiring and it holds its last frame forever. Still
+	// play it -- seeing the clip is the point -- but say so, because "it froze"
+	// would otherwise look like a bug in the layer rather than a missing driver.
+	if (!GetWorldTimerManager().IsTimerActive(LocomotionTimerHandle))
+	{
+		UE_LOG(LogPrimalFauna, Warning,
+			TEXT("[PFA] %s: PFA.PlayAnim '%s' -- locomotion driver is NOT armed on this creature, so nothing will release the pose when the clip ends. It will hold its final frame; run PFA.PlayAnim with no args to clear."),
+			*GetName(), *ClipName);
+	}
+
 	return PlayOneShotClip(Sequence, *ClipName, bHoldFinalFrame, DevOneShotBaseState);
 }
 

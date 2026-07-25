@@ -66,11 +66,30 @@ Write-Host "PFABUILD marker=$Marker"
 $game = Get-Process -Name 'FactoryGame*' -ErrorAction SilentlyContinue
 if ($game) { Fail "Satisfactory is running (PID $($game.Id -join ',')) -- it locks the deployed DLL. Close it first." }
 
+# --- gate 3b: no OTHER build in flight. The lock file below only catches
+# another build.ps1; a session driving RunUAT directly holds no lock, and two
+# concurrent builds corrupt the shared toolchain. Process check per
+# _team/BUILD-COORDINATION.md (review W5).
+$builders = Get-Process -Name 'UnrealBuildTool','AutomationTool','cl','link','MSBuild' -ErrorAction SilentlyContinue
+if ($builders) {
+    Fail ("a build is already running ({0}) -- builds MUST serialize; wait for it to finish." -f
+          (($builders | ForEach-Object { "$($_.ProcessName):$($_.Id)" }) -join ', '))
+}
+
 # --- cross-session build lock (_team/BUILD-COORDINATION.md) ----------------
+# Staleness window per that doc: a lock older than 30 minutes is treated as
+# abandoned. Without this, one hard-killed build blocks EVERY future build in
+# EVERY session until a human deletes the file by hand (review W4) -- and
+# review W1 found a path that could strand exactly such a lock.
+$LockStaleMinutes = 30
 if (Test-Path $LockFile) {
-    Write-Host "PFABUILD another build holds the lock:" -ForegroundColor Yellow
+    $lockAge = (Get-Date) - (Get-Item $LockFile).LastWriteTime
+    Write-Host "PFABUILD existing build lock ($([int]$lockAge.TotalMinutes)m old):" -ForegroundColor Yellow
     Get-Content $LockFile | Write-Host
-    Fail 'build lock held -- wait for the other build, or delete the lock if it is stale.'
+    if ($lockAge.TotalMinutes -lt $LockStaleMinutes) {
+        Fail ("build lock held and only {0}m old -- another build is probably live. Wait, or delete the lock if you know it is dead." -f [int]$lockAge.TotalMinutes)
+    }
+    Write-Host "PFABUILD lock is older than ${LockStaleMinutes}m -- treating as abandoned and taking it over." -ForegroundColor Yellow
 }
 "PrimalFauna $Marker | pid $PID | $(Get-Date -Format s)" | Set-Content $LockFile -Encoding UTF8
 
@@ -110,13 +129,28 @@ try {
     if (-not ($uatOut -match 'BUILD SUCCESSFUL')) { Fail 'PackagePlugin did not report BUILD SUCCESSFUL' }
 }
 finally {
+    # Each cleanup action is ISOLATED. Review W1 reproduced the un-isolated
+    # version: a throwing Move-Item skipped the lock deletion entirely, which
+    # strands _team\BUILD-LOCK.txt and blocks every future build in every
+    # session for every mod. Cleanup must never be all-or-nothing.
     if ($restoreWu -and (Test-Path $WuDisabled)) {
-        Move-Item $WuDisabled $WuPlugin -Force
-        Write-Host 'PFABUILD WeaponUpgrades.uplugin restored'
+        try {
+            Move-Item $WuDisabled $WuPlugin -Force
+            Write-Host 'PFABUILD WeaponUpgrades.uplugin restored'
+        }
+        catch {
+            Write-Warning ("PFABUILD COULD NOT RESTORE WeaponUpgrades.uplugin -- the user's installed mod is DISABLED. " +
+                           "Rename '$WuDisabled' back to '$WuPlugin' by hand. Error: $_")
+        }
     }
     # [System.IO.File]::Delete, NOT Remove-Item -- the harness blocks
     # Remove-Item next to a robocopy /MIR (workspace CLAUDE.md).
-    if (Test-Path $LockFile) { [System.IO.File]::Delete($LockFile) }
+    try {
+        if (Test-Path $LockFile) { [System.IO.File]::Delete($LockFile) }
+    }
+    catch {
+        Write-Warning "PFABUILD COULD NOT DELETE the build lock '$LockFile' -- delete it by hand or the next build will refuse to start. Error: $_"
+    }
 }
 
 # --- gate 4a: the marker must be in the DLL the user will actually load ----
