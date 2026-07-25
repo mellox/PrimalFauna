@@ -319,8 +319,28 @@ MEL.set_material_instance_scalar_parameter_value(mi, 'AggroGlow', 0.0)
 MEL.set_material_instance_scalar_parameter_value(mi, 'GlowIntensity', GLOW_INTENSITY)
 MEL.update_material_instance(mi)
 
+# MATERIAL USAGE FLAG -- the difference between "works" and "grey creature".
+# A material must declare bUsedWithSkeletalMesh or the renderer refuses it on a
+# skeletal mesh and substitutes the DEFAULT material. In the editor this flag is
+# set FOR you the moment you assign the material to a skeletal mesh by hand, so
+# an interactively-authored material never hits it -- which is exactly why
+# headless authoring does. Cost: one shipped build of grey creatures, diagnosed
+# only because the game log says it outright:
+#   "Material MI_Sicklejaw missing bUsedWithSkeletalMesh=True!
+#    Default Material will be used in game."
+mat.set_editor_property('used_with_skeletal_mesh', True)
+if not mat.get_editor_property('used_with_skeletal_mesh'):
+    fail('used_with_skeletal_mesh did not stick -- the creature would render with the DEFAULT grey material')
+log('usage flag OK: used_with_skeletal_mesh=True')
+
 EAL.save_asset(MAT_PATH)
 EAL.save_asset(MI_PATH)
+# Re-read from disk: a flag that does not survive the save is the same bug as a
+# flag that was never set, and it is invisible until the game renders grey.
+reloaded_mat = EAL.load_asset(MAT_PATH)
+if not reloaded_mat.get_editor_property('used_with_skeletal_mesh'):
+    fail('used_with_skeletal_mesh did not PERSIST through save on %s' % MAT_PATH)
+log('usage flag verified after save')
 for pname in TEXTURES:
     EAL.save_asset('%s/%s' % (TEXDIR, TEXTURES[pname]))
 log('SAVED %s and %s' % (MAT_PATH, MI_PATH))
