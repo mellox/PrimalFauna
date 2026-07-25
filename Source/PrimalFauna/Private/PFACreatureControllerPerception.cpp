@@ -207,6 +207,44 @@ void APFACreatureController::WireCreaturePerception(AFGCreature* PossessedCreatu
 		GetWorldTimerManager().SetTimer(StateHeartbeatTimerHandle, this,
 			&APFACreatureController::LogCreatureStateHeartbeat, 30.0f, /*bLoop=*/true);
 	}
+
+	// Step 7 (w26-1): keep the AI focus on whatever we are hunting, so the
+	// pawn's rotation policy has something to aim at while closing. Another
+	// job the vanilla BP controller layer did for its creatures.
+	if (!FocusSyncTimerHandle.IsValid())
+	{
+		GetWorldTimerManager().SetTimer(FocusSyncTimerHandle, this,
+			&APFACreatureController::TickFocusSync, 0.25f, /*bLoop=*/true);
+	}
+}
+
+void APFACreatureController::TickFocusSync()
+{
+	AActor* Target = GetCurrentTarget();
+	AActor* Previous = LastFocusTarget.Get();
+	if (Target == Previous)
+	{
+		return;
+	}
+	LastFocusTarget = Target;
+
+	if (Target)
+	{
+		SetFocus(Target, EAIFocusPriority::Gameplay);
+	}
+	else
+	{
+		ClearFocus(EAIFocusPriority::Gameplay);
+	}
+
+	if (PFADiag::IsEnabled())
+	{
+		UE_LOG(LogPrimalFauna, Display,
+			TEXT("[PFA] %s: focus -> %s (was %s)"),
+			*GetName(),
+			Target ? *Target->GetName() : TEXT("cleared"),
+			Previous ? *Previous->GetName() : TEXT("none"));
+	}
 }
 
 void APFACreatureController::LogCreatureStateHeartbeat()

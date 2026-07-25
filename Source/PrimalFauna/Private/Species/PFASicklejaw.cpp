@@ -94,6 +94,26 @@ namespace
 		TEXT("1 (default): play idle/walk/run on Sicklejaws. 0: skip animation playback (statues) -- escape hatch while anim data is fixed. Respawn to apply."),
 		ECVF_Default);
 
+	// w26-1 foot-plant keeper tuning. Tolerance is a hysteresis band (stops
+	// the 1-gain correction oscillating); the cap bounds any pathological
+	// bounds reading to something visibly wrong-but-not-launched.
+	// 3cm was too tight (w26-2 review): physics-asset bounds track the GAIT,
+	// so normal body bob -- multiplied into world space by ScaleFactor --
+	// would make the keeper shove the mesh up and down 5x/second, trading
+	// "sunk" for "twitching". Correct GROSS mis-planting only, and stay
+	// below the FeetPlanted self-test's 25cm tolerance so the test still
+	// guards what the keeper leaves behind.
+	constexpr float FootPlantToleranceCm = 12.0f;
+	constexpr float FootPlantMaxCorrectionCm = 300.0f;
+
+	// w26-1: live kill-switch for the running foot-plant correction (the
+	// static w18-8 offset remains if disabled). Same live-tune pattern as
+	// pfa.MeshZOffset / pfa.LocomotionAnims.
+	static TAutoConsoleVariable<int32> CVarPFAFootPlantAuto(
+		TEXT("pfa.FootPlantAuto"), 1,
+		TEXT("1 (default): each locomotion tick, keep the animated mesh's lowest point at the capsule bottom. 0: static assign-time offset only."),
+		ECVF_Default);
+
 	// w24-2 locomotion anim PACKAGES. w24-1 in-game evidence (MISSING x3
 	// despite the assets being in the cooked pak): the FBX anim import put
 	// the MESH payload into each primary package (five ~611KB cooked twins of
@@ -437,6 +457,54 @@ void APFASicklejaw::TickLocomotionAnim()
 		{
 			GetWorldTimerManager().ClearTimer(LocomotionTimerHandle);
 			return;
+		}
+	}
+
+	// ---- w26-1 FOOT-PLANT KEEPER (runs every tick, independent of whether
+	// the gait changed): compare the mesh's CURRENT world bounds bottom to
+	// the capsule bottom and close the gap. Both move together, so this is a
+	// pose correction, never a terrain one -- falling, slopes and stairs are
+	// unaffected. Gain 1 with a tolerance band converges in a tick or two.
+	if (CVarPFAFootPlantAuto.GetValueOnGameThread() != 0)
+	{
+		float CapsuleHalfCm = 88.0f;
+		if (const UCapsuleComponent* Capsule = GetCapsuleComponent())
+		{
+			CapsuleHalfCm = Capsule->GetScaledCapsuleHalfHeight();
+		}
+		const FBoxSphereBounds& WorldBounds = MeshComponent->Bounds;
+		const float MeshBottomZ = WorldBounds.Origin.Z - WorldBounds.BoxExtent.Z;
+		const float CapsuleBottomZ = GetActorLocation().Z - CapsuleHalfCm;
+		// >0 => the mesh hangs BELOW the capsule (sunk) => lift by that much.
+		// pfa.MeshZOffset rides along as an ADDITIVE trim (w26-2 review: the
+		// keeper otherwise drives that manual knob back to zero within one
+		// tick, silently disabling it).
+		const float DeltaZ = (CapsuleBottomZ + CVarPFAMeshZOffset.GetValueOnGameThread()) - MeshBottomZ;
+
+		if (FMath::Abs(DeltaZ) > FootPlantToleranceCm)
+		{
+			const float NewCorrection = FMath::Clamp(FootPlantCorrectionCm + DeltaZ,
+				-FootPlantMaxCorrectionCm, FootPlantMaxCorrectionCm);
+			const float AppliedCm = NewCorrection - FootPlantCorrectionCm;
+			if (!FMath::IsNearlyZero(AppliedCm))
+			{
+				FootPlantCorrectionCm = NewCorrection;
+				FVector RelLoc = MeshComponent->GetRelativeLocation();
+				RelLoc.Z += AppliedCm;
+				MeshComponent->SetRelativeLocation(RelLoc);
+				MeshComponent->UpdateBounds();
+
+				// First few corrections per creature are always-on (they
+				// explain a visible position change); the rest are diag-only
+				// so a persistently-correcting pose can't flood the log.
+				if (FootPlantLogCount < 3 || PFADiag::IsEnabled())
+				{
+					++FootPlantLogCount;
+					UE_LOG(LogPrimalFauna, Display,
+						TEXT("[PFA] %s: foot-plant correction %+.0fcm (mesh bottom was %+.0fcm vs capsule bottom; total correction %+.0fcm)"),
+						*GetName(), AppliedCm, -DeltaZ, FootPlantCorrectionCm);
+				}
+			}
 		}
 	}
 

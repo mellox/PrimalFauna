@@ -78,4 +78,15 @@ private:
 	FTimerHandle LocomotionTimerHandle;
 	// 0=idle 1=walk 2=run, -1 = nothing playing yet (forces the first apply).
 	int32 LocomotionState = -1;
+
+	// w26-1 (user report: creatures sunk into the terrain once anims played).
+	// The w18-8/w23-2 feet-plant offset was computed ONCE from the mesh's
+	// REFERENCE-pose bounds; an animated pose sits at a different height, so
+	// a static offset silently goes wrong the moment a clip plays -- and
+	// nothing re-checked it (the regression this packet also adds tests for).
+	// This is the running correction that keeps the mesh's LOWEST point at
+	// the capsule bottom every locomotion tick, for whatever pose is live.
+	// Capsule-relative, so it never fights terrain, falling, or slopes.
+	float FootPlantCorrectionCm = 0.0f;
+	int32 FootPlantLogCount = 0;
 };

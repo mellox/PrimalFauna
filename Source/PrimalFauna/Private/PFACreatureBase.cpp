@@ -10,6 +10,7 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "Net/UnrealNetwork.h"
 #include "Components/CapsuleComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Curves/CurveFloat.h"
 #include "Engine/HitResult.h"
 #include "Engine/World.h"
@@ -50,6 +51,11 @@ namespace
 	// launch a correctly-grounded creature up onto the roof. 0.7 admits
 	// slopes to ~45 deg; real lowland nest terrain reads ~1.0.
 	constexpr float BuriedWalkableNormalZ = 0.7f;
+
+	// w26-1: yaw rate for orient-to-movement. 360 deg/s = a predator can
+	// come about in one second; fast enough to keep a strafing player inside
+	// the 90-degree melee cone without looking like a turret.
+	constexpr float CreatureYawRateDegPerSec = 360.0f;
 
 	// w18-4 (cold-review recommendation): live kill-switch for the rescue
 	// TELEPORT (the probe + logging always run) -- follows the pfa.Diag
@@ -157,6 +163,55 @@ void APFACreatureBase::BeginPlay()
 		// as the rest of this file.
 		UE_LOG(LogPrimalFauna, Warning,
 			TEXT("[PFA] %s: BeginPlay found no health component to check for the current-health init gap."),
+			*GetName());
+	}
+
+	// ---- w26-1 ROTATION POLICY (user report: "when aggroing onto me and
+	// coming to me they don't turn to face me"). UE offers two MUTUALLY
+	// EXCLUSIVE yaw mechanisms for a Character, and a C++-only creature
+	// inherits neither in a working state -- vanilla creatures get theirs
+	// from the BP layer we replaced (the same parity-gap class as the BT
+	// launch, perception wiring and aggro curves). Result: they translate
+	// toward the target without ever facing it, which also silently breaks
+	// the melee cone (mAttackAngle is measured from the forward vector).
+	// Fix: turn ON orient-to-movement (a running predator faces where it
+	// runs) and force controller-yaw OFF so the two can never fight.
+	//
+	// The controller also sets an AI focus on its target -- note that with
+	// bUseControllerRotationYaw=false the focus does NOT rotate the body
+	// (APawn::FaceRotation early-outs); it steers ControlRotation only,
+	// which FG uses for view traces and action aiming. Body yaw comes from
+	// orient-to-movement, so a STATIONARY creature holds its last heading.
+	// If in-game shows they stop tracking a strafing player at melee range,
+	// the fix is bUseControllerDesiredRotation=true with
+	// bOrientRotationToMovement=false (mutually exclusive in
+	// UCharacterMovementComponent::PhysicsRotation -- pick one).
+	if (UCharacterMovementComponent* Movement = GetCharacterMovement())
+	{
+		const bool bOrientBefore = Movement->bOrientRotationToMovement;
+		const bool bYawBefore = bUseControllerRotationYaw;
+		const FRotator RateBefore = Movement->RotationRate;
+
+		Movement->bOrientRotationToMovement = true;
+		// YAW ONLY. Keep whatever pitch/roll rate the FG movement component
+		// shipped with: mAlignRotationToFloor (FGCreatureController.h:475 --
+		// "don't forget to set rotation rates in movement component to use
+		// this values! Only pitch is supported") dies if the pitch rate is
+		// 0, and a zero rate means "preserve current", not "force zero".
+		Movement->RotationRate = FRotator(RateBefore.Pitch, CreatureYawRateDegPerSec, RateBefore.Roll);
+		bUseControllerRotationYaw = false;
+
+		UE_LOG(LogPrimalFauna, Display,
+			TEXT("[PFA] %s: rotation policy -> orientToMovement %s->true, yawRate %.0f->%.0f deg/s (pitch/roll rate kept %.0f/%.0f), useControllerYaw %s->false"),
+			*GetName(),
+			bOrientBefore ? TEXT("true") : TEXT("false"),
+			RateBefore.Yaw, CreatureYawRateDegPerSec, RateBefore.Pitch, RateBefore.Roll,
+			bYawBefore ? TEXT("true") : TEXT("false"));
+	}
+	else
+	{
+		UE_LOG(LogPrimalFauna, Warning,
+			TEXT("[PFA] %s: no CharacterMovementComponent -- rotation policy NOT applied (creature may never face its target)."),
 			*GetName());
 	}
 

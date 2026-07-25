@@ -149,6 +149,24 @@ void APFASubsystem::RefreshTick()
         PFA_RunSelfTests(GetWorld());
     }
 
+    // w26-2: second one-shot, the first tick a live creature exists -- the
+    // spatial tests (FeetPlanted / FacingTarget) can only assert against a
+    // real posed body, and the first-tick run above always predates one.
+    if (bRanAutoTest && !bRanAutoTestWithCreatures && PFADiag::IsAutoTestRequested())
+    {
+        for (TActorIterator<APFACreatureBase> It(GetWorld()); It; ++It)
+        {
+            if (*It && !It->IsActorBeingDestroyed())
+            {
+                bRanAutoTestWithCreatures = true;
+                UE_LOG(LogPrimalFauna, Display,
+                    TEXT("[PFA] pfa.AutoTest=1: re-running self-tests now that live creatures exist (spatial tests need a posed body)."));
+                PFA_RunSelfTests(GetWorld());
+                break;
+            }
+        }
+    }
+
     // W1.4 review W2: re-attempt the BT borrow if discovery raced a still-
     // scanning asset registry and saw ZERO assets (null tree with a non-zero
     // census = heuristic miss, retrying cannot help). Cap keeps a genuinely

@@ -142,6 +142,16 @@ private:
 	// needed and none wanted, keeping it off the reflection/export surface).
 	void LogCreatureStateHeartbeat();
 
+	// w26-1: keeps the AI focus pointed at the current target so the pawn's
+	// rotation policy (orient-to-movement, set in APFACreatureBase::BeginPlay)
+	// has something to aim at while closing -- user report: creatures
+	// approached without ever turning to face, which also silently narrows
+	// the melee cone. Vanilla creatures get this from their BP controller.
+	// Change-gated (only re-focuses when the target actually changes).
+	void TickFocusSync();
+	FTimerHandle FocusSyncTimerHandle;
+	TWeakObjectPtr<AActor> LastFocusTarget;
+
 	// Repeating 30s timer driving LogCreatureStateHeartbeat; set once in
 	// WireCreaturePerception (guarded against re-set on re-possession), and
 	// auto-cleared by the world when this controller actor is destroyed on

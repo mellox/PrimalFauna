@@ -157,6 +157,14 @@ private:
     // RefreshTick, NOT a new engine hook").
     bool bRanAutoTest = false;
 
+    // w26-2 (review finding): the one-shot above fires on the FIRST refresh
+    // tick, when no creature has spawned/posed/acquired a target yet -- so
+    // the w26-1 SPATIAL tests (FeetPlanted / FacingTarget) always took their
+    // NO-COVERAGE branch in unattended runs, making them decorative. This
+    // second one-shot re-runs the suite the first time a live creature
+    // actually exists, which is when those tests can assert anything.
+    bool bRanAutoTestWithCreatures = false;
+
     // W1.4 (docs/07 §4): GC root for the borrowed vanilla BehaviorTree that
     // PFABehaviorBorrower assigns onto the Sicklejaw CDO in BeginPlay. An asset
     // referenced only from a CDO is invisible to GC (cookbook gotcha #34); this
