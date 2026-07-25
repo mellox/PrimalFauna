@@ -93,6 +93,16 @@ public:
 	bool DevPlayClipByName(const FString& ClipName, bool bHoldFinalFrame);
 	void DevClearClipOverride();
 
+	// w30-1: the attack VISUAL for the montage-less melee path
+	// (Actions/PFACreatureActionMelee.cpp). Vanilla plays attacks as montages
+	// through UFGCreatureActionAnimatedBase, which needs a UAnimInstance we
+	// deliberately don't have -- so the strike rides the same one-shot layer as
+	// everything else. Unlike a comfort break this is NOT released by a state
+	// change: an attack is a committed act and must be seen through, so it ends
+	// on its own clock (or when the action cleans up).
+	bool PlayAttackOneShot(const FString& ClipName);
+	void StopAttackOneShot();
+
 private:
 
 	// UPROPERTY-rooted so the runtime-loaded sequences can't be GC'd from

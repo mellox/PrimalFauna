@@ -58,6 +58,13 @@ namespace
 	// clip through at real scale in the real game.
 	constexpr int32 DevOneShotBaseState = -2;
 
+	// BaseState sentinel for an attack strike. Also immune to state changes --
+	// a bite is a committed act, and releasing it the instant the creature's
+	// speed band flickers would cut the strike in half. It still expires on the
+	// clip's own clock, so the worst case is ~1.2s of a bite pose while moving,
+	// not a stuck creature.
+	constexpr int32 AttackOneShotBaseState = -3;
+
 	struct FIdleBreakDef
 	{
 		const TCHAR* ClipSuffix;
@@ -456,6 +463,44 @@ void APFASicklejaw::DevClearClipOverride()
 	if (OneShotBaseState == DevOneShotBaseState)
 	{
 		ClearOneShot(TEXT("dev override cleared"));
+	}
+}
+
+bool APFASicklejaw::PlayAttackOneShot(const FString& ClipName)
+{
+	UAnimSequence* Sequence = ResolveClip(*ClipName, GetName());
+	if (!Sequence)
+	{
+		// Loud, not diag-gated: an attack with no visible strike is the exact
+		// thing this method exists to prevent, and silence here would look
+		// identical to the bug it fixes.
+		UE_LOG(LogPrimalFauna, Warning,
+			TEXT("[PFA] %s: attack clip '%s' did not resolve -- the bite will deal damage with NO strike animation."),
+			*GetName(), *ClipName);
+		return false;
+	}
+
+	// Same skeleton guard as the dev path (w29-2 review W3): a creature that
+	// fell back to the placeholder mesh must not be handed Sicklejaw clips.
+	const USkeletalMeshComponent* MeshComponent = GetMesh();
+	const USkeletalMesh* SkeletalMesh = MeshComponent ? Cast<USkeletalMesh>(MeshComponent->GetSkinnedAsset()) : nullptr;
+	const USkeleton* MeshSkeleton = SkeletalMesh ? SkeletalMesh->GetSkeleton() : nullptr;
+	if (!MeshSkeleton || MeshSkeleton != Sequence->GetSkeleton())
+	{
+		UE_LOG(LogPrimalFauna, Warning,
+			TEXT("[PFA] %s: attack clip '%s' SKIPPED -- skeleton mismatch; damage still applies, the strike just isn't shown."),
+			*GetName(), *ClipName);
+		return false;
+	}
+
+	return PlayOneShotClip(Sequence, *ClipName, /*bHoldFinalFrame*/ false, AttackOneShotBaseState);
+}
+
+void APFASicklejaw::StopAttackOneShot()
+{
+	if (OneShotBaseState == AttackOneShotBaseState)
+	{
+		ClearOneShot(TEXT("attack action cleaned up"));
 	}
 }
 

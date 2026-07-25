@@ -13,9 +13,22 @@
 #include "GameFramework/Controller.h"     // w18-11 TakeDamage instigator
 #include "Components/PrimitiveComponent.h" // w18-11 synthetic-hit component fill
 #include "Engine/DamageEvents.h"          // w18-11 FPointDamageEvent
+#include "Engine/World.h"                 // w30-1 impact timer
+#include "TimerManager.h"                 // w30-1 impact timer
 
 namespace
 {
+	// w30-1: seconds from the strike starting to the frame the jaws shut.
+	// 0.792 = the authored Bite HitNotify at frame 19 of a 24fps clip -- the
+	// number the animation was built around, not a tuned guess.
+	// SET TO 0 to restore the exact w18-10 behaviour (damage on action start,
+	// no impact timing). That escape hatch exists because this is the first
+	// change to combat TIMING rather than combat numbers.
+	static TAutoConsoleVariable<float> CVarPFABiteImpactDelay(
+		TEXT("pfa.BiteImpactDelay"), 0.792f,
+		TEXT("Seconds between a Sicklejaw's strike starting and its damage landing (authored impact frame = 0.792). 0 = damage immediately on action start, the pre-w30 behaviour."),
+		ECVF_Default);
+
 	// ---- TODO(W1.2-census): every value is a PLACEHOLDER anchor. doc 01 §1
 	// frames bite damage as "~ Alpha Hog charge"; docs/CENSUS.md only captured
 	// passive fauna, so the real Alpha Hog charge damage is unknown. Nothing
@@ -172,8 +185,52 @@ void UPFACreatureActionMelee::PerformAction_Implementation()
 	// montage is authored (W2.2 anim era).
 	if (!mActionMontage)
 	{
-		TryDirectMeleeHit();
+		// w30-1: play the strike, then land the damage on the frame the jaws
+		// shut. Order matters -- the clip starts first so that even if the
+		// damage path bails (out of range, dead target) the creature is still
+		// visibly seen to lunge and miss, which is what a near-miss should
+		// look like.
+		if (APFASicklejaw* Sicklejaw = Cast<APFASicklejaw>(mCreature.Get()))
+		{
+			Sicklejaw->PlayAttackOneShot(TEXT("Bite"));
+		}
+
+		const float ImpactDelay = FMath::Max(0.0f, CVarPFABiteImpactDelay.GetValueOnGameThread());
+		UWorld* World = mCreature.IsValid() ? mCreature->GetWorld() : nullptr;
+		if (ImpactDelay > 0.0f && World)
+		{
+			// Re-arm rather than stack: a second PerformAction before the first
+			// impact fired would otherwise queue two hits off one bite.
+			World->GetTimerManager().ClearTimer(BiteImpactTimerHandle);
+			World->GetTimerManager().SetTimer(
+				BiteImpactTimerHandle, this, &UPFACreatureActionMelee::OnBiteImpact, ImpactDelay, false);
+			if (PFADiag::IsEnabled())
+			{
+				UE_LOG(LogPrimalFauna, Display,
+					TEXT("[PFA] Sicklejaw action=Melee strike started, damage scheduled for impact frame in %.3fs"),
+					ImpactDelay);
+			}
+		}
+		else
+		{
+			// pfa.BiteImpactDelay 0, or no world to time against: the proven
+			// w18-10 behaviour, unchanged.
+			TryDirectMeleeHit();
+		}
 	}
+}
+
+void UPFACreatureActionMelee::OnBiteImpact()
+{
+	// Everything is re-validated inside TryDirectMeleeHit (creature, target,
+	// range, cone, authority), which is exactly why the delay is safe: by the
+	// time this fires the world may have moved on, and a bite at an absent or
+	// out-of-range target must simply miss.
+	if (PFADiag::IsEnabled())
+	{
+		UE_LOG(LogPrimalFauna, Display, TEXT("[PFA] Sicklejaw action=Melee impact frame reached -- resolving hit"));
+	}
+	TryDirectMeleeHit();
 }
 
 void UPFACreatureActionMelee::TryDirectMeleeHit()
@@ -254,10 +311,17 @@ void UPFACreatureActionMelee::TryDirectMeleeHit()
 		// W2.3: our balance knob applies at the SOURCE (doc 04 §1 / doc 07
 		// §6) -- scales the outgoing base before the pipeline, composing
 		// independently with HostileScaling's own incoming-damage hook.
-		// TODO(W2.2): this multiplier lives INSIDE the montage-less fallback
-		// -- when a real attack montage is authored, TryDirectMeleeHit stops
-		// running and the knob goes dead unless it is re-homed onto the
-		// montage/anim-notify damage path (W2.3a cold review, carry-forward).
+		// This multiplier lives INSIDE the montage-less fallback, so it dies
+		// with TryDirectMeleeHit if that path ever stops running.
+		// STATUS 2026-07-25 (w30-1): the montage path that would have retired
+		// this is NOT coming. Vanilla plays attacks through
+		// UFGCreatureActionAnimatedBase -> UAnimMontage -> UAnimInstance, and we
+		// have no AnimInstance (single-node playback by design). So the strike
+		// VISUAL now rides the one-shot clip layer while damage stays right
+		// here, on the proven path, with the knob intact. The old
+		// TODO(W2.2) "re-home this onto the montage path" only becomes live if
+		// we later adopt a real AnimInstance -- see the additive-layer decision
+		// in _team/primalfauna-state.md.
 		const float DamageMultiplier = PFAFactionConfig::SicklejawDamageMultiplier();
 		if (!bBaseApplied && TargetHealth)
 		{
@@ -306,6 +370,23 @@ void UPFACreatureActionMelee::CleanupAction_Implementation(bool actionSuccess)
 			TEXT("[PFA] Sicklejaw action=Melee CleanupAction success=%s -- action completed, not hung"),
 			actionSuccess ? TEXT("true") : TEXT("false"));
 	}
+
+	// w30-1: an action that ends before its impact frame must not land a hit
+	// afterwards -- otherwise a bite interrupted by death, a state change or a
+	// lost target still bites. Kill the pending impact and release the strike
+	// pose so the locomotion loop takes the creature back immediately.
+	if (mCreature.IsValid())
+	{
+		if (UWorld* World = mCreature->GetWorld())
+		{
+			World->GetTimerManager().ClearTimer(BiteImpactTimerHandle);
+		}
+		if (APFASicklejaw* Sicklejaw = Cast<APFASicklejaw>(mCreature.Get()))
+		{
+			Sicklejaw->StopAttackOneShot();
+		}
+	}
+
 	Super::CleanupAction_Implementation(actionSuccess);
 }
 

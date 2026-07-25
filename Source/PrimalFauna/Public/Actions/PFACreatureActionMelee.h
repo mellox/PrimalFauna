@@ -97,4 +97,20 @@ private:
 	// (creature actions execute on the server); the base's private client-fx
 	// multicast is not reachable -- cosmetic hit fx absent until montages.
 	void TryDirectMeleeHit();
+
+	// --- w30-1: strike visual + impact-timed damage --------------------------
+	// The bite has dealt damage with no animation at all since w18-10, because
+	// vanilla plays attacks as montages (UFGCreatureActionAnimatedBase) and
+	// montages need a UAnimInstance we don't have. The strike now rides the
+	// one-shot clip layer instead, and the damage moves to the frame the jaws
+	// actually shut (Bite HitNotify @ f19 of 24fps = 0.792s) so the hit lands
+	// when the player can see why.
+	//
+	// This CHANGES COMBAT TIMING, so it is revertible in game without a
+	// rebuild: pfa.BiteImpactDelay 0 restores the w18-10 immediate hit exactly.
+	// The delayed path re-runs the FULL range/cone gate at impact, so backing
+	// out of a committed bite now makes it whiff -- a behaviour change, and an
+	// improvement, but call it out rather than let it be discovered.
+	void OnBiteImpact();
+	FTimerHandle BiteImpactTimerHandle;
 };
