@@ -77,6 +77,9 @@
 
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/BlackboardData.h"
+// w45-3: TickAggroRangeDecay calls UCurveFloat::GetFloatValue, so the pointer's
+// forward declaration on AFGCreature's getter is not enough here.
+#include "Curves/CurveFloat.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Object.h"
 #include "GameFramework/Pawn.h"
 
@@ -208,16 +211,14 @@ void APFACreatureController::WireCreaturePerception(AFGCreature* PossessedCreatu
 			&APFACreatureController::LogCreatureStateHeartbeat, 30.0f, /*bLoop=*/true);
 	}
 
-	// Step 6b (w45-2, review F3): PUBLISH THE BLACKBOARD KEYS NOW, not in 30s.
-	// Both writers are driven by the looping heartbeat above, and SetTimer does not
-	// fire immediately -- so a nest creature ran its behaviour tree with a null
-	// roam anchor and (pre-w44-1) a [0..0] roam band for its entire first half
-	// minute. That is exactly the window in which a player who just triggered the
-	// spawn is standing there watching it do nothing. The heartbeat calls stay:
-	// they are the self-healing path if anything re-initialises the blackboard
-	// later. This is just the missing first beat.
-	ApplyRoamBandToBlackboard();
-	ApplySpawnerToBlackboard();
+	// NOTE (w45-3, review D1): the first blackboard publish deliberately does NOT
+	// live here. WireCreaturePerception runs from OnPossess BEFORE
+	// RunBehaviorTree(), and RunBehaviorTree -> UseBlackboard() is what creates the
+	// blackboard component at all -- so calling the writers here would either
+	// silently no-op on a null blackboard (fixing nothing) or, worse, take the
+	// readback-failure path and latch bSpawnerKeyWriteFailed permanently on what is
+	// only a timing problem. They are called from OnPossess's bStarted branch
+	// instead, where GetBlackboardComponent() is provably non-null.
 
 	// Step 7 (w26-1): keep the AI focus on whatever we are hunting, so the
 	// pawn's rotation policy has something to aim at while closing. Another
@@ -284,13 +285,40 @@ void APFACreatureController::TickAggroRangeDecay(float DeltaSeconds)
 		return;
 	}
 
+	// w45-3 (review D6): ACCUMULATE TO 0.25s instead of running every frame. Decay
+	// is a rate x dt integration, so batching is behaviourally IDENTICAL and ~15x
+	// cheaper -- it removes a per-creature TArray heap allocation per frame (20
+	// creatures at 60fps was ~1200 allocations/s to usually do nothing). The log
+	// comment below already claimed a 0.25s cadence that did not exist; now it does.
+	constexpr float DecayInterval = 0.25f;
+	mRangeDecayAccumulator += DeltaSeconds;
+	if (mRangeDecayAccumulator < DecayInterval)
+	{
+		return;
+	}
+	const float AccumulatedDelta = mRangeDecayAccumulator;
+	mRangeDecayAccumulator = 0.0f;
+
+	// Cheap early-out against the const ref before the snapshot copy below.
+	if (GetAggroTargets().Num() == 0)
+	{
+		return;
+	}
+
+	const float FightThreshold = DecayCreature->GetAggroFightThreshold();
 	const FVector SelfLocation = DecayPawn->GetActorLocation();
 
 	// Copy: ModifyAggroForTarget mutates the native array we would be iterating.
-	TArray<FFGCreatureAggroData> Snapshot = GetAggroTargets();
+	const TArray<FFGCreatureAggroData> Snapshot = GetAggroTargets();
+	bool bAnyTargetStillAboveThreshold = false;
+	bool bCrossedBelowThreshold = false;
+
 	for (const FFGCreatureAggroData& AggroData : Snapshot)
 	{
 		AActor* AggroTarget = AggroData.Target;
+		// The Aggro > 0 half of this guard is LOAD-BEARING, not a throwaway: it is
+		// the only thing preventing unbounded negative drift if the native side
+		// does not clamp at zero.
 		if (!AggroTarget || AggroData.Aggro <= 0.0f)
 		{
 			continue;
@@ -300,29 +328,79 @@ void APFACreatureController::TickAggroRangeDecay(float DeltaSeconds)
 		// Only where the native gain is provably nothing. FRichCurve extrapolates
 		// PostInfinity as Constant, so this is 0.0 for every distance past the last
 		// key -- the exact complement of the region the native path drives.
-		if (VisibilityCurve->GetFloatValue(DistanceCm) > 0.0f)
+		const bool bInDecayRegion = (VisibilityCurve->GetFloatValue(DistanceCm) <= 0.0f);
+
+		// w45-3 (review D3): NEVER DRAIN SOMEONE WHO JUST SHOT US. Damage-aggro does
+		// not run through either curve (it is the w18-11 path), so a player sniping
+		// from 31m would otherwise land hits into a target we are actively draining
+		// at 5/s and be ignored -- "I shot it and it didn't care" would be a real
+		// regression introduced by this very function. WasRecentlyDamagedBy is the
+		// mod's own existing predicate over the inherited protected damage state.
+		const bool bRecentAggressor = WasRecentlyDamagedBy(AggroTarget);
+
+		if (!bInDecayRegion || bRecentAggressor)
 		{
+			if (AggroData.Aggro >= FightThreshold)
+			{
+				bAnyTargetStillAboveThreshold = true;
+			}
+			// Region/exemption exit: forget the log state so a later re-entry
+			// reports its first shed instead of being suppressed as "unchanged".
+			mRangeDecayLoggedTargets.Remove(FObjectKey(AggroTarget));
 			continue;
 		}
 
-		ModifyAggroForTarget(AggroTarget, -ReductionRate * DeltaSeconds);
+		const float Before = AggroData.Aggro;
+		const float After = Before - (ReductionRate * AccumulatedDelta);
+		const bool bThisCrossed = (Before >= FightThreshold) && (After < FightThreshold);
+		bCrossedBelowThreshold = bCrossedBelowThreshold || bThisCrossed;
 
-		// Change-gated to a whole-number aggro step so a 0.25s tick cannot flood
-		// the log the way the w18-2 verdict spam did (46% of one session's lines).
+		// w45-3 (review D2): pass bImmediateStateUpdate on the CROSSING FRAME ONLY.
+		// Forcing a native state update every tick per target would thrash; forcing
+		// it never risks the state machine not noticing at all, since
+		// mAggroFightThreshold is documented as a transition-IN condition and
+		// nothing states that falling below it transitions OUT.
+		ModifyAggroForTarget(AggroTarget, -(ReductionRate * AccumulatedDelta), /*bImmediateStateUpdate=*/bThisCrossed);
+
+		if (After >= FightThreshold)
+		{
+			bAnyTargetStillAboveThreshold = true;
+		}
+
+		// w45-3 (review D4): log EVENTS, not samples. The old whole-unit bucket fired
+		// ~5 lines/s/target for a full ~20s de-escalation; this project already lost
+		// 46% of one session's log to exactly that. Entry and threshold-crossing carry
+		// the entire forensic content in two lines.
 		if (PFADiag::IsEnabled())
 		{
-			const uint8 Bucket = static_cast<uint8>(FMath::Clamp(AggroData.Aggro, 0.0f, 255.0f));
 			const FObjectKey TargetKey(AggroTarget);
-			const uint8* LastBucket = mLastLoggedRangeDecayBucket.Find(TargetKey);
-			if (!LastBucket || *LastBucket != Bucket)
+			if (!mRangeDecayLoggedTargets.Contains(TargetKey))
 			{
-				mLastLoggedRangeDecayBucket.Add(TargetKey, Bucket);
+				mRangeDecayLoggedTargets.Add(TargetKey);
 				UE_LOG(LogPrimalFauna, Display,
-					TEXT("[PFA] %s: range-decay shedding aggro on %s -- dist=%.0f (visibility gain 0 here) aggro=%.1f -> falling at %.1f/s toward fightThreshold=%.0f"),
-					*GetName(), *AggroTarget->GetName(), DistanceCm, AggroData.Aggro,
-					ReductionRate, DecayCreature->GetAggroFightThreshold());
+					TEXT("[PFA] %s: range-decay ENTERED on %s -- dist=%.0f (visibility gain 0 beyond the curve), aggro=%.1f falling at %.1f/s toward fightThreshold=%.0f. Slope tells you the mechanism: ~%.0f/s = native visibility LATCHED (we are the only driver); ~%.0f/s = it cleared and native decay runs too."),
+					*GetName(), *AggroTarget->GetName(), DistanceCm, Before,
+					ReductionRate, FightThreshold, ReductionRate, ReductionRate * 2.0f);
+			}
+			if (bThisCrossed)
+			{
+				UE_LOG(LogPrimalFauna, Display,
+					TEXT("[PFA] %s: range-decay CROSSED below fightThreshold on %s -- aggro %.1f -> %.1f (threshold %.0f), state update forced. If state stays CS_Fight after this, the native machine does not exit on aggro alone."),
+					*GetName(), *AggroTarget->GetName(), Before, After, FightThreshold);
 			}
 		}
+	}
+
+	// w45-3 (review D2): reuse the mechanism that already has in-game evidence.
+	// Driving aggro under the threshold is NOT provably enough to leave CS_Fight --
+	// mCurrentTarget is independent of aggro, so the creature could sit in Fight on
+	// a stale target with zero aggro. ResetTargetingState is the w40-1 give-up path
+	// (NullifyAllAggro + SetCurrentTarget(nullptr) + TriggerStateUpdate) and is the
+	// one disengage route this mod has actually watched work in game. Fires at most
+	// once per de-escalation, and only when nothing is left worth fighting.
+	if (bCrossedBelowThreshold && !bAnyTargetStillAboveThreshold)
+	{
+		ResetTargetingState(TEXT("aggro decayed below fight threshold at range"));
 	}
 }
 
@@ -585,11 +663,32 @@ void APFACreatureController::ApplyRoamBandToBlackboard()
 
 	BlackboardComp->SetValueAsFloat(FName(TEXT("MinRoamingDistance")), Band.Min);
 	BlackboardComp->SetValueAsFloat(FName(TEXT("MaxRoamingDistance")), Band.Max);
+
+	// w45-3 (review D5): READ IT BACK BEFORE CLAIMING IT. This line used to assert
+	// the write unconditionally -- the exact defect class F2 was created to remove
+	// from the Spawner writer, left in place on its sibling because only one of the
+	// two got looked at. SetValueAsFloat is equally void-returning and equally
+	// silent when the key is absent or type-mismatched.
+	const float MinReadback = BlackboardComp->GetValueAsFloat(FName(TEXT("MinRoamingDistance")));
+	const float MaxReadback = BlackboardComp->GetValueAsFloat(FName(TEXT("MaxRoamingDistance")));
+	const bool bBandTook =
+		FMath::IsNearlyEqual(MinReadback, Band.Min) && FMath::IsNearlyEqual(MaxReadback, Band.Max);
+
 	// Always-on, not diag-gated: this is a behaviour change taking effect, and
 	// the whole reason the bug survived was that its evidence was invisible.
-	UE_LOG(LogPrimalFauna, Display,
-		TEXT("[PFA] %s: wrote roam band [%.0f..%.0f] to the blackboard (was %.0f max) -- vanilla's BP controller normally does this."),
-		*GetName(), Band.Min, Band.Max, BBMax);
+	// (UE_LOG needs its verbosity as a literal token, so this is two calls.)
+	if (bBandTook)
+	{
+		UE_LOG(LogPrimalFauna, Display,
+			TEXT("[PFA] %s: roam band write TOOK -- wrote [%.0f..%.0f] (was %.0f max), readback=[%.0f..%.0f]. Vanilla's BP controller normally does this."),
+			*GetName(), Band.Min, Band.Max, BBMax, MinReadback, MaxReadback);
+	}
+	else
+	{
+		UE_LOG(LogPrimalFauna, Warning,
+			TEXT("[PFA] %s: roam band write FAILED -- wrote [%.0f..%.0f], readback=[%.0f..%.0f]. The borrowed blackboard asset has no usable roaming-distance keys; roaming cannot work until this is resolved."),
+			*GetName(), Band.Min, Band.Max, MinReadback, MaxReadback);
+	}
 }
 
 void APFACreatureController::ApplySpawnerToBlackboard()
@@ -666,17 +765,43 @@ void APFACreatureController::ApplySpawnerToBlackboard()
 	BlackboardComp->SetValueAsObject(FGBBKeys::Spawner, Spawner);
 	const UObject* Readback = BlackboardComp->GetValueAsObject(FGBBKeys::Spawner);
 	const bool bWriteTook = (Readback == Spawner);
-	bSpawnerKeyWriteFailed = !bWriteTook;
 
-	UE_LOG(LogPrimalFauna, Display,
-		TEXT("[PFA] %s: FGBBKeys::Spawner write %s -- wrote %s, readback=%s. %s"),
-		*GetName(),
-		bWriteTook ? TEXT("TOOK") : TEXT("FAILED"),
-		*Spawner->GetName(),
-		Readback ? *Readback->GetName() : TEXT("null"),
-		bWriteTook
-			? TEXT("Vanilla's BP controller normally does this; if wandering starts working, THIS was the missing roam anchor.")
-			: TEXT("The borrowed blackboard asset has no usable 'Spawner' key (absent or type-mismatched), so the roam branch can never read one from us -- do NOT read a repeat of this line as a retry succeeding."));
+	// w45-3 (review D1): the latch demands POSITIVE PROOF of a schema defect --
+	// the asset exists and genuinely has no usable key -- not merely a failed
+	// readback. A failed write with no asset yet is a TIMING artefact that heals on
+	// the next beat, and latching on it would convert "published late" into "never
+	// published", with an always-on log line confidently misdiagnosing a race as a
+	// missing blackboard key. GetBlackboardAsset/GetKeyID are AIMODULE_API engine
+	// symbols (BlackboardComponent.h), so this adds no FactoryGame export surface.
+	const bool bSchemaProvenBad =
+		(BlackboardComp->GetBlackboardAsset() != nullptr) &&
+		(BlackboardComp->GetKeyID(FGBBKeys::Spawner) == FBlackboard::InvalidKey);
+	bSpawnerKeyWriteFailed = !bWriteTook && bSchemaProvenBad;
+
+	if (bWriteTook)
+	{
+		UE_LOG(LogPrimalFauna, Display,
+			TEXT("[PFA] %s: FGBBKeys::Spawner write TOOK -- wrote %s, readback=%s. Vanilla's BP controller normally does this; if wandering starts working, THIS was the missing roam anchor."),
+			*GetName(), *Spawner->GetName(), Readback ? *Readback->GetName() : TEXT("null"));
+	}
+	else if (bSchemaProvenBad)
+	{
+		// Terminal and always-on: this is a real, permanent capability gap in the
+		// borrowed asset, and it means the roam branch can never get an anchor
+		// from us. Logged once (the latch above stops further attempts).
+		UE_LOG(LogPrimalFauna, Warning,
+			TEXT("[PFA] %s: FGBBKeys::Spawner write FAILED PERMANENTLY -- the borrowed blackboard asset has no usable 'Spawner' key (absent or type-mismatched). The roam branch can never read an anchor from us. Not retrying."),
+			*GetName());
+	}
+	else if (PFADiag::IsEnabled())
+	{
+		// Transient: blackboard not ready yet. Diag-gated because it is expected
+		// noise during bring-up and self-heals on the next beat -- an always-on
+		// line here would train the reader to ignore the terminal one above.
+		UE_LOG(LogPrimalFauna, Display,
+			TEXT("[PFA] %s: FGBBKeys::Spawner write did not take yet (blackboard asset not ready) -- retrying on the next beat, NOT latched."),
+			*GetName());
+	}
 }
 
 void APFACreatureController::LogCreatureStateHeartbeat()

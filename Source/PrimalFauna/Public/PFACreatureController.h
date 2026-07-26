@@ -168,7 +168,14 @@ private:
 	// native gain is provably 0. Makes de-escalation independent of the closed
 	// native visibility semantics (see the .cpp). Kill-switch pfa.AggroDecayAtRange.
 	void TickAggroRangeDecay(float DeltaSeconds);
-	mutable TMap<FObjectKey, uint8> mLastLoggedRangeDecayBucket;
+	// Not mutable -- that path is non-const (w45-3 review D7: the w45-2 version was
+	// declared mutable while the flag added 50 lines below correctly was not, so the
+	// commit stated the convention and broke it on the same screen).
+	// Set membership, not a value map: we log region ENTRY and the threshold
+	// CROSSING rather than sampling aggro, so there is no per-target value to keep.
+	TSet<FObjectKey> mRangeDecayLoggedTargets;
+	// Batches the per-frame Tick down to a 0.25s cadence (review D6).
+	float mRangeDecayAccumulator = 0.0f;
 
 	void LogCreatureStateHeartbeat();
 

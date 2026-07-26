@@ -149,6 +149,18 @@ void APFACreatureController::OnPossess(APawn* InPawn)
 		return;
 	}
 
+	// w45-3 (review D8): clear per-pawn blackboard/decay state on every possession.
+	// A controller reused across a respawn would otherwise inherit a
+	// bSpawnerKeyWriteFailed latch earned against a DIFFERENT pawn and never write
+	// the key for the new one. Done here rather than in an OnUnPossess override,
+	// which this class deliberately does not have (overriding it would force a
+	// Super:: call into a closed-source FactoryGame method -- the shipping-export
+	// trap that killed module load in w15-2).
+	bSpawnerKeyWriteFailed = false;
+	bLoggedNoSpawnerForBlackboard = false;
+	mRangeDecayLoggedTargets.Reset();
+	mRangeDecayAccumulator = 0.0f;
+
 	// W1.8: wire perception FIRST -- independent of the BT launch (perception
 	// feeds aggro; the BT consumes aggro), and must run even if the BT branch
 	// below early-returns (a creature with no BT should still be able to
@@ -218,6 +230,23 @@ void APFACreatureController::OnPossess(APawn* InPawn)
 		UE_LOG(LogPrimalFauna, Display,
 			TEXT("[PFA] %s: OnPossess %s -> BT %s (source=%s) RunBehaviorTree=true blackboard=%s (btBlackboardAsset=%s)"),
 			*GetName(), *PossessedCreature->GetName(), *BTAsset->GetName(), BTSource, BlackboardState, *BTBlackboardAssetName);
+
+		// w45-3 (review D1): FIRST blackboard publish, here and nowhere earlier.
+		// The keys the vanilla BP controller used to write -- the roam band and the
+		// roam anchor -- must land before the tree's first roam evaluation, not 30s
+		// later on the first heartbeat beat (SetTimer does not fire immediately, so
+		// a nest creature spent its whole first half-minute with no anchor while the
+		// player who just spawned it stood there watching it do nothing).
+		//
+		// This is the earliest point where it is SAFE: RunBehaviorTree() above is
+		// what calls UseBlackboard(), which is what assigns the blackboard component.
+		// w45-2 put these in WireCreaturePerception, which runs before that call --
+		// so they no-opped on a null blackboard, and could have latched the
+		// write-failure flag permanently on a pure timing artefact.
+		// The heartbeat keeps calling both: that is the self-healing path if
+		// anything re-initialises the blackboard later in the creature's life.
+		ApplyRoamBandToBlackboard();
+		ApplySpawnerToBlackboard();
 	}
 	else
 	{
