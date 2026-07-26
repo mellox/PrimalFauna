@@ -442,9 +442,64 @@ void APFACreatureController::TickFocusSync()
 	}
 }
 
+void APFACreatureController::ApplyRoamBandToBlackboard()
+{
+	// The vanilla BehaviorTree's roam branch reads MinRoamingDistance /
+	// MaxRoamingDistance from the BLACKBOARD. Vanilla's BP controller writes
+	// them; we have no BP, so a C++-only creature gets [0..0] and dutifully
+	// roams zero centimetres. Third instance of that same vanilla-parity gap
+	// (after the un-launched BehaviorTree and the null aggro curves).
+	//
+	// Called from the heartbeat -- so it is SELF-HEALING. If anything
+	// re-initialises the blackboard later (a BT restart, a state reset) the keys
+	// come back on the next beat instead of staying zero for the rest of the
+	// creature's life. It must never be gated behind diagnostics: see w44-1.
+	UBlackboardComponent* BlackboardComp = GetBlackboardComponent();
+	const AFGCreature* RoamSetter = Cast<AFGCreature>(GetPawn());
+	if (!BlackboardComp || !RoamSetter)
+	{
+		return;
+	}
+
+	const FFloatInterval& Band = RoamSetter->GetRoamingDistance();
+	if (Band.Max <= 0.0f)
+	{
+		return;
+	}
+
+	const float BBMax = BlackboardComp->GetValueAsFloat(FName(TEXT("MaxRoamingDistance")));
+	if (FMath::IsNearlyEqual(BBMax, Band.Max))
+	{
+		return;
+	}
+
+	BlackboardComp->SetValueAsFloat(FName(TEXT("MinRoamingDistance")), Band.Min);
+	BlackboardComp->SetValueAsFloat(FName(TEXT("MaxRoamingDistance")), Band.Max);
+	// Always-on, not diag-gated: this is a behaviour change taking effect, and
+	// the whole reason the bug survived was that its evidence was invisible.
+	UE_LOG(LogPrimalFauna, Display,
+		TEXT("[PFA] %s: wrote roam band [%.0f..%.0f] to the blackboard (was %.0f max) -- vanilla's BP controller normally does this."),
+		*GetName(), Band.Min, Band.Max, BBMax);
+}
+
 void APFACreatureController::LogCreatureStateHeartbeat()
 {
-	// Gated: only speaks when diagnostics are on (the timer keeps firing cheaply
+	// ---- w44-1 CRITICAL FIX (cold review) ---------------------------------
+	// BEHAVIOUR FIRST, THEN THE DIAG GATE. w38-1 put the roam-band blackboard
+	// write -- the ONLY thing in the entire repo that makes creatures wander --
+	// inside this function, which returns early unless diagnostics are on. So
+	// wandering only ever worked in a diagnostics-enabled session. The user
+	// confirmed "I see them wander around now" during exactly such a session,
+	// which made a permanently-broken feature look fixed.
+	//
+	// The lesson is bigger than the bug: NEVER put behaviour inside a function
+	// whose contract is "diagnostics". This one even said so in its own header
+	// comment ("ONLY when pfa.Diag is on") and I added a load-bearing write to
+	// it anyway. Behaviour that only runs while you are watching is the worst
+	// kind of bug -- it is invisible precisely when nobody is looking.
+	ApplyRoamBandToBlackboard();
+
+	// Gated: only SPEAKS when diagnostics are on (the timer keeps firing cheaply
 	// otherwise). GetCurrentCreatureState/GetAggroTargets/GetCurrentTarget are
 	// all inherited public inline getters (FGCreatureController.h:182/216/208);
 	// CreatureStateEnumToString is an inline free fn (FGCreature.h:111).
@@ -497,27 +552,8 @@ void APFACreatureController::LogCreatureStateHeartbeat()
 		// vanilla's BP launched for us, the aggro curves its BP authored, and now
 		// the roam keys its BP wrote.
 		//
-		// Written here rather than once at possess time on purpose: this runs on
-		// the heartbeat, so it is self-healing. If anything re-initialises the
-		// blackboard later (a BT restart, a state reset), the keys come back
-		// within one heartbeat instead of silently staying zero for the rest of
-		// the creature's life -- which is exactly how this bug hid.
-		if (const AFGCreature* RoamSetter = Cast<AFGCreature>(GetPawn()))
-		{
-			const FFloatInterval& Band = RoamSetter->GetRoamingDistance();
-			if (Band.Max > 0.0f)
-			{
-				const float BBMax = BlackboardComp->GetValueAsFloat(FName(TEXT("MaxRoamingDistance")));
-				if (!FMath::IsNearlyEqual(BBMax, Band.Max))
-				{
-					BlackboardComp->SetValueAsFloat(FName(TEXT("MinRoamingDistance")), Band.Min);
-					BlackboardComp->SetValueAsFloat(FName(TEXT("MaxRoamingDistance")), Band.Max);
-					UE_LOG(LogPrimalFauna, Display,
-						TEXT("[PFA] %s: wrote roam band [%.0f..%.0f] to the blackboard (was %.0f max) -- vanilla's BP controller normally does this."),
-						*GetName(), Band.Min, Band.Max, BBMax);
-				}
-			}
-		}
+		// The WRITE now lives in ApplyRoamBandToBlackboard(), called unconditionally
+		// at the top of this function (w44-1). Only the reporting is left here.
 
 		// Both sides still logged, because the write above only matters if it
 		// STICKS -- and a key that reverts is the same bug wearing a hat.

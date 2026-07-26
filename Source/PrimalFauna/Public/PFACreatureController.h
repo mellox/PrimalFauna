@@ -151,6 +151,12 @@ private:
 	// evidence supports it, else leave this gated logger). Plain member fn
 	// (FTimerManager's templated SetTimer binds raw member fns -- no UFUNCTION
 	// needed and none wanted, keeping it off the reflection/export surface).
+	// w44-1: writes the roam band to the blackboard. Deliberately SEPARATE from
+	// the heartbeat's diagnostics and called unconditionally -- putting this
+	// behaviour inside a diag-gated function made wandering work only while
+	// diagnostics were on, which looked like a working feature.
+	void ApplyRoamBandToBlackboard();
+
 	void LogCreatureStateHeartbeat();
 
 	// w26-1: keeps the AI focus pointed at the current target so the pawn's
