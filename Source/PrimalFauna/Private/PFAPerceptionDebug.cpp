@@ -204,12 +204,30 @@ namespace
 		}
 
 		// State machine + aggro (all inline public on AFGCreatureController).
+		// w48-2: DESIRED state alongside CURRENT, plus whether CS_Roam is even
+		// enabled on this creature. The w48-1 session proved a creature parks in
+		// CS_Alert with aggroTargets=0 / currentTarget=none after a successful
+		// disengage; this dump previously could not distinguish "the machine wants
+		// alert" from "the machine wants roam but the transition is not applied",
+		// which are the two branches with opposite fixes.
+		// Both work on VANILLA creatures too (Controller is typed
+		// AFGCreatureController here), so a hog dump is the baseline for what the
+		// desired/current pair looks like on a working state machine.
+		// EXPORTS: BOTH are real FactoryGame imports in the built DLL, and both are
+		// exported by the shipping game (dumpbin ordinals 18422 and 23664), verified
+		// before these lines were written and re-proven by check_imports.ps1 every
+		// build. Note GetDesiredCreatureState is virtual and STILL imports -- it is a
+		// base virtual we never override, so our vtable already carried it; the
+		// "virtual => never imports" shorthand is wrong for that shape. Full
+		// reasoning at ForceRoamAfterDisengage in PFACreatureController.cpp.
 		const AActor* CurrentTarget = Controller->GetCurrentTarget();
 		UE_LOG(LogPrimalFauna, Display,
-			TEXT("[PFA]   creatureState=%s aggroTargets=%d currentTarget=%s"),
+			TEXT("[PFA]   creatureState=%s desiredState=%s aggroTargets=%d currentTarget=%s roamStateEnabled=%s"),
 			*CreatureStateEnumToString(Controller->GetCurrentCreatureState()),
+			*CreatureStateEnumToString(Controller->GetDesiredCreatureState()),
 			Controller->GetAggroTargets().Num(),
-			CurrentTarget ? *CurrentTarget->GetName() : TEXT("none"));
+			CurrentTarget ? *CurrentTarget->GetName() : TEXT("none"),
+			Creature->IsCreatureStateEnabled(ECreatureState::CS_Roam) ? TEXT("true") : TEXT("false"));
 
 		// w18-3 (invisible-spawn diagnosis): position + ground probe + mesh
 		// render state in ONE dump, so the log alone distinguishes "buried

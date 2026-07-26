@@ -509,7 +509,21 @@ void APFACreatureController::TickAggroRangeDecay(float DeltaSeconds)
 		// committed to it -- and the not-draining/exempt branch above (a recent
 		// aggressor, or anything inside the curve's range) vetoes on ANY aggro, which
 		// is the live-nearby-interest case and is deliberately left untouched.
-		if (After >= FightThreshold)
+		//
+		// w48-2 HARDENING (the w48-1 review's recommendation A, taken as its own
+		// clause): `&& After > KINDA_SMALL_NUMBER`. At FightThreshold == 0 the
+		// w48-1 condition alone kills BOTH disengage rules -- the crossing needs
+		// `After < 0`, which `AppliedDelta = FMath::Min(Rate*dt, Before)` makes
+		// impossible by clamping After to >= 0, and `After >= 0` is universally
+		// true, so a fully-drained target self-vetoes and the species could NEVER
+		// disengage. That is strictly worse than the w46-1 bug w48-1 fixed.
+		// Not reachable by omission today (vanilla defaults mAggroFightThreshold =
+		// 75 at FGCreature.cpp:41; only PFASicklejaw.cpp authors it, at 50), but the
+		// roster is expanding -- and the clause is a PROVABLE NO-OP at any positive
+		// threshold: After >= FightThreshold > 0 already implies After > 0.
+		// Complement when species #2 lands: assert mAggroFightThreshold > 0 at the
+		// authoring seam (species ctor or PFA.SelfTest), per check-at-the-seam.
+		if (After >= FightThreshold && After > KINDA_SMALL_NUMBER)
 		{
 			NoteAggroRemains(AggroTarget, After, DistanceCm, bInDecayRegion);
 		}
@@ -576,6 +590,18 @@ void APFACreatureController::TickAggroRangeDecay(float DeltaSeconds)
 		bLoggedStaleZeroLongHold = false;
 		mStaleZeroConsecutiveBeats = 0;
 		ResetTargetingState(DisengageReason);
+		// w48-2: ...and then MAKE IT ROAM. Proven in the w48-1 session: the reset
+		// above ran (its always-on line fired with the crossing reason, which had
+		// never appeared in any log before), aggro was 0 and currentTarget none --
+		// and the native machine still sat in CS_Alert on every subsequent
+		// heartbeat. The reset is necessary and was not sufficient.
+		//
+		// BOUNDED TO ONE CALL PER DISENGAGE EVENT, which is what keeps this from
+		// fighting the state machine in a loop: ResetTargetingState empties
+		// mAggroTargets, so the next beat hits the `GetAggroTargets().Num() == 0`
+		// early-out at the top of this function and cannot reach here again until
+		// perception registers fresh aggro.
+		ForceRoamAfterDisengage(DisengageReason);
 		return;
 	}
 
@@ -592,6 +618,17 @@ void APFACreatureController::TickAggroRangeDecay(float DeltaSeconds)
 		// veto, because the line printed the same actor twice without ever saying
 		// they were the same actor. A veto by the very target that just disengaged is
 		// a contradiction and can only be a bug; say so in the line itself.
+		//
+		// ⚠ w48-2 -- DO NOT DELETE THIS AS DEAD CODE. With the w48-2 hardening clause
+		// in place (`After >= FightThreshold && After > KINDA_SMALL_NUMBER`, ~85 lines
+		// up), a SELF-VETO is structurally unreachable at any POSITIVE fight
+		// threshold -- so a future reader will find this tripwire never firing and be
+		// tempted to remove it. It is not dead: it is now precisely the DETECTOR for
+		// the one hole that remains, a species that authors mAggroFightThreshold = 0.
+		// At threshold 0 the crossing rule cannot fire (After is clamped >= 0) and
+		// this line is the ONLY thing that would name the resulting never-disengaging
+		// creature as the same bug class rather than a fresh mystery. It costs one
+		// pointer comparison inside a branch that already runs.
 		const bool bSelfVeto = (VetoTarget != nullptr) && (VetoTarget == DisengageTarget);
 		UE_LOG(LogPrimalFauna, Display,
 			TEXT("[PFA] %s: range-decay DISENGAGE VETOED -- a target %s but %s still holds %.1f aggro (dist=%.0f, inDecayRegion=%d); not resetting.%s The veto is deliberate (forgetting a nearby creature would be worse), but if the creature now stands still, THIS is why."),
@@ -792,6 +829,15 @@ void APFACreatureController::Tick(float DeltaTime)
 				OutOfRangeSinceSeconds = 0.0;
 				LastValidFocusTarget = nullptr;
 				ResetTargetingState(TEXT("target out of range too long -- disengaged"));
+				// w48-2: the SAME stuck-state applies here. This path also ends in
+				// ResetTargetingState, so it inherits the proven "reset ran, machine
+				// stayed in CS_Alert" behaviour verbatim; fixing only the range-decay
+				// path would leave the w40-1 give-up half-fixed for no reason.
+				// Also bounded to one call per disengage: GetCurrentTarget() is now
+				// null and LastValidFocusTarget was just cleared, so `Target` is null
+				// on the next tick and this block cannot re-enter until the creature
+				// re-acquires something.
+				ForceRoamAfterDisengage(TEXT("target out of range too long -- disengaged"));
 				return;   // no yaw this tick; the creature is done watching
 			}
 		}
@@ -1184,10 +1230,30 @@ void APFACreatureController::LogCreatureStateHeartbeat()
 		AggroLedger = TEXT("<none>");
 	}
 
+	// w48-2: DESIRED next to CURRENT. The w48-1 session proved the machine parks in
+	// CS_Alert with aggroTargets=0 and currentTarget=none, and the heartbeat could
+	// not say whether the machine WANTED alert or merely failed to leave it -- two
+	// causes needing opposite fixes. GetDesiredCreatureState (FGCreatureController.h
+	// :189) adds NO import surface -- but NOT for the reason this project's house
+	// rule would give. It is virtual, and the built DLL shows it in the import table
+	// ANYWAY: it is a base virtual we do not override, so our own vtable already had
+	// to carry the base implementation's address. It was therefore already imported
+	// before this line existed (measured: FactoryGame 174 -> 176 across the packet,
+	// with three CreatureState symbols present, so only two are new). It is safe
+	// because the shipping DLL EXPORTS it (dumpbin ordinal 18422) -- see the long
+	// note at ForceRoamAfterDisengage in PFACreatureController.cpp.
+	// READ IT LIKE THIS: `state=CS_Alert desired=CS_Roam` = the transition is not
+	// being applied (the pfa.ForceRoamOnDisengage kick is the fix, and its own
+	// always-on line will say whether it took). `state=CS_Alert desired=CS_Alert` =
+	// something OTHER than aggro is holding the machine alert, and the fix is
+	// upstream of the state setter entirely.
+	const ECreatureState HeartbeatDesired = GetDesiredCreatureState();
+
 	UE_LOG(LogPrimalFauna, Display,
-		TEXT("[PFA] %s: state heartbeat -> state=%s aggroTargets=%d currentTarget=%s fightThreshold=%.0f reductionRate=%.1f/s aggro: %s (30s gated diag; stuck-in-CS_Default reveals a state-machine kick is needed)"),
+		TEXT("[PFA] %s: state heartbeat -> state=%s desired=%s aggroTargets=%d currentTarget=%s fightThreshold=%.0f reductionRate=%.1f/s aggro: %s (30s gated diag; state!=desired = a transition is not being applied, state==desired with no aggro = something other than aggro holds it)"),
 		*GetName(),
 		*CreatureStateEnumToString(GetCurrentCreatureState()),
+		*CreatureStateEnumToString(HeartbeatDesired),
 		GetAggroTargets().Num(),
 		CurrentTarget ? *CurrentTarget->GetName() : TEXT("none"),
 		HeartbeatCreature ? HeartbeatCreature->GetAggroFightThreshold() : -1.0f,

@@ -85,6 +85,42 @@ public:
 	// (FGCreatureController.h:479/486) -- plain subclass access.
 	void ResetTargetingState(const TCHAR* Reason);
 
+	// --- w48-2 STATE KICK -----------------------------------------------------
+	// PROVEN IN GAME (w48-1 session, 2026-07-26): after a successful disengage --
+	// `ResetTargetingState (aggro decayed below fight threshold at range)`, aggro
+	// wiped, currentTarget null, TriggerStateUpdate(true) already called -- the
+	// native machine STAYS IN CS_Alert indefinitely (repeating heartbeats:
+	// `state=CS_Alert aggroTargets=0 currentTarget=none`). Both prior cold reviews
+	// flagged this as statically unprovable ("mAggroFightThreshold is documented as
+	// a transition-IN condition; nothing says falling below it transitions OUT") --
+	// it is now measured, not assumed.
+	//
+	// It matters twice over: the roam branch is gated by BTD_CheckState_C
+	// 'Check For Roaming State' State=1 (CS_Roam = 1 << 0), so a creature parked in
+	// CS_Alert can never reach it; and CS_Alert maps to DesiredState=3 in the anim
+	// driver, so the seven idle-break clips are unreachable too. One stuck state,
+	// both "it doesn't wander" and "it just stands there".
+	//
+	// Called immediately AFTER ResetTargetingState on the two disengage paths (the
+	// w45-2 range-decay reset and the w40-1 out-of-range give-up), never before --
+	// ResetTargetingState ends with TriggerStateUpdate(true), so the native machine
+	// has already had its say by the time we look. Deliberately NOT called on the
+	// aggression-mode-change reset (PFACreatureBase.cpp): that path is user-verified
+	// working and a Passive flip is not a "went back to its own business" disengage.
+	//
+	// Always-on logging (this is a behaviour change; w44-1's lesson is that
+	// behaviour which only runs while you are watching is the worst kind of bug),
+	// live kill-switch `pfa.ForceRoamOnDisengage` (default 1) so the whole thing is
+	// A/B-able in one session without a rebuild, exactly like pfa.AggroDecayAtRange.
+	// Bounded to at most one call per disengage EVENT on both paths, so it can never
+	// fight the native machine in a loop -- see the .cpp.
+	//
+	// The .cpp also records a house rule this packet DISPROVED against the built
+	// binary: an un-overridden base-class virtual (GetDesiredCreatureState) still
+	// lands in our import table, because our own vtable must carry the base's
+	// address. "It's virtual" is not a substitute for checking the export table.
+	void ForceRoamAfterDisengage(const TCHAR* Reason);
+
 	// W2.3 SHIPPED the Factions keys (flat layout, PFAConfig.cpp) -- these
 	// constexprs are no longer the runtime values. Their remaining roles:
 	// (1) compile-time doc-04 anchors the SicklejawControllerPolicy self-test

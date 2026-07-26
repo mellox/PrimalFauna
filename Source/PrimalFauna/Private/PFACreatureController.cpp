@@ -481,6 +481,142 @@ void APFACreatureController::ResetTargetingState(const TCHAR* Reason)
 		*GetName(), Reason, AggroCount, VisibleCount);
 }
 
+void APFACreatureController::ForceRoamAfterDisengage(const TCHAR* Reason)
+{
+	// Kill-switch, same pattern as pfa.AggroDecayAtRange / pfa.LocomotionAnims.
+	// This touches the NATIVE state machine, so it must be A/B-able in one session
+	// without a rebuild: `pfa.ForceRoamOnDisengage 0` reverts to w48-1 behaviour
+	// (ResetTargetingState + TriggerStateUpdate only) while STILL printing the
+	// current/desired pair below, so turning it off keeps the diagnosis and loses
+	// only the fix.
+	static TAutoConsoleVariable<int32> CVarPFAForceRoamOnDisengage(
+		TEXT("pfa.ForceRoamOnDisengage"), 1,
+		TEXT("1 = after a disengage, explicitly put the creature back into CS_Roam if the native state machine is still holding CS_Alert/CS_Fight (proven stuck in the w48-1 session). 0 = only observe and log the current/desired state pair."),
+		ECVF_Default);
+
+	// ---- ITEM 1: THE DIAGNOSIS FIELD -----------------------------------------
+	// GetDesiredCreatureState (FGCreatureController.h:189) is what the machine
+	// WANTS; GetCurrentCreatureState (:182) is what it IS. Printing them together
+	// splits the problem cleanly, and the two halves need different fixes:
+	//   desired=CS_Roam while current=CS_Alert -> the machine knows it should roam
+	//     and the transition simply is not being applied. The force below IS the
+	//     fix, and `took=true` proves it.
+	//   desired=CS_Alert                        -> the native "desired" logic still
+	//     WANTS alert with zero aggro and no target, so something other than aggro
+	//     is holding it (leftover perception/visibility stimuli are the prime
+	//     suspect -- ResetTargetingState already clears mAggroTargets and
+	//     mVisibleTargets, so the residue would have to be in the perception
+	//     component's own stimuli). Then forcing is the WRONG LAYER: the state will
+	//     revert on the next native UpdateCreatureState, the following heartbeat
+	//     will say CS_Alert again, and the fix belongs in a separate packet
+	//     (UAIPerceptionComponent::ForgetAll/ForgetActor are engine AIMODULE_API,
+	//     so no FactoryGame export risk -- but that is a different change).
+	//
+	// ---- EXPORT NOTE: A HOUSE RULE OF THIS PROJECT IS WRONG, AND THE BINARY SAID
+	// SO. -----------------------------------------------------------------------
+	// The packet (and earlier reviews in this repo) reasoned "GetDesiredCreature
+	// State is virtual => vtable-dispatched => it can never appear in the import
+	// table". I wrote that here, then dumped the built DLL, and it is FALSE:
+	//   ?GetDesiredCreatureState@AFGCreatureController@@UEBA?AW4ECreatureState@@XZ
+	// IS in this module's import table.
+	//
+	// The reason is structural, not a compiler whim: it is a base-class virtual we
+	// do NOT override, and APFACreatureController's vtable is emitted in OUR
+	// module, so our vtable must contain the address of the BASE implementation.
+	// That address is a direct cross-DLL symbol reference. So for an un-overridden
+	// base virtual, "virtual" buys nothing at all -- the import exists whether or
+	// not anyone calls the function.
+	//
+	// What that also proves is that CALLING it here costs ZERO new import surface,
+	// because the symbol was already there. Measured, not argued: this build's
+	// FactoryGame imports went 174 -> 176 (total 900 -> 902) while THREE
+	// CreatureState symbols are now in the table -- so exactly two are new
+	// (SetCurrentCreatureState + IsCreatureStateEnabled) and this one was already
+	// present before the packet.
+	//
+	// The thing that actually makes it safe is the same thing that makes every
+	// other FactoryGame call safe: the shipping DLL EXPORTS it (dumpbin ordinal
+	// 18422), verified before the call was written and re-proven by
+	// check_imports.ps1 on the built binary. Treat "is it exported?" as the only
+	// question; "is it virtual?" is not a substitute for asking it.
+	const ECreatureState Before = GetCurrentCreatureState();
+	const ECreatureState Desired = GetDesiredCreatureState();
+
+	// IsCreatureStateEnabled (FGCreature.h:366, public UFUNCTION; exported --
+	// dumpbin ordinal 23664) answers the one question a bare `took=false` would
+	// leave open: whether CS_Roam is even in this creature's enabled-state mask. A
+	// refusal with roamEnabled=0 is a species-authoring bug, not a state-machine
+	// one, and the two need opposite fixes.
+	const AFGCreature* KickCreature = Cast<AFGCreature>(GetPawn());
+	const int32 RoamEnabled = KickCreature
+		? (KickCreature->IsCreatureStateEnabled(ECreatureState::CS_Roam) ? 1 : 0)
+		: -1;
+
+	// The desired/current disagreement is the whole diagnosis, so say it in the
+	// line rather than leaving it to be re-derived from two enum names.
+	const TCHAR* DesiredVerdict = (Desired == ECreatureState::CS_Roam)
+		? TEXT(" The machine WANTS CS_Roam, so this is purely a transition that was not applied.")
+		: TEXT(" The machine still WANTS this non-roam state with zero aggro and no target, so something other than aggro is holding it (perception stimuli residue is the prime suspect). If the next heartbeat reads CS_Alert again, forcing is the wrong layer and the fix belongs upstream.");
+
+	if (CVarPFAForceRoamOnDisengage.GetValueOnGameThread() == 0)
+	{
+		UE_LOG(LogPrimalFauna, Display,
+			TEXT("[PFA] %s: disengage state check (%s): current=%s desired=%s roamEnabled=%d -- pfa.ForceRoamOnDisengage=0, NOT forcing.%s"),
+			*GetName(), Reason,
+			*CreatureStateEnumToString(Before), *CreatureStateEnumToString(Desired),
+			RoamEnabled, DesiredVerdict);
+		return;
+	}
+
+	if (Before == ECreatureState::CS_Roam)
+	{
+		// Nothing was stuck. Still always-on: the ABSENCE of a kick line would be
+		// ambiguous between "already roaming" and "the helper never ran".
+		UE_LOG(LogPrimalFauna, Display,
+			TEXT("[PFA] %s: disengage state check (%s): already CS_Roam (desired=%s) -- no kick needed."),
+			*GetName(), Reason, *CreatureStateEnumToString(Desired));
+		return;
+	}
+
+	// ---- ITEM 2: APPLY THE TRANSITION ----------------------------------------
+	// SetCurrentCreatureState (FGCreatureController.h:346) is the setter the header
+	// itself points at: ":528-530 Current behavior state of the creature. Don't set
+	// directly, call SetCurrentCreatureState." It is `protected` (plain subclass
+	// access) and NON-virtual, so this IS a direct FactoryGame symbol import -- the
+	// exact shipping-export-trap shape. Verified present in the shipping DLL before
+	// writing this line (dumpbin ordinal 29575,
+	// ?SetCurrentCreatureState@AFGCreatureController@@IEAA_NW4ECreatureState@@@Z),
+	// and check_imports.ps1 re-proves it against the built binary every build.
+	//
+	// This is the machine's OWN mechanism, not a bypass: it is what the native
+	// UpdateCreatureState calls, so OnCreatureStateChanged and everything hanging
+	// off it still fire.
+	//
+	// It returns bool. A REFUSED transition must never read as a successful one --
+	// that is the whole reason the return value is logged rather than discarded.
+	const bool bTook = SetCurrentCreatureState(ECreatureState::CS_Roam);
+	const ECreatureState After = GetCurrentCreatureState();
+
+	const TCHAR* Outcome =
+		(bTook && After == ECreatureState::CS_Roam)
+			? TEXT("TOOK")
+			: (!bTook
+				? TEXT("REFUSED by the native machine (returned false)")
+				: TEXT("RETURNED TRUE BUT THE STATE IS NOT CS_Roam -- the setter's contract is not what we assumed"));
+
+	// ALWAYS-ON. This is a behaviour change on a path the user is testing, and
+	// w44-1 is this project's standing lesson that evidence for a behaviour change
+	// must not sit behind PFADiag::IsEnabled().
+	UE_LOG(LogPrimalFauna, Display,
+		TEXT("[PFA] %s: disengage state KICK (%s): current=%s desired=%s roamEnabled=%d -> SetCurrentCreatureState(CS_Roam) returned %s, state now %s [%s].%s"),
+		*GetName(), Reason,
+		*CreatureStateEnumToString(Before), *CreatureStateEnumToString(Desired),
+		RoamEnabled,
+		bTook ? TEXT("true") : TEXT("false"),
+		*CreatureStateEnumToString(After),
+		Outcome, DesiredVerdict);
+}
+
 bool APFACreatureController::PassesAggressionModeGate(const AActor* Target) const
 {
 	const APFACreatureBase* SelfBase = Cast<APFACreatureBase>(GetControlledCreature());
