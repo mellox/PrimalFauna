@@ -103,8 +103,15 @@ private:
 	// vanilla plays attacks as montages (UFGCreatureActionAnimatedBase) and
 	// montages need a UAnimInstance we don't have. The strike now rides the
 	// one-shot clip layer instead, and the damage moves to the frame the jaws
-	// actually shut (Bite HitNotify @ f19 of 24fps = 0.792s) so the hit lands
-	// when the player can see why.
+	// actually shut (Bite HitNotify @ f19 of **30fps** = 0.633s) so the hit
+	// lands when the player can see why.
+	//
+	// w49-1: this comment still said "f19 of 24fps = 0.792s" -- the exact wrong
+	// rate that shipped as the live constant for four builds before the .cpp was
+	// corrected to 0.633f. The constant was right and only the comment was
+	// stale, which is the more dangerous half: the next reader trusts the
+	// header. Corrected here; NO constant changed. Both the artist's w48 report
+	// and every validation/*.json record 30 fps.
 	//
 	// This CHANGES COMBAT TIMING, so it is revertible in game without a
 	// rebuild: pfa.BiteImpactDelay 0 restores the w18-10 immediate hit exactly.
