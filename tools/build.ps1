@@ -225,6 +225,84 @@ else {
     Write-Host 'PFABUILD NOTE: anim source or cook dir not found -- content freshness NOT checked' -ForegroundColor Yellow
 }
 
+# --- gate 4d: CONTENT PARITY, repo vs build tree ---------------------------
+# The hole this closes: gate 1 syncs Source, Config and the .uplugin repo->Mods,
+# and Content is in NEITHER list. Content is written straight into the build tree
+# by the Unreal import scripts, and the repo copy is a manual back-copy with
+# nothing enforcing it. That is exactly how the repo drifted 6 clips stale with
+# no material at all, undetected, while every build reported success.
+#
+# THIS IS A DETECTOR, NOT A MUTATOR -- read-only by construction (Get-ChildItem +
+# Get-FileHash, nothing else). Content must NEVER be added to the gate-1 robocopy
+# /MIR list: that copies repo->build tree, so a stale repo would DELETE freshly
+# imported assets, turning a reporting gap into data loss. If these two ever
+# disagree, a human decides which side is right.
+#
+# WARNING, not Fail, on this first iteration: it has never run, and a gate that
+# can fail a good build is worse than the drift it detects. PROMOTE IT TO Fail
+# once it has proven quiet across a few builds -- until then a divergence is
+# information, not a verdict.
+#
+# Off the critical path in both senses: it runs after the try/finally above has
+# already released the build lock, so it cannot strand one, and the whole block
+# is wrapped in try/catch because $ErrorActionPreference='Stop' would otherwise
+# let an unreadable file abort the script and report a FAILED build that in fact
+# succeeded.
+try {
+    $RepoContent = Join-Path $Repo 'Content'
+    $ModsContent = Join-Path $ModsPlugin 'Content'
+    if ((Test-Path $RepoContent) -and (Test-Path $ModsContent)) {
+        $hashTree = {
+            param($root)
+            $map = @{}
+            $rootFull = (Resolve-Path -LiteralPath $root).Path.TrimEnd('\')
+            foreach ($f in (Get-ChildItem -LiteralPath $rootFull -Recurse -File)) {
+                $rel = $f.FullName.Substring($rootFull.Length).TrimStart('\')
+                $map[$rel] = (Get-FileHash -LiteralPath $f.FullName -Algorithm MD5).Hash
+            }
+            return $map
+        }
+        $repoMap = & $hashTree $RepoContent
+        $modsMap = & $hashTree $ModsContent
+
+        $diffs = @()
+        $matched = 0
+        foreach ($rel in ($repoMap.Keys | Sort-Object)) {
+            if (-not $modsMap.ContainsKey($rel))       { $diffs += "in repo, NOT in build tree : $rel" }
+            elseif ($modsMap[$rel] -ne $repoMap[$rel]) { $diffs += "DIFFERENT content          : $rel" }
+            else                                       { $matched++ }
+        }
+        foreach ($rel in ($modsMap.Keys | Sort-Object)) {
+            # The drift that actually bit us: imported into the build tree, never
+            # back-copied to the repo, so the repo cannot rebuild what shipped.
+            if (-not $repoMap.ContainsKey($rel)) { $diffs += "in build tree, NOT in repo : $rel" }
+        }
+
+        # N/N counts files that are byte-identical on BOTH sides, over the size of
+        # the union -- so a divergence can never read as a full score, and the
+        # matched count can never go negative (an early draft printed 0/3 for a
+        # tree with one good file by subtracting diffs from the repo count).
+        $union = ($repoMap.Keys + $modsMap.Keys | Sort-Object -Unique).Count
+        if ($diffs.Count -eq 0) {
+            Write-Host ("PFABUILD content parity: {0}/{1}" -f $matched, $union)
+        }
+        else {
+            Write-Host ("PFABUILD !! content parity: {0}/{1} -- {2} divergence(s) between the repo and the build tree:" -f
+                        $matched, $union, $diffs.Count) -ForegroundColor Yellow
+            $diffs | Select-Object -First 12 | ForEach-Object { Write-Host "           $_" -ForegroundColor DarkYellow }
+            if ($diffs.Count -gt 12) { Write-Host ("           ... and {0} more" -f ($diffs.Count - 12)) -ForegroundColor DarkYellow }
+            Write-Host "           Content is imported into the build tree, so the build tree is USUALLY right --" -ForegroundColor Yellow
+            Write-Host "           back-copy to $RepoContent and commit. Do NOT sync the other way." -ForegroundColor Yellow
+        }
+    }
+    else {
+        Write-Host 'PFABUILD NOTE: a Content dir is missing -- content parity NOT checked' -ForegroundColor Yellow
+    }
+}
+catch {
+    Write-Warning "PFABUILD content parity check could not run (build is unaffected): $_"
+}
+
 # --- gate 4b: shipping-export check -------------------------------------
 if (-not $SkipImportCheck) {
     & (Join-Path $Repo 'tools\check_imports.ps1')

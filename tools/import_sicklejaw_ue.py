@@ -1,8 +1,11 @@
 r"""
-import_sicklejaw_ue.py -- W2.2: import the APPROVED Sicklejaw rebuild
-(art/wip/sicklejaw-rebuild/final/SK_Sicklejaw.fbx, 48-bone tail-chain rig,
-embedded 2048 textures) + its 5 retargeted preset anims into the plugin's
+import_sicklejaw_ue.py -- import the APPROVED Sicklejaw
+(art/wip/sicklejaw-d-v2/SK_Sicklejaw.fbx, 56-bone tail-chain rig, embedded 2048
+textures) + every authored A_Sicklejaw_*.fbx clip beside it into the plugin's
 content at /PrimalFauna/Sicklejaw/, replacing the placeholder era.
+(Bone count is not folklore: it is `bone_count` in that folder's
+rig_manifest.json, which this script loads and asserts against -- see ART below.
+The earlier 48-bone sicklejaw-rebuild/final/ rig is a documented dead end.)
 
 Template: import_placeholder_ue.py (proven), plus the 2026-07-24 import
 STANDARD from the invisible-Sicklejaw saga (cookbook §22 / doc 05 rider):
@@ -135,11 +138,25 @@ def make_anim_task(dest_name, fbx_path, target_skeleton, uniform_scale):
 
     anim = o.anim_sequence_import_data
     safe_set(anim, "import_bone_tracks", True)
-    # 2026-07-24: keep the SOURCE frame rate (24fps, artist-authored timing)
-    # instead of resampling to the 30fps default -- Run (1.25s @ 24fps) lands
-    # on a half-frame at 30fps and the importer HARD-FAILS ("animation has to
-    # be frame-border aligned"; Slash would too at 197.5 frames). Boundary
-    # snap stays on as the belt for any future oddly-cut clip.
+    # Keep the SOURCE frame rate: take whatever rate the FBX was authored at
+    # instead of resampling to the importer's default. That is what
+    # use_default_sample_rate=False + FBXALIT_EXPORTED_TIME buy, and the pairing
+    # is deliberately RATE-AGNOSTIC -- it stays correct whatever the art side
+    # authors at, so nothing here needs touching when that changes. (The single
+    # source of truth for the rate is FPS in the authoring script,
+    # art/wip/sicklejaw-d-v2/scripts/100_animate_alive.py.)
+    #
+    # Why not resample: a clip whose length is not a whole number of frames at
+    # the target rate ends on a fractional frame and the importer HARD-FAILS
+    # ("animation has to be frame-border aligned"). Reading the file's own rate
+    # makes that unreachable by construction. Boundary snap stays on as the belt
+    # for any future oddly-cut clip.
+    #
+    # w49-2: this rationale used to argue the point from a specific clip at a
+    # specific rate. The numbers were wrong and had gone stale unnoticed; the
+    # MECHANISM they justified is correct and must not change. Deleted rather
+    # than re-numbered -- pinning a rate-agnostic setting to one clip's timing is
+    # what rotted, and re-numbering it would only reset the clock.
     safe_set(anim, "use_default_sample_rate", False)
     safe_set(anim, "snap_to_closest_frame_boundary", True)
     safe_set(anim, "animation_length", unreal.FBXAnimationLengthImportType.FBXALIT_EXPORTED_TIME)
