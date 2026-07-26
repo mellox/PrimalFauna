@@ -198,5 +198,31 @@ if (-not $SkipImportCheck) {
     if ($LASTEXITCODE -ne 0) { Fail 'check_imports.ps1 reported missing imports -- the module would 127-fail at load' }
 }
 
+# ---- COLD-REVIEW GATE --------------------------------------------------------
+# The workspace rule is "cold-review every change before the user tests it", and
+# on 2026-07-25 it was silently dropped for FOUR consecutive builds the moment
+# the pace picked up -- w38, w39, w42, w43 all reached the user unreviewed, and
+# the user found the bugs. A rule that lives only in a document is a suggestion
+# (the lesson this project keeps re-learning), so the build itself now says it.
+#
+# Stamp a review with:  git tag -f pfa-reviewed <sha>   (or edit the file below)
+$reviewMark = Join-Path $PSScriptRoot '..\..\_team\PFA-LAST-REVIEWED.txt'
+$lastReviewed = (Test-Path $reviewMark) ? ((Get-Content $reviewMark -TotalCount 1).Trim()) : ''
+if ($lastReviewed) {
+    $unreviewed = @(git -C (Split-Path $PSScriptRoot -Parent) log --oneline "$lastReviewed..HEAD" 2>$null)
+    if ($unreviewed.Count -gt 0) {
+        Write-Host ''
+        Write-Host "PFABUILD !! COLD REVIEW OWED: $($unreviewed.Count) commit(s) since the last reviewed one." -ForegroundColor Yellow
+        $unreviewed | Select-Object -First 6 | ForEach-Object { Write-Host "           $_" -ForegroundColor DarkYellow }
+        Write-Host "           Run a fresh reviewer BEFORE the user tests. Then record the sha in:" -ForegroundColor Yellow
+        Write-Host "           $((Resolve-Path $reviewMark -EA SilentlyContinue) ?? $reviewMark)" -ForegroundColor DarkYellow
+        Write-Host ''
+    } else {
+        Write-Host 'PFABUILD cold-review gate: up to date' -ForegroundColor DarkGray
+    }
+} else {
+    Write-Host "PFABUILD !! COLD REVIEW GATE NOT INITIALISED -- create _team\PFA-LAST-REVIEWED.txt with the last reviewed sha." -ForegroundColor Yellow
+}
+
 Write-Host 'PFABUILD OK' -ForegroundColor Green
 exit 0
