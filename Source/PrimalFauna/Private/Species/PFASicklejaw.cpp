@@ -531,9 +531,18 @@ void APFASicklejaw::StartLocomotionAnim()
 	float AppliedWalkSpeed = 0.0f;
 	if (UCharacterMovementComponent* Movement = GetCharacterMovement())
 	{
+		const float PreTraitWalkSpeed = Movement->MaxWalkSpeed;
 		Movement->MaxWalkSpeed *= SpeedTrait;
 		Movement->RotationRate.Yaw *= TurnTrait;
 		AppliedWalkSpeed = Movement->MaxWalkSpeed;
+
+		// w47-1: register the baseline with the base class's speed-trait watch, so
+		// one session says whether this product survives -- AFGCreature::
+		// SetMoveSpeed (a public BlueprintCallable UFUNCTION nothing of OURS calls)
+		// would overwrite it with a flat mMoveSpeedData value and silently delete
+		// the per-individual difference. See PFACreatureBase.h / PFASpeedTraitWatch.cpp.
+		// Measurement only: nothing here changes what the trait does.
+		NoteSpeedTraitApplied(SpeedTrait, PreTraitWalkSpeed, AppliedWalkSpeed);
 	}
 
 	// NOTE: per-individual PERCEPTION (so they don't all notice the player on the

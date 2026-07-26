@@ -64,6 +64,8 @@
 #include "PFACreatureController.h"
 #include "PrimalFauna.h"
 #include "PFACheats.h"
+// w47-1: the heartbeat reads the speed-trait watch's state off our own creature.
+#include "PFACreatureBase.h"
 
 #include "Creature/FGCreature.h"
 
@@ -329,12 +331,38 @@ void APFACreatureController::TickAggroRangeDecay(float DeltaSeconds)
 	// diagnostic after the loop -- this is the one residual hole in this path and it
 	// is reported rather than acted on, deliberately.
 	int32 StaleZeroInRegion = 0;
+	// w47-1 (w46-1 cold review F4): the two shapes the w46-1 diagnostic was BLIND to,
+	// tallied so one line distinguishes all four.
+	//  * NullTargetEntries -- the aggro entry survived but its Target is gone. This
+	//    is what "the creature killed the hog and then stood there" looks like from
+	//    here, i.e. the natural end of a multi-target fight and precisely the
+	//    reported symptom. The loop `continue`s past these, so before this tally
+	//    they were invisible.
+	//  * ZeroAggroExemptEntries -- zero-aggro entries that never reach the
+	//    zero-check because they are inside the curve's range or are recent
+	//    aggressors (a recent aggressor sitting at zero is the second blind shape).
+	int32 NullTargetEntries = 0;
+	int32 ZeroAggroExemptEntries = 0;
+	// w47-1 (review F1): WHY a disengage was vetoed. The w46-1 veto widened from
+	// "some target is still above the fight threshold" to "some target holds any
+	// aggro at all", which makes disengaging strictly HARDER than w45-3 -- a hog at
+	// 5 aggro 12m away can now veto the reset for a player who drained to zero at
+	// 35m, reproducing the exact "stood where it lost interest" symptom this path
+	// exists to fix. The behaviour is kept (forgetting the nearby hog would be
+	// worse); what changes is that it can no longer happen SILENTLY, which
+	// previously had to be inferred from the ABSENCE of a ResetTargetingState line
+	// while the stale-target line was suppressed too (it requires !bDisengageEvent).
+	const AActor* VetoTarget = nullptr;
+	float VetoAggro = 0.0f;
+	float VetoDistanceCm = -1.0f;
+	bool bVetoInDecayRegion = false;
 
 	for (const FFGCreatureAggroData& AggroData : Snapshot)
 	{
 		AActor* AggroTarget = AggroData.Target;
 		if (!AggroTarget)
 		{
+			++NullTargetEntries;
 			continue;
 		}
 
@@ -364,6 +392,23 @@ void APFACreatureController::TickAggroRangeDecay(float DeltaSeconds)
 			if (AggroData.Aggro > KINDA_SMALL_NUMBER)
 			{
 				bAnyAggroRemains = true;
+				// w47-1 (review F1): remember the STRONGEST vetoing entry, so the veto
+				// line below can name who did it. One float + one pointer, no
+				// allocation, and only inside a branch that already runs.
+				if (AggroData.Aggro > VetoAggro)
+				{
+					VetoAggro = AggroData.Aggro;
+					VetoTarget = AggroTarget;
+					VetoDistanceCm = DistanceCm;
+					bVetoInDecayRegion = bInDecayRegion;
+				}
+			}
+			else
+			{
+				// w47-1 (review F4): a zero-aggro entry that is exempt from draining --
+				// invisible to StaleZeroInRegion, and one of the two shapes that made
+				// the w46-1 stale-target diagnostic print nothing.
+				++ZeroAggroExemptEntries;
 			}
 			// Region/exemption exit: forget the log state so a later re-entry
 			// reports its first shed instead of being suppressed as "unchanged".
@@ -443,11 +488,25 @@ void APFACreatureController::TickAggroRangeDecay(float DeltaSeconds)
 			}
 			if (bThisCrossed || bThisDrained)
 			{
+				// w47-1 (review F6): PROVE the applied delta at the native boundary.
+				// `After` is our own arithmetic, which is exactly the class of claim the
+				// w46-1 clamp fix existed to stop making -- the log has to be true
+				// before anything else is. GetAggroForTarget is already an import of
+				// this module (PFACreatureController.cpp:463, ForceAggro's readback), so
+				// this adds no export surface, and it is read ONLY on the transition
+				// frame inside the diag gate. If readback ever disagrees with After, the
+				// native side is transforming our delta and the whole decay model needs
+				// revisiting.
+				const float Readback = GetAggroForTarget(AggroTarget);
 				UE_LOG(LogPrimalFauna, Display,
-					TEXT("[PFA] %s: range-decay %s on %s -- aggro %.1f -> %.1f (threshold %.0f), state update forced. If the creature does not resume roaming after this, the native machine is holding state on something other than aggro."),
+					TEXT("[PFA] %s: range-decay %s on %s -- aggro %.1f -> %.1f readback=%.2f%s (threshold %.0f), state update forced. If the creature does not resume roaming after this, the native machine is holding state on something other than aggro."),
 					*GetName(),
 					bThisCrossed ? TEXT("CROSSED below fightThreshold") : TEXT("FULLY DRAINED"),
-					*AggroTarget->GetName(), Before, After, FightThreshold);
+					*AggroTarget->GetName(), Before, After, Readback,
+					FMath::IsNearlyEqual(Readback, After, 0.01f)
+						? TEXT("")
+						: TEXT(" <-- READBACK DISAGREES WITH OUR ARITHMETIC: the native side is transforming the delta"),
+					FightThreshold);
 			}
 		}
 	}
@@ -471,8 +530,24 @@ void APFACreatureController::TickAggroRangeDecay(float DeltaSeconds)
 		// never gets another chance to run for them).
 		mRangeDecayLoggedTargets.Reset();
 		bLoggedStaleZeroAggroTarget = false;
+		mStaleZeroConsecutiveBeats = 0;
 		ResetTargetingState(DisengageReason);
 		return;
+	}
+
+	// w47-1 (review F1): THE VETO, SPOKEN OUT LOUD. A disengage event happened and
+	// was refused because something else still holds aggro. Without this line the
+	// only evidence is a missing ResetTargetingState, and the stale-target
+	// diagnostic below cannot cover it (it requires !bDisengageEvent). Fires at most
+	// once per disengage event -- a crossing happens once per drain and a full drain
+	// once per target -- so no throttle is needed beyond the diag gate.
+	if (bDisengageEvent && bAnyAggroRemains && PFADiag::IsEnabled())
+	{
+		UE_LOG(LogPrimalFauna, Display,
+			TEXT("[PFA] %s: range-decay DISENGAGE VETOED -- a target %s but %s still holds %.1f aggro (dist=%.0f, inDecayRegion=%d); not resetting. The veto is deliberate (forgetting a nearby creature would be worse), but if the creature now stands still, THIS is why."),
+			*GetName(), DisengageReason,
+			VetoTarget ? *VetoTarget->GetName() : TEXT("<an entry we could not name>"),
+			VetoAggro, VetoDistanceCm, bVetoInDecayRegion ? 1 : 0);
 	}
 
 	// ---- w46-1 DIAGNOSTIC ONLY: the one residual hole, named out loud. ----------
@@ -493,17 +568,46 @@ void APFACreatureController::TickAggroRangeDecay(float DeltaSeconds)
 	// up in a session where a creature stood still, the correct fix is a debounced
 	// stale-target timeout (dwell-based, like the w40-1 give-up clock), not a reset
 	// from here. Throttled to once per episode, re-armed by any live aggro.
+	// w47-1 (review F3/F4): TWO fixes to this diagnostic.
+	//
+	// F3 -- the boolean latch could SPAM. It was cleared on any beat failing the
+	// condition, and the condition includes GetCurrentTarget() != nullptr, which
+	// this codebase's own TickFocusSync comment documents as flickering to null
+	// 1-2x/second during a live engagement (w26-3, session 18). Every flicker
+	// re-armed the latch: ~2 lines/s, indefinitely. Replaced with a CONSECUTIVE-BEAT
+	// DEBOUNCE -- the condition must hold for a full second (4 beats at 0.25s)
+	// before anything prints, which a 1-2Hz flicker can never satisfy. The debounce
+	// is also deliberately the front half of the dwell timer that is the likely
+	// follow-up fix, so that work starts from a measured number.
+	//
+	// F4 -- the trigger was blind to its most likely real cause. It counted only
+	// non-null, in-region, non-aggressor, zero-aggro entries, so the two ordinary
+	// shapes printed NOTHING: the target DIED (entry survives with Target == nullptr
+	// -- the natural end of a fight, and exactly the reported symptom) and a recent
+	// aggressor sitting at zero. Both are now tallied, the null case joins the
+	// trigger, and every tally plus the entry count and state is printed, so ONE
+	// line distinguishes all four shapes.
 	const AActor* StaleTarget = GetCurrentTarget();
 	const bool bStaleZeroTargetHeld =
-		(!bDisengageEvent && !bAnyAggroRemains && StaleZeroInRegion > 0 && StaleTarget != nullptr);
+		(!bDisengageEvent && !bAnyAggroRemains && (StaleZeroInRegion + NullTargetEntries) > 0 && StaleTarget != nullptr);
 	if (!bStaleZeroTargetHeld)
 	{
 		// Cleared on ANY beat that does not meet the condition, not only on live
 		// aggro -- a latch that outlives the situation it describes reports the first
 		// episode and hides every later one.
 		bLoggedStaleZeroAggroTarget = false;
+		mStaleZeroConsecutiveBeats = 0;
 		return;
 	}
+
+	++mStaleZeroConsecutiveBeats;
+	// 4 beats x 0.25s = 1.0s of the condition holding CONTINUOUSLY.
+	constexpr int32 StaleZeroDebounceBeats = 4;
+	if (mStaleZeroConsecutiveBeats < StaleZeroDebounceBeats)
+	{
+		return;
+	}
+
 	// The latch is set only when the line is actually PRINTED, so enabling pfa.Diag
 	// after the fact still yields the report (the w18-3 verdict throttle has the
 	// opposite property and it cost a session).
@@ -511,10 +615,12 @@ void APFACreatureController::TickAggroRangeDecay(float DeltaSeconds)
 	{
 		bLoggedStaleZeroAggroTarget = true;
 		UE_LOG(LogPrimalFauna, Display,
-			TEXT("[PFA] %s: STALE TARGET -- currentTarget=%s but %d aggro entr%s already at zero inside the decay region and nothing holds aggro. This mechanism never saw the drop, so it has no disengage event to fire on; the creature may stand where it lost interest. Needs a dwell-based stale-target timeout if it correlates with a motionless creature."),
+			TEXT("[PFA] %s: STALE TARGET (held %.2fs) -- currentTarget=%s state=%s, nothing holds aggro. entries=%d of which staleZeroInRegion=%d nullTarget(target destroyed/GCd)=%d zeroAggroExempt(in-curve-range or recent aggressor)=%d. This mechanism never saw the drop, so it has no disengage event to fire on; the creature may stand where it lost interest. nullTarget>0 means it most likely KILLED what it was fighting. Fix if this correlates with a motionless creature: a dwell-based stale-target timeout (this debounce is its front half)."),
 			*GetName(),
+			StaleZeroDebounceBeats * DecayInterval,
 			*StaleTarget->GetName(),
-			StaleZeroInRegion, (StaleZeroInRegion == 1) ? TEXT("y is") : TEXT("ies are"));
+			*CreatureStateEnumToString(GetCurrentCreatureState()),
+			Snapshot.Num(), StaleZeroInRegion, NullTargetEntries, ZeroAggroExemptEntries);
 	}
 }
 
@@ -1058,10 +1164,23 @@ void APFACreatureController::LogCreatureStateHeartbeat()
 		}
 	}
 	const APawn* ControlledPawn = GetPawn();
+	// w47-1: the SPEED-TRAIT fields. The roaming-design research flagged that
+	// nothing ever calls AFGCreature::SetMoveSpeed, so if the BT or native code
+	// does, it silently overwrites the per-individual `MaxWalkSpeed *= SpeedTrait`
+	// and every individual moves identically ("they all seem to do the same
+	// thing"). The change DETECTOR lives on the creature (PFASpeedTraitWatch.cpp);
+	// this puts the current state on the line a reader is already looking at, so a
+	// heartbeat that shows walkSpeed == an exact mMoveSpeedData value while
+	// traitBaseline is a x1.0x product is the whole diagnosis at a glance.
+	const APFACreatureBase* SpeedCreature = Cast<APFACreatureBase>(ControlledPawn);
 	UE_LOG(LogPrimalFauna, Display,
-		TEXT("[PFA] %s: heartbeat-move -> moveStatus=%d (0=Idle 1=Waiting 2=Paused 3=Moving) velocity=%.0fcm/s bbObjectKeys: %s"),
+		TEXT("[PFA] %s: heartbeat-move -> moveStatus=%d (0=Idle 1=Waiting 2=Paused 3=Moving) velocity=%.0fcm/s walkSpeed=%.1f (traitBaseline=%.1f trait=x%.3f unexplainedChanges=%d) bbObjectKeys: %s"),
 		*GetName(),
 		static_cast<int32>(GetMoveStatus()),
 		ControlledPawn ? ControlledPawn->GetVelocity().Size2D() : -1.0f,
+		SpeedCreature ? SpeedCreature->GetLiveMaxWalkSpeedCms() : -1.0f,
+		SpeedCreature ? SpeedCreature->GetTraitWalkSpeedBaselineCms() : -1.0f,
+		SpeedCreature ? SpeedCreature->GetSpeedTraitMultiplier() : -1.0f,
+		SpeedCreature ? SpeedCreature->GetWalkSpeedChangeCount() : -1,
 		*BlackboardDump);
 }

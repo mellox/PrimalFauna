@@ -180,6 +180,14 @@ private:
 	// been reported for this engagement; re-armed as soon as any target holds aggro
 	// again. Diagnostic-only state -- see the end of TickAggroRangeDecay.
 	bool bLoggedStaleZeroAggroTarget = false;
+	// w47-1 (w46-1 review F3): consecutive 0.25s beats the stale-zero condition has
+	// held. The boolean above alone could SPAM ~2 lines/s forever, because the
+	// condition tests GetCurrentTarget() != nullptr and the native current-target
+	// flickers null 1-2x/second during an engagement (w26-3) -- each flicker
+	// re-armed the latch. Requiring 4 consecutive beats (1.0s) is a debounce a
+	// flicker cannot satisfy, and it is deliberately the front half of the
+	// dwell-based stale-target timeout that is the likely follow-up fix.
+	int32 mStaleZeroConsecutiveBeats = 0;
 
 	// --- w46-1 ROAM-LEG TELEMETRY (PFACreatureControllerRoam.cpp) --------------
 	// The roam band reaches the blackboard as [600..2500]cm and the VANILLA BT picks
@@ -217,7 +225,18 @@ private:
 	// reported so a leg that looks short can be told from a leg that was stalled.
 	int32 mRoamLegStalls = 0;
 	int32 mRoamLegBelowThresholdSamples = 0;
+	// True if a target OR any aggro entry existed at any point during the leg.
+	// w47-1 (review F5.2): aggro is included because the native current-target
+	// flickers null 1-2x/second while engaged (w26-3), so target-only sampling let
+	// pursuit legs into the roam histogram through the flicker window.
 	bool bRoamLegHadTarget = false;
+	// w47-1 (review F5.2): the leg ran wholly or partly outside CS_Roam -- a
+	// reaction (knockback, flee, the frame after a ResetTargetingState), not a roam
+	// sample. Tracked SEPARATELY from the target flag so the log names which
+	// disqualifier fired instead of claiming "had a target" about a creature that
+	// had none.
+	bool bRoamLegNonRoamState = false;
+	ECreatureState mRoamLegStateAtStart = ECreatureState::CS_Default;
 	int32 mRoamLegIndex = 0;
 	bool bRoamWaitReported = false;
 

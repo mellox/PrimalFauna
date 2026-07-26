@@ -310,6 +310,20 @@ void APFACreatureBase::BeginPlay()
 	// reflection/export surface).
 	GetWorldTimerManager().SetTimerForNextTick(this, &APFACreatureBase::RescueBuriedSpawn);
 
+	// w47-1 SPEED-TRAIT WATCH (PFASpeedTraitWatch.cpp -- measurement only, it
+	// never writes the speed back). Armed for EVERY species here rather than in
+	// the species that happens to roll a trait, so a species that forgets to
+	// register a baseline still gets change detection. Deliberately AFTER the
+	// authority gate above: MaxWalkSpeed is decided server-side, and a client-side
+	// sampler would report replication artefacts as clobbers.
+	//
+	// Ordering note: a species' trait roll runs LATER in its own BeginPlay (after
+	// this Super:: call), and this timer's first fire is a whole interval away, so
+	// the baseline is always registered before the first sample. Raw member fn on
+	// the templated timer API -- no UFUNCTION, same as RescueBuriedSpawn above.
+	GetWorldTimerManager().SetTimer(SpeedTraitWatchTimerHandle, this,
+		&APFACreatureBase::TickSpeedTraitWatch, 0.5f, /*bLoop=*/true);
+
 	// W2.3: stamp the configured aggression on spawn (server-only section).
 	// The subsystem retargets LIVE creatures only when the config value
 	// CHANGES, so a fresh spawn must self-apply the current value.

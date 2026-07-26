@@ -456,9 +456,13 @@ bool APFASicklejaw::MaybeStartOneShot(int32 DesiredState)
 		if (bIdleBreaksEnabled && NextIdleBreakWorldSeconds > 0.0f &&
 			NowSeconds >= NextIdleBreakWorldSeconds && !bLoggedIdleBreakSuppressed)
 		{
-			bLoggedIdleBreakSuppressed = true;
+			// w47-1 (w46-1 review F2): the latch is set INSIDE the diag gate, not
+			// before it. Setting it first meant that enabling pfa.Diag mid-episode
+			// permanently LOST this line -- the same w18-3 mistake the sibling latch
+			// in PFACreatureControllerPerception.cpp explicitly avoids and documents.
 			if (PFADiag::IsEnabled())
 			{
+				bLoggedIdleBreakSuppressed = true;
 				UE_LOG(LogPrimalFauna, Display,
 					TEXT("[PFA] %s: idle break DUE %.1fs ago but SUPPRESSED -- the creature is not calm (DesiredState=%d; 0=calm idle, 1=walk, 2=run, 3=alert, 4=aggressive, 5=prowl). It will play as soon as it settles. The gate is deliberate: grooming while hunted reads as broken."),
 					*GetName(), NowSeconds - NextIdleBreakWorldSeconds, DesiredState);

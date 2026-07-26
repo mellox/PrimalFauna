@@ -31,13 +31,39 @@ anything, and each one has silently broken a build on this machine before:
      .pak/.ucas: IoStore hashes asset names, so a string search there reads
      False even for clips that demonstrably work in game.)
 
-Usage:  powershell -File tools\build.ps1  [-SkipSync] [-SkipImportCheck]
+Usage:  pwsh -File tools\build.ps1  [-SkipSync] [-SkipImportCheck] [-Marker <expected>]
+
+  * `pwsh`, NOT `powershell`. This script uses `?:` and `??` (see the
+    cold-review-gate block near the end), which PowerShell 5.1 cannot even
+    PARSE -- it fails with two parse errors before executing a single line, and
+    that reads in a transcript as a mysterious build failure rather than "wrong
+    shell". The `#requires -Version 7.0` below turns it into a message that
+    names the actual fix. (Silver lining verified by the w46-1 review: the 5.1
+    parse failure happens before the lock is taken at line ~99, so it can never
+    strand the build lock.)
+
+  * THE MARKER IS NOT A PARAMETER YOU SET. It is read by regex out of
+    Source\PrimalFauna\Private\PrimalFauna.cpp, which is the single source of
+    truth (the marker must be monotonic and authored -- not typo-able from a
+    command line). To change the build id, EDIT THAT STRING, then run this
+    script bare. `-Marker <expected>` is an ASSERTION only: if supplied it is
+    compared against the value in the source and the build FAILS on a mismatch.
+    History: three builds in one session were invoked with `-Marker "..."` in
+    the belief that it set something. Without [CmdletBinding()] an unknown
+    named argument is silently swallowed into $args -- so the builds were
+    correct only because the source string had also been hand-edited.
+
 Exit 0 only if the build succeeded, the marker is in the deployed DLL, and
 every authored clip is in the cook.
 #>
+#requires -Version 7.0
+[CmdletBinding()]
 param(
     [switch]$SkipSync,
-    [switch]$SkipImportCheck
+    [switch]$SkipImportCheck,
+    # Optional ASSERTION of the expected build id (see the usage note above).
+    # Never used to WRITE the marker.
+    [string]$Marker
 )
 
 $ErrorActionPreference = 'Stop'
@@ -57,10 +83,17 @@ $WuDisabled= "$WuPlugin.disabled_for_build"
 function Fail($msg) { Write-Host "PFABUILD FAIL: $msg" -ForegroundColor Red; exit 1 }
 
 # --- the marker we must find in the deployed DLL afterwards -----------------
+# Source of truth = the string in PrimalFauna.cpp. -Marker, if supplied, is only
+# an assertion about it (see the usage block at the top).
+$ExpectedMarker = $Marker
 $markerLine = Select-String -Path (Join-Path $Repo 'Source\PrimalFauna\Private\PrimalFauna.cpp') -Pattern 'BUILD ([0-9a-zA-Z\-]+) LOADED'
 if (-not $markerLine) { Fail 'could not read the build marker out of PrimalFauna.cpp' }
 $Marker = $markerLine.Matches[0].Groups[1].Value
-Write-Host "PFABUILD marker=$Marker"
+if ($ExpectedMarker -and $ExpectedMarker -ne $Marker) {
+    Fail ("-Marker '$ExpectedMarker' does not match the marker in Source\PrimalFauna\Private\PrimalFauna.cpp ('$Marker'). " +
+          "This flag ASSERTS the marker, it does not set it -- edit the UE_LOG string in PrimalFauna.cpp, then rebuild.")
+}
+Write-Host "PFABUILD marker=$Marker$(if ($ExpectedMarker) { ' (asserted by -Marker: MATCH)' })"
 
 # --- gate 3: the game must be closed ---------------------------------------
 $game = Get-Process -Name 'FactoryGame*' -ErrorAction SilentlyContinue

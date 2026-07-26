@@ -1,8 +1,14 @@
 // ===========================================================================
 // PFACreatureControllerRoam.cpp -- APFACreatureController's w46-1 ROAM-LEG
 // TELEMETRY. Third TU of the same class (after PFACreatureController.cpp and
-// PFACreatureControllerPerception.cpp), split for the same reason: the 500-line
-// workspace file limit. Declared in PFACreatureController.h, called from Tick.
+// PFACreatureControllerPerception.cpp). Split because this measurement is a
+// self-contained concern with its own tuning CVars and its own reason to exist;
+// keeping it out of the 1000-line perception TU is the point. (w47-1 correction:
+// the original header cited "the 500-line workspace file limit" as the reason,
+// which read as a claim that this codebase honours that limit -- three files in
+// the same commit already exceed it, PFACreatureControllerPerception.cpp at 1067.
+// Splitting by CONCERN is the honest rationale; the line count is a symptom.)
+// Declared in PFACreatureController.h, called from Tick.
 //
 // WHY THIS EXISTS -- a measurement, not a fix.
 // The user, on build w45-3: "when it wandered it seem to do for the same length,
@@ -115,13 +121,23 @@ void APFACreatureController::TickRoamLegTelemetry(float DeltaSeconds)
 	// tree actually reads, so it is the only band a leg length can be compared
 	// against honestly (they have disagreed before -- w38-1 read roamBB=[0..0]
 	// against roamCDO=[600..2500]).
+	//
+	// w47-1 (w46-1 review F7): these are PRINT-ONLY values and they were read at
+	// 4Hz per creature even with diagnostics off. Folded into a lambda called from
+	// inside the log gates instead -- nothing about the measurement itself depends
+	// on them, so nothing about the measurement changes.
+	auto ReadRoamBand = [this](float& OutMin, float& OutMax)
+	{
+		OutMin = -1.0f;
+		OutMax = -1.0f;
+		if (const UBlackboardComponent* BlackboardComp = GetBlackboardComponent())
+		{
+			OutMin = BlackboardComp->GetValueAsFloat(FName(TEXT("MinRoamingDistance")));
+			OutMax = BlackboardComp->GetValueAsFloat(FName(TEXT("MaxRoamingDistance")));
+		}
+	};
 	float BandMin = -1.0f;
 	float BandMax = -1.0f;
-	if (const UBlackboardComponent* BlackboardComp = GetBlackboardComponent())
-	{
-		BandMin = BlackboardComp->GetValueAsFloat(FName(TEXT("MinRoamingDistance")));
-		BandMax = BlackboardComp->GetValueAsFloat(FName(TEXT("MaxRoamingDistance")));
-	}
 
 	if (!bRoamLegActive)
 	{
@@ -144,7 +160,16 @@ void APFACreatureController::TickRoamLegTelemetry(float DeltaSeconds)
 			mRoamLegBelowThresholdSamples = 0;
 			// A leg that has a target at ANY point during it is a pursuit, not a
 			// roam, and mixing the two would poison the whole measurement.
-			bRoamLegHadTarget = (GetCurrentTarget() != nullptr);
+			// w47-1 (w46-1 review F5.2): a current target is not the only way a leg
+			// fails to be a roam sample. A creature that holds AGGRO but has no
+			// current target (the flicker window, w26-3) is engaged, and a leg that
+			// runs in any non-Roam state is a reaction -- knockback, flee, the frame
+			// after a ResetTargetingState. Both are tracked SEPARATELY from the
+			// target flag so the completion line can name WHICH disqualified it,
+			// rather than claiming "had a target" about a creature that had none.
+			bRoamLegHadTarget = (GetCurrentTarget() != nullptr) || (GetAggroTargets().Num() > 0);
+			mRoamLegStateAtStart = GetCurrentCreatureState();
+			bRoamLegNonRoamState = (mRoamLegStateAtStart != ECreatureState::CS_Roam);
 			// The wait is only knowable at the START of the next leg, so it is
 			// stashed here and printed on the completion line.
 			mRoamLegWaitBeforeSeconds =
@@ -153,11 +178,12 @@ void APFACreatureController::TickRoamLegTelemetry(float DeltaSeconds)
 
 			if (PFADiag::IsEnabled())
 			{
+				ReadRoamBand(BandMin, BandMax);
 				// Logged as well as the completion line so a session that ends
 				// mid-leg still shows that a leg started and how long the creature
 				// had been standing before it did.
 				UE_LOG(LogPrimalFauna, Display,
-					TEXT("[PFA] %s: roam leg #%d START -- speed=%.0fcm/s waitBefore=%.1fs band=[%.0f..%.0f] state=%s target=%s"),
+					TEXT("[PFA] %s: roam leg #%d START -- speed=%.0fcm/s waitBefore=%.1fs band=[%.0f..%.0f] stateAtStart=%s target=%s"),
 					*GetName(), mRoamLegIndex, SpeedCms,
 					mRoamLegWaitBeforeSeconds,
 					BandMin, BandMax,
@@ -176,9 +202,13 @@ void APFACreatureController::TickRoamLegTelemetry(float DeltaSeconds)
 		if (!bRoamWaitReported && mRoamLegEndedTimeSeconds > 0.0 && WaitReportSeconds > 0.0f &&
 			(Now - mRoamLegEndedTimeSeconds) >= WaitReportSeconds)
 		{
-			bRoamWaitReported = true;
+			// w47-1 (w46-1 review F2): latch INSIDE the gate. Setting it before the
+			// diag check meant enabling pfa.Diag mid-wait permanently lost this line
+			// -- the w18-3 mistake, third instance.
 			if (PFADiag::IsEnabled())
 			{
+				bRoamWaitReported = true;
+				ReadRoamBand(BandMin, BandMax);
 				UE_LOG(LogPrimalFauna, Display,
 					TEXT("[PFA] %s: roam WAIT -- standing still %.1fs since leg #%d ended (moveStatus=%d 0=Idle 1=Waiting 2=Paused 3=Moving, velocity=%.0fcm/s, state=%s, target=%s, band=[%.0f..%.0f]). Idle here means the tree has issued no new roam move."),
 					*GetName(), Now - mRoamLegEndedTimeSeconds, mRoamLegIndex,
@@ -200,9 +230,15 @@ void APFACreatureController::TickRoamLegTelemetry(float DeltaSeconds)
 	{
 		++mRoamLegProwlBandSamples;
 	}
-	if (GetCurrentTarget() != nullptr)
+	if (GetCurrentTarget() != nullptr || GetAggroTargets().Num() > 0)
 	{
 		bRoamLegHadTarget = true;
+	}
+	// w47-1 (review F5.2): a leg that ENTERS a non-Roam state mid-flight is no longer
+	// a roam sample either -- the same reason the start check exists.
+	if (GetCurrentCreatureState() != ECreatureState::CS_Roam)
+	{
+		bRoamLegNonRoamState = true;
 	}
 
 	if (bMovingNow)
@@ -235,24 +271,40 @@ void APFACreatureController::TickRoamLegTelemetry(float DeltaSeconds)
 	const int32 ProwlBandPercent = (mRoamLegSamples > 0)
 		? FMath::RoundToInt(100.0f * static_cast<float>(mRoamLegProwlBandSamples) / static_cast<float>(mRoamLegSamples))
 		: 0;
-	const TCHAR* GaitBand =
+	// w47-1 (w46-1 review F5.1): named avgBand, NOT gaitBand. It is computed from
+	// AVERAGE speed while the real gait selector (Species/PFASicklejaw.cpp) runs on
+	// INSTANTANEOUS speed every 0.2s anim tick -- so a leg that never played Prowl
+	// for a single frame could print `gaitBand=PROWL` and be read as an answer to the
+	// Prowl question. `prowlBandSamples=%` is the honest number for that question and
+	// is right next to it.
+	const TCHAR* AvgBand =
 		(AvgSpeedCms < RoamGaitProwlBandStartCms) ? TEXT("below-prowl") :
-		(AvgSpeedCms < RoamGaitWalkBandStartCms) ? TEXT("PROWL") : TEXT("walk-or-run");
+		(AvgSpeedCms < RoamGaitWalkBandStartCms) ? TEXT("prowl-range") : TEXT("walk-or-run");
+
+	// kind= now names WHICH disqualifier fired (review F5.2), because "had a target"
+	// was about to be printed for creatures that had none.
+	const TCHAR* LegKind =
+		(bRoamLegHadTarget && bRoamLegNonRoamState) ? TEXT("ENGAGED (target/aggro AND non-Roam state -- not a roam sample)") :
+		bRoamLegHadTarget ? TEXT("PURSUIT (target or aggro held -- not a roam sample)") :
+		bRoamLegNonRoamState ? TEXT("REACTION (non-Roam state -- knockback/flee/post-reset, not a roam sample)") :
+		TEXT("roam");
 
 	if (PFADiag::IsEnabled())
 	{
+		ReadRoamBand(BandMin, BandMax);
 		// ONE line, everything a leg is: how far it went in a straight line (the
 		// number that answers "does the tree randomise inside [600..2500]"), how
-		// far it actually walked, how long it took, the speed band that decides
-		// which gait clip plays, and how long it had stood still beforehand.
+		// far it actually walked, how long it took, the speed band the AVERAGE fell
+		// in, the share of samples that were in the prowl band (the honest gait
+		// number), and how long it had stood still beforehand.
 		UE_LOG(LogPrimalFauna, Display,
-			TEXT("[PFA] %s: roam leg #%d DONE kind=%s straight=%.0fcm path=%.0fcm wander=%.2f dur=%.1fs avg=%.0fcm/s peak=%.0fcm/s gaitBand=%s prowlBandSamples=%d%% stalls=%d waitBefore=%.1fs band=[%.0f..%.0f] state=%s"),
-			*GetName(), mRoamLegIndex,
-			bRoamLegHadTarget ? TEXT("PURSUIT (had a target -- not a roam sample)") : TEXT("roam"),
+			TEXT("[PFA] %s: roam leg #%d DONE kind=%s straight=%.0fcm path=%.0fcm wander=%.2f dur=%.1fs avg=%.0fcm/s peak=%.0fcm/s avgBand=%s prowlBandSamples=%d%% stalls=%d waitBefore=%.1fs band=[%.0f..%.0f] stateAtStart=%s stateNow=%s"),
+			*GetName(), mRoamLegIndex, LegKind,
 			StraightCm, mRoamLegPathCm, WanderRatio, DurationSeconds,
-			AvgSpeedCms, mRoamLegPeakSpeedCms, GaitBand, ProwlBandPercent,
+			AvgSpeedCms, mRoamLegPeakSpeedCms, AvgBand, ProwlBandPercent,
 			mRoamLegStalls, mRoamLegWaitBeforeSeconds,
 			BandMin, BandMax,
+			*CreatureStateEnumToString(mRoamLegStateAtStart),
 			*CreatureStateEnumToString(GetCurrentCreatureState()));
 	}
 

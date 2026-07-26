@@ -2,6 +2,10 @@
 
 #include "CoreMinimal.h"
 #include "Creature/Enemy/FGEnemy.h"
+// FTimerHandle for the w47-1 speed-trait watch. FGCreature.h already carries its
+// own FTimerHandle members so this is transitively present, but IWYU discipline
+// (the AIModule/AnimGraphRuntime precedent in PrimalFauna.Build.cs) says name it.
+#include "Engine/TimerHandle.h"
 #include "PFACreatureBase.generated.h"
 
 // Doc 04 §1 "Aggression" config values, doc 02 §3 species aggression modes.
@@ -107,6 +111,40 @@ public:
 	void ClearNativeOrphanTimer();
 
 public:
+	// --- w47-1 SPEED-TRAIT WATCH (measurement only, PFASpeedTraitWatch.cpp) ----
+	// THE SUSPICION: AFGCreature::SetMoveSpeed(EMoveSpeed) is a public
+	// UFUNCTION(BlueprintCallable) (Creature/FGCreature.h:341, public block opens
+	// at :231) that resets the movement component's MaxWalkSpeed from the
+	// creature's own mMoveSpeedData table (:643). Nothing in THIS codebase ever
+	// calls it (grep-verified). Meanwhile Species/PFASicklejaw.cpp applies the
+	// per-individual speed trait as `MaxWalkSpeed *= SpeedTrait` ONCE at BeginPlay.
+	// If the borrowed BehaviorTree (or any native path) calls SetMoveSpeed later,
+	// it silently overwrites that product with a flat table value -- which would
+	// make every individual move at exactly the same speed and is a candidate
+	// partial explanation for the standing user report that individuals all behave
+	// the same.
+	//
+	// It cannot be settled statically: the SML-side SetMoveSpeed body is a stub
+	// (`void AFGCreature::SetMoveSpeed(EMoveSpeed){}`) and the tree is a cooked
+	// Blueprint. So this packet SHIPS THE LOG instead of a fix -- one session with
+	// a creature that fights and roams answers it, and PFA.DumpBehaviorTree may
+	// name the calling node outright.
+	//
+	// Species call this right after applying their trait; the watch itself is
+	// armed for EVERY species from BeginPlay, so a species that forgets to
+	// register still gets change detection (it just cannot say "the trait was
+	// discarded", only "something moved the value").
+	void NoteSpeedTraitApplied(float TraitMultiplier, float PreTraitWalkSpeedCms, float AppliedWalkSpeedCms);
+
+	// Live read of the movement component's MaxWalkSpeed (-1 if no component), the
+	// trait baseline it is compared against, the trait itself, and how many
+	// unexplained changes have been seen. Printed on the controller heartbeat so
+	// one gated line shows whether the trait is still carried.
+	float GetLiveMaxWalkSpeedCms() const;
+	float GetTraitWalkSpeedBaselineCms() const { return mTraitWalkSpeedBaselineCms; }
+	float GetSpeedTraitMultiplier() const { return mSpeedTraitMultiplier; }
+	int32 GetWalkSpeedChangeCount() const { return mWalkSpeedChangeCount; }
+
 	// w26-3: applies the body-yaw mechanism selected by pfa.RotationMode
 	// (1 = controller-desired/focus-driven, 0 = orient-to-movement). Called
 	// from BeginPlay and re-checked by the controller's focus-sync timer, so
@@ -123,6 +161,28 @@ protected:
 	// w26-3: last pfa.RotationMode value actually applied (-1 = never), so
 	// the live re-check costs one int compare per 0.25s tick.
 	int32 LastAppliedRotationMode = -1;
+
+	// --- w47-1 speed-trait watch state (PFASpeedTraitWatch.cpp) ---------------
+	// Sampler: reads MaxWalkSpeed and reports every change against the baseline.
+	// Diagnostic ONLY -- it never writes the speed back, because "restore the
+	// trait every 0.5s" would be a fix invented before the measurement it depends
+	// on (and would fight whatever native code is doing the writing).
+	void TickSpeedTraitWatch();
+	FTimerHandle SpeedTraitWatchTimerHandle;
+	// The post-trait value the species authorised. Never re-baselined, so
+	// "traitSurvives" stays answerable for the creature's whole life.
+	float mTraitWalkSpeedBaselineCms = -1.0f;
+	// The pre-trait value the multiply started from -- an exact match after a
+	// clobber means the trait was thrown away rather than re-rolled.
+	float mPreTraitWalkSpeedCms = -1.0f;
+	float mSpeedTraitMultiplier = 1.0f;
+	// Last value we OBSERVED, so the watch reports changes rather than a permanent
+	// mismatch (one clobber must not print forever).
+	float mLastObservedWalkSpeedCms = -1.0f;
+	int32 mWalkSpeedChangeCount = 0;
+	// First few changes log always-on (they are the finding); the rest are
+	// diag-gated so a per-frame writer cannot flood a session (the w18-2 lesson).
+	static constexpr int32 WalkSpeedChangeAlwaysOnLogLimit = 5;
 
 	// W1.6 (docs/08 packet, Phase-1 gate finding): fresh nest-spawned
 	// creatures were observed reading CurrentHealth=0/MaxHealth=200 (Section B
