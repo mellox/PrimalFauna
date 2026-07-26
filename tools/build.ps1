@@ -238,10 +238,26 @@ else {
 # imported assets, turning a reporting gap into data loss. If these two ever
 # disagree, a human decides which side is right.
 #
-# WARNING, not Fail, on this first iteration: it has never run, and a gate that
-# can fail a good build is worse than the drift it detects. PROMOTE IT TO Fail
-# once it has proven quiet across a few builds -- until then a divergence is
-# information, not a verdict.
+# WARNING, NOT Fail -- PERMANENTLY, BY DESIGN. Do NOT "promote it to Fail once it
+# has proven quiet" (this comment used to say exactly that, and following it would
+# have broken builds). A divergence here is the NORMAL state of a CORRECT workflow,
+# not drift: import_sicklejaw_ue.py:65 writes to
+# ...\SatisfactoryModLoader\Mods\PrimalFauna\Content\Sicklejaw -- the BUILD TREE
+# ONLY -- and the repo copy is a manual back-copy made afterwards. The workflow is
+# import -> build -> back-copy -> commit, so at the moment build.ps1 runs after any
+# asset import the repo is LEGITIMATELY stale and this gate correctly reports
+# "in build tree, NOT in repo". Fail would break every build that follows an import
+# for doing precisely the right thing.
+#
+# "Proven quiet" is also a sampling trap. The trees are 54/54 as of 2026-07-26, so
+# the gate will stay silent across the next few builds -- but those are builds with
+# NO import, which is exactly the population that never exercises the promotion.
+# Quiet on that sample is evidence about the wrong thing.
+#
+# If Fail is ever genuinely wanted, the prerequisite is to make the IMPORTER
+# back-copy into the repo itself. That would make the repo authoritative and only
+# then is Fail safe -- but it turns the importer into a repo mutator, so it is its
+# own packet, not a footnote here.
 #
 # Off the critical path in both senses: it runs after the try/finally above has
 # already released the build lock, so it cannot strand one, and the whole block
