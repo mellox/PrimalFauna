@@ -114,14 +114,110 @@ APFACreatureBase::APFACreatureBase(const FObjectInitializer& ObjectInitializer)
 	// mAggroGainRate x 1.0 -- restoring the doc 01 numbers (10/s -> Fight at
 	// 50 after ~5s of being seen). Species can override with real shaped
 	// curves later (W2.3 tuning).
+	//
+	// ---- w45-1: THAT "LATER" NEVER CAME, AND THE FLAT CURVE KILLED EVERY -----
+	// ---- CALM BEHAVIOUR THE MOD HAS. --------------------------------------
+	// Both curves are keyed on DISTANCE TO TARGET (FGCreature.h:605-611). w18-12
+	// authored them flat 1.0 out to 10,000cm -- 2.5x beyond this species' own
+	// 4,000cm sight radius -- so a creature gained full visibility AND full aggro
+	// on anything anywhere in its sight cone, at any range, and could never lose
+	// interest. In-game evidence (user session 2026-07-26 on build w44-1):
+	// CS_Roam appeared exactly ONCE per creature, at spawn, then Alert -> Fight
+	// permanently (245 CS_Fight samples vs 11 CS_Roam); moveStatus=Idle on 38 of
+	// 44 heartbeats, with movement ONLY ever while a TargetActor was set.
+	//
+	// Two user-visible symptoms, one cause. Roaming was dead REGARDLESS of the
+	// w44-1 roam-band fix (that fix worked -- the band reads [600..2500] in the
+	// blackboard) because roaming only happens in CS_Roam and the creature was
+	// never in it. And all SEVEN authored idle-break clips resolved 7/7 yet
+	// played ZERO times, because they require a calm creature: the user's "not
+	// much different animation style" was the whole comfort set being unreachable.
+	//
+	// WHAT THIS CHANGE PROVABLY BUYS -- the ACQUISITION cap. Past 3,000cm the
+	// visibility gain is 0, so a creature can no longer complete "seeing" a fresh
+	// target at all, and 20-30m now ramps slowly (1.67s at 20m, 5s at 28s) instead
+	// of 1s flat. That is statically provable from the curve alone and it is the
+	// part of this change to rely on.
+	//
+	// ⚠️ WHAT IS ONLY A HYPOTHESIS -- de-escalation. A cold review (2026-07-26)
+	// showed my original reasoning here was probably BACKWARDS, so it is written
+	// as an open question rather than a fact:
+	//   mAggroReductionRate (5/s) only sheds aggro "when a target is NOT visible"
+	//   (FGCreature.h:618-619). But mVisibilityGainRateCurve is a RATE OF INCREASE
+	//   on an accumulator -- "considered visible once its visibility value reaches
+	//   1.0" (:609-611) -- so for a target ALREADY at 1.0, a gain of 0 plausibly
+	//   LATCHES it at 1.0 rather than clearing it. Latched visible => no decay =>
+	//   aggro frozen above mAggroFightThreshold (50) => permanent CS_Fight.
+	//   UpdateVisibilityData/SetVisibilityPerceivedForTarget are closed native
+	//   (SML stubs them), and AFGCreature owns NO visibility-loss rate property,
+	//   so this CANNOT be settled statically. Three implementations fit the
+	//   headers; under one of them (decay scaled by this same curve) this change
+	//   is a REGRESSION for a target that breaks line of sight at 30-45m, which
+	//   used to decay normally under the flat curve.
+	// The aggro ledger added to the heartbeat in this same build is what settles
+	// it: `aggro=100.0 visible=yes dist=3500` still in CS_Fight after 60s == the
+	// latch is real. See the T3/T4 rows of the w45 in-game checklist.
+	//
+	// DE-ESCALATION WE ALREADY OWN, and which this comment previously failed to
+	// mention: w40-1 give-up (PFACreatureControllerPerception.cpp) drops the
+	// target after pfa.GiveUpSeconds (8) beyond pfa.GiveUpDistance (4500). So a
+	// creature cannot stare forever at a RETREATING player regardless of the
+	// above. The hole is the stationary-at-30-to-45m and broken-LOS cases, which
+	// a distance-only give-up never sees. w45-2 adds an explicit range-decay path
+	// (pfa.AggroDecayAtRange) that does not depend on the unknown at all.
+	//
+	// TRADE-OFF, stated rather than hidden: the creature no longer ACQUIRES
+	// targets beyond ~30m even though mPerceptionSettings still has a 40m sight
+	// cone. Bringing SightRadius down to match is a species-design change
+	// (docs/01 "sight range ~ Stinger") and deliberately NOT made here. Note the
+	// review's F8: curve-zero 3,000 / LoseSight 4,500 / give-up 4,500 are three
+	// distances for ONE behavioural concept and should eventually agree.
+	//
+	// DIFFERENTIAL PARITY vs the constant curves this replaces: the proven w1.8
+	// chain (perceive -> rule5 -> chase -> bite) and the w18-11/w30 damage work
+	// were all verified at CLOSE range -- session dumps put the creature 196cm
+	// from the player -- and both curves are still EXACTLY 1.0 there (visibility
+	// to 1,000cm, aggro to 1,500cm). No behaviour that was ever demonstrated in
+	// game changes rate. The falloff governs only distances that were never
+	// verified. The 500cm ImmediateVisibilityRadius short-circuit is untouched,
+	// and damage-aggro does not run through these curves at all.
+	//
+	// Interp mode is set to LINEAR explicitly as defensive insurance, NOT as a
+	// correction. Review F7 checked the engine: FRichCurveKey(time, value) already
+	// initialises InterpMode(RCIM_Linear) (CSS engine RichCurve.h:132-142) -- an
+	// earlier version of this comment claimed the default was cubic-with-auto-
+	// tangents, which is false, and a wrong engine fact in a comment propagates
+	// into the next curve someone authors. The call stays because it costs nothing
+	// and pins the behaviour if an engine default ever changes.
+	//
+	// Extrapolation past the last key is what makes the zero-crossing stick:
+	// FRealCurve's ctor sets PostInfinityExtrap = RCCE_Constant, so Eval() returns
+	// the last key value (0.0) at ANY greater distance -- verified in
+	// RichCurve.cpp:1224-1241. Had it been RCCE_Linear, eval at 4,000cm would have
+	// come out NEGATIVE.
+	const auto AddLinearKey = [](FRichCurve& Curve, float DistanceCm, float Value)
+	{
+		const FKeyHandle Handle = Curve.AddKey(DistanceCm, Value);
+		Curve.SetKeyInterpMode(Handle, ERichCurveInterpMode::RCIM_Linear);
+	};
+
+	// Spotting rate vs distance: instant up close, slow at the fringe, and ZERO
+	// past 3,000cm so an escaped target genuinely stops being seen.
 	UCurveFloat* VisibilityCurve = CreateDefaultSubobject<UCurveFloat>(TEXT("PFAVisibilityGainCurve"));
-	VisibilityCurve->FloatCurve.AddKey(0.0f, 1.0f);
-	VisibilityCurve->FloatCurve.AddKey(10000.0f, 1.0f);
+	AddLinearKey(VisibilityCurve->FloatCurve, 0.0f, 1.0f);
+	AddLinearKey(VisibilityCurve->FloatCurve, 1000.0f, 1.0f);
+	AddLinearKey(VisibilityCurve->FloatCurve, 2000.0f, 0.6f);
+	AddLinearKey(VisibilityCurve->FloatCurve, 2800.0f, 0.2f);
+	AddLinearKey(VisibilityCurve->FloatCurve, 3000.0f, 0.0f);
 	mVisibilityGainRateCurve = VisibilityCurve;
 
+	// Commitment vs distance: full inside 15m, fading to nothing by 30m, so a
+	// creature that loses a chase de-escalates instead of hunting you forever.
 	UCurveFloat* AggroCurve = CreateDefaultSubobject<UCurveFloat>(TEXT("PFAAggroGainCurve"));
-	AggroCurve->FloatCurve.AddKey(0.0f, 1.0f);
-	AggroCurve->FloatCurve.AddKey(10000.0f, 1.0f);
+	AddLinearKey(AggroCurve->FloatCurve, 0.0f, 1.0f);
+	AddLinearKey(AggroCurve->FloatCurve, 1500.0f, 1.0f);
+	AddLinearKey(AggroCurve->FloatCurve, 2500.0f, 0.3f);
+	AddLinearKey(AggroCurve->FloatCurve, 3000.0f, 0.0f);
 	mAggroGainRateCurve = AggroCurve;
 }
 

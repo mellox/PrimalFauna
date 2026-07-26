@@ -208,6 +208,17 @@ void APFACreatureController::WireCreaturePerception(AFGCreature* PossessedCreatu
 			&APFACreatureController::LogCreatureStateHeartbeat, 30.0f, /*bLoop=*/true);
 	}
 
+	// Step 6b (w45-2, review F3): PUBLISH THE BLACKBOARD KEYS NOW, not in 30s.
+	// Both writers are driven by the looping heartbeat above, and SetTimer does not
+	// fire immediately -- so a nest creature ran its behaviour tree with a null
+	// roam anchor and (pre-w44-1) a [0..0] roam band for its entire first half
+	// minute. That is exactly the window in which a player who just triggered the
+	// spawn is standing there watching it do nothing. The heartbeat calls stay:
+	// they are the self-healing path if anything re-initialises the blackboard
+	// later. This is just the missing first beat.
+	ApplyRoamBandToBlackboard();
+	ApplySpawnerToBlackboard();
+
 	// Step 7 (w26-1): keep the AI focus on whatever we are hunting, so the
 	// pawn's rotation policy has something to aim at while closing. Another
 	// job the vanilla BP controller layer did for its creatures.
@@ -218,9 +229,108 @@ void APFACreatureController::WireCreaturePerception(AFGCreature* PossessedCreatu
 	}
 }
 
+void APFACreatureController::TickAggroRangeDecay(float DeltaSeconds)
+{
+	// w45-2 -- DE-ESCALATION THAT DOES NOT DEPEND ON AN UNKNOWN.
+	// The w45-1 curve reshape assumed that zeroing visibility gain past 3,000cm
+	// would make an already-seen target stop being visible, letting the native
+	// mAggroReductionRate (5/s, "when a target is not visible") shed aggro. Cold
+	// review showed that is probably backwards: the curve is a RATE OF INCREASE on
+	// an accumulator, so zero gain likely LATCHES visibility at 1.0 instead of
+	// clearing it, leaving aggro frozen above mAggroFightThreshold forever. It
+	// cannot be settled statically -- the native visibility update is closed source
+	// and AFGCreature owns no visibility-loss rate.
+	//
+	// So rather than bet the behaviour on which of three readings is true, drive
+	// the decay ourselves in exactly the region where the NATIVE GAIN IS PROVABLY
+	// ZERO (beyond the visibility curve's last key). Two systems never fight over
+	// the value: inside the curve's range this does nothing at all, and outside it
+	// the native contribution is 0 by construction, so the sum is unambiguous.
+	// ModifyAggroForTarget is an already-imported BlueprintCallable this codebase
+	// uses elsewhere, so no new export surface.
+	//
+	// Kill-switch, same pattern as pfa.BiteImpactDelay / pfa.FootPlantAuto /
+	// pfa.LocomotionAnims: `pfa.AggroDecayAtRange 0` reverts to relying purely on
+	// the native path, which is the A/B that tells us which one is really working.
+	static TAutoConsoleVariable<int32> CVarPFAAggroDecayAtRange(
+		TEXT("pfa.AggroDecayAtRange"), 1,
+		TEXT("1 = we explicitly shed aggro for targets beyond the visibility curve's range (where native gain is 0), so creatures de-escalate and return to roaming. 0 = rely only on the native not-visible decay (which may never run if visibility latches)."),
+		ECVF_Default);
+
+	if (CVarPFAAggroDecayAtRange.GetValueOnGameThread() == 0)
+	{
+		return;
+	}
+
+	const APawn* DecayPawn = GetPawn();
+	const AFGCreature* DecayCreature = Cast<AFGCreature>(DecayPawn);
+	if (!DecayCreature)
+	{
+		return;
+	}
+
+	const UCurveFloat* VisibilityCurve = DecayCreature->GetVisibilityGainCurve();
+	if (!VisibilityCurve)
+	{
+		return;
+	}
+
+	// The rate is the creature's OWN authored reduction rate, not a new magic
+	// number -- so this path decays at exactly the speed the species already
+	// declares for losing interest, and tuning stays in one place.
+	const float ReductionRate = DecayCreature->GetAggroReductionRate();
+	if (ReductionRate <= 0.0f)
+	{
+		return;
+	}
+
+	const FVector SelfLocation = DecayPawn->GetActorLocation();
+
+	// Copy: ModifyAggroForTarget mutates the native array we would be iterating.
+	TArray<FFGCreatureAggroData> Snapshot = GetAggroTargets();
+	for (const FFGCreatureAggroData& AggroData : Snapshot)
+	{
+		AActor* AggroTarget = AggroData.Target;
+		if (!AggroTarget || AggroData.Aggro <= 0.0f)
+		{
+			continue;
+		}
+
+		const float DistanceCm = FVector::Dist(SelfLocation, AggroTarget->GetActorLocation());
+		// Only where the native gain is provably nothing. FRichCurve extrapolates
+		// PostInfinity as Constant, so this is 0.0 for every distance past the last
+		// key -- the exact complement of the region the native path drives.
+		if (VisibilityCurve->GetFloatValue(DistanceCm) > 0.0f)
+		{
+			continue;
+		}
+
+		ModifyAggroForTarget(AggroTarget, -ReductionRate * DeltaSeconds);
+
+		// Change-gated to a whole-number aggro step so a 0.25s tick cannot flood
+		// the log the way the w18-2 verdict spam did (46% of one session's lines).
+		if (PFADiag::IsEnabled())
+		{
+			const uint8 Bucket = static_cast<uint8>(FMath::Clamp(AggroData.Aggro, 0.0f, 255.0f));
+			const FObjectKey TargetKey(AggroTarget);
+			const uint8* LastBucket = mLastLoggedRangeDecayBucket.Find(TargetKey);
+			if (!LastBucket || *LastBucket != Bucket)
+			{
+				mLastLoggedRangeDecayBucket.Add(TargetKey, Bucket);
+				UE_LOG(LogPrimalFauna, Display,
+					TEXT("[PFA] %s: range-decay shedding aggro on %s -- dist=%.0f (visibility gain 0 here) aggro=%.1f -> falling at %.1f/s toward fightThreshold=%.0f"),
+					*GetName(), *AggroTarget->GetName(), DistanceCm, AggroData.Aggro,
+					ReductionRate, DecayCreature->GetAggroFightThreshold());
+			}
+		}
+	}
+}
+
 void APFACreatureController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	TickAggroRangeDecay(DeltaTime);
 
 	// The mode CVar lives in PFACreatureBase.cpp's anonymous namespace; look
 	// it up by name so neither file has to export it.
@@ -482,6 +592,93 @@ void APFACreatureController::ApplyRoamBandToBlackboard()
 		*GetName(), Band.Min, Band.Max, BBMax);
 }
 
+void APFACreatureController::ApplySpawnerToBlackboard()
+{
+	// w45-1 -- the LAST unwritten key in FGBBKeys. That namespace holds exactly
+	// five (FGCreatureController.h:18-26): Spawner, Spline, TargetActor,
+	// MinRoamingDistance, MaxRoamingDistance. As of w44-1 the roam band is
+	// written, TargetActor tracks combat and Spline is legitimately null (nest
+	// spawners author no patrol splines) -- but Spawner logged `null` on 100% of
+	// heartbeats even for nest-spawned creatures, whose AFGCreature::GetSpawner()
+	// should be valid. Same shape as every parity gap before it: vanilla's BP
+	// controller wrote a key our C++-only controller does not.
+	//
+	// HONEST ABOUT WHAT THIS FIXES: the BT is a closed BP asset, so it CANNOT be
+	// proven statically that the roam branch consumes this key -- the roam
+	// destination has to be anchored somewhere, and the spawner is the only
+	// candidate on the blackboard, but that is inference. The log line below is
+	// written so ONE session settles it, and it distinguishes the two failure
+	// modes that look identical from the outside: a creature with no spawner at
+	// all (nothing to publish -- a deeper spawn-path problem) versus a spawner we
+	// simply never told the tree about.
+	// A failed write is TERMINAL, not transient: the blackboard asset's key schema
+	// is fixed at load, so a key that is absent or type-mismatched now will never
+	// become writable. Stop attempting (and stop logging) after the first proven
+	// failure, otherwise the change-gate below -- which can only latch on a
+	// SUCCESSFUL readback -- would retry and re-log every 30s for the creature's
+	// whole life.
+	if (bSpawnerKeyWriteFailed)
+	{
+		return;
+	}
+
+	UBlackboardComponent* BlackboardComp = GetBlackboardComponent();
+	AFGCreature* SpawnerOwner = Cast<AFGCreature>(GetPawn());
+	if (!BlackboardComp || !SpawnerOwner)
+	{
+		return;
+	}
+
+	AFGCreatureSpawner* Spawner = SpawnerOwner->GetSpawner();
+	if (!Spawner)
+	{
+		// Not an error on its own: PFA.SpawnTest creatures are deliberately
+		// spawnerless (which is why they get ClearNativeOrphanTimer). Says so
+		// once per creature, always-on, because "creature has no spawner" is the
+		// other half of the diagnosis and must not need diagnostics to appear.
+		if (!bLoggedNoSpawnerForBlackboard)
+		{
+			bLoggedNoSpawnerForBlackboard = true;
+			UE_LOG(LogPrimalFauna, Display,
+				TEXT("[PFA] %s: GetSpawner() is null -- nothing to publish to the FGBBKeys::Spawner key. Expected for PFA.SpawnTest creatures; for a NEST-spawned creature this means the native spawner never coupled itself and roaming has no anchor."),
+				*GetName());
+		}
+		return;
+	}
+
+	// Change-gated: the BT may legitimately re-read this, but rewriting an
+	// identical object value every beat would spam the key's observers.
+	if (BlackboardComp->GetValueAsObject(FGBBKeys::Spawner) == Spawner)
+	{
+		return;
+	}
+
+	// w45-2 (review F2) -- NEVER CLAIM A WRITE YOU DID NOT VERIFY.
+	// UBlackboardComponent::SetValueAsObject returns void, and the underlying
+	// SetValue SILENTLY returns false when the key is absent from the blackboard
+	// asset or its type class doesn't match (BlackboardComponent.cpp:687-691).
+	// Since we run on a BORROWED vanilla blackboard we do not own, that is a live
+	// possibility. Without a readback the change-gate above would never latch and
+	// this always-on line would announce a successful write every 30s per creature
+	// forever, while nothing had been written -- a self-inflicted lie in the one
+	// build whose entire purpose is log forensics. Same readback discipline as
+	// SetBorrowedBehaviorTree (PFACreatureBase.cpp).
+	BlackboardComp->SetValueAsObject(FGBBKeys::Spawner, Spawner);
+	const UObject* Readback = BlackboardComp->GetValueAsObject(FGBBKeys::Spawner);
+	const bool bWriteTook = (Readback == Spawner);
+	bSpawnerKeyWriteFailed = !bWriteTook;
+
+	UE_LOG(LogPrimalFauna, Display,
+		TEXT("[PFA] %s: FGBBKeys::Spawner write %s -- wrote %s, readback=%s. %s"),
+		*GetName(),
+		bWriteTook ? TEXT("TOOK") : TEXT("FAILED"),
+		*Spawner->GetName(),
+		Readback ? *Readback->GetName() : TEXT("null"),
+		bWriteTook
+			? TEXT("Vanilla's BP controller normally does this; if wandering starts working, THIS was the missing roam anchor.")
+			: TEXT("The borrowed blackboard asset has no usable 'Spawner' key (absent or type-mismatched), so the roam branch can never read one from us -- do NOT read a repeat of this line as a retry succeeding."));
+}
+
 void APFACreatureController::LogCreatureStateHeartbeat()
 {
 	// ---- w44-1 CRITICAL FIX (cold review) ---------------------------------
@@ -498,6 +695,7 @@ void APFACreatureController::LogCreatureStateHeartbeat()
 	// it anyway. Behaviour that only runs while you are watching is the worst
 	// kind of bug -- it is invisible precisely when nobody is looking.
 	ApplyRoamBandToBlackboard();
+	ApplySpawnerToBlackboard();
 
 	// Gated: only SPEAKS when diagnostics are on (the timer keeps firing cheaply
 	// otherwise). GetCurrentCreatureState/GetAggroTargets/GetCurrentTarget are
@@ -508,12 +706,53 @@ void APFACreatureController::LogCreatureStateHeartbeat()
 		return;
 	}
 	const AActor* CurrentTarget = GetCurrentTarget();
+
+	// w45-1: the aggro LEDGER, not just the count. The w44-1 session could prove
+	// creatures were stuck in CS_Fight but not WHY, because the heartbeat only
+	// ever printed how many aggro targets existed. Both gain curves are keyed on
+	// DISTANCE, and decay (mAggroReductionRate, 5/s) only runs while a target is
+	// NOT visible -- so aggro, visibility and distance TOGETHER are the whole
+	// mechanism, and any one of them alone explains nothing. Reading
+	// `aggro=100.0 visible=yes dist=3500` next to a 3,000cm zero-crossing is what
+	// distinguishes "the curve is wrong" from "the curve is right and something
+	// else pins the state".
+	// Both are FORCEINLINE header getters (FGCreatureController.h-adjacent
+	// FGCreature.h:396/402), so printing them adds no import surface -- and they
+	// turn the ledger into something self-explanatory months from now: the
+	// threshold the aggro numbers have to fall under, and the rate they fall at.
+	const AFGCreature* HeartbeatCreature = Cast<AFGCreature>(GetPawn());
+
+	FString AggroLedger;
+	// w45-2 (review F4): if the pawn is gone there is no origin to measure FROM, so
+	// distance must read as the -1 sentinel. Falling back to FVector::ZeroVector
+	// would print a plausible-looking distance from WORLD ORIGIN, and in a
+	// forensics line a confidently wrong number is worse than a missing one.
+	const APawn* LedgerPawn = GetPawn();
+	const FVector SelfLocation = LedgerPawn ? LedgerPawn->GetActorLocation() : FVector::ZeroVector;
+	for (const FFGCreatureAggroData& AggroData : GetAggroTargets())
+	{
+		const AActor* AggroTarget = AggroData.Target;
+		const bool bCanMeasure = (LedgerPawn != nullptr) && (AggroTarget != nullptr);
+		AggroLedger += FString::Printf(TEXT("[%s aggro=%.1f visible=%s dist=%.0f] "),
+			AggroTarget ? *AggroTarget->GetName() : TEXT("null"),
+			AggroData.Aggro,
+			AggroData.IsVisible ? TEXT("yes") : TEXT("no"),
+			bCanMeasure ? FVector::Dist(SelfLocation, AggroTarget->GetActorLocation()) : -1.0f);
+	}
+	if (AggroLedger.IsEmpty())
+	{
+		AggroLedger = TEXT("<none>");
+	}
+
 	UE_LOG(LogPrimalFauna, Display,
-		TEXT("[PFA] %s: state heartbeat -> state=%s aggroTargets=%d currentTarget=%s (30s gated diag; stuck-in-CS_Default reveals a state-machine kick is needed)"),
+		TEXT("[PFA] %s: state heartbeat -> state=%s aggroTargets=%d currentTarget=%s fightThreshold=%.0f reductionRate=%.1f/s aggro: %s (30s gated diag; stuck-in-CS_Default reveals a state-machine kick is needed)"),
 		*GetName(),
 		*CreatureStateEnumToString(GetCurrentCreatureState()),
 		GetAggroTargets().Num(),
-		CurrentTarget ? *CurrentTarget->GetName() : TEXT("none"));
+		CurrentTarget ? *CurrentTarget->GetName() : TEXT("none"),
+		HeartbeatCreature ? HeartbeatCreature->GetAggroFightThreshold() : -1.0f,
+		HeartbeatCreature ? HeartbeatCreature->GetAggroReductionRate() : -1.0f,
+		*AggroLedger);
 
 	// w25-1 (aggro-but-no-path diagnosis; session-13 evidence: creatures that
 	// had chased earlier later sat frozen in CS_Fight targeting the player's

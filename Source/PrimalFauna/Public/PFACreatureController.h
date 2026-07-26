@@ -157,6 +157,19 @@ private:
 	// diagnostics were on, which looked like a working feature.
 	void ApplyRoamBandToBlackboard();
 
+	// w45-1: publishes FGBBKeys::Spawner. Same class of gap as the roam band and
+	// called from the same unconditional slot. Self-healing (re-checked each beat)
+	// because the key can only be written once the native spawner has coupled
+	// itself to the creature, which is not guaranteed to have happened by the
+	// time we first possess.
+	void ApplySpawnerToBlackboard();
+
+	// w45-2: sheds aggro for targets beyond the visibility curve's range, where the
+	// native gain is provably 0. Makes de-escalation independent of the closed
+	// native visibility semantics (see the .cpp). Kill-switch pfa.AggroDecayAtRange.
+	void TickAggroRangeDecay(float DeltaSeconds);
+	mutable TMap<FObjectKey, uint8> mLastLoggedRangeDecayBucket;
+
 	void LogCreatureStateHeartbeat();
 
 	// w26-1: keeps the AI focus pointed at the current target so the pawn's
@@ -205,6 +218,16 @@ private:
 	// fallback for this controller, so it logs once instead of once per
 	// evaluation. Mutable because CanBeHostileTowards and friends are const.
 	mutable bool bLoggedNoSpawnerFallback = false;
+
+	// w45-1: set once ApplySpawnerToBlackboard has reported a spawnerless
+	// creature, so the always-on line appears once per creature rather than
+	// every 30s beat. Not mutable -- that path is non-const.
+	bool bLoggedNoSpawnerForBlackboard = false;
+
+	// w45-2 (review F2): set once a Spawner-key write has been proven to have NOT
+	// taken via readback. Terminal -- the blackboard asset's key schema is fixed at
+	// load, so retrying can only re-log a failure that cannot change.
+	bool bSpawnerKeyWriteFailed = false;
 
 	// w18-3: doc 02 §2 contract logger (format frozen -- see the .cpp),
 	// throttled to log a target only when its (rule, verdict) result CHANGES.
