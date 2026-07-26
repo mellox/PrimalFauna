@@ -215,7 +215,14 @@ namespace
 	// session against the same creature, in the same place, on the same save --
 	// which is the only comparison that would actually catch a regression.
 	static TAutoConsoleVariable<int32> CVarPFAUseAnimInstance(
-		TEXT("pfa.UseAnimInstance"), 0,
+		// w43-1: DEFAULT ON. This shipped at 0 as a deliberately reversible first
+		// increment, which was right while it was unproven and became wrong the
+		// moment it was the only thing standing between the user and the six
+		// authored tail moods, the breathing layer and the head-look. Everything
+		// the single-node path guarantees is now provably provided here too
+		// (w38-2 parity fix: per-creature phase offset AND speed-matched play
+		// rate). 0 still falls back to the proven single-node player.
+		TEXT("pfa.UseAnimInstance"), 1,
 		TEXT("0 (default): drive Sicklejaw animation through the proven single-node player (PlayAnimation). 1: drive it through the native UPFAAnimInstance anim graph. Takes effect on the next pose change (<=0.2s) -- no respawn, no rebuild. Check with PFA.AnimGraph."),
 		ECVF_Default);
 
@@ -234,7 +241,11 @@ namespace
 	// So mode 1 REFUSES a non-additive clip and says why, and mode 2 forces it
 	// anyway -- for proving the node evaluates, at the price of looking wrong.
 	static TAutoConsoleVariable<int32> CVarPFATailMoodLayer(
-		TEXT("pfa.TailMoodLayer"), 0,
+		// w43-1: DEFAULT ON, now that the additive flags are set at import and
+		// asserted on readback. Mode 1 still self-disables per creature if a clip
+		// turns out not to be a real additive -- it declines and says why rather
+		// than doubling every bone transform.
+		TEXT("pfa.TailMoodLayer"), 1,
 		TEXT("Additive tail-mood layer (needs pfa.UseAnimInstance 1). 0 (default): off. 1: on, but SKIPPED unless the clip is really flagged additive. 2: FORCE on even for a non-additive clip -- proves the ApplyAdditive node evaluates, expect a visibly wrong pose."),
 		ECVF_Default);
 
@@ -244,7 +255,11 @@ namespace
 		ECVF_Default);
 
 	static TAutoConsoleVariable<FString> CVarPFATailMoodClip(
-		TEXT("pfa.TailMoodClip"), TEXT("Add_Tail_Threat"),
+		// w43-1: "auto" = pick the mood from the creature's own state (calm /
+		// alert / aggressive / wounded). A specific clip name still forces that
+		// clip on every creature, which is what this CVar was for originally --
+		// useful for inspection, useless as behaviour.
+		TEXT("pfa.TailMoodClip"), TEXT("auto"),
 		TEXT("Which tail-mood clip the additive layer plays, as a bare suffix: Add_Tail_Calm / Add_Tail_Alert / Add_Tail_Threat / Add_Tail_Aggressive / Add_Tail_Fear / Add_Tail_Wounded. Re-resolved when this changes."),
 		ECVF_Default);
 
@@ -592,11 +607,51 @@ void APFASicklejaw::PushTailMood(UPFAAnimInstance* AnimInstance)
 		return;
 	}
 
+	// w43-1: the tail mood now follows the CREATURE'S STATE instead of a global
+	// debug CVar. Six moods were authored, imported and reachable by nothing --
+	// the layer existed but every creature in the world shared one hand-typed
+	// clip name, which is a debug lever, not a behaviour.
+	//
+	// This is the "no diversity for what they are doing at the time" complaint:
+	// a calm animal, one that has noticed you, and one committed to killing you
+	// should not carry the same tail. Leaving the CVar as an override so a
+	// specific clip can still be forced for inspection.
+	FString MoodClip = CVarPFATailMoodClip.GetValueOnGameThread();
+	if (MoodClip.IsEmpty() || MoodClip.Equals(TEXT("auto"), ESearchCase::IgnoreCase))
+	{
+		ECreatureState CreatureState = ECreatureState::CS_Default;
+		if (const AFGCreatureController* CreatureAI = GetCreatureController())
+		{
+			CreatureState = CreatureAI->GetCurrentCreatureState();
+		}
+
+		// pfa.LimpHealthFraction is defined in PFASicklejawAnim.cpp's anonymous
+		// namespace, so it is reached BY NAME here rather than duplicated -- the
+		// same pattern the controller uses for pfa.RotationMode. One definition,
+		// so the wounded tail and the wounded gait can never disagree about what
+		// "wounded" means.
+		const bool bWounded = [this]()
+		{
+			static IConsoleVariable* LimpVar =
+				IConsoleManager::Get().FindConsoleVariable(TEXT("pfa.LimpHealthFraction"));
+			const float Threshold = LimpVar ? LimpVar->GetFloat() : 0.35f;
+			const UFGHealthComponent* Health = GetHealthComponent();
+			return Health && Health->GetMaxHealth() > 0.0f
+				&& (Health->GetCurrentHealth() / Health->GetMaxHealth()) < Threshold;
+		}();
+
+		if (bWounded)                                        { MoodClip = TEXT("Add_Tail_Wounded"); }
+		else if (CreatureState == ECreatureState::CS_Fight)  { MoodClip = TEXT("Add_Tail_Aggressive"); }
+		else if (CreatureState == ECreatureState::CS_Alert ||
+		         CreatureState == ECreatureState::CS_Investigate) { MoodClip = TEXT("Add_Tail_Alert"); }
+		else                                                 { MoodClip = TEXT("Add_Tail_Calm"); }
+	}
+
 	// Console strings are untrusted input and this one is concatenated into a
 	// package path; ResolveTailMoodClip validates it at that boundary, exactly
 	// like PFA.PlayAnim does (w29-2 review W6). It also caches, so this only
-	// touches the package system when the CVar actually changes.
-	if (!ResolveTailMoodClip(CVarPFATailMoodClip.GetValueOnGameThread()))
+	// touches the package system when the mood actually changes.
+	if (!ResolveTailMoodClip(MoodClip))
 	{
 		AnimInstance->SetTailMood(nullptr, 0.0f);
 		return;

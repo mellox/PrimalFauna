@@ -246,12 +246,30 @@ void UPFACreatureActionMelee::PerformAction_Implementation()
 				{
 					AttackClip = TEXT("Lunge");
 				}
+				// w43-1: ClawPin, the sickle-claw signature this animal is NAMED
+				// for, was still reached by nothing. In close, a quarter of the
+				// time, pin instead of biting -- so the same range does not always
+				// produce the same act, which is what made the attacks read as a
+				// cooldown rather than a choice.
+				else if (!bHasGroundToCover && FMath::FRand() < 0.25f)
+				{
+					AttackClip = TEXT("ClawPin");
+				}
 			}
 		}
 
 		if (APFASicklejaw* Sicklejaw = Cast<APFASicklejaw>(mCreature.Get()))
 		{
-			Sicklejaw->PlayAttackOneShot(AttackClip);
+			// Fall back to the bite if a variant fails to resolve: an attack must
+			// never end up with NO strike just because one clip is missing.
+			if (!Sicklejaw->PlayAttackOneShot(AttackClip))
+			{
+				Sicklejaw->PlayAttackOneShot(TEXT("Bite"));
+			}
+			if (PFADiag::IsEnabled())
+			{
+				UE_LOG(LogPrimalFauna, Display, TEXT("[PFA] Sicklejaw attack -> %s"), AttackClip);
+			}
 		}
 
 		const float ImpactDelay = FMath::Max(0.0f, CVarPFABiteImpactDelay.GetValueOnGameThread());
