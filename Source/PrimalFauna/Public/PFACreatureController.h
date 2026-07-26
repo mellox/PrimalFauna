@@ -180,12 +180,17 @@ private:
 	// been reported for this engagement; re-armed as soon as any target holds aggro
 	// again. Diagnostic-only state -- see the end of TickAggroRangeDecay.
 	bool bLoggedStaleZeroAggroTarget = false;
+	// w47-2 (w47-1 review I2): second latch, for the LONG-hold sample (20 beats =
+	// 5.0s) that gives the dwell-timeout work an actual measured number. Cleared
+	// alongside the one above on every beat the condition fails.
+	bool bLoggedStaleZeroLongHold = false;
 	// w47-1 (w46-1 review F3): consecutive 0.25s beats the stale-zero condition has
 	// held. The boolean above alone could SPAM ~2 lines/s forever, because the
 	// condition tests GetCurrentTarget() != nullptr and the native current-target
 	// flickers null 1-2x/second during an engagement (w26-3) -- each flicker
-	// re-armed the latch. Requiring 4 consecutive beats (1.0s) is a debounce a
-	// flicker cannot satisfy, and it is deliberately the front half of the
+	// re-armed the latch. w47-2 (review I3): 6 consecutive beats (1.5s), raised from
+	// 4 (1.0s) -- at 4 the margin over the flicker was exactly one beat, so a 0.75 Hz
+	// flicker would have satisfied it. It is also deliberately the front half of the
 	// dwell-based stale-target timeout that is the likely follow-up fix.
 	int32 mStaleZeroConsecutiveBeats = 0;
 

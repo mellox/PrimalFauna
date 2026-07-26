@@ -357,6 +357,30 @@ void APFACreatureController::TickAggroRangeDecay(float DeltaSeconds)
 	float VetoDistanceCm = -1.0f;
 	bool bVetoInDecayRegion = false;
 
+	// w47-2 (w47-1 cold review W1): ONE place that records "aggro remains", so the
+	// veto tracker cannot be updated at one site and forgotten at the other -- which
+	// is exactly what w47-1 did. `bAnyAggroRemains` is set in TWO places (the
+	// not-draining/exempt branch below, and a target that still holds aggro after
+	// this beat's shed), but only the first recorded who did it. The ordinary
+	// two-targets-at-range case therefore printed
+	//   `DISENGAGE VETOED -- ... but <an entry we could not name> still holds 0.0 aggro`
+	// -- a line asserting a veto while reporting no vetoer and no aggro, which
+	// defeats the entire purpose of the F1 line (naming WHO vetoed).
+	// Parameter names deliberately differ from the loop locals: shadowing a captured
+	// variable is a warning this engine build treats as an error.
+	auto NoteAggroRemains = [&VetoTarget, &VetoAggro, &VetoDistanceCm, &bVetoInDecayRegion, &bAnyAggroRemains]
+		(const AActor* InTarget, float InAggro, float InDistanceCm, bool bInRegion)
+	{
+		bAnyAggroRemains = true;
+		if (InAggro > VetoAggro)
+		{
+			VetoAggro = InAggro;
+			VetoTarget = InTarget;
+			VetoDistanceCm = InDistanceCm;
+			bVetoInDecayRegion = bInRegion;
+		}
+	};
+
 	for (const FFGCreatureAggroData& AggroData : Snapshot)
 	{
 		AActor* AggroTarget = AggroData.Target;
@@ -391,17 +415,10 @@ void APFACreatureController::TickAggroRangeDecay(float DeltaSeconds)
 			// this branch, so this preserves that reviewed semantic explicitly.
 			if (AggroData.Aggro > KINDA_SMALL_NUMBER)
 			{
-				bAnyAggroRemains = true;
-				// w47-1 (review F1): remember the STRONGEST vetoing entry, so the veto
-				// line below can name who did it. One float + one pointer, no
-				// allocation, and only inside a branch that already runs.
-				if (AggroData.Aggro > VetoAggro)
-				{
-					VetoAggro = AggroData.Aggro;
-					VetoTarget = AggroTarget;
-					VetoDistanceCm = DistanceCm;
-					bVetoInDecayRegion = bInDecayRegion;
-				}
+				// w47-1 (review F1) / w47-2 (review W1): remember the STRONGEST vetoing
+				// entry, so the veto line below can name who did it. One float + one
+				// pointer, no allocation, and only inside a branch that already runs.
+				NoteAggroRemains(AggroTarget, AggroData.Aggro, DistanceCm, bInDecayRegion);
 			}
 			else
 			{
@@ -466,9 +483,13 @@ void APFACreatureController::TickAggroRangeDecay(float DeltaSeconds)
 		ModifyAggroForTarget(AggroTarget, -AppliedDelta,
 			/*bImmediateStateUpdate=*/bThisCrossed || bThisDrained);
 
+		// w47-2 (review W1): the SECOND site, and the common one -- a target that is
+		// draining but still holds aggro this beat. w47-1 set the flag here without
+		// recording the vetoer, which is why the veto line could not name anybody in
+		// the ordinary two-targets-at-range case.
 		if (After > KINDA_SMALL_NUMBER)
 		{
-			bAnyAggroRemains = true;
+			NoteAggroRemains(AggroTarget, After, DistanceCm, bInDecayRegion);
 		}
 
 		// w45-3 (review D4): log EVENTS, not samples. The old whole-unit bucket fired
@@ -530,6 +551,7 @@ void APFACreatureController::TickAggroRangeDecay(float DeltaSeconds)
 		// never gets another chance to run for them).
 		mRangeDecayLoggedTargets.Reset();
 		bLoggedStaleZeroAggroTarget = false;
+		bLoggedStaleZeroLongHold = false;
 		mStaleZeroConsecutiveBeats = 0;
 		ResetTargetingState(DisengageReason);
 		return;
@@ -575,10 +597,12 @@ void APFACreatureController::TickAggroRangeDecay(float DeltaSeconds)
 	// this codebase's own TickFocusSync comment documents as flickering to null
 	// 1-2x/second during a live engagement (w26-3, session 18). Every flicker
 	// re-armed the latch: ~2 lines/s, indefinitely. Replaced with a CONSECUTIVE-BEAT
-	// DEBOUNCE -- the condition must hold for a full second (4 beats at 0.25s)
+	// DEBOUNCE -- the condition must hold for 1.5s (6 beats at 0.25s, raised from 4
+	// by the w47-1 review: one beat of margin over a 0.75 Hz flicker was not margin)
 	// before anything prints, which a 1-2Hz flicker can never satisfy. The debounce
 	// is also deliberately the front half of the dwell timer that is the likely
-	// follow-up fix, so that work starts from a measured number.
+	// follow-up fix, and w47-2 makes that literal: the printed hold is now the
+	// MEASURED one and a second line reports a 5s continuous hold.
 	//
 	// F4 -- the trigger was blind to its most likely real cause. It counted only
 	// non-null, in-region, non-aggressor, zero-aggro entries, so the two ordinary
@@ -596,17 +620,35 @@ void APFACreatureController::TickAggroRangeDecay(float DeltaSeconds)
 		// aggro -- a latch that outlives the situation it describes reports the first
 		// episode and hides every later one.
 		bLoggedStaleZeroAggroTarget = false;
+		bLoggedStaleZeroLongHold = false;
 		mStaleZeroConsecutiveBeats = 0;
 		return;
 	}
 
 	++mStaleZeroConsecutiveBeats;
-	// 4 beats x 0.25s = 1.0s of the condition holding CONTINUOUSLY.
-	constexpr int32 StaleZeroDebounceBeats = 4;
+	// w47-2 (w47-1 cold review I3): 6 beats x 0.25s = 1.5s, up from 4 (1.0s). The
+	// debounce exists to reject the 1-2 Hz current-target flicker (w26-3), and at 4
+	// beats the margin was exactly ONE beat -- a 0.75 Hz flicker satisfies it. Six
+	// costs nothing (this is a diagnostic that fires once per episode) and buys real
+	// margin.
+	constexpr int32 StaleZeroDebounceBeats = 6;
+	// w47-2 (I2): a SECOND report at a long hold, so the dwell-based stale-target
+	// timeout that is the likely follow-up fix can be sized from a measured number
+	// instead of a guess. 20 beats = 5.0s: long enough that no flicker or transient
+	// reaches it, short enough that a session with one motionless creature produces
+	// the sample.
+	constexpr int32 StaleZeroLongHoldBeats = 20;
 	if (mStaleZeroConsecutiveBeats < StaleZeroDebounceBeats)
 	{
 		return;
 	}
+
+	// w47-2 (w47-1 cold review I2): print the MEASURED hold, not the constant.
+	// w47-1 printed `StaleZeroDebounceBeats * DecayInterval`, and since the latch
+	// fires on exactly the beat the debounce is met, that could only ever say
+	// "1.00" -- while the comment claimed the number existed so the dwell-timer work
+	// "starts from a measured number". It never produced one. This does.
+	const float StaleHeldSeconds = static_cast<float>(mStaleZeroConsecutiveBeats) * DecayInterval;
 
 	// The latch is set only when the line is actually PRINTED, so enabling pfa.Diag
 	// after the fact still yields the report (the w18-3 verdict throttle has the
@@ -617,7 +659,21 @@ void APFACreatureController::TickAggroRangeDecay(float DeltaSeconds)
 		UE_LOG(LogPrimalFauna, Display,
 			TEXT("[PFA] %s: STALE TARGET (held %.2fs) -- currentTarget=%s state=%s, nothing holds aggro. entries=%d of which staleZeroInRegion=%d nullTarget(target destroyed/GCd)=%d zeroAggroExempt(in-curve-range or recent aggressor)=%d. This mechanism never saw the drop, so it has no disengage event to fire on; the creature may stand where it lost interest. nullTarget>0 means it most likely KILLED what it was fighting. Fix if this correlates with a motionless creature: a dwell-based stale-target timeout (this debounce is its front half)."),
 			*GetName(),
-			StaleZeroDebounceBeats * DecayInterval,
+			StaleHeldSeconds,
+			*StaleTarget->GetName(),
+			*CreatureStateEnumToString(GetCurrentCreatureState()),
+			Snapshot.Num(), StaleZeroInRegion, NullTargetEntries, ZeroAggroExemptEntries);
+	}
+
+	// The long-hold sample. Same episode, same latch discipline -- one line, and
+	// only if the condition really held continuously for the whole window.
+	if (mStaleZeroConsecutiveBeats >= StaleZeroLongHoldBeats && !bLoggedStaleZeroLongHold && PFADiag::IsEnabled())
+	{
+		bLoggedStaleZeroLongHold = true;
+		UE_LOG(LogPrimalFauna, Display,
+			TEXT("[PFA] %s: STALE TARGET STILL HELD (%.2fs continuous) -- currentTarget=%s state=%s, still nothing holding aggro. entries=%d staleZeroInRegion=%d nullTarget=%d zeroAggroExempt=%d. THIS is the number to size a dwell-based stale-target timeout from: the creature has held a dead target this long without disengaging on its own."),
+			*GetName(),
+			StaleHeldSeconds,
 			*StaleTarget->GetName(),
 			*CreatureStateEnumToString(GetCurrentCreatureState()),
 			Snapshot.Num(), StaleZeroInRegion, NullTargetEntries, ZeroAggroExemptEntries);

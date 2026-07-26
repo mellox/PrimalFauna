@@ -47,10 +47,10 @@
 
 namespace
 {
-	// 0.5s. Fast enough that a state-change-driven write is caught within one
-	// beat of it happening (state changes are seconds apart), slow enough to be
-	// free: one float compare per creature per half second, no allocation.
-	constexpr float SpeedTraitWatchIntervalSeconds = 0.5f;
+	// w47-2 (review I4): the sampler interval now lives ONCE, on the class
+	// (APFACreatureBase::SpeedTraitWatchIntervalSeconds), because the SetTimer call in
+	// PFACreatureBase.cpp and the baseline line printed here must never be able to
+	// disagree about it.
 
 	// Tolerance for "the value moved". Speeds here are hundreds of cm/s and every
 	// candidate writer sets a table value or a product of one, so anything above
@@ -155,11 +155,48 @@ void APFACreatureBase::TickSpeedTraitWatch()
 
 	// The verdict, stated in the log so nobody has to re-derive it from numbers
 	// months from now.
-	const TCHAR* Verdict =
-		bBackToPreTrait ? TEXT("TRAIT DISCARDED (value is exactly the pre-trait number)") :
-		(ExactTableMatch != nullptr) ? TEXT("TRAIT DISCARDED (value is an exact mMoveSpeedData entry -> SetMoveSpeed is the writer)") :
-		(TraitScaledTableMatch != nullptr) ? TEXT("trait PRESERVED (value is a table entry x the trait)") :
-		TEXT("UNEXPLAINED (matches neither the table nor the pre-trait value)");
+	//
+	// w47-2 (w47-1 cold review W3): THE LADDER ORDER WAS HIDING THE CONCLUSION THIS
+	// FILE EXISTS TO REACH. UCharacterMovementComponent::MaxWalkSpeed defaults to
+	// 600, which is EXACTLY our MS_Run (Species/PFASicklejaw.cpp), so in the likeliest
+	// case bBackToPreTrait and ExactTableMatch are BOTH true -- and testing
+	// bBackToPreTrait first printed "value is exactly the pre-trait number",
+	// suppressing the "SetMoveSpeed is the writer" attribution that is the entire
+	// point of the measurement. The table match is now tested first and names the
+	// pre-trait coincidence in its own text instead of being displaced by it.
+	//
+	// Also w47-2: when the rolled trait lands within ~0.13% of 1.0 (about 1.5% of
+	// creatures at FRandRange(0.92,1.08) with a 0.5cm/s epsilon), the raw entry and
+	// the entry x trait are the same number and BOTH matches fire. w47-1 silently
+	// preferred "discarded" -- true by luck, stated with unearned confidence. Say so
+	// instead. Deliberately NOT fixed by tightening the epsilon: a tighter epsilon
+	// risks missing a REAL match through float drift in the native write, which
+	// would cost a whole verdict rather than a caveat.
+	FString Verdict;
+	if (ExactTableMatch != nullptr && TraitScaledTableMatch != nullptr)
+	{
+		Verdict = FString::Printf(
+			TEXT("AMBIGUOUS (this individual's trait is within epsilon of 1.0, so %s matches the raw mMoveSpeedData entry AND the entry x trait -- discarded and preserved are indistinguishable on THIS creature; read another one's line)"),
+			ExactTableMatch);
+	}
+	else if (ExactTableMatch != nullptr)
+	{
+		Verdict = bBackToPreTrait
+			? FString::Printf(TEXT("TRAIT DISCARDED (exact mMoveSpeedData entry %s -- which is ALSO the pre-trait value; SetMoveSpeed is the likely writer)"), ExactTableMatch)
+			: FString::Printf(TEXT("TRAIT DISCARDED (exact mMoveSpeedData entry %s -> SetMoveSpeed is the writer)"), ExactTableMatch);
+	}
+	else if (TraitScaledTableMatch != nullptr)
+	{
+		Verdict = FString::Printf(TEXT("trait PRESERVED (value is mMoveSpeedData entry %s x the trait)"), TraitScaledTableMatch);
+	}
+	else if (bBackToPreTrait)
+	{
+		Verdict = TEXT("TRAIT DISCARDED (value is exactly the pre-trait number and matches no table entry -- someone restored the pre-trait speed without going through mMoveSpeedData)");
+	}
+	else
+	{
+		Verdict = TEXT("UNEXPLAINED (matches neither the table nor the pre-trait value)");
+	}
 
 	const bool bAlwaysOn = (mWalkSpeedChangeCount <= WalkSpeedChangeAlwaysOnLogLimit);
 	if (bAlwaysOn || PFADiag::IsEnabled())
@@ -170,7 +207,7 @@ void APFACreatureBase::TickSpeedTraitWatch()
 			mTraitWalkSpeedBaselineCms, mPreTraitWalkSpeedCms, mSpeedTraitMultiplier,
 			ExactTableMatch ? ExactTableMatch : TEXT("none"),
 			TraitScaledTableMatch ? TraitScaledTableMatch : TEXT("none"),
-			Verdict,
+			*Verdict,
 			(mWalkSpeedChangeCount == WalkSpeedChangeAlwaysOnLogLimit)
 				? TEXT(" [further changes on this creature are pfa.Diag-gated from here]") : TEXT(""));
 	}

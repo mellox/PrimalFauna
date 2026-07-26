@@ -93,6 +93,29 @@ namespace
 		TEXT("pfa.RoamLegWaitReportSeconds"), 15.0f,
 		TEXT("Report once (pfa.Diag) when a creature has stood still this long since its last roam leg ended -- the numeric form of 'it stands there for a long time'."),
 		ECVF_Default);
+
+	// w47-2 (w47-1 cold review W2): ENTRIES THAT ACTUALLY HOLD AGGRO, not entries.
+	// `GetAggroTargets().Num() > 0` is NOT a test for interest -- perception
+	// registers a merely-SEEN actor at ZERO aggro, which the perception TU states
+	// explicitly one file over ("a zero-aggro entry is not interest",
+	// PFACreatureControllerPerception.cpp). So w47-1's pursuit test was true for any
+	// creature with the player anywhere in its 4,000cm sight radius, which would have
+	// stamped kind=PURSUIT on essentially EVERY leg -- and the standing analysis
+	// instruction for this telemetry is "discard kind=PURSUIT legs", so the analyst
+	// would have discarded exactly the roam samples this packet exists to produce.
+	// Plain loop rather than Algo::CountIf: one fewer header, same code.
+	int32 CountLiveAggroEntries(const TArray<FFGCreatureAggroData>& AggroTargets)
+	{
+		int32 LiveEntries = 0;
+		for (const FFGCreatureAggroData& AggroData : AggroTargets)
+		{
+			if (AggroData.Aggro > KINDA_SMALL_NUMBER)
+			{
+				++LiveEntries;
+			}
+		}
+		return LiveEntries;
+	}
 }
 
 void APFACreatureController::TickRoamLegTelemetry(float DeltaSeconds)
@@ -167,7 +190,8 @@ void APFACreatureController::TickRoamLegTelemetry(float DeltaSeconds)
 			// after a ResetTargetingState. Both are tracked SEPARATELY from the
 			// target flag so the completion line can name WHICH disqualified it,
 			// rather than claiming "had a target" about a creature that had none.
-			bRoamLegHadTarget = (GetCurrentTarget() != nullptr) || (GetAggroTargets().Num() > 0);
+			// w47-2 (review W2): LIVE aggro entries only -- see CountLiveAggroEntries.
+			bRoamLegHadTarget = (GetCurrentTarget() != nullptr) || (CountLiveAggroEntries(GetAggroTargets()) > 0);
 			mRoamLegStateAtStart = GetCurrentCreatureState();
 			bRoamLegNonRoamState = (mRoamLegStateAtStart != ECreatureState::CS_Roam);
 			// The wait is only knowable at the START of the next leg, so it is
@@ -230,7 +254,9 @@ void APFACreatureController::TickRoamLegTelemetry(float DeltaSeconds)
 	{
 		++mRoamLegProwlBandSamples;
 	}
-	if (GetCurrentTarget() != nullptr || GetAggroTargets().Num() > 0)
+	// w47-2 (review W2): LIVE aggro entries only, same as the start check.
+	const int32 LiveAggroEntries = CountLiveAggroEntries(GetAggroTargets());
+	if (GetCurrentTarget() != nullptr || LiveAggroEntries > 0)
 	{
 		bRoamLegHadTarget = true;
 	}
@@ -283,6 +309,11 @@ void APFACreatureController::TickRoamLegTelemetry(float DeltaSeconds)
 
 	// kind= now names WHICH disqualifier fired (review F5.2), because "had a target"
 	// was about to be printed for creatures that had none.
+	// w47-2 (review W2): kind= is a DERIVED label, and this packet already changed
+	// how one of its inputs is computed once. The DONE line therefore also prints the
+	// raw fields it is derived from (hadTarget, aggroEntries, and the two states
+	// already at the end of the line), so a later analyst can re-derive or re-classify
+	// legs from an old log instead of trusting a label whose definition moved.
 	const TCHAR* LegKind =
 		(bRoamLegHadTarget && bRoamLegNonRoamState) ? TEXT("ENGAGED (target/aggro AND non-Roam state -- not a roam sample)") :
 		bRoamLegHadTarget ? TEXT("PURSUIT (target or aggro held -- not a roam sample)") :
@@ -298,8 +329,9 @@ void APFACreatureController::TickRoamLegTelemetry(float DeltaSeconds)
 		// in, the share of samples that were in the prowl band (the honest gait
 		// number), and how long it had stood still beforehand.
 		UE_LOG(LogPrimalFauna, Display,
-			TEXT("[PFA] %s: roam leg #%d DONE kind=%s straight=%.0fcm path=%.0fcm wander=%.2f dur=%.1fs avg=%.0fcm/s peak=%.0fcm/s avgBand=%s prowlBandSamples=%d%% stalls=%d waitBefore=%.1fs band=[%.0f..%.0f] stateAtStart=%s stateNow=%s"),
+			TEXT("[PFA] %s: roam leg #%d DONE kind=%s hadTarget=%d aggroEntries=%d straight=%.0fcm path=%.0fcm wander=%.2f dur=%.1fs avg=%.0fcm/s peak=%.0fcm/s avgBand=%s prowlBandSamples=%d%% stalls=%d waitBefore=%.1fs band=[%.0f..%.0f] stateAtStart=%s stateNow=%s"),
 			*GetName(), mRoamLegIndex, LegKind,
+			bRoamLegHadTarget ? 1 : 0, LiveAggroEntries,
 			StraightCm, mRoamLegPathCm, WanderRatio, DurationSeconds,
 			AvgSpeedCms, mRoamLegPeakSpeedCms, AvgBand, ProwlBandPercent,
 			mRoamLegStalls, mRoamLegWaitBeforeSeconds,

@@ -321,8 +321,11 @@ void APFACreatureBase::BeginPlay()
 	// this Super:: call), and this timer's first fire is a whole interval away, so
 	// the baseline is always registered before the first sample. Raw member fn on
 	// the templated timer API -- no UFUNCTION, same as RescueBuriedSpawn above.
+	// w47-2 (w47-1 review I4): the interval is the CLASS constant, not a literal --
+	// PFASpeedTraitWatch.cpp prints it in the baseline line, and a hardcoded 0.5f here
+	// meant changing one would silently make the log lie about the other.
 	GetWorldTimerManager().SetTimer(SpeedTraitWatchTimerHandle, this,
-		&APFACreatureBase::TickSpeedTraitWatch, 0.5f, /*bLoop=*/true);
+		&APFACreatureBase::TickSpeedTraitWatch, SpeedTraitWatchIntervalSeconds, /*bLoop=*/true);
 
 	// W2.3: stamp the configured aggression on spawn (server-only section).
 	// The subsystem retargets LIVE creatures only when the config value

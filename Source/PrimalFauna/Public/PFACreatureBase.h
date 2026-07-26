@@ -169,6 +169,14 @@ protected:
 	// on (and would fight whatever native code is doing the writing).
 	void TickSpeedTraitWatch();
 	FTimerHandle SpeedTraitWatchTimerHandle;
+	// w47-2 (w47-1 review I4): ONE definition of the sampler cadence. It used to be a
+	// hardcoded 0.5f in PFACreatureBase.cpp's SetTimer AND a separate constant in
+	// PFASpeedTraitWatch.cpp's anonymous namespace that the baseline line PRINTS --
+	// so changing the timer would have made the log state an interval that was not
+	// the one being sampled. 0.5s: fast enough that a state-change-driven write is
+	// caught within one beat (state changes are seconds apart), cheap enough to be
+	// free (one float compare per creature per half second, no allocation).
+	static constexpr float SpeedTraitWatchIntervalSeconds = 0.5f;
 	// The post-trait value the species authorised. Never re-baselined, so
 	// "traitSurvives" stays answerable for the creature's whole life.
 	float mTraitWalkSpeedBaselineCms = -1.0f;

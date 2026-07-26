@@ -50,14 +50,18 @@
 // careful of when extending it: do NOT call anything named Set*/Modify*/Request*
 // on the BT component or blackboard.
 //
-// FILE SIZE, STATED HONESTLY: 625 lines, over the workspace's 500-line rule.
-// Not split, because the unit here is ONE console command -- splitting its tree
-// walk from its blackboard walk would put two halves of one output format in two
-// files and make the format harder to keep consistent, which is the cost the rule
-// exists to avoid. Roughly half the file is comment. (Sibling note: the w46-1
-// review's F8 finding was that PFACreatureControllerRoam.cpp's header cited that
-// limit as if the codebase honoured it while PFACreatureControllerPerception.cpp
-// sat at 1067; that header is now corrected, and this one does not repeat it.)
+// FILE SIZE, STATED HONESTLY: 661 lines (sibling
+// PFACreatureControllerPerception.cpp: 1242).
+// w47-2 correction -- the w47-1 header claimed 625 when the file was 634, and cited
+// the perception TU at 1067 when it was already 1186. That is the exact shape of the
+// w46-1 review's F8 finding (a header making a false claim about its own file size),
+// repeated one packet later by the header that was written to not repeat it.
+// NOT SPLIT, and the honest framing is split-by-concern rather than a per-file
+// apology: this codebase does not enforce a line limit (three files in the w47-1
+// commit alone exceed 500). The unit here is ONE console command -- its tree walk and
+// its blackboard walk share one output format, one stats struct and one pair of caps,
+// so splitting them would put two halves of one format in two files and make it
+// harder to keep consistent. Roughly half the file is comment.
 //
 // EXPORT-SAFETY NOTE (the engine flavour of the shipping-export trap, docs/07 §1)
 // FBlackboardKeySelector is `USTRUCT(BlueprintType)` with NO AIMODULE_API tag
@@ -84,6 +88,11 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/BlackboardData.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType.h"
+// w47-2 (review I1): FBlackboard::InvalidKey, explicitly rather than transitively --
+// the key-absent test below is the whole point of that fix and must not depend on
+// another header happening to pull the namespace in (same IWYU discipline as
+// PFACreatureControllerRoam.cpp's IConsoleManager include).
+#include "BehaviorTree/Blackboard/BlackboardKey.h"
 
 #include "Engine/World.h"
 #include "HAL/IConsoleManager.h"
@@ -429,11 +438,29 @@ namespace
 				FString LiveValue = TEXT("<no live blackboard>");
 				if (Live)
 				{
-					// AIMODULE_API, BlackboardComponent.h:219. Read-only.
-					LiveValue = Live->DescribeKeyValue(Entry.EntryName, EBlackboardDescription::OnlyValue);
-					if (LiveValue.IsEmpty())
+					// w47-2 (w47-1 cold review I1): ASK WHETHER THE KEY EXISTS FIRST.
+					// DescribeKeyValue returns an empty string for a key the live
+					// component does not have, and w47-1 mapped empty to "<empty>" --
+					// so "this key is absent from the live blackboard" and "this key
+					// exists and is unset" printed IDENTICALLY. That is worst exactly
+					// where it matters: on the `LIVE blackboard asset DIFFERS` path and
+					// in every `--- SUBTREE ---` block, where the whole point is that the
+					// schema being dumped may NOT be the live one, and a reader would
+					// wrongly conclude the key exists. GetKeyID is AIMODULE_API
+					// (BlackboardComponent.h:58) and already in this module's import
+					// table, so this adds no export surface. Read-only.
+					if (Live->GetKeyID(Entry.EntryName) == FBlackboard::InvalidKey)
 					{
-						LiveValue = TEXT("<empty>");
+						LiveValue = TEXT("<not in live blackboard>");
+					}
+					else
+					{
+						// AIMODULE_API, BlackboardComponent.h:219. Read-only.
+						LiveValue = Live->DescribeKeyValue(Entry.EntryName, EBlackboardDescription::OnlyValue);
+						if (LiveValue.IsEmpty())
+						{
+							LiveValue = TEXT("<empty -- key EXISTS, value unset>");
+						}
 					}
 				}
 
