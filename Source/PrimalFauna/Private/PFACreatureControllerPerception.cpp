@@ -310,16 +310,30 @@ void APFACreatureController::TickAggroRangeDecay(float DeltaSeconds)
 
 	// Copy: ModifyAggroForTarget mutates the native array we would be iterating.
 	const TArray<FFGCreatureAggroData> Snapshot = GetAggroTargets();
-	bool bAnyTargetStillAboveThreshold = false;
-	bool bCrossedBelowThreshold = false;
+
+	// w46-1 -- THE w45-3 TRIGGER WAS TOO NARROW, and the user found it in one
+	// session: "the one that aggroed on me, then lost interest, just stood at where
+	// it lost interest."
+	// w45-3 only disengaged on a THRESHOLD CROSSING (aggro falling from >=50 through
+	// 50), because it assumed de-escalation always follows a committed fight. In
+	// game both creatures entered range-decay at aggro 40.5 and 3.5 -- ALERTED but
+	// never committed -- so `Before >= FightThreshold` was never true, the crossing
+	// never happened, ResetTargetingState never ran, and each creature drained to
+	// ~0 aggro while keeping its stale target and standing exactly where it stopped.
+	// A creature with no aggro left has nothing to pursue whether or not it ever
+	// crossed a fight threshold, so FULL DRAIN is equally a disengage event.
+	bool bAnyAggroRemains = false;
+	bool bDisengageEvent = false;
+	const TCHAR* DisengageReason = TEXT("aggro decayed at range");
+	// w46-1: entries that are ALREADY at zero when we look. See the stale-target
+	// diagnostic after the loop -- this is the one residual hole in this path and it
+	// is reported rather than acted on, deliberately.
+	int32 StaleZeroInRegion = 0;
 
 	for (const FFGCreatureAggroData& AggroData : Snapshot)
 	{
 		AActor* AggroTarget = AggroData.Target;
-		// The Aggro > 0 half of this guard is LOAD-BEARING, not a throwaway: it is
-		// the only thing preventing unbounded negative drift if the native side
-		// does not clamp at zero.
-		if (!AggroTarget || AggroData.Aggro <= 0.0f)
+		if (!AggroTarget)
 		{
 			continue;
 		}
@@ -340,9 +354,16 @@ void APFACreatureController::TickAggroRangeDecay(float DeltaSeconds)
 
 		if (!bInDecayRegion || bRecentAggressor)
 		{
-			if (AggroData.Aggro >= FightThreshold)
+			// Anything we are NOT draining still counts as live interest, so it must
+			// veto the disengage below -- but only if it actually HOLDS aggro. A
+			// zero-aggro entry is not interest, and letting one veto would mean a
+			// creature that has genuinely forgotten everything could be pinned by a
+			// merely-perceived actor standing next to it (perception registers a seen
+			// actor at zero aggro). w45-3 skipped zero-aggro entries before reaching
+			// this branch, so this preserves that reviewed semantic explicitly.
+			if (AggroData.Aggro > KINDA_SMALL_NUMBER)
 			{
-				bAnyTargetStillAboveThreshold = true;
+				bAnyAggroRemains = true;
 			}
 			// Region/exemption exit: forget the log state so a later re-entry
 			// reports its first shed instead of being suppressed as "unchanged".
@@ -350,21 +371,59 @@ void APFACreatureController::TickAggroRangeDecay(float DeltaSeconds)
 			continue;
 		}
 
+		// Nothing left to shed. w45-3 skipped these at the top of the loop, before
+		// distance was even measured; measuring first is what lets the diagnostic
+		// after the loop distinguish "forgotten, in the decay region, still targeted"
+		// from "out of range of this mechanism entirely".
+		// Clearing the log key here is also the fix for a second-de-escalation blind
+		// spot: without it, a target drained once would never print another
+		// `range-decay ENTERED` line for the rest of the creature's life, so the
+		// SECOND time a player aggroed and walked away the forensics went silent.
+		if (AggroData.Aggro <= KINDA_SMALL_NUMBER)
+		{
+			++StaleZeroInRegion;
+			mRangeDecayLoggedTargets.Remove(FObjectKey(AggroTarget));
+			continue;
+		}
+
 		const float Before = AggroData.Aggro;
-		const float After = Before - (ReductionRate * AccumulatedDelta);
+		// w46-1: CLAMP THE DELTA WE ACTUALLY APPLY, not just the number we reason
+		// about. w45-3's FMath::Max(0.0f, ...) clamped the local `After` while the
+		// full unclamped delta still went to ModifyAggroForTarget -- so on the last
+		// beat of a drain the log said "-> 0.0" while the native entry could hold a
+		// small negative value, and the log has to be true before anything else is.
+		// (It also removes the reliance on the native side clamping at zero, which
+		// is closed source and never verified.)
+		const float AppliedDelta = FMath::Min(ReductionRate * AccumulatedDelta, Before);
+		const float After = Before - AppliedDelta;
 		const bool bThisCrossed = (Before >= FightThreshold) && (After < FightThreshold);
-		bCrossedBelowThreshold = bCrossedBelowThreshold || bThisCrossed;
+		// `Before > 0` is already guaranteed by the zero-aggro branch above, so this
+		// fires only on a REAL transition to zero driven by this function -- never on
+		// a target that arrived already drained.
+		const bool bThisDrained = (After <= KINDA_SMALL_NUMBER);
+
+		if (bThisCrossed || bThisDrained)
+		{
+			bDisengageEvent = true;
+			// Name which one actually happened -- they are different stories: a
+			// crossing means it gave up a committed fight, a drain means it never
+			// committed and has now forgotten the target entirely.
+			DisengageReason = bThisCrossed
+				? TEXT("aggro decayed below fight threshold at range")
+				: TEXT("aggro fully drained at range (never reached fight threshold)");
+		}
 
 		// w45-3 (review D2): pass bImmediateStateUpdate on the CROSSING FRAME ONLY.
 		// Forcing a native state update every tick per target would thrash; forcing
 		// it never risks the state machine not noticing at all, since
 		// mAggroFightThreshold is documented as a transition-IN condition and
 		// nothing states that falling below it transitions OUT.
-		ModifyAggroForTarget(AggroTarget, -(ReductionRate * AccumulatedDelta), /*bImmediateStateUpdate=*/bThisCrossed);
+		ModifyAggroForTarget(AggroTarget, -AppliedDelta,
+			/*bImmediateStateUpdate=*/bThisCrossed || bThisDrained);
 
-		if (After >= FightThreshold)
+		if (After > KINDA_SMALL_NUMBER)
 		{
-			bAnyTargetStillAboveThreshold = true;
+			bAnyAggroRemains = true;
 		}
 
 		// w45-3 (review D4): log EVENTS, not samples. The old whole-unit bucket fired
@@ -382,11 +441,13 @@ void APFACreatureController::TickAggroRangeDecay(float DeltaSeconds)
 					*GetName(), *AggroTarget->GetName(), DistanceCm, Before,
 					ReductionRate, FightThreshold, ReductionRate, ReductionRate * 2.0f);
 			}
-			if (bThisCrossed)
+			if (bThisCrossed || bThisDrained)
 			{
 				UE_LOG(LogPrimalFauna, Display,
-					TEXT("[PFA] %s: range-decay CROSSED below fightThreshold on %s -- aggro %.1f -> %.1f (threshold %.0f), state update forced. If state stays CS_Fight after this, the native machine does not exit on aggro alone."),
-					*GetName(), *AggroTarget->GetName(), Before, After, FightThreshold);
+					TEXT("[PFA] %s: range-decay %s on %s -- aggro %.1f -> %.1f (threshold %.0f), state update forced. If the creature does not resume roaming after this, the native machine is holding state on something other than aggro."),
+					*GetName(),
+					bThisCrossed ? TEXT("CROSSED below fightThreshold") : TEXT("FULLY DRAINED"),
+					*AggroTarget->GetName(), Before, After, FightThreshold);
 			}
 		}
 	}
@@ -398,9 +459,62 @@ void APFACreatureController::TickAggroRangeDecay(float DeltaSeconds)
 	// (NullifyAllAggro + SetCurrentTarget(nullptr) + TriggerStateUpdate) and is the
 	// one disengage route this mod has actually watched work in game. Fires at most
 	// once per de-escalation, and only when nothing is left worth fighting.
-	if (bCrossedBelowThreshold && !bAnyTargetStillAboveThreshold)
+	// w46-1: fires on a threshold crossing OR a full drain (see above), and only
+	// when NO target holds any meaningful aggro -- so a creature that has genuinely
+	// forgotten everything returns to roaming instead of standing where it stopped.
+	if (bDisengageEvent && !bAnyAggroRemains)
 	{
-		ResetTargetingState(TEXT("aggro decayed below fight threshold at range"));
+		// The aggro array is about to be emptied, so the per-target log state has to
+		// go with it or the NEXT de-escalation of the same target prints no
+		// `range-decay ENTERED` line and the forensics silently thin out over a
+		// session (the entries themselves are gone, so the in-loop removal above
+		// never gets another chance to run for them).
+		mRangeDecayLoggedTargets.Reset();
+		bLoggedStaleZeroAggroTarget = false;
+		ResetTargetingState(DisengageReason);
+		return;
+	}
+
+	// ---- w46-1 DIAGNOSTIC ONLY: the one residual hole, named out loud. ----------
+	// This function can only disengage on a transition it OBSERVES. If aggro reaches
+	// zero without us taking the last step -- the native not-visible decay got there
+	// first between two of our 0.25s beats, or the entry was registered at zero and
+	// never gained any -- then no crossing and no drain is seen, nothing resets, and
+	// the creature can sit on a stale mCurrentTarget with nothing left to pursue.
+	// That is precisely the shape the user reported ("just stood at where it lost
+	// interest"), so if it is still happening the log must say so instead of leaving
+	// us to re-derive it from an absence of lines.
+	//
+	// Deliberately NOT wired to ResetTargetingState. Perception re-registers a
+	// merely-SEEN actor at zero aggro, and the sight radius (4,000cm) extends past
+	// the curve's last key (3,000cm), so a player simply STANDING at 35m produces
+	// exactly this condition continuously -- acting on it would wipe targeting and
+	// emit an always-on behaviour-event line four times a second. If this line shows
+	// up in a session where a creature stood still, the correct fix is a debounced
+	// stale-target timeout (dwell-based, like the w40-1 give-up clock), not a reset
+	// from here. Throttled to once per episode, re-armed by any live aggro.
+	const AActor* StaleTarget = GetCurrentTarget();
+	const bool bStaleZeroTargetHeld =
+		(!bDisengageEvent && !bAnyAggroRemains && StaleZeroInRegion > 0 && StaleTarget != nullptr);
+	if (!bStaleZeroTargetHeld)
+	{
+		// Cleared on ANY beat that does not meet the condition, not only on live
+		// aggro -- a latch that outlives the situation it describes reports the first
+		// episode and hides every later one.
+		bLoggedStaleZeroAggroTarget = false;
+		return;
+	}
+	// The latch is set only when the line is actually PRINTED, so enabling pfa.Diag
+	// after the fact still yields the report (the w18-3 verdict throttle has the
+	// opposite property and it cost a session).
+	if (!bLoggedStaleZeroAggroTarget && PFADiag::IsEnabled())
+	{
+		bLoggedStaleZeroAggroTarget = true;
+		UE_LOG(LogPrimalFauna, Display,
+			TEXT("[PFA] %s: STALE TARGET -- currentTarget=%s but %d aggro entr%s already at zero inside the decay region and nothing holds aggro. This mechanism never saw the drop, so it has no disengage event to fire on; the creature may stand where it lost interest. Needs a dwell-based stale-target timeout if it correlates with a motionless creature."),
+			*GetName(),
+			*StaleTarget->GetName(),
+			StaleZeroInRegion, (StaleZeroInRegion == 1) ? TEXT("y is") : TEXT("ies are"));
 	}
 }
 
@@ -409,6 +523,14 @@ void APFACreatureController::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	TickAggroRangeDecay(DeltaTime);
+
+	// w46-1: BEFORE every early return below. This tracks movement start/stop
+	// continuously (the logging inside it is diag-gated, the tracking is not), so
+	// putting it after the `!ControlledPawn` return or the disengage `return` would
+	// leave legs half-recorded exactly when the creature is doing something
+	// interesting. Same lesson as w44-1, applied one layer up: a measurement that
+	// only runs on the happy path measures the happy path.
+	TickRoamLegTelemetry(DeltaTime);
 
 	// The mode CVar lives in PFACreatureBase.cpp's anonymous namespace; look
 	// it up by name so neither file has to export it.

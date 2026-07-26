@@ -160,6 +160,16 @@ void APFACreatureController::OnPossess(APawn* InPawn)
 	bLoggedNoSpawnerForBlackboard = false;
 	mRangeDecayLoggedTargets.Reset();
 	mRangeDecayAccumulator = 0.0f;
+	bLoggedStaleZeroAggroTarget = false;
+	// w46-1: the roam-leg accumulators are per-PAWN, so a reused controller must not
+	// close a leg that a previous pawn started somewhere else in the world -- that
+	// would print a kilometre-long "roam leg" and poison the one measurement this
+	// build exists to take.
+	bRoamLegActive = false;
+	mRoamLegAccumulator = 0.0f;
+	mRoamLegEndedTimeSeconds = 0.0;
+	mRoamLegIndex = 0;
+	bRoamWaitReported = false;
 
 	// W1.8: wire perception FIRST -- independent of the BT launch (perception
 	// feeds aggro; the BT consumes aggro), and must run even if the BT branch

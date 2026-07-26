@@ -200,6 +200,10 @@ private:
 	// that is trying to kill it.
 	int32 OneShotBaseState = -1;
 	float NextIdleBreakWorldSeconds = 0.0f;
+	// w46-1: set once "a break came due while the creature was not calm" has been
+	// reported; cleared the moment it is calm again, so each busy episode reports
+	// once. Diagnostic-only state (MaybeStartOneShot).
+	bool bLoggedIdleBreakSuppressed = false;
 	// One ritualised threat display per alert episode, re-armed on leaving alert.
 	bool bThreatenedThisEpisode = false;
 

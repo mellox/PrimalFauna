@@ -176,6 +176,50 @@ private:
 	TSet<FObjectKey> mRangeDecayLoggedTargets;
 	// Batches the per-frame Tick down to a 0.25s cadence (review D6).
 	float mRangeDecayAccumulator = 0.0f;
+	// w46-1: set once the "aggro already at zero, target still held" condition has
+	// been reported for this engagement; re-armed as soon as any target holds aggro
+	// again. Diagnostic-only state -- see the end of TickAggroRangeDecay.
+	bool bLoggedStaleZeroAggroTarget = false;
+
+	// --- w46-1 ROAM-LEG TELEMETRY (PFACreatureControllerRoam.cpp) --------------
+	// The roam band reaches the blackboard as [600..2500]cm and the VANILLA BT picks
+	// the destination. It is a closed BP asset, so whether it randomises inside the
+	// band or always takes MaxRoamingDistance CANNOT be established statically -- and
+	// the user's report ("when it wandered it seem to do for the same length") is
+	// exactly what always-taking-the-max looks like. So measure it: detect movement
+	// start/stop and log one line per completed leg with the distance actually
+	// covered, so ONE session answers "do leg lengths vary within the band".
+	//
+	// THE TRACKING IS UNCONDITIONAL; ONLY THE LOG LINES ARE DIAG-GATED. w44-1 exists
+	// because a load-bearing blackboard write sat inside a diag-gated function, so
+	// wandering only worked while somebody was watching. State that must be
+	// continuous across a session cannot be sampled only when diagnostics are on --
+	// legs would start unrecorded and complete with garbage.
+	void TickRoamLegTelemetry(float DeltaSeconds);
+	float mRoamLegAccumulator = 0.0f;
+	bool bRoamLegActive = false;
+	FVector mRoamLegStartLocation = FVector::ZeroVector;
+	FVector mRoamLegLastLocation = FVector::ZeroVector;
+	// Position/time of the last sample that was genuinely MOVING, so the stop
+	// debounce below does not inflate every leg's duration by its own window.
+	FVector mRoamLegLastMovingLocation = FVector::ZeroVector;
+	double mRoamLegStartTimeSeconds = 0.0;
+	double mRoamLegLastMovingTimeSeconds = 0.0;
+	// World time the previous leg ended (0 = none yet), which is what makes the
+	// between-leg wait measurable at all.
+	double mRoamLegEndedTimeSeconds = 0.0;
+	double mRoamLegWaitBeforeSeconds = -1.0;
+	float mRoamLegPathCm = 0.0f;
+	float mRoamLegPeakSpeedCms = 0.0f;
+	int32 mRoamLegSamples = 0;
+	int32 mRoamLegProwlBandSamples = 0;
+	// Dips below the movement threshold that did NOT reach the debounce count --
+	// reported so a leg that looks short can be told from a leg that was stalled.
+	int32 mRoamLegStalls = 0;
+	int32 mRoamLegBelowThresholdSamples = 0;
+	bool bRoamLegHadTarget = false;
+	int32 mRoamLegIndex = 0;
+	bool bRoamWaitReported = false;
 
 	void LogCreatureStateHeartbeat();
 

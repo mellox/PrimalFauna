@@ -106,9 +106,24 @@ namespace
 	// Mean gap between breaks for a calm, undisturbed creature. The measured
 	// real-animal figure is ~10.5 minutes (see above); this is the gameplay
 	// cadence and is a knob precisely because it is a judgement call.
+	//
+	// w46-1: 14.0 -> 8.5. User on w45-3: they want visibly more going on when a
+	// creature has arrived somewhere. The log says only FIVE breaks fired in an
+	// entire session (LookAround x2, Stretch, Sniff, ShakeOff) with all 7 clips
+	// resolved 7/7, so the authored inventory was effectively invisible -- the same
+	// failure mode as w44-1's unreachable comfort set, just quantitative instead of
+	// absolute. Jitter is unchanged, so the gap is now 4.7-13.6s.
+	//
+	// HONEST ABOUT THE LIKELY REAL LIMITER: the gate is DesiredState == 0 (calm
+	// idle) and that session was dominated by roaming -- Walk 23 / Prowl 19 poses
+	// against Idle 15 -- so the binding constraint is probably how little time a
+	// creature spends calm and still, not the mean. The gate is NOT being widened
+	// (a creature grooming while hunted reads as broken), so the new diagnostics in
+	// MaybeStartOneShot below report which of the two it actually is: a break that
+	// comes due while the creature is busy now says so out loud.
 	static TAutoConsoleVariable<float> CVarPFAIdleBreakMeanSeconds(
-		TEXT("pfa.IdleBreakMeanSeconds"), 14.0f,
-		TEXT("Mean seconds between idle breaks on a calm Sicklejaw (jittered 0.55x-1.6x). Research cadence is ~630s; 14 is the gameplay-visible compression."),
+		TEXT("pfa.IdleBreakMeanSeconds"), 8.5f,
+		TEXT("Mean seconds between idle breaks on a calm Sicklejaw (jittered 0.55x-1.6x, so 4.7-13.6s). Research cadence is ~630s; 8.5 is the gameplay-visible compression (was 14.0 through w45-3)."),
 		ECVF_Default);
 
 	static TAutoConsoleVariable<int32> CVarPFAThreatenDisplay(
@@ -359,6 +374,18 @@ void APFASicklejaw::ScheduleNextIdleBreak(float NowSeconds)
 	// Jitter, not a fixed period: two creatures standing together must not
 	// preen in lockstep, which reads as machinery instantly.
 	NextIdleBreakWorldSeconds = NowSeconds + Mean * FMath::FRandRange(0.55f, 1.6f);
+
+	// w46-1: make the SCHEDULE observable, not just its outcome. "Only five breaks
+	// all session" has three completely different causes -- clips absent (already
+	// covered by the always-on resolve line), schedule never armed, or armed and
+	// repeatedly suppressed -- and until now the log could not tell them apart.
+	// Printing the deadline is what makes the count auditable against elapsed time.
+	if (PFADiag::IsEnabled())
+	{
+		UE_LOG(LogPrimalFauna, Display,
+			TEXT("[PFA] %s: next idle break due in %.1fs (at t=%.1f; mean=%.1fs jittered 0.55-1.6x)"),
+			*GetName(), NextIdleBreakWorldSeconds - NowSeconds, NextIdleBreakWorldSeconds, Mean);
+	}
 }
 
 bool APFASicklejaw::MaybeStartOneShot(int32 DesiredState)
@@ -415,10 +442,34 @@ bool APFASicklejaw::MaybeStartOneShot(int32 DesiredState)
 	// Deliberately NOT while alert or fighting: a creature that grooms itself
 	// while being hunted reads as broken, and the research is explicit that
 	// comfort behaviour is what an animal does when it feels unthreatened.
-	if (DesiredState != 0 || CVarPFAIdleBreaks.GetValueOnGameThread() == 0)
+	const bool bIdleBreaksEnabled = (CVarPFAIdleBreaks.GetValueOnGameThread() != 0);
+	if (DesiredState != 0 || !bIdleBreaksEnabled)
 	{
+		// w46-1: a break that came DUE while the creature was busy is not lost -- it
+		// fires the moment the creature settles, because the deadline is absolute
+		// world time. But it IS the most likely reason the user sees so few, and
+		// "scheduled and suppressed" was previously indistinguishable in the log from
+		// "never scheduled". Named explicitly so the fix, if one is needed, is aimed
+		// at the right thing: more calm TIME (roam/wait tuning), not a shorter mean.
+		// Once per suppression episode -- this sits on a per-tick path and the w18-2
+		// lesson (400 log lines/s) is not being relearned.
+		if (bIdleBreaksEnabled && NextIdleBreakWorldSeconds > 0.0f &&
+			NowSeconds >= NextIdleBreakWorldSeconds && !bLoggedIdleBreakSuppressed)
+		{
+			bLoggedIdleBreakSuppressed = true;
+			if (PFADiag::IsEnabled())
+			{
+				UE_LOG(LogPrimalFauna, Display,
+					TEXT("[PFA] %s: idle break DUE %.1fs ago but SUPPRESSED -- the creature is not calm (DesiredState=%d; 0=calm idle, 1=walk, 2=run, 3=alert, 4=aggressive, 5=prowl). It will play as soon as it settles. The gate is deliberate: grooming while hunted reads as broken."),
+					*GetName(), NowSeconds - NextIdleBreakWorldSeconds, DesiredState);
+			}
+		}
 		return false;
 	}
+	// Calm again: re-arm the suppression report so the NEXT busy episode is also
+	// visible (a flag latched for the creature's life would report once and then
+	// hide a creature that is busy 95% of the time -- exactly the case at issue).
+	bLoggedIdleBreakSuppressed = false;
 
 	if (NextIdleBreakWorldSeconds <= 0.0f)
 	{
