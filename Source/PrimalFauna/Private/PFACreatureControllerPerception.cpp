@@ -327,6 +327,13 @@ void APFACreatureController::TickAggroRangeDecay(float DeltaSeconds)
 	bool bAnyAggroRemains = false;
 	bool bDisengageEvent = false;
 	const TCHAR* DisengageReason = TEXT("aggro decayed at range");
+	// w48-1: WHICH target triggered the disengage event, kept alongside the reason
+	// (both last-write-wins, so they always describe the same entry). Used only by
+	// the veto line below, to state whether the vetoer is that same actor -- a
+	// SELF-VETO, which is never legitimate and is the exact shape of the w46-1 bug
+	// this packet fixes. Naming the relationship is what makes that class of bug
+	// impossible to hide behind a line that merely says "something still holds aggro".
+	const AActor* DisengageTarget = nullptr;
 	// w46-1: entries that are ALREADY at zero when we look. See the stale-target
 	// diagnostic after the loop -- this is the one residual hole in this path and it
 	// is reported rather than acted on, deliberately.
@@ -467,6 +474,7 @@ void APFACreatureController::TickAggroRangeDecay(float DeltaSeconds)
 		if (bThisCrossed || bThisDrained)
 		{
 			bDisengageEvent = true;
+			DisengageTarget = AggroTarget;
 			// Name which one actually happened -- they are different stories: a
 			// crossing means it gave up a committed fight, a drain means it never
 			// committed and has now forgotten the target entirely.
@@ -483,11 +491,25 @@ void APFACreatureController::TickAggroRangeDecay(float DeltaSeconds)
 		ModifyAggroForTarget(AggroTarget, -AppliedDelta,
 			/*bImmediateStateUpdate=*/bThisCrossed || bThisDrained);
 
-		// w47-2 (review W1): the SECOND site, and the common one -- a target that is
-		// draining but still holds aggro this beat. w47-1 set the flag here without
-		// recording the vetoer, which is why the veto line could not name anybody in
-		// the ordinary two-targets-at-range case.
-		if (After > KINDA_SMALL_NUMBER)
+		// The SECOND site, and the common one -- a target that is draining but still
+		// holds aggro this beat.
+		//
+		// w48-1: THE THRESHOLD IS PART OF THE CONDITION, and it must stay that way.
+		// A DRAINING target below the fight threshold is a target we are ABANDONING,
+		// so it is not remaining interest and must not veto its own disengage.
+		// w46-1 wrote `After > KINDA_SMALL_NUMBER` here, which meant the very target
+		// whose crossing set bDisengageEvent immediately registered itself as the
+		// vetoer at (say) 49.5 aggro -- a SELF-VETO. The consequence was total: the
+		// crossing rule could only ever reset when EVERY draining target hit exactly
+		// zero on the same beat, i.e. the crossing rule never fired once in three
+		// user sessions, silently collapsing the two-rule design (cross 50 OR drain
+		// to 0) that was chosen deliberately, down to drain-to-0 only.
+		// So do NOT "helpfully" widen this back to `> 0`: that reintroduces the bug.
+		// A draining target at or above the threshold DOES still veto -- we remain
+		// committed to it -- and the not-draining/exempt branch above (a recent
+		// aggressor, or anything inside the curve's range) vetoes on ANY aggro, which
+		// is the live-nearby-interest case and is deliberately left untouched.
+		if (After >= FightThreshold)
 		{
 			NoteAggroRemains(AggroTarget, After, DistanceCm, bInDecayRegion);
 		}
@@ -565,11 +587,20 @@ void APFACreatureController::TickAggroRangeDecay(float DeltaSeconds)
 	// once per target -- so no throttle is needed beyond the diag gate.
 	if (bDisengageEvent && bAnyAggroRemains && PFADiag::IsEnabled())
 	{
+		// w48-1: STATE THE RELATIONSHIP, not just the two names. The w46-1 self-veto
+		// sat in this log for three sessions reading as a legitimate multi-target
+		// veto, because the line printed the same actor twice without ever saying
+		// they were the same actor. A veto by the very target that just disengaged is
+		// a contradiction and can only be a bug; say so in the line itself.
+		const bool bSelfVeto = (VetoTarget != nullptr) && (VetoTarget == DisengageTarget);
 		UE_LOG(LogPrimalFauna, Display,
-			TEXT("[PFA] %s: range-decay DISENGAGE VETOED -- a target %s but %s still holds %.1f aggro (dist=%.0f, inDecayRegion=%d); not resetting. The veto is deliberate (forgetting a nearby creature would be worse), but if the creature now stands still, THIS is why."),
+			TEXT("[PFA] %s: range-decay DISENGAGE VETOED -- a target %s but %s still holds %.1f aggro (dist=%.0f, inDecayRegion=%d); not resetting.%s The veto is deliberate (forgetting a nearby creature would be worse), but if the creature now stands still, THIS is why."),
 			*GetName(), DisengageReason,
 			VetoTarget ? *VetoTarget->GetName() : TEXT("<an entry we could not name>"),
-			VetoAggro, VetoDistanceCm, bVetoInDecayRegion ? 1 : 0);
+			VetoAggro, VetoDistanceCm, bVetoInDecayRegion ? 1 : 0,
+			bSelfVeto
+				? TEXT(" <-- the vetoer IS the target that just crossed/drained: this is a SELF-VETO and almost certainly a bug (a target being abandoned must not count as remaining interest).")
+				: TEXT(""));
 	}
 
 	// ---- w46-1 DIAGNOSTIC ONLY: the one residual hole, named out loud. ----------
