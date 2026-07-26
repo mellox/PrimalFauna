@@ -507,8 +507,23 @@ void APFASicklejaw::ApplyChosenPose(UAnimSequence* Sequence, bool bLoop)
 		const float AuthoredCms = AuthoredSpeedForSequence(Sequence);
 		if (AuthoredCms > 0.0f)
 		{
+			// w42-1 (user: "while they are not in lockstep their animations
+			// appear synced a lot... they do it at the exact same time").
+			//
+			// The per-creature phase offset was working -- the log shows genuinely
+			// distinct phases -- but a fixed offset FREEZES the relationship. Two
+			// creatures moving at the same speed got exactly the same play rate,
+			// so whatever phase gap they started with, they held it forever and
+			// any pair that spawned close together stayed visually locked.
+			// Random offsets also cluster: three of six rolled 0.55/0.60/0.67.
+			//
+			// A per-creature RATE multiplier makes them continuously DRIFT instead,
+			// so a pair that looks synced now will not in a few seconds. +/-6% is
+			// under the ~10% the literature uses, because rate also has to stay
+			// honest to ground speed or the feet start sliding again -- this is a
+			// deliberate trade between desync and foot-slide, not a free knob.
 			const float SpeedCms = GetVelocity().Size2D();
-			const float Rate = FMath::Clamp(SpeedCms / AuthoredCms, 0.5f, 2.0f);
+			const float Rate = FMath::Clamp((SpeedCms / AuthoredCms) * LocomotionRateTrait, 0.5f, 2.0f);
 			MeshComponent->SetPlayRate(Rate);
 			if (PFADiag::IsEnabled() && !FMath::IsNearlyEqual(Rate, 1.0f, 0.05f))
 			{

@@ -217,6 +217,11 @@ private:
 	// individual rather than as noise.
 	float LocomotionPhaseOffset = 0.0f;
 
+	// w42-1: per-creature gait play-rate multiplier (~+/-6%). A fixed phase offset
+	// desyncs creatures ONCE; a rate difference makes them drift apart continuously,
+	// which is what stops a pair that spawned together from staying visually locked.
+	float LocomotionRateTrait = 1.0f;
+
 	// w31-1 animation-driver state. Latched on failure. If the AnimInstance was requested but the component
 	// did not end up with one, this creature stops asking and runs the proven
 	// single-node path for the rest of its life. Without the latch, every pose

@@ -526,6 +526,7 @@ void APFASicklejaw::StartLocomotionAnim()
 	// "they're twitchy".
 	const float SpeedTrait = FMath::FRandRange(0.92f, 1.08f);   // +/-8%: visible, not silly
 	const float TurnTrait  = FMath::FRandRange(0.85f, 1.20f);   // sluggish vs snappy
+	LocomotionRateTrait    = FMath::FRandRange(0.94f, 1.06f);
 
 	float AppliedWalkSpeed = 0.0f;
 	if (UCharacterMovementComponent* Movement = GetCharacterMovement())
@@ -543,8 +544,8 @@ void APFASicklejaw::StartLocomotionAnim()
 	// Tracked as a follow-up rather than half-done.
 
 	UE_LOG(LogPrimalFauna, Display,
-		TEXT("[PFA] %s: traits rolled -- speed x%.2f (%.0f cm/s), turn x%.2f, animPhase %.2f"),
-		*GetName(), SpeedTrait, AppliedWalkSpeed, TurnTrait, LocomotionPhaseOffset);
+		TEXT("[PFA] %s: traits rolled -- speed x%.2f (%.0f cm/s), turn x%.2f, animPhase %.2f, gaitRate x%.2f"),
+		*GetName(), SpeedTrait, AppliedWalkSpeed, TurnTrait, LocomotionPhaseOffset, LocomotionRateTrait);
 
 	// w29-1: the one-shot set (comfort breaks, threat display, limp). Resolved
 	// here so ALL clip loading happens in one place at arm time -- a creature
