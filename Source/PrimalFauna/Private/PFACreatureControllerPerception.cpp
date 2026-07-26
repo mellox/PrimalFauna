@@ -623,12 +623,35 @@ void APFACreatureController::TickAggroRangeDecay(float DeltaSeconds)
 		// in place (`After >= FightThreshold && After > KINDA_SMALL_NUMBER`, ~85 lines
 		// up), a SELF-VETO is structurally unreachable at any POSITIVE fight
 		// threshold -- so a future reader will find this tripwire never firing and be
-		// tempted to remove it. It is not dead: it is now precisely the DETECTOR for
-		// the one hole that remains, a species that authors mAggroFightThreshold = 0.
-		// At threshold 0 the crossing rule cannot fire (After is clamped >= 0) and
-		// this line is the ONLY thing that would name the resulting never-disengaging
-		// creature as the same bug class rather than a fresh mystery. It costs one
-		// pointer comparison inside a branch that already runs.
+		// tempted to remove it.
+		//
+		// w48-3 (review W3) CORRECTS THE REASON THIS BANNER USED TO GIVE. It said the
+		// tripwire "is now precisely the DETECTOR for the threshold-0 hole". That is
+		// FALSE, and the same clause proves it: at FightThreshold == 0 the only
+		// possible disengage event is bThisDrained (After == 0), and the veto gate
+		// `After >= FightThreshold && After > KINDA_SMALL_NUMBER` is false for it --
+		// so the drained target cannot register as a vetoer at all. (The crossing rule
+		// would need After < 0, which `AppliedDelta = FMath::Min(Rate*dt, Before)`
+		// makes impossible.) The clause that closes the hole ALSO closes the detector:
+		// bSelfVeto is unreachable at threshold 0 too. A false rationale inside a DO
+		// NOT DELETE banner is exactly how the w46-1 self-veto hid in plain sight for
+		// three sessions, and this project's standard is that the log has to be true
+		// before anything else is -- which applies to load-bearing comments as well.
+		//
+		// THE HONEST REASON TO KEEP IT: this is a STANDING INVARIANT ASSERT. The veto
+		// gate (`After >= FightThreshold`) and the crossing test (`Before >=
+		// FightThreshold && After < FightThreshold`) are complementary by
+		// construction, and that complementarity is precisely what makes a target that
+		// is being abandoned structurally unable to count as remaining interest in
+		// itself. If this line ever fires, someone has broken that relationship --
+		// widened the veto back toward `> 0`, changed the crossing test, or let the
+		// applied delta go unclamped -- and it will say so by name instead of
+		// resurfacing as a fresh mystery. That is worth asserting forever, and it
+		// costs one pointer comparison inside a branch that already runs.
+		//
+		// (The threshold-0 hole itself is still real and still unguarded here; its
+		// complement is the authoring-seam assert `mAggroFightThreshold > 0` noted at
+		// the hardening clause, which is where it actually belongs.)
 		const bool bSelfVeto = (VetoTarget != nullptr) && (VetoTarget == DisengageTarget);
 		UE_LOG(LogPrimalFauna, Display,
 			TEXT("[PFA] %s: range-decay DISENGAGE VETOED -- a target %s but %s still holds %.1f aggro (dist=%.0f, inDecayRegion=%d); not resetting.%s The veto is deliberate (forgetting a nearby creature would be worse), but if the creature now stands still, THIS is why."),
@@ -1250,7 +1273,7 @@ void APFACreatureController::LogCreatureStateHeartbeat()
 	const ECreatureState HeartbeatDesired = GetDesiredCreatureState();
 
 	UE_LOG(LogPrimalFauna, Display,
-		TEXT("[PFA] %s: state heartbeat -> state=%s desired=%s aggroTargets=%d currentTarget=%s fightThreshold=%.0f reductionRate=%.1f/s aggro: %s (30s gated diag; state!=desired = a transition is not being applied, state==desired with no aggro = something other than aggro holds it)"),
+		TEXT("[PFA] %s: state heartbeat -> state=%s desired=%s aggroTargets=%d currentTarget=%s fightThreshold=%.0f reductionRate=%.1f/s aggro: %s (30s gated diag; state!=desired = a transition is not being applied; state==desired==CS_Roam with no aggro = HEALTHY, nothing to diagnose; state==desired on a NON-roam state with no aggro = something other than aggro holds it)"),
 		*GetName(),
 		*CreatureStateEnumToString(GetCurrentCreatureState()),
 		*CreatureStateEnumToString(HeartbeatDesired),

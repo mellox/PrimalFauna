@@ -105,13 +105,28 @@ public:
 	// w45-2 range-decay reset and the w40-1 out-of-range give-up), never before --
 	// ResetTargetingState ends with TriggerStateUpdate(true), so the native machine
 	// has already had its say by the time we look. Deliberately NOT called on the
-	// aggression-mode-change reset (PFACreatureBase.cpp): that path is user-verified
-	// working and a Passive flip is not a "went back to its own business" disengage.
+	// aggression-mode-change reset (PFACreatureBase.cpp:494). w48-3 states the REAL
+	// reason, replacing the w48-2 one ("a Passive flip is not a disengage", which is
+	// a rationalization): it is BLAST-RADIUS CONTROL. The kick's effect on the native
+	// state machine is still unproven, that reset path is user-verified working
+	// today, and a third call site would muddy the very A/B this packet exists to
+	// run. Revisit once the kick has in-game evidence.
+	//
+	// SCOPE (w48-3, review W1): kicks ONLY the stuck-alert shape -- CS_Alert,
+	// CS_Fight, CS_Default. CS_Flee (stress-driven) and CS_Investigate (noise) are
+	// legitimate non-aggro states on an axis independent of aggro, and forcing Roam
+	// would CANCEL them. This narrowing is a differential requirement, not a
+	// nicety: the old path (ResetTargetingState alone) could not change the
+	// behaviour state at all, so it could never cancel a flee; this one can.
 	//
 	// Always-on logging (this is a behaviour change; w44-1's lesson is that
 	// behaviour which only runs while you are watching is the worst kind of bug),
 	// live kill-switch `pfa.ForceRoamOnDisengage` (default 1) so the whole thing is
 	// A/B-able in one session without a rebuild, exactly like pfa.AggroDecayAtRange.
+	// That CVar is declared at FILE SCOPE in the .cpp, NOT inside this function: a
+	// function-local static CVar only registers when its host function first runs,
+	// and this one is event-driven, so `pfa.ForceRoamOnDisengage 0` was an unknown
+	// command until the first disengage had already happened (w48-3, review W2).
 	// Bounded to at most one call per disengage EVENT on both paths, so it can never
 	// fight the native machine in a loop -- see the .cpp.
 	//

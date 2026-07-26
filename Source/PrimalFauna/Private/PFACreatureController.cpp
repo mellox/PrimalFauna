@@ -21,6 +21,42 @@
 // under the 500-line workspace limit (this class owns both). See that file for
 // the full root-cause + symbol/export analysis.
 
+namespace
+{
+	// ⚠ TRAP, NAMED SO THE NEXT PERSON DOES NOT COPY IT AGAIN (w48-3, review W2):
+	// THIS CVar MUST BE DECLARED AT FILE SCOPE, NOT INSIDE ITS FUNCTION.
+	//
+	// A function-local `static TAutoConsoleVariable` is constructed -- and therefore
+	// REGISTERED with the console -- only when control first reaches its declaration.
+	// Every other CVar in this mod is a function-local static (PFACreatureBase.cpp,
+	// PFACreatureControllerPerception.cpp, the anim ones) and that is fine, because
+	// each of those functions runs on BeginPlay or every tick, so the variable exists
+	// by the time anyone could type its name. ForceRoamAfterDisengage is different:
+	// it is EVENT-DRIVEN, running only on a disengage. Declared inside it, the name
+	// `pfa.ForceRoamOnDisengage` did not exist at session start -- typing
+	// `pfa.ForceRoamOnDisengage 0` was an UNKNOWN COMMAND that silently did nothing,
+	// then the first disengage registered the variable at its default (1) and the
+	// kick fired in that same call. The "off" arm of the A/B this packet exists to
+	// run was unreachable, and the session would have produced a confident wrong
+	// answer.
+	//
+	// RULE: a CVar whose host function is not guaranteed to run early (BeginPlay /
+	// Tick / module startup) must be declared at file scope so module load registers
+	// it. Behaviour is otherwise unchanged -- it is read exactly as before, via
+	// .GetValueOnGameThread() at the top of ForceRoamAfterDisengage.
+	//
+	// Kill-switch, same pattern as pfa.AggroDecayAtRange / pfa.LocomotionAnims. This
+	// touches the NATIVE state machine, so it must be A/B-able in one session without
+	// a rebuild: `pfa.ForceRoamOnDisengage 0` reverts to w48-1 behaviour
+	// (ResetTargetingState + TriggerStateUpdate only) while STILL printing the
+	// current/desired pair, so turning it off keeps the diagnosis and loses only the
+	// fix.
+	TAutoConsoleVariable<int32> CVarPFAForceRoamOnDisengage(
+		TEXT("pfa.ForceRoamOnDisengage"), 1,
+		TEXT("1 = after a disengage, explicitly put the creature back into CS_Roam if the native state machine is still holding CS_Alert/CS_Fight (proven stuck in the w48-1 session). 0 = only observe and log the current/desired state pair."),
+		ECVF_Default);
+}
+
 void APFACreatureController::LogRuleVerdict(const AFGCreature* SelfCreature, const AActor* Target, int32 RuleNumber, bool bHostile) const
 {
 	if (!PFADiag::IsEnabled())
@@ -483,16 +519,9 @@ void APFACreatureController::ResetTargetingState(const TCHAR* Reason)
 
 void APFACreatureController::ForceRoamAfterDisengage(const TCHAR* Reason)
 {
-	// Kill-switch, same pattern as pfa.AggroDecayAtRange / pfa.LocomotionAnims.
-	// This touches the NATIVE state machine, so it must be A/B-able in one session
-	// without a rebuild: `pfa.ForceRoamOnDisengage 0` reverts to w48-1 behaviour
-	// (ResetTargetingState + TriggerStateUpdate only) while STILL printing the
-	// current/desired pair below, so turning it off keeps the diagnosis and loses
-	// only the fix.
-	static TAutoConsoleVariable<int32> CVarPFAForceRoamOnDisengage(
-		TEXT("pfa.ForceRoamOnDisengage"), 1,
-		TEXT("1 = after a disengage, explicitly put the creature back into CS_Roam if the native state machine is still holding CS_Alert/CS_Fight (proven stuck in the w48-1 session). 0 = only observe and log the current/desired state pair."),
-		ECVF_Default);
+	// The `pfa.ForceRoamOnDisengage` kill-switch is declared at FILE SCOPE at the top
+	// of this TU, not here -- see the trap note there. Declaring it inside this
+	// event-driven function meant it did not exist until the first disengage.
 
 	// ---- ITEM 1: THE DIAGNOSIS FIELD -----------------------------------------
 	// GetDesiredCreatureState (FGCreatureController.h:189) is what the machine
@@ -506,11 +535,19 @@ void APFACreatureController::ForceRoamAfterDisengage(const TCHAR* Reason)
 	//     is holding it (leftover perception/visibility stimuli are the prime
 	//     suspect -- ResetTargetingState already clears mAggroTargets and
 	//     mVisibleTargets, so the residue would have to be in the perception
-	//     component's own stimuli). Then forcing is the WRONG LAYER: the state will
-	//     revert on the next native UpdateCreatureState, the following heartbeat
-	//     will say CS_Alert again, and the fix belongs in a separate packet
-	//     (UAIPerceptionComponent::ForgetAll/ForgetActor are engine AIMODULE_API,
-	//     so no FactoryGame export risk -- but that is a different change).
+	//     component's own stimuli). Then forcing is the WRONG LAYER, and the fix
+	//     belongs in a separate packet (UAIPerceptionComponent::ForgetAll/ForgetActor
+	//     are engine AIMODULE_API, so no FactoryGame export risk -- but that is a
+	//     different change).
+	//     TWO OUTCOMES ARE POSSIBLE HERE AND WE DO NOT KNOW WHICH, so read the next
+	//     heartbeat rather than assuming (w48-3, review INFO-2): if
+	//     UpdateCreatureState re-runs on its own, the forced CS_Roam REVERTS and the
+	//     heartbeat says CS_Alert again; if it is trigger-driven instead
+	//     (mShouldUpdateCreatureState, FGCreatureController.h:514) the forced state
+	//     can LATCH and the heartbeat keeps reading CS_Roam while desired stays
+	//     CS_Alert -- a creature that looks fixed in the log while the real cause is
+	//     untouched. Either way the upstream perception fix is what is needed; the
+	//     heartbeat's state/desired pair is what tells them apart.
 	//
 	// ---- EXPORT NOTE: A HOUSE RULE OF THIS PROJECT IS WRONG, AND THE BINARY SAID
 	// SO. -----------------------------------------------------------------------
@@ -575,6 +612,41 @@ void APFACreatureController::ForceRoamAfterDisengage(const TCHAR* Reason)
 		UE_LOG(LogPrimalFauna, Display,
 			TEXT("[PFA] %s: disengage state check (%s): already CS_Roam (desired=%s) -- no kick needed."),
 			*GetName(), Reason, *CreatureStateEnumToString(Desired));
+		return;
+	}
+
+	// ---- w48-3 (review W1): KICK ONLY THE STUCK-ALERT SHAPE. -------------------
+	// The contract this helper was written for is "the machine is still holding
+	// CS_Alert/CS_Fight after a disengage" -- but w48-2 implemented `anything that
+	// is not CS_Roam`, which is a strictly wider set and includes two states that
+	// are legitimately NOT aggro:
+	//   CS_Flee       -- driven by mStressLevel (SetStressLevel /
+	//                    ModifyStressLevel / GetStressAccumulationFromDamage), an
+	//                    axis independent of aggro. A creature fleeing while a
+	//                    distant target's aggro drains out would be yanked out of
+	//                    Flee into Roam.
+	//   CS_Investigate -- a creature checking a noise (ShouldInvestigateStimulus is
+	//                    live in our import table), likewise not an aggro hold.
+	// This is a DIFFERENTIAL miss, not a hypothetical: the OLD path
+	// (ResetTargetingState alone) could not change the behaviour STATE at all, so
+	// it could never cancel a flee. The new path can, so the narrowing has to be
+	// explicit.
+	//
+	// CS_Default stays in the allowed set deliberately -- the pre-existing heartbeat
+	// text already calls CS_Default a stuck shape.
+	if (Before != ECreatureState::CS_Alert
+		&& Before != ECreatureState::CS_Fight
+		&& Before != ECreatureState::CS_Default)
+	{
+		UE_LOG(LogPrimalFauna, Display,
+			TEXT("[PFA] %s: disengage state check (%s): current=%s desired=%s roamEnabled=%d -- NOT kicking: this is not a stuck-alert shape (Flee/Investigate are legitimate non-aggro states and forcing Roam would cancel them)."),
+			*GetName(), Reason,
+			*CreatureStateEnumToString(Before), *CreatureStateEnumToString(Desired),
+			RoamEnabled);
+		// DesiredVerdict is deliberately NOT appended here: its text is written for
+		// the stuck-alert case ("something other than aggro is holding it, perception
+		// residue is the prime suspect") and would be a false explanation for a
+		// stress-driven Flee. The log has to be true before anything else is.
 		return;
 	}
 
