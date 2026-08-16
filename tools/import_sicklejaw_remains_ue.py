@@ -106,6 +106,31 @@ except Exception as exc:
 if not math.isfinite(hide_roughness) or not 0.0 <= hide_roughness <= 1.0:
     fail("Roughness scalar must be finite and within 0..1")
 try:
+    material_recommendations = manifest["ue_import_recommendations"]
+    if material_recommendations["material_parent"] != VANILLA_REMAINS_PARENT_PATH:
+        raise ValueError("material parent differs from importer parent")
+    manifest_scalars = material_recommendations["material_scalars"]
+    material_scalars = {
+        "Metallic": float(manifest_scalars["Metallic"]),
+        "Roughness": float(manifest_scalars["Roughness"]),
+        "RougnessMultiply": float(manifest_scalars["RougnessMultiply"]),
+    }
+    if any(not math.isfinite(value) for value in material_scalars.values()):
+        raise ValueError("material scalars must be finite")
+    if not 0.0 <= material_scalars["Metallic"] <= 1.0:
+        raise ValueError("Metallic must be within 0..1")
+    if not 0.0 <= material_scalars["Roughness"] <= 1.0:
+        raise ValueError("Roughness must be within 0..1")
+    if material_scalars["RougnessMultiply"] < 0.0:
+        raise ValueError("RougnessMultiply must be non-negative")
+    if not math.isclose(material_scalars["Roughness"], hide_roughness,
+                        rel_tol=0.0, abs_tol=1e-6):
+        raise ValueError("Roughness texture scalar and material recommendation differ")
+    if material_recommendations["material_static_switches"] != VANILLA_REMAINS_STATIC_SWITCHES:
+        raise ValueError("material static switches differ from importer contract")
+except Exception as exc:
+    fail("asset_manifest.json material recommendation is invalid (%s)" % exc)
+try:
     expected_m = manifest["dimensions_m"]
     if isinstance(expected_m, dict):
         expected_axes_m = [expected_m[key] for key in ("x", "y", "z")]
@@ -168,7 +193,7 @@ for asset_name, filename in ICONS.items():
              (asset_name, actual_size[0], actual_size[1], expected_size[0], expected_size[1]))
     log("icon=%s size=%dx%d expected=match" % (asset_name, actual_size[0], actual_size[1]))
 
-def make_instance(name, albedo, normal, reflection_map, roughness):
+def make_instance(name, albedo, normal, reflection_map):
     instance = TOOLS.create_asset(name, DEST, unreal.MaterialInstanceConstant,
                                   unreal.MaterialInstanceConstantFactoryNew())
     if not isinstance(instance, unreal.MaterialInstanceConstant):
@@ -178,12 +203,12 @@ def make_instance(name, albedo, normal, reflection_map, roughness):
     if normal is not None:
         MEL.set_material_instance_texture_parameter_value(instance, "Normal", normal)
     MEL.set_material_instance_texture_parameter_value(instance, "ReflectionMap", reflection_map)
-    # Exact vanilla Hog Remains scalar route. ReflectionMap is a dedicated
-    # uniform-white non-sRGB mask, not the FactoryBaked power-pole default
-    # which produced the user-observed mirror-black runtime result.
-    MEL.set_material_instance_scalar_parameter_value(instance, "Metallic", 1.0)
-    MEL.set_material_instance_scalar_parameter_value(instance, "Roughness", roughness)
-    MEL.set_material_instance_scalar_parameter_value(instance, "RougnessMultiply", 1.0)
+    # Read the same scalar contract the final picture proof records. w53-1
+    # shipped Metallic=1 while its accepted proof silently rendered Metallic=0,
+    # producing a nearly-black pickup. A single manifest-owned contract makes
+    # that proof/import split impossible to repeat.
+    for parameter, value in material_scalars.items():
+        MEL.set_material_instance_scalar_parameter_value(instance, parameter, value)
     # Mirror the actual MI_HogPart switches. Have_ReflMap is load-bearing:
     # binding the texture without enabling this compiled branch is a silent
     # no-op. The remaining values make the organic route deterministic.
@@ -197,12 +222,13 @@ def make_instance(name, albedo, normal, reflection_map, roughness):
 
 mi_hide = make_instance(
     MI_HIDE_NAME, texture_assets["BaseColor"], texture_assets["Normal"],
-    texture_assets["ReflectionMap"], hide_roughness)
+    texture_assets["ReflectionMap"])
 mi_cut = make_instance(
     MI_CUT_NAME, texture_assets["CutBaseColor"], None,
-    texture_assets["ReflectionMap"], hide_roughness)
-log("material-route=vanilla-Hog Asset_Master instanced-static-mesh=yes hide=albedo+normal+reflection roughness=%.2f cut=tissue-albedo+reflection" %
-    hide_roughness)
+    texture_assets["ReflectionMap"])
+log("material-route=Asset_Master instanced-static-mesh=yes hide=albedo+normal+reflection cut=tissue-albedo+reflection metallic=%.2f roughness=%.2f roughness-multiply=%.2f" %
+    (material_scalars["Metallic"], material_scalars["Roughness"],
+     material_scalars["RougnessMultiply"]))
 
 options = unreal.FbxImportUI()
 options.import_mesh = True
@@ -298,11 +324,7 @@ for name, instance, expected_albedo, expected_normal in material_contracts:
         persisted_normal = MEL.get_material_instance_texture_parameter_value(instance, "Normal")
         if persisted_normal != expected_normal:
             fail("%s did not persist its exact Normal" % name)
-    for parameter, expected_value in (
-        ("Metallic", 1.0),
-        ("Roughness", hide_roughness),
-        ("RougnessMultiply", 1.0),
-    ):
+    for parameter, expected_value in material_scalars.items():
         actual_value = MEL.get_material_instance_scalar_parameter_value(instance, parameter)
         if not math.isclose(actual_value, expected_value, rel_tol=0.0, abs_tol=1e-4):
             fail("%s scalar %s %.4f did not persist expected %.4f" %
@@ -312,8 +334,9 @@ for name, instance, expected_albedo, expected_normal in material_contracts:
         if actual_value != expected_value:
             fail("%s static switch %s=%s did not persist expected %s" %
                  (name, parameter, actual_value, expected_value))
-    log("persisted-material name=%s albedo=%s reflection=%s roughness=%.2f switches=%d outcome=match" %
+    log("persisted-material name=%s albedo=%s reflection=%s metallic=%.2f roughness=%.2f switches=%d outcome=match" %
         (name, persisted_albedo.get_path_name(), persisted_reflection.get_path_name(),
-         hide_roughness, len(VANILLA_REMAINS_STATIC_SWITCHES)))
+         material_scalars["Metallic"], material_scalars["Roughness"],
+         len(VANILLA_REMAINS_STATIC_SWITCHES)))
 log("all-assets-on-disk=%d outcome=ready" % len(required_assets))
 print("PFA_REMAINS_OK")
