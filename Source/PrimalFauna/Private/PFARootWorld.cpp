@@ -3,12 +3,15 @@
 #include "PFALoot.h"
 #include "PFASubsystem.h"
 
-#include "Registry/ModContentRegistry.h"
-
 URootGameWorld_PrimalFauna::URootGameWorld_PrimalFauna()
 {
     bRootModule = true;
     ModSubsystems.Add(APFASubsystem::StaticClass());
+
+    // SML registers the custom schematic and discovers its recipe unlock at
+    // world-module initialization. This is the same content-registration path
+    // used by the proven Laser Rifle / Energy Cell recipes.
+    mSchematics.Add(UPFASchematic_SicklejawLoot::StaticClass());
 }
 
 void URootGameWorld_PrimalFauna::DispatchLifecycleEvent(ELifecyclePhase Phase)
@@ -18,27 +21,15 @@ void URootGameWorld_PrimalFauna::DispatchLifecycleEvent(ELifecyclePhase Phase)
         // Belt call before SML initializes any registered content. The game-
         // instance module normally resolved this already; the function is
         // idempotent and retries if that earlier content load was premature.
-        PFALoot::ResolveDeferredContent();
-    }
-    else if (Phase == ELifecyclePhase::INITIALIZATION)
-    {
-        // Direct registration is one of docs/01 section 5's two approved
-        // loading anchors and avoids exposing a meaningless player schematic.
-        UModContentRegistry* Registry = UModContentRegistry::Get(GetWorld());
-        if (Registry && PFALoot::IsDeferredContentReady())
-        {
-            Registry->RegisterRecipe(GetOwnerModReference(), UPFARecipe_ProteinSicklejaw::StaticClass());
-            UE_LOG(LogPrimalFauna, Display,
-                TEXT("[PFA] Loot registration: recipe=%s mod=%s decision=register outcome=submitted"),
-                *UPFARecipe_ProteinSicklejaw::StaticClass()->GetName(), *GetOwnerModReference().ToString());
-        }
-        else
-        {
-            UE_LOG(LogPrimalFauna, Error,
-                TEXT("[PFA] Loot registration: registry=%s contentResolved=%s decision=register outcome=FAILED"),
-                Registry ? TEXT("ready") : TEXT("null"),
-                PFALoot::IsDeferredContentReady() ? TEXT("yes") : TEXT("no"));
-        }
+        const bool bContentReady = PFALoot::ResolveDeferredContent();
+        const int32 UnlockCount = UFGSchematic::GetUnlocks(
+            UPFASchematic_SicklejawLoot::StaticClass()).Num();
+        UE_LOG(LogPrimalFauna, Display,
+            TEXT("[PFA] Loot registration anchor: schematic=%s recipe=%s unlocks=%d contentResolved=%s decision=stage outcome=%s"),
+            *UPFASchematic_SicklejawLoot::StaticClass()->GetName(),
+            *UPFARecipe_ProteinSicklejaw::StaticClass()->GetName(), UnlockCount,
+            bContentReady ? TEXT("yes") : TEXT("no"),
+            (bContentReady && UnlockCount == 1) ? TEXT("ready") : TEXT("FAILED"));
     }
 
     Super::DispatchLifecycleEvent(Phase);

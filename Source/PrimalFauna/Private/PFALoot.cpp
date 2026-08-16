@@ -6,6 +6,7 @@
 
 #include "FGCategory.h"
 #include "FGRecipeManager.h"
+#include "Registry/ModContentRegistry.h"
 #include "ItemAmount.h"
 #include "Engine/StaticMesh.h"
 #include "Engine/Texture2D.h"
@@ -108,6 +109,24 @@ UPFARecipe_ProteinSicklejaw::UPFARecipe_ProteinSicklejaw()
     mProducedIn.Add(TSoftClassPtr<UObject>(FSoftObjectPath(WorkBenchPath)));
 }
 
+UPFASchematic_SicklejawLoot::UPFASchematic_SicklejawLoot()
+{
+    mType = ESchematicType::EST_Custom;
+    mDisplayName = NSLOCTEXT("PrimalFauna", "SicklejawLootRegistrationName", "Sicklejaw Loot Registration");
+    mDescription = NSLOCTEXT("PrimalFauna", "SicklejawLootRegistrationDescription",
+        "Internal registration anchor for the Sicklejaw remains protein recipe.");
+    mTechTier = 0;
+    mTimeToComplete = 0.0f;
+    mCost.Reset();
+    mHiddenUntilDependenciesMet = true;
+    mDependenciesBlocksSchematicAccess = true;
+
+    UPFAUnlock_SicklejawProtein* RecipeUnlock =
+        CreateDefaultSubobject<UPFAUnlock_SicklejawProtein>(TEXT("SicklejawProteinRecipeUnlock"));
+    RecipeUnlock->AddRecipe(UPFARecipe_ProteinSicklejaw::StaticClass());
+    mUnlocks.Add(RecipeUnlock);
+}
+
 bool UPFARecipe_ProteinSicklejaw::ResolveDeferredContent(FString& OutDetail)
 {
     UClass* AlienProteinClass = LoadClass<UFGItemDescriptor>(nullptr, AlienProteinDescriptorPath);
@@ -180,6 +199,13 @@ namespace
                 const TArray<TSubclassOf<UObject>> Producers =
                     UFGRecipe::GetProducedIn(UPFARecipe_ProteinSicklejaw::StaticClass());
                 AFGRecipeManager* RecipeManager = AFGRecipeManager::Get(World);
+                UModContentRegistry* ContentRegistry = UModContentRegistry::Get(World);
+                FGameObjectRegistration RecipeRegistration;
+                const bool bRegistryRegistered = ContentRegistry &&
+                    ContentRegistry->GetRecipeInfo(
+                        UPFARecipe_ProteinSicklejaw::StaticClass(), RecipeRegistration);
+                const bool bManagerListed = RecipeManager &&
+                    RecipeManager->GetAllRecipes().Contains(UPFARecipe_ProteinSicklejaw::StaticClass());
                 UTexture2D* SmallIcon = UFGItemDescriptor::GetSmallIcon(
                     UPFASicklejawRemainsDescriptor::StaticClass());
                 UTexture2D* BigIcon = UFGItemDescriptor::GetBigIcon(
@@ -218,10 +244,10 @@ namespace
                     RecipeManager->IsRecipeAvailable(UPFARecipe_ProteinSicklejaw::StaticClass());
                 const bool bPass = PFALoot::IsDeferredContentReady() && bCreatureWired &&
                     bIngredientWired && bProductWired && bProducerWiring && bTimingWired &&
-                    bCustomPresentationWired && bAvailable;
+                    bCustomPresentationWired && bRegistryRegistered && bManagerListed && bAvailable;
 
                 OutDetail = FString::Printf(
-                    TEXT("resolved=%s creature=%s ingredient=%s product=%s producers=%s timing=%s presentation=%s available=%s"),
+                    TEXT("resolved=%s creature=%s ingredient=%s product=%s producers=%s timing=%s presentation=%s registration=%s/%s available=%s paths=(small=%s big=%s mesh=%s)"),
                     PFALoot::IsDeferredContentReady() ? TEXT("yes") : TEXT("no"),
                     bCreatureWired ? TEXT("yes") : TEXT("no"),
                     bIngredientWired ? TEXT("1 remains") : TEXT("bad"),
@@ -229,7 +255,11 @@ namespace
                     bProducerWiring ? TEXT("constructor+workbench") : TEXT("bad"),
                     bTimingWired ? TEXT("3s") : TEXT("bad"),
                     bCustomPresentationWired ? TEXT("custom-sicklejaw") : TEXT("bad"),
-                    bAvailable ? TEXT("yes") : TEXT("no"));
+                    bRegistryRegistered ? TEXT("registry") : TEXT("no-registry"),
+                    bManagerListed ? TEXT("manager") : TEXT("no-manager"),
+                    bAvailable ? TEXT("yes") : TEXT("no"),
+                    *GetPathNameSafe(SmallIcon), *GetPathNameSafe(BigIcon),
+                    *GetPathNameSafe(ConveyorMesh));
                 return bPass;
             }});
         return true;

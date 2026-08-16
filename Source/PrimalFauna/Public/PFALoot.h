@@ -2,7 +2,9 @@
 
 #include "CoreMinimal.h"
 #include "FGRecipe.h"
+#include "FGSchematic.h"
 #include "Resources/FGItemDescriptor.h"
+#include "Unlocks/FGUnlockRecipe.h"
 #include "PFALoot.generated.h"
 
 // Sicklejaw's species-specific remains item (docs/01 section 5, docs/07 section 6).
@@ -35,6 +37,34 @@ public:
     // Resolves the vanilla Alien Protein descriptor and places it on this
     // recipe's native CDO after content mount.
     static bool ResolveDeferredContent(FString& OutDetail);
+};
+
+// Registration anchor for the Sicklejaw protein recipe. This mirrors the
+// proven Laser Rifle / Energy Cell chain: root-world schematic registration
+// discovers the recipe through a concrete UFGUnlockRecipe. EST_Custom keeps
+// the anchor out of player-facing milestone and MAM progression.
+UCLASS()
+class PRIMALFAUNA_API UPFAUnlock_SicklejawProtein : public UFGUnlockRecipe
+{
+    GENERATED_BODY()
+
+public:
+    void AddRecipe(TSubclassOf<UFGRecipe> Recipe)
+    {
+        if (Recipe)
+        {
+            mRecipes.AddUnique(Recipe);
+        }
+    }
+};
+
+UCLASS()
+class PRIMALFAUNA_API UPFASchematic_SicklejawLoot : public UFGSchematic
+{
+    GENERATED_BODY()
+
+public:
+    UPFASchematic_SicklejawLoot();
 };
 
 namespace PFALoot

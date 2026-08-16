@@ -15,6 +15,8 @@
 #include "Engine/World.h"
 #include "Creature/FGCreature.h"
 #include "FGRecipeManager.h"
+#include "FGUnlockSubsystem.h"
+#include "Registry/ModContentRegistry.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/Pawn.h"
 
@@ -199,53 +201,77 @@ bool APFASubsystem::EnsureLootRecipeAvailable()
 {
     ++LootRecipeReadyAttempts;
     AFGRecipeManager* RecipeManager = AFGRecipeManager::Get(GetWorld());
+    AFGUnlockSubsystem* UnlockSubsystem = AFGUnlockSubsystem::Get(GetWorld());
     const TSubclassOf<UFGRecipe> RecipeClass = UPFARecipe_ProteinSicklejaw::StaticClass();
-    if (!RecipeManager)
+    if (!RecipeManager || !UnlockSubsystem || !PFALoot::IsDeferredContentReady())
     {
         if (LootRecipeReadyAttempts == 5)
         {
             UE_LOG(LogPrimalFauna, Warning,
-                TEXT("[PFA] Loot recipe availability: attempt=%d manager=null recipe=%s decision=retry outcome=not-ready"),
-                LootRecipeReadyAttempts, *GetNameSafe(RecipeClass));
+                TEXT("[PFA] Loot recipe availability: attempt=%d manager=%s unlock=%s contentResolved=%s recipe=%s decision=retry outcome=not-ready"),
+                LootRecipeReadyAttempts,
+                RecipeManager ? TEXT("ready") : TEXT("null"),
+                UnlockSubsystem ? TEXT("ready") : TEXT("null"),
+                PFALoot::IsDeferredContentReady() ? TEXT("yes") : TEXT("no"),
+                *GetNameSafe(RecipeClass));
         }
         return false;
     }
 
-    const bool bRegistered = RecipeManager->GetAllRecipes().Contains(RecipeClass);
+    UModContentRegistry* ContentRegistry = UModContentRegistry::Get(GetWorld());
+    FGameObjectRegistration RecipeRegistration;
+    const bool bRegistryRegistered = ContentRegistry &&
+        ContentRegistry->GetRecipeInfo(RecipeClass, RecipeRegistration);
+    const bool bManagerListed = RecipeManager->GetAllRecipes().Contains(RecipeClass);
     const bool bWasAvailable = RecipeManager->IsRecipeAvailable(RecipeClass);
-    if (!bRegistered)
+
+    // The schematic anchor must complete the SAME registration chain used by
+    // the Laser Rifle / Energy Cell recipes before we grant availability.
+    // Do not let UnlockRecipe create the sole predicate that certifies this
+    // path: registration, manager census, then unlock are three distinct gates.
+    if (!bRegistryRegistered || !bManagerListed)
     {
         if (LootRecipeReadyAttempts == 5)
         {
             UE_LOG(LogPrimalFauna, Warning,
-                TEXT("[PFA] Loot recipe availability: attempt=%d registered=no available=%s recipe=%s decision=retry outcome=registry-not-ready"),
-                LootRecipeReadyAttempts, bWasAvailable ? TEXT("yes") : TEXT("no"), *GetNameSafe(RecipeClass));
+                TEXT("[PFA] Loot recipe availability: attempt=%d registryRegistered=%s managerListed=%s decision=retry outcome=registration-not-ready recipe=%s"),
+                LootRecipeReadyAttempts,
+                bRegistryRegistered ? TEXT("yes") : TEXT("no"),
+                bManagerListed ? TEXT("yes") : TEXT("no"),
+                *GetNameSafe(RecipeClass));
         }
         return false;
     }
 
     if (!bWasAvailable)
     {
-        RecipeManager->AddAvailableRecipe(RecipeClass);
+        // Match the proven Satismagictory and Laser Rifle unlock path. The
+        // UnlockSubsystem owns the player/save-facing recipe grant; checking
+        // IsRecipeAvailable first keeps this idempotent and avoids repeat UI.
+        UnlockSubsystem->UnlockRecipe(RecipeClass);
     }
 
     const bool bNowAvailable = RecipeManager->IsRecipeAvailable(RecipeClass);
     if (bNowAvailable)
     {
         UE_LOG(LogPrimalFauna, Display,
-            TEXT("[PFA] Loot recipe availability: attempt=%d registered=yes previouslyAvailable=%s decision=%s outcome=available recipe=%s"),
+            TEXT("[PFA] Loot recipe availability: attempt=%d registryRegistered=%s managerListed=%s previouslyAvailable=%s decision=%s outcome=available recipe=%s"),
             LootRecipeReadyAttempts,
+            bRegistryRegistered ? TEXT("yes") : TEXT("no"),
+            bManagerListed ? TEXT("yes") : TEXT("no"),
             bWasAvailable ? TEXT("yes") : TEXT("no"),
-            bWasAvailable ? TEXT("verify") : TEXT("grant"),
+            bWasAvailable ? TEXT("verify") : TEXT("unlock"),
             *GetNameSafe(RecipeClass));
     }
     else
     {
         UE_LOG(LogPrimalFauna, Error,
-            TEXT("[PFA] Loot recipe availability: attempt=%d registered=yes previouslyAvailable=%s decision=%s outcome=FAILED recipe=%s"),
+            TEXT("[PFA] Loot recipe availability: attempt=%d registryRegistered=%s managerListed=%s previouslyAvailable=%s decision=%s outcome=FAILED recipe=%s"),
             LootRecipeReadyAttempts,
+            bRegistryRegistered ? TEXT("yes") : TEXT("no"),
+            bManagerListed ? TEXT("yes") : TEXT("no"),
             bWasAvailable ? TEXT("yes") : TEXT("no"),
-            bWasAvailable ? TEXT("verify") : TEXT("grant"),
+            bWasAvailable ? TEXT("verify") : TEXT("unlock"),
             *GetNameSafe(RecipeClass));
     }
     return bNowAvailable;

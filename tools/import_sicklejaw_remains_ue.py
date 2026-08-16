@@ -97,6 +97,18 @@ if manifest.get("forward_axis") != "+X" or manifest.get("up_axis") != "+Z":
 if list(manifest.get("material_slots", [])) != EXPECTED_SLOTS:
     fail("manifest material slots do not match the fixed two-slot contract")
 
+factory_parent = EAL.load_asset(FACTORY_PARENT_PATH)
+if not isinstance(factory_parent, unreal.Material):
+    fail("FactoryBaked parent missing: %s" % FACTORY_PARENT_PATH)
+if not factory_parent.get_editor_property("used_with_instanced_static_meshes"):
+    fail("FactoryBaked parent lacks instanced-static-mesh usage")
+factory_texture_parameters = set(str(name) for name in MEL.get_texture_parameter_names(factory_parent))
+factory_scalar_parameters = set(str(name) for name in MEL.get_scalar_parameter_names(factory_parent))
+available_factory_parameters = factory_texture_parameters | factory_scalar_parameters
+for required_parameter in ("Albedo", "Normal", "PR_Metallic", "PR_Roughness"):
+    if required_parameter not in available_factory_parameters:
+        fail("FactoryBaked parameter missing: %s" % required_parameter)
+
 if EAL.does_directory_exist(DEST):
     if not EAL.delete_directory(DEST):
         fail("could not delete stale destination %s" % DEST)
@@ -127,19 +139,6 @@ for asset_name, filename in ICONS.items():
         fail("icon=%s size=%dx%d expected=%dx%d" %
              (asset_name, actual_size[0], actual_size[1], expected_size[0], expected_size[1]))
     log("icon=%s size=%dx%d expected=match" % (asset_name, actual_size[0], actual_size[1]))
-
-factory_parent = EAL.load_asset(FACTORY_PARENT_PATH)
-if not isinstance(factory_parent, unreal.Material):
-    fail("FactoryBaked parent missing: %s" % FACTORY_PARENT_PATH)
-if not factory_parent.get_editor_property("used_with_instanced_static_meshes"):
-    fail("FactoryBaked parent lacks instanced-static-mesh usage")
-factory_texture_parameters = set(str(name) for name in MEL.get_texture_parameter_names(factory_parent))
-factory_scalar_parameters = set(str(name) for name in MEL.get_scalar_parameter_names(factory_parent))
-for required_parameter in ("Albedo", "Normal", "PR_Metallic", "PR_Roughness"):
-    available = factory_texture_parameters | factory_scalar_parameters
-    if required_parameter not in available:
-        fail("FactoryBaked parameter missing: %s" % required_parameter)
-
 
 def make_instance(name, albedo, normal, roughness):
     instance = TOOLS.create_asset(name, DEST, unreal.MaterialInstanceConstant,
