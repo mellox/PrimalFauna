@@ -136,6 +136,10 @@ private:
     // overriding it (sml-gotchas.md, world-modification.md §7).
     void RefreshTick();
 
+    // Existing saves must receive the directly-registered remains recipe too.
+    // Called from RefreshTick until the replicated recipe manager confirms it.
+    bool EnsureLootRecipeAvailable();
+
     FTimerHandle RefreshTimerHandle;
 
     // Ticks since BeginPlay; also doubles as the heartbeat log's "#N" so the
@@ -146,6 +150,9 @@ private:
     // actually running with is visible from a single log read (doc 04 §2:
     // MP diagnosability -- only the server's config affects gameplay).
     bool bLoggedConfigSnapshot = false;
+
+    bool bLootRecipeReady = false;
+    int32 LootRecipeReadyAttempts = 0;
 
     // W2.3: last SicklejawAggression value pushed to live creatures; -1 =
     // never pushed, so the first RefreshTick always applies the persisted

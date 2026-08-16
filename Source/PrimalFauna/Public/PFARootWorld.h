@@ -12,4 +12,5 @@ class PRIMALFAUNA_API URootGameWorld_PrimalFauna : public UGameWorldModule
 
 public:
     URootGameWorld_PrimalFauna();
+    virtual void DispatchLifecycleEvent(ELifecyclePhase Phase) override;
 };

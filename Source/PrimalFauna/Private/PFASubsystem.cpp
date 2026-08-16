@@ -6,6 +6,7 @@
 #include "PFABehaviorBorrower.h"
 #include "PFANestSpawner.h"
 #include "PFACreatureBase.h"
+#include "PFALoot.h"
 #include "Species/PFASicklejaw.h"
 
 #include "BehaviorTree/BehaviorTree.h"
@@ -13,6 +14,7 @@
 #include "EngineUtils.h"
 #include "Engine/World.h"
 #include "Creature/FGCreature.h"
+#include "FGRecipeManager.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/Pawn.h"
 
@@ -81,6 +83,11 @@ void APFASubsystem::BeginPlay()
 void APFASubsystem::RefreshTick()
 {
     ++TickCount;
+
+    if (!bLootRecipeReady)
+    {
+        bLootRecipeReady = EnsureLootRecipeAvailable();
+    }
 
     const FPFAConfigStruct Config = FPFAConfigStruct::GetActiveConfig(this);
 
@@ -186,6 +193,62 @@ void APFASubsystem::RefreshTick()
     {
         UE_LOG(LogPrimalFauna, Display, TEXT("[PFA] Heartbeat #%d"), TickCount);
     }
+}
+
+bool APFASubsystem::EnsureLootRecipeAvailable()
+{
+    ++LootRecipeReadyAttempts;
+    AFGRecipeManager* RecipeManager = AFGRecipeManager::Get(GetWorld());
+    const TSubclassOf<UFGRecipe> RecipeClass = UPFARecipe_ProteinSicklejaw::StaticClass();
+    if (!RecipeManager)
+    {
+        if (LootRecipeReadyAttempts == 5)
+        {
+            UE_LOG(LogPrimalFauna, Warning,
+                TEXT("[PFA] Loot recipe availability: attempt=%d manager=null recipe=%s decision=retry outcome=not-ready"),
+                LootRecipeReadyAttempts, *GetNameSafe(RecipeClass));
+        }
+        return false;
+    }
+
+    const bool bRegistered = RecipeManager->GetAllRecipes().Contains(RecipeClass);
+    const bool bWasAvailable = RecipeManager->IsRecipeAvailable(RecipeClass);
+    if (!bRegistered)
+    {
+        if (LootRecipeReadyAttempts == 5)
+        {
+            UE_LOG(LogPrimalFauna, Warning,
+                TEXT("[PFA] Loot recipe availability: attempt=%d registered=no available=%s recipe=%s decision=retry outcome=registry-not-ready"),
+                LootRecipeReadyAttempts, bWasAvailable ? TEXT("yes") : TEXT("no"), *GetNameSafe(RecipeClass));
+        }
+        return false;
+    }
+
+    if (!bWasAvailable)
+    {
+        RecipeManager->AddAvailableRecipe(RecipeClass);
+    }
+
+    const bool bNowAvailable = RecipeManager->IsRecipeAvailable(RecipeClass);
+    if (bNowAvailable)
+    {
+        UE_LOG(LogPrimalFauna, Display,
+            TEXT("[PFA] Loot recipe availability: attempt=%d registered=yes previouslyAvailable=%s decision=%s outcome=available recipe=%s"),
+            LootRecipeReadyAttempts,
+            bWasAvailable ? TEXT("yes") : TEXT("no"),
+            bWasAvailable ? TEXT("verify") : TEXT("grant"),
+            *GetNameSafe(RecipeClass));
+    }
+    else
+    {
+        UE_LOG(LogPrimalFauna, Error,
+            TEXT("[PFA] Loot recipe availability: attempt=%d registered=yes previouslyAvailable=%s decision=%s outcome=FAILED recipe=%s"),
+            LootRecipeReadyAttempts,
+            bWasAvailable ? TEXT("yes") : TEXT("no"),
+            bWasAvailable ? TEXT("verify") : TEXT("grant"),
+            *GetNameSafe(RecipeClass));
+    }
+    return bNowAvailable;
 }
 
 void APFASubsystem::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion)

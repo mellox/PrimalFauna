@@ -86,9 +86,14 @@ public:
 	UFUNCTION(BlueprintPure, Category = "PrimalFauna")
 	float GetTerritoryRadiusCm() const { return TerritoryRadiusCm; }
 
-	// BNE override (Creature/FGCreature.h:344). W1.3 scope is a log line only
-	// -- real item-drop spawning arrives with W2's loot items (doc 07 §6).
+	// BNE override (Creature/FGCreature.h:344). Preserves vanilla handling,
+	// then creates this species' configured descriptor as a real spawnable
+	// pickup on the authority (doc 07 section 6).
 	virtual void SpawnDeathItem_Implementation() override;
+
+	// Read-back used by the SicklejawLootWiring self-test. Species set this
+	// native class reference in their constructor; no content load is involved.
+	TSubclassOf<class UFGItemDescriptor> GetDeathLootDescriptor() const { return DeathLootDescriptor; }
 
 	// W1.4 (docs/07 §4 borrowed-BT): PFABehaviorBorrower assigns a discovered
 	// vanilla UBehaviorTree onto this species' CDO. mBehaviorTree is PROTECTED
@@ -240,4 +245,14 @@ protected:
 	// the controller always reads its own server-side copy.
 	UPROPERTY(Replicated)
 	EPFAAggression mAggressionMode;
+
+	// Per-species remains descriptor. Null is legal for not-yet-authored
+	// species; the base logs that decision and leaves vanilla handling intact.
+	UPROPERTY(EditDefaultsOnly, Category = "PrimalFauna|Loot")
+	TSubclassOf<class UFGItemDescriptor> DeathLootDescriptor;
+
+	// SpawnDeathItem is expected once, but the closed-source death path is not
+	// relied on for idempotence: a repeated callback must not duplicate loot.
+	UPROPERTY(Transient)
+	bool bDeathLootSpawned = false;
 };

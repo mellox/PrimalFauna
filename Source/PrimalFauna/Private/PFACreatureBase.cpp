@@ -1,4 +1,5 @@
 #include "PFACreatureBase.h"
+#include "PFALoot.h"
 #include "PrimalFauna.h"
 #include "PFACreatureController.h"
 #include "PFACheats.h"
@@ -6,6 +7,8 @@
 
 #include "AI/FGCreatureController.h"
 #include "Creature/FGCreature.h"
+#include "FGInventoryComponent.h"
+#include "FGItemPickup_Spawnable.h"
 #include "FGHealthComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "Net/UnrealNetwork.h"
@@ -595,10 +598,44 @@ void APFACreatureBase::ClearNativeOrphanTimer()
 
 void APFACreatureBase::SpawnDeathItem_Implementation()
 {
-	// Preserve whatever the base class's own default does (unknown --
-	// FGCreature.cpp is a closed-source link stub); W2's loot items replace
-	// this log with real item-drop spawning (doc 07 §6, doc 01 §5).
+	// Preserve the native creature path. PrimalFauna does not write
+	// AFGCreature::mItemToDrop or any vanilla pickup CDO.
 	Super::SpawnDeathItem_Implementation();
 
-	UE_LOG(LogPrimalFauna, Display, TEXT("[PFA] %s died - loot arrives with W2 items"), *GetClass()->GetName());
+	if (!HasAuthority())
+	{
+		return;
+	}
+	if (bDeathLootSpawned)
+	{
+		UE_LOG(LogPrimalFauna, Warning,
+			TEXT("[PFA] Loot drop: creature=%s descriptor=%s decision=skip outcome=duplicate-callback-blocked"),
+			*GetName(), *GetNameSafe(DeathLootDescriptor));
+		return;
+	}
+	if (!DeathLootDescriptor)
+	{
+		UE_LOG(LogPrimalFauna, Warning,
+			TEXT("[PFA] Loot drop: creature=%s descriptor=null decision=skip outcome=no-species-loot-authored"),
+			*GetName());
+		return;
+	}
+
+	const FInventoryStack LootStack(1, DeathLootDescriptor);
+	const FVector SpawnLocation = GetActorLocation() + FVector(0.0f, 0.0f, 50.0f);
+	AFGItemPickup_Spawnable* Pickup = AFGItemPickup_Spawnable::CreateItemDrop(
+		GetWorld(), LootStack, SpawnLocation, GetActorRotation());
+	if (!Pickup)
+	{
+		UE_LOG(LogPrimalFauna, Error,
+			TEXT("[PFA] Loot drop: creature=%s descriptor=%s amount=1 location=%s decision=spawn outcome=FAILED"),
+			*GetName(), *GetNameSafe(DeathLootDescriptor), *SpawnLocation.ToCompactString());
+		return;
+	}
+
+	bDeathLootSpawned = true;
+	UE_LOG(LogPrimalFauna, Display,
+		TEXT("[PFA] Loot drop: creature=%s descriptor=%s amount=1 location=%s decision=spawn outcome=success pickup=%s contentResolved=%s"),
+		*GetName(), *GetNameSafe(DeathLootDescriptor), *SpawnLocation.ToCompactString(),
+		*Pickup->GetName(), PFALoot::IsDeferredContentReady() ? TEXT("yes") : TEXT("no"));
 }

@@ -7,7 +7,7 @@ void FPrimalFaunaModule::StartupModule()
     // Marker is a MONOTONIC BUILD ID, not a packet label (W2.2 review catch:
     // numbering by packet decremented it below the committed w23-1 and would
     // have made log forensics non-unique).
-    UE_LOG(LogPrimalFauna, Display, TEXT("===== PrimalFauna BUILD 2026-07-26-w49-1 LOADED ====="));
+    UE_LOG(LogPrimalFauna, Display, TEXT("===== PrimalFauna BUILD 2026-08-15-w50-2 LOADED ====="));
 
     // Deliberately no SUBSCRIBE_METHOD / SUBSCRIBE_UOBJECT_METHOD hooks here.
     // PrimalFauna's entire gameplay surface lives in our own subclasses of
