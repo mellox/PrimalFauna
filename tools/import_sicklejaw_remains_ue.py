@@ -2,8 +2,9 @@
 
 Run only through tools/ue_headless.ps1. The destination is delete-fresh so a
 stale static-mesh import cannot survive a changed FBX. The script asserts the
-Blender manifest's dimensions, material-slot contract, asset classes, conveyor
-instancing usage flag, and on-disk persistence before printing PFA_REMAINS_OK.
+Blender manifest's dimensions, material-slot contract, asset classes, vanilla
+Hog-remains material route, conveyor instancing usage flag, and on-disk
+persistence before printing PFA_REMAINS_OK.
 """
 import json
 import math
@@ -19,12 +20,23 @@ DISK_DEST = r"C:\Claude\Projects\SatisfactoryModLoader\Mods\PrimalFauna\Content\
 MESH_NAME = "SM_PFA_SicklejawRemains"
 MI_HIDE_NAME = "MI_PFA_SicklejawRemains_Hide"
 MI_CUT_NAME = "MI_PFA_SicklejawRemains_Cut"
-FACTORY_PARENT_PATH = "/Game/FactoryGame/MasterMaterials/MM_FactoryBaked"
+VANILLA_REMAINS_PARENT_PATH = "/Game/FactoryGame/World/-Shared/Material/Asset_Master"
 EXPECTED_SLOTS = ["M_PFA_SicklejawRemains_Hide", "M_PFA_SicklejawRemains_Cut"]
+VANILLA_REMAINS_STATIC_SWITCHES = {
+    "Emissive": False,
+    "Have_ReflMap": True,
+    "NightEmissive": False,
+    "NormalMap is Packed": False,
+    "UsePaniniProjection": False,
+    "Use_DetailNormal": False,
+    "bRandomEmissive": True,
+    "bUseSimpleAlbedo": False,
+}
 
 TEXTURES = {
     "BaseColor": ("T_PFA_SicklejawRemains_BaseColor.png", True, unreal.TextureCompressionSettings.TC_DEFAULT),
     "Normal": ("T_PFA_SicklejawRemains_Normal.png", False, unreal.TextureCompressionSettings.TC_NORMALMAP),
+    "ReflectionMap": ("T_PFA_SicklejawRemains_ReflectionMap.png", False, unreal.TextureCompressionSettings.TC_MASKS),
     "CutBaseColor": ("T_PFA_SicklejawRemains_Cut_BaseColor.png", True, unreal.TextureCompressionSettings.TC_DEFAULT),
 }
 ICONS = {
@@ -112,17 +124,18 @@ if manifest.get("forward_axis") != "+X" or manifest.get("up_axis") != "+Z":
 if list(manifest.get("material_slots", [])) != EXPECTED_SLOTS:
     fail("manifest material slots do not match the fixed two-slot contract")
 
-factory_parent = EAL.load_asset(FACTORY_PARENT_PATH)
-if not isinstance(factory_parent, unreal.Material):
-    fail("FactoryBaked parent missing: %s" % FACTORY_PARENT_PATH)
-if not factory_parent.get_editor_property("used_with_instanced_static_meshes"):
-    fail("FactoryBaked parent lacks instanced-static-mesh usage")
-factory_texture_parameters = set(str(name) for name in MEL.get_texture_parameter_names(factory_parent))
-factory_scalar_parameters = set(str(name) for name in MEL.get_scalar_parameter_names(factory_parent))
-available_factory_parameters = factory_texture_parameters | factory_scalar_parameters
-for required_parameter in ("Albedo", "Normal", "PR_Metallic", "PR_Roughness"):
-    if required_parameter not in available_factory_parameters:
-        fail("FactoryBaked parameter missing: %s" % required_parameter)
+vanilla_remains_parent = EAL.load_asset(VANILLA_REMAINS_PARENT_PATH)
+if not isinstance(vanilla_remains_parent, unreal.Material):
+    fail("vanilla Hog-remains parent missing: %s" % VANILLA_REMAINS_PARENT_PATH)
+if not vanilla_remains_parent.get_editor_property("used_with_instanced_static_meshes"):
+    fail("vanilla Hog-remains parent lacks instanced-static-mesh usage")
+parent_texture_parameters = set(str(name) for name in MEL.get_texture_parameter_names(vanilla_remains_parent))
+parent_scalar_parameters = set(str(name) for name in MEL.get_scalar_parameter_names(vanilla_remains_parent))
+parent_static_parameters = set(str(name) for name in MEL.get_static_switch_parameter_names(vanilla_remains_parent))
+available_parent_parameters = parent_texture_parameters | parent_scalar_parameters | parent_static_parameters
+for required_parameter in ("Albedo", "Normal", "ReflectionMap", "Metallic", "Roughness", "RougnessMultiply"):
+    if required_parameter not in available_parent_parameters:
+        fail("vanilla Hog-remains parent parameter missing: %s" % required_parameter)
 
 if EAL.does_directory_exist(DEST):
     if not EAL.delete_directory(DEST):
@@ -155,26 +168,40 @@ for asset_name, filename in ICONS.items():
              (asset_name, actual_size[0], actual_size[1], expected_size[0], expected_size[1]))
     log("icon=%s size=%dx%d expected=match" % (asset_name, actual_size[0], actual_size[1]))
 
-def make_instance(name, albedo, normal, roughness):
+def make_instance(name, albedo, normal, reflection_map, roughness):
     instance = TOOLS.create_asset(name, DEST, unreal.MaterialInstanceConstant,
                                   unreal.MaterialInstanceConstantFactoryNew())
     if not isinstance(instance, unreal.MaterialInstanceConstant):
         fail("could not create %s" % name)
-    MEL.set_material_instance_parent(instance, factory_parent)
+    MEL.set_material_instance_parent(instance, vanilla_remains_parent)
     MEL.set_material_instance_texture_parameter_value(instance, "Albedo", albedo)
     if normal is not None:
         MEL.set_material_instance_texture_parameter_value(instance, "Normal", normal)
-    MEL.set_material_instance_scalar_parameter_value(instance, "PR_Metallic", 0.0)
-    MEL.set_material_instance_scalar_parameter_value(instance, "PR_Roughness", roughness)
+    MEL.set_material_instance_texture_parameter_value(instance, "ReflectionMap", reflection_map)
+    # Exact vanilla Hog Remains scalar route. ReflectionMap is a dedicated
+    # uniform-white non-sRGB mask, not the FactoryBaked power-pole default
+    # which produced the user-observed mirror-black runtime result.
+    MEL.set_material_instance_scalar_parameter_value(instance, "Metallic", 1.0)
+    MEL.set_material_instance_scalar_parameter_value(instance, "Roughness", roughness)
+    MEL.set_material_instance_scalar_parameter_value(instance, "RougnessMultiply", 1.0)
+    # Mirror the actual MI_HogPart switches. Have_ReflMap is load-bearing:
+    # binding the texture without enabling this compiled branch is a silent
+    # no-op. The remaining values make the organic route deterministic.
+    for parameter, value in VANILLA_REMAINS_STATIC_SWITCHES.items():
+        if parameter not in parent_static_parameters:
+            fail("vanilla Hog-remains static parameter missing: %s" % parameter)
+        MEL.set_material_instance_static_switch_parameter_value(instance, parameter, value)
     MEL.update_material_instance(instance)
     return instance
 
 
 mi_hide = make_instance(
-    MI_HIDE_NAME, texture_assets["BaseColor"], texture_assets["Normal"], hide_roughness)
+    MI_HIDE_NAME, texture_assets["BaseColor"], texture_assets["Normal"],
+    texture_assets["ReflectionMap"], hide_roughness)
 mi_cut = make_instance(
-    MI_CUT_NAME, texture_assets["CutBaseColor"], None, 0.72)
-log("material-route=MM_FactoryBaked instanced-static-mesh=yes hide=albedo+normal roughness=%.2f cut=tissue-albedo" %
+    MI_CUT_NAME, texture_assets["CutBaseColor"], None,
+    texture_assets["ReflectionMap"], hide_roughness)
+log("material-route=vanilla-Hog Asset_Master instanced-static-mesh=yes hide=albedo+normal+reflection roughness=%.2f cut=tissue-albedo+reflection" %
     hide_roughness)
 
 options = unreal.FbxImportUI()
@@ -186,7 +213,7 @@ options.set_editor_property("mesh_type_to_import", unreal.FBXImportType.FBXIT_ST
 static_data = options.static_mesh_import_data
 static_data.set_editor_property("combine_meshes", True)
 static_data.set_editor_property("auto_generate_collision", True)
-static_data.set_editor_property("generate_lightmap_u_vs", True)
+static_data.set_editor_property("generate_lightmap_u_vs", False)
 # Blender authors the source in metres, while this CSS Unreal toolchain reads
 # the FBX numeric coordinates as centimetres. The first measured import was
 # exactly 1/100 of the manifest, so apply the explicit unit conversion here and
@@ -239,25 +266,54 @@ missing_disk = [name for name in required_assets
 if missing_disk:
     fail("assets missing from disk after save: %s" % missing_disk)
 
+for parameter, (filename, expected_srgb, expected_compression) in TEXTURES.items():
+    asset_name = os.path.splitext(filename)[0]
+    persisted_texture = EAL.load_asset("%s/%s" % (DEST, asset_name))
+    if not isinstance(persisted_texture, unreal.Texture2D):
+        fail("%s did not reload as Texture2D" % asset_name)
+    actual_srgb = bool(persisted_texture.get_editor_property("srgb"))
+    actual_compression = persisted_texture.get_editor_property("compression_settings")
+    if actual_srgb != expected_srgb or actual_compression != expected_compression:
+        fail("%s texture settings persisted srgb=%s compression=%s expected srgb=%s compression=%s" %
+             (asset_name, actual_srgb, actual_compression,
+              expected_srgb, expected_compression))
+    log("persisted-texture role=%s name=%s srgb=%s compression=%s outcome=match" %
+        (parameter, asset_name, actual_srgb, actual_compression))
+
 reloaded_hide = EAL.load_asset("%s/%s" % (DEST, MI_HIDE_NAME))
 reloaded_cut = EAL.load_asset("%s/%s" % (DEST, MI_CUT_NAME))
-for name, instance in ((MI_HIDE_NAME, reloaded_hide), (MI_CUT_NAME, reloaded_cut)):
+material_contracts = (
+    (MI_HIDE_NAME, reloaded_hide, texture_assets["BaseColor"], texture_assets["Normal"]),
+    (MI_CUT_NAME, reloaded_cut, texture_assets["CutBaseColor"], None),
+)
+for name, instance, expected_albedo, expected_normal in material_contracts:
     parent = instance.get_editor_property("parent") if instance else None
-    if not parent or parent.get_path_name() != factory_parent.get_path_name():
-        fail("%s did not persist its FactoryBaked parent" % name)
-persisted_hide_roughness = MEL.get_material_instance_scalar_parameter_value(
-    reloaded_hide, "PR_Roughness")
-if not math.isclose(persisted_hide_roughness, hide_roughness, rel_tol=0.0, abs_tol=1e-4):
-    fail("%s roughness %.4f did not persist expected %.4f" %
-         (MI_HIDE_NAME, persisted_hide_roughness, hide_roughness))
-persisted_hide_albedo = MEL.get_material_instance_texture_parameter_value(
-    reloaded_hide, "Albedo")
-persisted_hide_normal = MEL.get_material_instance_texture_parameter_value(
-    reloaded_hide, "Normal")
-if persisted_hide_albedo != texture_assets["BaseColor"] or persisted_hide_normal != texture_assets["Normal"]:
-    fail("%s did not persist the exact final BaseColor and Normal" % MI_HIDE_NAME)
-log("persisted-hide-material albedo=%s normal=%s roughness=%.2f outcome=match" %
-    (persisted_hide_albedo.get_path_name(), persisted_hide_normal.get_path_name(),
-     persisted_hide_roughness))
+    if not parent or parent.get_path_name() != vanilla_remains_parent.get_path_name():
+        fail("%s did not persist its vanilla Hog-remains parent" % name)
+    persisted_albedo = MEL.get_material_instance_texture_parameter_value(instance, "Albedo")
+    persisted_reflection = MEL.get_material_instance_texture_parameter_value(instance, "ReflectionMap")
+    if persisted_albedo != expected_albedo or persisted_reflection != texture_assets["ReflectionMap"]:
+        fail("%s did not persist its exact Albedo and ReflectionMap" % name)
+    if expected_normal is not None:
+        persisted_normal = MEL.get_material_instance_texture_parameter_value(instance, "Normal")
+        if persisted_normal != expected_normal:
+            fail("%s did not persist its exact Normal" % name)
+    for parameter, expected_value in (
+        ("Metallic", 1.0),
+        ("Roughness", hide_roughness),
+        ("RougnessMultiply", 1.0),
+    ):
+        actual_value = MEL.get_material_instance_scalar_parameter_value(instance, parameter)
+        if not math.isclose(actual_value, expected_value, rel_tol=0.0, abs_tol=1e-4):
+            fail("%s scalar %s %.4f did not persist expected %.4f" %
+                 (name, parameter, actual_value, expected_value))
+    for parameter, expected_value in VANILLA_REMAINS_STATIC_SWITCHES.items():
+        actual_value = MEL.get_material_instance_static_switch_parameter_value(instance, parameter)
+        if actual_value != expected_value:
+            fail("%s static switch %s=%s did not persist expected %s" %
+                 (name, parameter, actual_value, expected_value))
+    log("persisted-material name=%s albedo=%s reflection=%s roughness=%.2f switches=%d outcome=match" %
+        (name, persisted_albedo.get_path_name(), persisted_reflection.get_path_name(),
+         hide_roughness, len(VANILLA_REMAINS_STATIC_SWITCHES)))
 log("all-assets-on-disk=%d outcome=ready" % len(required_assets))
 print("PFA_REMAINS_OK")

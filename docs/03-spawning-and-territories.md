@@ -83,17 +83,33 @@ FPFARegion { FName RegionId; FString Label;            // "DuneDesert_Fringe"
 5. **Log census every load (Display):** `[PFA] Regions: N, nests live: X (by species: …), suppressed: Y`.
    Per-nest lines at Verbose.
 
-## 4. Persistence model — ✅ RESOLVED: OUTCOME A (native persistence), gate re-run 2026-07-23
+## 4. Persistence model — native actor persistence + explicit runtime-config mirror (corrected 2026-08-16)
 
-**Verdict from the Phase-1 gate (build w15-3, two save/reload cycles):** dynamically spawned
-`APFANestSpawner`s persist natively (`records=4 preexisting-live=4`, census `adopted=4
-materialized=0`, both cycles), no duplicates, no name collisions, no count compounding, and
-HostileScaling processed the nests generically by stable name. The transient fallback below is
-NOT needed — retained for reference only.
+**What the Phase-1 gate proved (build w15-3):** dynamically spawned `APFANestSpawner` *actors* and
+their `mSpawnData` records persist natively (`records=4 preexisting-live=4`, census `adopted=4
+materialized=0`), with no duplicate actor/name/count compounding.
+
+**What it failed to prove, and the user falsified on 2026-08-16:** living creatures are ordinary
+distance-managed actors and do not necessarily serialize with the spawner. More importantly, the
+base spawner's authoring fields (`mCreatureClass`, `mNumberOfCreatures`, day/night flags,
+`mSpawnRadius`, `mRespawnTimeIndays`) are *not* SaveGame; level-placed vanilla spawners recover them
+from their archetype, but a runtime C++ nest reloads with CDO defaults. The saved spawn slots then
+have no usable creature class and cannot repopulate. Actor adoption alone was therefore a false
+positive for functional persistence.
+
+**Corrected contract:** `APFANestSpawner` mirrors PFA's authored base configuration into its own
+SaveGame fields, restores it **before** the base `PostLoadGame` recouple path, and runs a one-shot
+adoption check. The snapshot is deliberately not refreshed from live fields during `PreSaveGame`:
+HostileScaling owns session-transient respawn scaling and starvation radius widening, so those must
+reset to PFA's authored baseline when it is disabled or absent on the next load. Existing pre-fix
+saves are repaired from the durable nest registry without replacing a non-empty saved `mSpawnData`;
+their exact effective slot count is preserved for the legacy recovery session, including
+HostileScaling. Only a genuinely empty legacy slot array is populated. The
+`NestSpawnerRuntimeReady` self-test requires snapshot + creature class + non-empty slots.
 
 ### (original assumption text, superseded)
 
-**Intended:** runtime-spawned `APFANestSpawner`s are SAVED by the game (the class implements
+**Original intended assumption:** runtime-spawned `APFANestSpawner`s are SAVED by the game (the class implements
 `IFGSaveInterface`; dynamically spawned save-interface actors persist like buildings do), so
 `mSpawnData` kill-state/respawn-days survive reload natively, and creatures re-link via
 `TryRecoupleCreatureAndSpawner()` (:175) / orphan-kill otherwise (`FGCreature.h:663`).

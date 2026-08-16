@@ -244,6 +244,7 @@ $RequiredRemainsCook = @(
     'T_PFA_SicklejawRemains_Icon_Large.uasset',
     'T_PFA_SicklejawRemains_BaseColor.uasset',
     'T_PFA_SicklejawRemains_Normal.uasset',
+    'T_PFA_SicklejawRemains_ReflectionMap.uasset',
     'T_PFA_SicklejawRemains_Cut_BaseColor.uasset',
     'MI_PFA_SicklejawRemains_Hide.uasset',
     'MI_PFA_SicklejawRemains_Cut.uasset'
@@ -368,11 +369,18 @@ if (-not $SkipImportCheck) {
 $reviewMark = Join-Path $PSScriptRoot '..\..\_team\PFA-LAST-REVIEWED.txt'
 $lastReviewed = (Test-Path $reviewMark) ? ((Get-Content $reviewMark -TotalCount 1).Trim()) : ''
 if ($lastReviewed) {
-    $unreviewed = @(git -C (Split-Path $PSScriptRoot -Parent) log --oneline "$lastReviewed..HEAD" 2>$null)
-    if ($unreviewed.Count -gt 0) {
+    $repoRoot = Split-Path $PSScriptRoot -Parent
+    $unreviewed = @(git -C $repoRoot log --oneline "$lastReviewed..HEAD" 2>$null)
+    # A deployed build can contain dirty Source/Content/Config/tool inputs even
+    # when HEAD still equals the reviewed SHA. That exact state made w53-1
+    # falsely print "up to date" before its required review. Docs/art alone do
+    # not affect the packaged result, so scope this to build inputs.
+    $dirtyBuildInputs = @(git -C $repoRoot status --porcelain --untracked-files=all -- Source Content Config PrimalFauna.uplugin tools 2>$null)
+    if ($unreviewed.Count -gt 0 -or $dirtyBuildInputs.Count -gt 0) {
         Write-Host ''
-        Write-Host "PFABUILD !! COLD REVIEW OWED: $($unreviewed.Count) commit(s) since the last reviewed one." -ForegroundColor Yellow
+        Write-Host "PFABUILD !! COLD REVIEW OWED: $($unreviewed.Count) commit(s) and $($dirtyBuildInputs.Count) dirty build input(s) beyond the last reviewed SHA." -ForegroundColor Yellow
         $unreviewed | Select-Object -First 6 | ForEach-Object { Write-Host "           $_" -ForegroundColor DarkYellow }
+        $dirtyBuildInputs | Select-Object -First 6 | ForEach-Object { Write-Host "           dirty: $_" -ForegroundColor DarkYellow }
         Write-Host "           Run a fresh reviewer BEFORE the user tests. Then record the sha in:" -ForegroundColor Yellow
         Write-Host "           $((Resolve-Path $reviewMark -EA SilentlyContinue) ?? $reviewMark)" -ForegroundColor DarkYellow
         Write-Host ''

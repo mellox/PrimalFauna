@@ -62,4 +62,4 @@ finally {
 }
 
 Write-Host "UEHEADLESS editor exit=$code"
-exit 0
+exit $code

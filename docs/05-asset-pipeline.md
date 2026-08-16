@@ -124,8 +124,11 @@ Verified 2026-07-11 (fab.com/eula + Epic Content EULA):
   accepted editor-manual step (one per species, ~15 min, click-path recipe in the packet). Code
   alternative for the slice: drive locomotion by `PlayAnimation`/single-node switching from C++ —
   acceptable for systems bring-up only.
-- **Materials:** master material + MIs as §4; creature meshes use standard skeletal materials (the
-  `MM_FactoryBaked` route is for belt/conveyor item meshes only — remains items use it).
+- **Materials:** master material + MIs as §4; creature meshes use standard skeletal materials.
+  Remains item meshes mirror the matching vanilla remains material route. Sicklejaw Remains uses
+  `Asset_Master` with dedicated Albedo, Normal, and uniform-white non-sRGB `TC_MASKS`
+  `ReflectionMap` textures plus `Have_ReflMap=true`; it must not use `MM_FactoryBaked` (that route
+  inherited factory paint/custom-data and PowerPole reflection defaults on a plain pickup).
 
 ## 7. Sandwyrm assets — procedural by design
 

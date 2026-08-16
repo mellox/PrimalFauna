@@ -16,13 +16,15 @@
 //      re-associate a live spawner with its record across saves (doc 03 §3
 //      step 1 "adopt").
 //
-// Deliberately overrides NOTHING from AFGCreatureSpawner -- no BeginPlay,
-// Tick, or IFGSaveInterface hook. Doc 03 §1 is explicit: this subclass "must
-// NOT change spawn mechanics" so HostileScaling's generic
+// Does not override spawn mechanics (BeginPlay/Tick/SpawnCreatures). It does
+// mirror the base spawner's non-SaveGame authoring fields through the save
+// interface. Runtime-spawned actors have no level archetype to restore those
+// fields from, so without the mirror their saved mSpawnData returns but its
+// creature class/day-night/radius/respawn configuration resets to the CDO.
+// HostileScaling's generic
 // TActorIterator<AFGCreatureSpawner> treatment (doc 06 §3) and radar/scanner
 // listing (FGBuildableRadarTower.h:113) stay byte-for-byte identical to a
-// vanilla spawner. If a future packet needs to override something here, that
-// is an architecture deviation for the orchestrator to decide, not a default.
+// vanilla spawner.
 // ---------------------------------------------------------------------------
 UCLASS()
 class PRIMALFAUNA_API APFANestSpawner : public AFGCreatureSpawner
@@ -31,6 +33,14 @@ class PRIMALFAUNA_API APFANestSpawner : public AFGCreatureSpawner
 
 public:
 	APFANestSpawner();
+
+	// AFGCreatureSpawner's spawn-data/kill records are SaveGame, but the
+	// runtime authoring fields they depend on are not. Capture their exact
+	// authored values once and restore them before the base PostLoad handler
+	// recouples creatures. Session-transient HostileScaling adjustments must
+	// not leak into a later session when that mod is disabled or absent.
+	virtual void PreSaveGame_Implementation(int32 SaveVersion, int32 GameVersion) override;
+	virtual void PostLoadGame_Implementation(int32 SaveVersion, int32 GameVersion) override;
 
 	// Registry identity. Set exactly once by ConfigureNest. Public because
 	// APFASubsystem's adopt scan reads these directly off every live
@@ -69,8 +79,51 @@ public:
 		int32 InMinCreatures, int32 InMaxCreatures, float InSpawnRadius,
 		bool bInCanSpawnDuringDay, bool bInCanSpawnDuringNight, int32 InRespawnTimeIndays);
 
+	// One-shot adoption seam. New saves already restored their snapshot before
+	// the base PostLoad hook. A pre-fix save has no snapshot, so this rehydrates
+	// only the missing base configuration from the registry while preserving
+	// any saved mSpawnData/kill state and existing effective slot count.
+	void EnsureRuntimeConfigurationAfterAdoption(TSubclassOf<class AFGCreature> InCreatureClass,
+		int32 InMinCreatures, int32 InMaxCreatures, float InSpawnRadius,
+		bool bInCanSpawnDuringDay, bool bInCanSpawnDuringNight, int32 InRespawnTimeIndays);
+
+	bool HasRuntimeConfigurationSnapshot() const { return bHasRuntimeConfigSnapshot; }
+
 private:
 	// Write-once guard for ConfigureNest. Not exposed -- internal bookkeeping
 	// only (doc 06 S2 enforcement), not a general "is this nest ready" query.
 	bool bConfigured = false;
+
+	// The inherited fields below are EditAnywhere but not SaveGame because
+	// vanilla map spawners recover them from their placed archetype. Our nests
+	// are runtime actors, so their authored values need an explicit mirror.
+	// This intentionally excludes session-transient modifications made by
+	// HostileScaling (notably respawn time and starvation-widened radius).
+	UPROPERTY(SaveGame)
+	bool bHasRuntimeConfigSnapshot = false;
+
+	UPROPERTY(SaveGame)
+	TSubclassOf<class AFGCreature> SavedCreatureClass;
+
+	UPROPERTY(SaveGame)
+	FInt32Interval SavedNumberOfCreatures;
+
+	UPROPERTY(SaveGame)
+	bool bSavedCanSpawnDuringDay = true;
+
+	UPROPERTY(SaveGame)
+	bool bSavedCanSpawnDuringNight = true;
+
+	UPROPERTY(SaveGame)
+	float SavedSpawnRadius = 0.0f;
+
+	UPROPERTY(SaveGame)
+	int32 SavedRespawnTimeInDays = -1;
+
+	// Per-instance, per-load one-shot guard. Reconcile runs every ten seconds;
+	// adoption recovery must not become a second spawn loop.
+	bool bRuntimeAdoptionChecked = false;
+
+	void CaptureRuntimeConfigurationSnapshot();
+	void RestoreRuntimeConfigurationSnapshot();
 };

@@ -361,22 +361,25 @@ void APFASubsystem::ReconcileNests()
             continue; // W2.3 wires real dormancy; nothing to reconcile yet.
         }
 
-        if (LiveByNestId.Contains(Record.NestId))
+        UClass* ResolvedClass = Record.SpeciesClass.TryLoadClass<AFGCreature>();
+        if (!ResolvedClass)
         {
+            UE_LOG(LogPrimalFauna, Error,
+                TEXT("[PFA] Nest %s: cannot reconcile -- SpeciesClass '%s' failed to load."),
+                *Record.NestId.ToString(), *Record.SpeciesClass.ToString());
+            continue;
+        }
+
+        if (APFANestSpawner** AdoptedSpawner = LiveByNestId.Find(Record.NestId))
+        {
+			(*AdoptedSpawner)->EnsureRuntimeConfigurationAfterAdoption(
+				TSubclassOf<AFGCreature>(ResolvedClass), Record.CreaturesMin, Record.CreaturesMax,
+				Record.SpawnRadius, true, true, Record.RespawnDays);
             ++AdoptedCount;
             continue;
         }
 
         // MATERIALIZE (doc 03 §3 step 2, doc 06 S1/S2).
-        UClass* ResolvedClass = Record.SpeciesClass.TryLoadClass<AFGCreature>();
-        if (!ResolvedClass)
-        {
-            UE_LOG(LogPrimalFauna, Error,
-                TEXT("[PFA] Nest %s: cannot materialize -- SpeciesClass '%s' failed to load."),
-                *Record.NestId.ToString(), *Record.SpeciesClass.ToString());
-            continue;
-        }
-
         const FName DeterministicName(*FString::Printf(TEXT("PFANest_%s"), *Record.NestId.ToString()));
         const FTransform SpawnTransform(FRotator::ZeroRotator, Record.Location);
 
@@ -400,6 +403,9 @@ void APFASubsystem::ReconcileNests()
                     *Record.NestId.ToString(), *Existing->GetName());
                 Existing->NestId = Record.NestId;
                 Existing->RegionId = Record.RegionId;
+				Existing->EnsureRuntimeConfigurationAfterAdoption(
+					TSubclassOf<AFGCreature>(ResolvedClass), Record.CreaturesMin, Record.CreaturesMax,
+					Record.SpawnRadius, true, true, Record.RespawnDays);
                 ++AdoptedCount;
                 bAdoptedByName = true;
                 break;
@@ -663,6 +669,36 @@ namespace
                 }
                 OutDetail = TEXT("no APFASubsystem actor found in world");
                 return false;
+            }});
+        return true;
+    }();
+
+    const bool bRegistered_NestSpawnerRuntimeReady = []
+    {
+        RegisterPFASelfTest({TEXT("NestSpawnerRuntimeReady"),
+            [](UWorld* World, FString& OutDetail) -> bool
+            {
+                int32 Spawners = 0;
+                int32 MissingSnapshot = 0;
+                int32 MissingClass = 0;
+                int32 EmptySlots = 0;
+                for (TActorIterator<APFANestSpawner> It(World); It; ++It)
+                {
+                    APFANestSpawner* Spawner = *It;
+                    if (!Spawner)
+                    {
+                        continue;
+                    }
+                    ++Spawners;
+                    MissingSnapshot += Spawner->HasRuntimeConfigurationSnapshot() ? 0 : 1;
+                    MissingClass += Spawner->GetCreatureClass() ? 0 : 1;
+                    EmptySlots += Spawner->GetTotalNumCreatures() > 0 ? 0 : 1;
+                }
+
+                OutDetail = FString::Printf(
+                    TEXT("spawners=%d missingSnapshot=%d missingClass=%d emptySlots=%d"),
+                    Spawners, MissingSnapshot, MissingClass, EmptySlots);
+                return MissingSnapshot == 0 && MissingClass == 0 && EmptySlots == 0;
             }});
         return true;
     }();
