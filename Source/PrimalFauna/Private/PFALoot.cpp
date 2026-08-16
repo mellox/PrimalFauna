@@ -15,8 +15,12 @@ namespace
 {
     bool GPFADeferredLootReady = false;
 
-    constexpr const TCHAR* HogRemainsDescriptorPath =
-        TEXT("/Game/FactoryGame/Resource/Parts/AnimalParts/Desc_HogParts.Desc_HogParts_C");
+    constexpr const TCHAR* SicklejawRemainsMeshPath =
+        TEXT("/PrimalFauna/SicklejawRemains/SM_PFA_SicklejawRemains.SM_PFA_SicklejawRemains");
+    constexpr const TCHAR* SicklejawRemainsSmallIconPath =
+        TEXT("/PrimalFauna/SicklejawRemains/T_PFA_SicklejawRemains_Icon_Small.T_PFA_SicklejawRemains_Icon_Small");
+    constexpr const TCHAR* SicklejawRemainsBigIconPath =
+        TEXT("/PrimalFauna/SicklejawRemains/T_PFA_SicklejawRemains_Icon_Large.T_PFA_SicklejawRemains_Icon_Large");
     constexpr const TCHAR* OtherCategoryPath =
         TEXT("/Game/FactoryGame/Resource/ItemCategories/Cat_Other.Cat_Other_C");
     constexpr const TCHAR* AlienProteinDescriptorPath =
@@ -56,22 +60,14 @@ UPFASicklejawRemainsDescriptor::UPFASicklejawRemainsDescriptor()
 
 bool UPFASicklejawRemainsDescriptor::ResolveDeferredContent(FString& OutDetail)
 {
-    UClass* HogRemainsClass = LoadClass<UFGItemDescriptor>(nullptr, HogRemainsDescriptorPath);
     UClass* CategoryClass = LoadClass<UFGCategory>(nullptr, OtherCategoryPath);
-    if (!HogRemainsClass || !CategoryClass)
+    UTexture2D* SmallIcon = LoadObject<UTexture2D>(nullptr, SicklejawRemainsSmallIconPath);
+    UTexture2D* BigIcon = LoadObject<UTexture2D>(nullptr, SicklejawRemainsBigIconPath);
+    UStaticMesh* ConveyorMesh = LoadObject<UStaticMesh>(nullptr, SicklejawRemainsMeshPath);
+    if (!CategoryClass || !SmallIcon || !BigIcon || !ConveyorMesh)
     {
-        OutDetail = FString::Printf(TEXT("hog-remains=%s category=%s"),
-            HogRemainsClass ? TEXT("ok") : TEXT("missing"),
-            CategoryClass ? TEXT("ok") : TEXT("missing"));
-        return false;
-    }
-
-    UTexture2D* SmallIcon = UFGItemDescriptor::GetSmallIcon(HogRemainsClass);
-    UTexture2D* BigIcon = UFGItemDescriptor::GetBigIcon(HogRemainsClass);
-    UStaticMesh* ConveyorMesh = UFGItemDescriptor::GetItemMesh(HogRemainsClass);
-    if (!SmallIcon || !BigIcon || !ConveyorMesh)
-    {
-        OutDetail = FString::Printf(TEXT("hog visuals small=%s big=%s mesh=%s"),
+        OutDetail = FString::Printf(TEXT("category=%s custom-small=%s custom-big=%s custom-mesh=%s"),
+            CategoryClass ? TEXT("ok") : TEXT("missing"),
             SmallIcon ? TEXT("ok") : TEXT("missing"),
             BigIcon ? TEXT("ok") : TEXT("missing"),
             ConveyorMesh ? TEXT("ok") : TEXT("missing"));
@@ -86,14 +82,14 @@ bool UPFASicklejawRemainsDescriptor::ResolveDeferredContent(FString& OutDetail)
 
     // Assets assigned only to a native CDO are not sufficient GC roots on this
     // toolchain. Keep every deferred dependency alive for the process lifetime.
-    RootResolvedObject(HogRemainsClass);
     RootResolvedObject(CategoryClass);
     RootResolvedObject(SmallIcon);
     RootResolvedObject(BigIcon);
     RootResolvedObject(ConveyorMesh);
 
-    OutDetail = FString::Printf(TEXT("icon=%s mesh=%s category=%s"),
-        *SmallIcon->GetName(), *ConveyorMesh->GetName(), *CategoryClass->GetName());
+    OutDetail = FString::Printf(TEXT("small=%s big=%s mesh=%s category=%s"),
+        *SmallIcon->GetPathName(), *BigIcon->GetPathName(),
+        *ConveyorMesh->GetPathName(), *CategoryClass->GetName());
     return true;
 }
 
@@ -184,6 +180,12 @@ namespace
                 const TArray<TSubclassOf<UObject>> Producers =
                     UFGRecipe::GetProducedIn(UPFARecipe_ProteinSicklejaw::StaticClass());
                 AFGRecipeManager* RecipeManager = AFGRecipeManager::Get(World);
+                UTexture2D* SmallIcon = UFGItemDescriptor::GetSmallIcon(
+                    UPFASicklejawRemainsDescriptor::StaticClass());
+                UTexture2D* BigIcon = UFGItemDescriptor::GetBigIcon(
+                    UPFASicklejawRemainsDescriptor::StaticClass());
+                UStaticMesh* ConveyorMesh = UFGItemDescriptor::GetItemMesh(
+                    UPFASicklejawRemainsDescriptor::StaticClass());
 
                 const bool bCreatureWired = SicklejawCDO &&
                     SicklejawCDO->GetDeathLootDescriptor() == UPFASicklejawRemainsDescriptor::StaticClass();
@@ -208,19 +210,25 @@ namespace
                         UFGRecipe::GetManufacturingDuration(UPFARecipe_ProteinSicklejaw::StaticClass()), 3.0f) &&
                     FMath::IsNearlyEqual(
                         UFGRecipe::GetManualManufacturingDuration(UPFARecipe_ProteinSicklejaw::StaticClass()), 3.0f);
+                const bool bCustomPresentationWired = SmallIcon && BigIcon && ConveyorMesh &&
+                    SmallIcon->GetPathName() == SicklejawRemainsSmallIconPath &&
+                    BigIcon->GetPathName() == SicklejawRemainsBigIconPath &&
+                    ConveyorMesh->GetPathName() == SicklejawRemainsMeshPath;
                 const bool bAvailable = RecipeManager &&
                     RecipeManager->IsRecipeAvailable(UPFARecipe_ProteinSicklejaw::StaticClass());
                 const bool bPass = PFALoot::IsDeferredContentReady() && bCreatureWired &&
-                    bIngredientWired && bProductWired && bProducerWiring && bTimingWired && bAvailable;
+                    bIngredientWired && bProductWired && bProducerWiring && bTimingWired &&
+                    bCustomPresentationWired && bAvailable;
 
                 OutDetail = FString::Printf(
-                    TEXT("resolved=%s creature=%s ingredient=%s product=%s producers=%s timing=%s available=%s"),
+                    TEXT("resolved=%s creature=%s ingredient=%s product=%s producers=%s timing=%s presentation=%s available=%s"),
                     PFALoot::IsDeferredContentReady() ? TEXT("yes") : TEXT("no"),
                     bCreatureWired ? TEXT("yes") : TEXT("no"),
                     bIngredientWired ? TEXT("1 remains") : TEXT("bad"),
                     bProductWired ? TEXT("1 protein") : TEXT("bad"),
                     bProducerWiring ? TEXT("constructor+workbench") : TEXT("bad"),
                     bTimingWired ? TEXT("3s") : TEXT("bad"),
+                    bCustomPresentationWired ? TEXT("custom-sicklejaw") : TEXT("bad"),
                     bAvailable ? TEXT("yes") : TEXT("no"));
                 return bPass;
             }});

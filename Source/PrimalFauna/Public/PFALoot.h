@@ -16,9 +16,9 @@ class PRIMALFAUNA_API UPFASicklejawRemainsDescriptor : public UFGItemDescriptor
 public:
     UPFASicklejawRemainsDescriptor();
 
-    // Copies the approved vanilla remains presentation onto this native CDO.
-    // Returns false (and describes the missing dependency) so the world-module
-    // belt call can retry if the game-instance call ran before content mounted.
+    // Loads the PrimalFauna-owned mesh and icons onto this native CDO after
+    // content mount. Returns false (and describes the missing dependency) so
+    // the world-module belt call can retry if content is not ready yet.
     static bool ResolveDeferredContent(FString& OutDetail);
 };
 

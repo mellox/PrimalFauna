@@ -154,6 +154,15 @@ try {
         Write-Host 'PFABUILD WeaponUpgrades.uplugin disabled for this build'
     }
 
+    # WwisePatches' generated pre-build .bat launches Windows PowerShell from
+    # cmd.exe and calls Set-ExecutionPolicy before applyPatches.ps1. On this
+    # machine that command can fail to autoload Microsoft.PowerShell.Security
+    # in the custom-build-step context. Seed the child process policy instead;
+    # the exact generated batch was verified to finish with this process-scoped
+    # value even when its redundant Set-ExecutionPolicy call logs an error.
+    $env:PSExecutionPolicyPreference = 'Bypass'
+    Write-Host 'PFABUILD child PowerShell execution policy=Bypass for Wwise pre-build step'
+
     Write-Host 'PFABUILD running PackagePlugin...'
     & $RunUAT -ScriptsForProject="$UProject" PackagePlugin `
         -project="$UProject" `
@@ -224,6 +233,29 @@ if ((Test-Path $AnimSrcDir) -and (Test-Path $CookAnimDir)) {
 else {
     Write-Host 'PFABUILD NOTE: anim source or cook dir not found -- content freshness NOT checked' -ForegroundColor Yellow
 }
+
+# The loot descriptor loads these by string path after content mount. A compile
+# cannot prove the cooker retained them, so require the exact custom presentation
+# assets in this build's cook instead of accepting the old Hog-visual fallback.
+$CookRemainsDir = Join-Path $SmlRoot 'Mods\PrimalFauna\Saved\Cooked\Windows\FactoryGame\Mods\PrimalFauna\Content\SicklejawRemains'
+$RequiredRemainsCook = @(
+    'SM_PFA_SicklejawRemains.uasset',
+    'T_PFA_SicklejawRemains_Icon_Small.uasset',
+    'T_PFA_SicklejawRemains_Icon_Large.uasset',
+    'T_PFA_SicklejawRemains_BaseColor.uasset',
+    'T_PFA_SicklejawRemains_Normal.uasset',
+    'T_PFA_SicklejawRemains_Cut_BaseColor.uasset',
+    'MI_PFA_SicklejawRemains_Hide.uasset',
+    'MI_PFA_SicklejawRemains_Cut.uasset'
+)
+$MissingRemainsCook = @($RequiredRemainsCook | Where-Object {
+    -not (Test-Path (Join-Path $CookRemainsDir $_))
+})
+if ($MissingRemainsCook.Count -gt 0) {
+    Fail ("Sicklejaw-remains assets missing from cook: " + ($MissingRemainsCook -join ', ') +
+          " -- run tools\import_sicklejaw_remains_ue.py through tools\ue_headless.ps1, back-copy Content, then rebuild")
+}
+Write-Host ("PFABUILD remains content OK: {0} required assets present in the cook" -f $RequiredRemainsCook.Count)
 
 # --- gate 4d: CONTENT PARITY, repo vs build tree ---------------------------
 # The hole this closes: gate 1 syncs Source, Config and the .uplugin repo->Mods,

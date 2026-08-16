@@ -203,8 +203,8 @@ namespace
 APFASicklejaw::APFASicklejaw(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	// Native class reference only (constructor-safe): the descriptor's vanilla
-	// presentation assets resolve later in the root-module lifecycle.
+	// Native class reference only (constructor-safe): the descriptor's
+	// PrimalFauna-owned presentation assets resolve later in the root-module lifecycle.
 	DeathLootDescriptor = UPFASicklejawRemainsDescriptor::StaticClass();
 	// --- Identity/stats (doc 07 §3, doc 06 §2 C2: CDO-authored, never runtime-multiplied) ---
 	SetBaseHealth(SicklejawBaseHealth);
