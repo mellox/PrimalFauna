@@ -13,6 +13,7 @@ import unreal
 SRC = r"C:\Claude\Projects\PrimalFauna\art\wip\sicklejaw-remains"
 FBX = os.path.join(SRC, "SM_PFA_SicklejawRemains.fbx")
 MANIFEST = os.path.join(SRC, "asset_manifest.json")
+ROUGHNESS_SOURCE = os.path.join(SRC, "T_PFA_SicklejawRemains_Roughness.png")
 DEST = "/PrimalFauna/SicklejawRemains"
 DISK_DEST = r"C:\Claude\Projects\SatisfactoryModLoader\Mods\PrimalFauna\Content\SicklejawRemains"
 MESH_NAME = "SM_PFA_SicklejawRemains"
@@ -69,7 +70,7 @@ def import_texture(source, asset_name):
     return asset
 
 
-for required in [FBX, MANIFEST]:
+for required in [FBX, MANIFEST, ROUGHNESS_SOURCE]:
     require_file(required)
 for filename, _, _ in TEXTURES.values():
     require_file(os.path.join(SRC, filename))
@@ -78,6 +79,20 @@ for filename in ICONS.values():
 
 with open(MANIFEST, "r", encoding="utf-8") as handle:
     manifest = json.load(handle)
+roughness_entries = [entry for entry in manifest.get("textures", [])
+                     if entry.get("role") == "Roughness"]
+if len(roughness_entries) != 1:
+    fail("asset_manifest.json needs exactly one Roughness texture contract")
+roughness_entry = roughness_entries[0]
+if roughness_entry.get("file") != os.path.basename(ROUGHNESS_SOURCE):
+    fail("Roughness texture contract file must be %s" %
+         os.path.basename(ROUGHNESS_SOURCE))
+try:
+    hide_roughness = float(roughness_entry["scalar"])
+except Exception as exc:
+    fail("Roughness texture contract needs a scalar (%s)" % exc)
+if not math.isfinite(hide_roughness) or not 0.0 <= hide_roughness <= 1.0:
+    fail("Roughness scalar must be finite and within 0..1")
 try:
     expected_m = manifest["dimensions_m"]
     if isinstance(expected_m, dict):
@@ -156,10 +171,11 @@ def make_instance(name, albedo, normal, roughness):
 
 
 mi_hide = make_instance(
-    MI_HIDE_NAME, texture_assets["BaseColor"], texture_assets["Normal"], 0.58)
+    MI_HIDE_NAME, texture_assets["BaseColor"], texture_assets["Normal"], hide_roughness)
 mi_cut = make_instance(
     MI_CUT_NAME, texture_assets["CutBaseColor"], None, 0.72)
-log("material-route=MM_FactoryBaked instanced-static-mesh=yes hide=albedo+normal cut=tissue-albedo")
+log("material-route=MM_FactoryBaked instanced-static-mesh=yes hide=albedo+normal roughness=%.2f cut=tissue-albedo" %
+    hide_roughness)
 
 options = unreal.FbxImportUI()
 options.import_mesh = True
@@ -229,5 +245,19 @@ for name, instance in ((MI_HIDE_NAME, reloaded_hide), (MI_CUT_NAME, reloaded_cut
     parent = instance.get_editor_property("parent") if instance else None
     if not parent or parent.get_path_name() != factory_parent.get_path_name():
         fail("%s did not persist its FactoryBaked parent" % name)
+persisted_hide_roughness = MEL.get_material_instance_scalar_parameter_value(
+    reloaded_hide, "PR_Roughness")
+if not math.isclose(persisted_hide_roughness, hide_roughness, rel_tol=0.0, abs_tol=1e-4):
+    fail("%s roughness %.4f did not persist expected %.4f" %
+         (MI_HIDE_NAME, persisted_hide_roughness, hide_roughness))
+persisted_hide_albedo = MEL.get_material_instance_texture_parameter_value(
+    reloaded_hide, "Albedo")
+persisted_hide_normal = MEL.get_material_instance_texture_parameter_value(
+    reloaded_hide, "Normal")
+if persisted_hide_albedo != texture_assets["BaseColor"] or persisted_hide_normal != texture_assets["Normal"]:
+    fail("%s did not persist the exact final BaseColor and Normal" % MI_HIDE_NAME)
+log("persisted-hide-material albedo=%s normal=%s roughness=%.2f outcome=match" %
+    (persisted_hide_albedo.get_path_name(), persisted_hide_normal.get_path_name(),
+     persisted_hide_roughness))
 log("all-assets-on-disk=%d outcome=ready" % len(required_assets))
 print("PFA_REMAINS_OK")

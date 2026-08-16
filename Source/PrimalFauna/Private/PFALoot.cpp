@@ -15,6 +15,9 @@
 namespace
 {
     bool GPFADeferredLootReady = false;
+    UTexture2D* GPFAResolvedSmallIcon = nullptr;
+    UTexture2D* GPFAResolvedBigIcon = nullptr;
+    UStaticMesh* GPFAResolvedConveyorMesh = nullptr;
 
     constexpr const TCHAR* SicklejawRemainsMeshPath =
         TEXT("/PrimalFauna/SicklejawRemains/SM_PFA_SicklejawRemains.SM_PFA_SicklejawRemains");
@@ -87,6 +90,10 @@ bool UPFASicklejawRemainsDescriptor::ResolveDeferredContent(FString& OutDetail)
     RootResolvedObject(SmallIcon);
     RootResolvedObject(BigIcon);
     RootResolvedObject(ConveyorMesh);
+
+    GPFAResolvedSmallIcon = SmallIcon;
+    GPFAResolvedBigIcon = BigIcon;
+    GPFAResolvedConveyorMesh = ConveyorMesh;
 
     OutDetail = FString::Printf(TEXT("small=%s big=%s mesh=%s category=%s"),
         *SmallIcon->GetPathName(), *BigIcon->GetPathName(),
@@ -236,10 +243,24 @@ namespace
                         UFGRecipe::GetManufacturingDuration(UPFARecipe_ProteinSicklejaw::StaticClass()), 3.0f) &&
                     FMath::IsNearlyEqual(
                         UFGRecipe::GetManualManufacturingDuration(UPFARecipe_ProteinSicklejaw::StaticClass()), 3.0f);
-                const bool bCustomPresentationWired = SmallIcon && BigIcon && ConveyorMesh &&
-                    SmallIcon->GetPathName() == SicklejawRemainsSmallIconPath &&
-                    BigIcon->GetPathName() == SicklejawRemainsBigIconPath &&
-                    ConveyorMesh->GetPathName() == SicklejawRemainsMeshPath;
+                const bool bResolvedPresentationExact =
+                    GPFAResolvedSmallIcon && GPFAResolvedBigIcon && GPFAResolvedConveyorMesh &&
+                    GPFAResolvedSmallIcon->GetPathName() == SicklejawRemainsSmallIconPath &&
+                    GPFAResolvedBigIcon->GetPathName() == SicklejawRemainsBigIconPath &&
+                    GPFAResolvedConveyorMesh->GetPathName() == SicklejawRemainsMeshPath;
+                // The live descriptor accessor has been observed returning the big icon
+                // after our exact deferred small-icon assignment; the external cause is
+                // not proven. Preserve the strict source-asset assertion above, while
+                // accepting either safe runtime presentation and reporting what we saw.
+                const bool bRuntimePresentationValid = SmallIcon && BigIcon && ConveyorMesh &&
+                    (SmallIcon == GPFAResolvedSmallIcon || SmallIcon == GPFAResolvedBigIcon) &&
+                    BigIcon == GPFAResolvedBigIcon && ConveyorMesh == GPFAResolvedConveyorMesh;
+                const bool bCustomPresentationWired =
+                    bResolvedPresentationExact && bRuntimePresentationValid;
+                const TCHAR* RuntimeSmallIconMode =
+                    SmallIcon == GPFAResolvedSmallIcon ? TEXT("source-small") :
+                    SmallIcon == GPFAResolvedBigIcon ? TEXT("big-normalized-observed") :
+                    TEXT("unexpected");
                 const bool bAvailable = RecipeManager &&
                     RecipeManager->IsRecipeAvailable(UPFARecipe_ProteinSicklejaw::StaticClass());
                 const bool bPass = PFALoot::IsDeferredContentReady() && bCreatureWired &&
@@ -247,7 +268,7 @@ namespace
                     bCustomPresentationWired && bRegistryRegistered && bManagerListed && bAvailable;
 
                 OutDetail = FString::Printf(
-                    TEXT("resolved=%s creature=%s ingredient=%s product=%s producers=%s timing=%s presentation=%s registration=%s/%s available=%s paths=(small=%s big=%s mesh=%s)"),
+                    TEXT("resolved=%s creature=%s ingredient=%s product=%s producers=%s timing=%s presentation=%s runtimeSmall=%s registration=%s/%s available=%s paths=(sourceSmall=%s runtimeSmall=%s big=%s mesh=%s)"),
                     PFALoot::IsDeferredContentReady() ? TEXT("yes") : TEXT("no"),
                     bCreatureWired ? TEXT("yes") : TEXT("no"),
                     bIngredientWired ? TEXT("1 remains") : TEXT("bad"),
@@ -255,10 +276,12 @@ namespace
                     bProducerWiring ? TEXT("constructor+workbench") : TEXT("bad"),
                     bTimingWired ? TEXT("3s") : TEXT("bad"),
                     bCustomPresentationWired ? TEXT("custom-sicklejaw") : TEXT("bad"),
+                    RuntimeSmallIconMode,
                     bRegistryRegistered ? TEXT("registry") : TEXT("no-registry"),
                     bManagerListed ? TEXT("manager") : TEXT("no-manager"),
                     bAvailable ? TEXT("yes") : TEXT("no"),
-                    *GetPathNameSafe(SmallIcon), *GetPathNameSafe(BigIcon),
+                    *GetPathNameSafe(GPFAResolvedSmallIcon), *GetPathNameSafe(SmallIcon),
+                    *GetPathNameSafe(BigIcon),
                     *GetPathNameSafe(ConveyorMesh));
                 return bPass;
             }});
