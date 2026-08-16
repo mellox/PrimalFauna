@@ -136,69 +136,35 @@ namespace
 		TEXT("Below this health fraction a Sicklejaw limps instead of walking/prowling (never instead of running -- a wounded animal still flees at speed)."),
 		ECVF_Default);
 
-	// Single-candidate clip resolver. The multi-candidate probe in
-	// PFASicklejaw.cpp exists for the legacy *_Anim_preset_* twins that the
-	// w24-2 multi-take FBXs produced; the current one-clip-per-FBX export
-	// makes the primary package always correct, so this stays simple. Still
-	// scans the package for whatever UAnimSequence it contains rather than
-	// trusting the object name -- that assumption is what cost w24 three
-	// builds.
-	UAnimSequence* ResolveClip(const TCHAR* ClipSuffix, const FString& OwnerName)
-	{
-		const FString PackagePath = FString(AnimPackagePrefix) + ClipSuffix;
-		UPackage* Package = LoadPackage(nullptr, *PackagePath, LOAD_None);
-		if (!Package)
-		{
-			if (PFADiag::IsEnabled())
-			{
-				UE_LOG(LogPrimalFauna, Display, TEXT("[PFA] %s: clip probe %s: package NOT FOUND"),
-					*OwnerName, *PackagePath);
-			}
-			return nullptr;
-		}
-		UAnimSequence* Found = nullptr;
-		ForEachObjectWithPackage(Package, [&Found](UObject* Object)
-		{
-			if (UAnimSequence* Sequence = Cast<UAnimSequence>(Object))
-			{
-				Found = Sequence;
-				return false;
-			}
-			return true;
-		});
-		if (!Found && PFADiag::IsEnabled())
-		{
-			UE_LOG(LogPrimalFauna, Display, TEXT("[PFA] %s: clip probe %s: package loaded but holds NO UAnimSequence"),
-				*OwnerName, *PackagePath);
-		}
-		return Found;
-	}
+}
+
+UAnimSequence* APFASicklejaw::ResolveClip(const TCHAR* ClipSuffix)
+{
+	return ResolveSharedAnimPackage(FString(AnimPackagePrefix) + ClipSuffix, ClipSuffix);
 }
 
 void APFASicklejaw::ResolveOneShotClips()
 {
-	const FString OwnerName = GetName();
-
 	IdleBreakClips.Reset();
 	int32 ResolvedBreaks = 0;
 	for (const FIdleBreakDef& Def : SicklejawIdleBreaks)
 	{
-		UAnimSequence* Sequence = ResolveClip(Def.ClipSuffix, OwnerName);
+		UAnimSequence* Sequence = ResolveClip(Def.ClipSuffix);
 		IdleBreakClips.Add(Sequence);
 		if (Sequence)
 		{
 			++ResolvedBreaks;
 		}
 	}
-	ThreatenAnim = ResolveClip(TEXT("Threaten"), OwnerName);
-	LimpAnim = ResolveClip(TEXT("Limp"), OwnerName);
+	ThreatenAnim = ResolveClip(TEXT("Threaten"));
+	LimpAnim = ResolveClip(TEXT("Limp"));
 
 	// Always-on (not diag-gated): "the creature never preens" is otherwise
 	// indistinguishable from "the clips did not resolve", and that ambiguity is
 	// what made the w24 invisible-animation hunt take three sessions.
 	UE_LOG(LogPrimalFauna, Display,
 		TEXT("[PFA] %s: one-shot clips resolved -- idle breaks %d/%d, threaten=%s, limp=%s"),
-		*OwnerName, ResolvedBreaks, IdleBreakClips.Num(),
+		*GetName(), ResolvedBreaks, IdleBreakClips.Num(),
 		ThreatenAnim ? TEXT("ok") : TEXT("absent"),
 		LimpAnim ? TEXT("ok") : TEXT("absent"));
 }
@@ -226,7 +192,7 @@ bool APFASicklejaw::ResolveTailMoodClip(const FString& ClipSuffix)
 		return false;
 	}
 
-	UAnimSequence* Sequence = ResolveClip(*ClipSuffix, GetName());
+	UAnimSequence* Sequence = ResolveClip(*ClipSuffix);
 	if (!Sequence)
 	{
 		UE_LOG(LogPrimalFauna, Warning,
@@ -571,7 +537,7 @@ bool APFASicklejaw::DevPlayClipByName(const FString& ClipName, bool bHoldFinalFr
 		return false;
 	}
 
-	UAnimSequence* Sequence = ResolveClip(*ClipName, GetName());
+	UAnimSequence* Sequence = ResolveClip(*ClipName);
 	if (!Sequence)
 	{
 		return false;
@@ -623,7 +589,7 @@ void APFASicklejaw::DevClearClipOverride()
 
 bool APFASicklejaw::PlayAttackOneShot(const FString& ClipName)
 {
-	UAnimSequence* Sequence = ResolveClip(*ClipName, GetName());
+	UAnimSequence* Sequence = ResolveClip(*ClipName);
 	if (!Sequence)
 	{
 		// Loud, not diag-gated: an attack with no visible strike is the exact

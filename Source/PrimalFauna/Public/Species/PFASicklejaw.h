@@ -5,6 +5,7 @@
 #include "PFASicklejaw.generated.h"
 
 class UAnimSequence;
+class USkeletalMesh;
 
 // ---------------------------------------------------------------------------
 // APFASicklejaw -- the vertical-slice species (docs/01-creature-roster.md §1,
@@ -55,6 +56,18 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
+	// Runtime content is shared through a module-lifetime strong-reference
+	// cache in PFASicklejaw.cpp. A
+	// HostileScaling-expanded nest can create hundreds of Sicklejaws together;
+	// resolving the same mesh and animation packages independently in every
+	// BeginPlay caused a burst of synchronous async-loader flushes. These
+	// helpers perform each package load at most once, then every instance copies
+	// the strongly-held pointer into its own animation state.
+	USkeletalMesh* ResolveSharedMesh(const TCHAR* ObjectPath);
+	UAnimSequence* ResolveSharedAnimPackage(const FString& PackagePath, const TCHAR* Label);
+	UAnimSequence* FindSequenceInPackages(const TCHAR* const* PackagePaths, int32 NumPackages, const TCHAR* Label);
+	UAnimSequence* ResolveClip(const TCHAR* ClipSuffix);
+
 	// w24-1 locomotion driver ("they just slide along the ground"): a
 	// speed-driven idle/walk/run player on the component's single-node anim
 	// path (SetAnimationMode + PlayAnimation) -- deliberately NO AnimBP
@@ -159,7 +172,6 @@ public:
 	bool IsPlayingAttackOneShot() const;
 
 private:
-
 	// UPROPERTY-rooted so the runtime-loaded sequences can't be GC'd from
 	// under the playing component (cookbook GC-rooting convention).
 	UPROPERTY(Transient)

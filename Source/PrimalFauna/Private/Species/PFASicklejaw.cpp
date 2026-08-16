@@ -22,6 +22,7 @@
 #include "TimerManager.h"
 #include "FGHealthComponent.h"
 #include "UObject/Package.h"
+#include "UObject/StrongObjectPtr.h"
 #include "UObject/UObjectHash.h"
 
 #include "GameFramework/PlayerController.h"
@@ -31,6 +32,29 @@
 
 namespace
 {
+	// w55-1: load-once cache ownership must be independent of actor/CDO
+	// property copying and explicit to the garbage collector. A w54-1 stress
+	// run crashed while ResolveTailMoodClip dereferenced a cached sequence
+	// after many successful reuses; the log did not prove the invalidation
+	// mechanism. TStrongObjectPtr establishes the required lifetime invariant.
+	//
+	// Value-owned function statics live for the loaded module's lifetime. They
+	// keep assets strongly referenced during play and release those references
+	// during a supported module unload instead of orphaning an unreachable heap
+	// cache. TStrongObjectPtr suppresses ReleaseUObject during exit purge.
+	// Null entries remain cached to preserve the load-once fallback contract.
+	TMap<FString, TStrongObjectPtr<USkeletalMesh>>& GetSicklejawMeshCache()
+	{
+		static TMap<FString, TStrongObjectPtr<USkeletalMesh>> Cache;
+		return Cache;
+	}
+
+	TMap<FString, TStrongObjectPtr<UAnimSequence>>& GetSicklejawAnimCache()
+	{
+		static TMap<FString, TStrongObjectPtr<UAnimSequence>> Cache;
+		return Cache;
+	}
+
 	// ---- TODO(W1.2-census): every constant below is a PLACEHOLDER anchor
 	// ratio per docs/01-creature-roster.md §1 -- replace once PFA.DumpCreature
 	// census data on live vanilla creatures (Alpha Hog, Stinger) lands. ----
@@ -301,12 +325,15 @@ void APFASicklejaw::BeginPlay()
 	// back to the placeholder as the comment promises, instead of slipping
 	// past to the meshless guard below.
 	bool bRealMeshLive = false;
-	USkeletalMesh* PlaceholderMesh = LoadObject<USkeletalMesh>(nullptr, SicklejawMeshPath);
+	USkeletalMesh* PlaceholderMesh = ResolveSharedMesh(SicklejawMeshPath);
 	if (PlaceholderMesh && PlaceholderMesh->GetSkeleton())
 	{
 		bRealMeshLive = true;
-		UE_LOG(LogPrimalFauna, Display,
-			TEXT("[PFA] %s: REAL Sicklejaw mesh loaded (%s)."), *GetName(), SicklejawMeshPath);
+		if (PFADiag::IsEnabled())
+		{
+			UE_LOG(LogPrimalFauna, Display,
+				TEXT("[PFA] %s: REAL Sicklejaw mesh reused from shared strong-reference cache (%s)."), *GetName(), SicklejawMeshPath);
+		}
 	}
 	else
 	{
@@ -314,7 +341,7 @@ void APFASicklejaw::BeginPlay()
 			TEXT("[PFA] %s: real mesh %s %s -- FALLING BACK to the placeholder (run tools/import_sicklejaw_ue.py)."),
 			*GetName(), SicklejawMeshPath,
 			PlaceholderMesh ? TEXT("loaded but has NO Skeleton") : TEXT("not found"));
-		PlaceholderMesh = LoadObject<USkeletalMesh>(nullptr, PlaceholderMeshPath);
+		PlaceholderMesh = ResolveSharedMesh(PlaceholderMeshPath);
 	}
 	if (!PlaceholderMesh)
 	{
@@ -442,51 +469,84 @@ void APFASicklejaw::BeginPlay()
 	}
 }
 
-namespace
+USkeletalMesh* APFASicklejaw::ResolveSharedMesh(const TCHAR* ObjectPath)
 {
-	// w24-2: load each candidate package and return the FIRST UAnimSequence
-	// object inside, regardless of what the FBX importer named it. Logs every
-	// probe so the log alone shows which package+object won (or why none did).
-	UAnimSequence* FindSequenceInPackages(const TCHAR* const* PackagePaths, int32 NumPackages, const TCHAR* Label, const FString& OwnerName)
+	if (!IsInGameThread())
 	{
-		for (int32 i = 0; i < NumPackages; ++i)
-		{
-			UPackage* Package = LoadPackage(nullptr, PackagePaths[i], LOAD_None);
-			if (!Package)
-			{
-				if (PFADiag::IsEnabled())
-				{
-					UE_LOG(LogPrimalFauna, Display, TEXT("[PFA] %s: anim probe [%s] package %s: NOT FOUND"),
-						*OwnerName, Label, PackagePaths[i]);
-				}
-				continue;
-			}
-			UAnimSequence* Found = nullptr;
-			ForEachObjectWithPackage(Package, [&Found](UObject* Object)
-			{
-				if (UAnimSequence* Sequence = Cast<UAnimSequence>(Object))
-				{
-					Found = Sequence;
-					return false;
-				}
-				return true;
-			});
-			if (Found)
-			{
-				UE_LOG(LogPrimalFauna, Display,
-					TEXT("[PFA] %s: anim [%s] resolved: package=%s object=%s length=%.2fs"),
-					*OwnerName, Label, PackagePaths[i], *Found->GetName(), Found->GetPlayLength());
-				return Found;
-			}
-			if (PFADiag::IsEnabled())
-			{
-				UE_LOG(LogPrimalFauna, Display,
-					TEXT("[PFA] %s: anim probe [%s] package %s loaded but contains NO UAnimSequence"),
-					*OwnerName, Label, PackagePaths[i]);
-			}
-		}
+		UE_LOG(LogPrimalFauna, Error,
+			TEXT("[PFA] Sicklejaw asset cache rejected off-game-thread access: kind=mesh path=%s"),
+			ObjectPath);
 		return nullptr;
 	}
+
+	TMap<FString, TStrongObjectPtr<USkeletalMesh>>& Cache = GetSicklejawMeshCache();
+	const FString CacheKey(ObjectPath);
+	if (const TStrongObjectPtr<USkeletalMesh>* Cached = Cache.Find(CacheKey))
+	{
+		return Cached->Get();
+	}
+
+	USkeletalMesh* Loaded = LoadObject<USkeletalMesh>(nullptr, ObjectPath);
+	Cache.Add(CacheKey, TStrongObjectPtr<USkeletalMesh>(Loaded));
+	UE_LOG(LogPrimalFauna, Display,
+		TEXT("[PFA] Sicklejaw asset cache: kind=mesh path=%s decision=load-once lifetime=strong-ref outcome=%s skeleton=%s"),
+		ObjectPath, Loaded ? TEXT("loaded") : TEXT("missing"),
+		(Loaded && Loaded->GetSkeleton()) ? TEXT("yes") : TEXT("no"));
+	return Loaded;
+}
+
+UAnimSequence* APFASicklejaw::ResolveSharedAnimPackage(const FString& PackagePath, const TCHAR* Label)
+{
+	if (!IsInGameThread())
+	{
+		UE_LOG(LogPrimalFauna, Error,
+			TEXT("[PFA] Sicklejaw asset cache rejected off-game-thread access: kind=animation label=%s package=%s"),
+			Label, *PackagePath);
+		return nullptr;
+	}
+
+	TMap<FString, TStrongObjectPtr<UAnimSequence>>& Cache = GetSicklejawAnimCache();
+	if (const TStrongObjectPtr<UAnimSequence>* Cached = Cache.Find(PackagePath))
+	{
+		return Cached->Get();
+	}
+
+	UPackage* Package = LoadPackage(nullptr, *PackagePath, LOAD_None);
+	UAnimSequence* Found = nullptr;
+	if (Package)
+	{
+		ForEachObjectWithPackage(Package, [&Found](UObject* Object)
+		{
+			if (UAnimSequence* Sequence = Cast<UAnimSequence>(Object))
+			{
+				Found = Sequence;
+				return false;
+			}
+			return true;
+		});
+	}
+
+	// Cache failures as null too. Otherwise one missing primary candidate would
+	// still call LoadPackage once per creature before reaching its fallback.
+	Cache.Add(PackagePath, TStrongObjectPtr<UAnimSequence>(Found));
+	UE_LOG(LogPrimalFauna, Display,
+		TEXT("[PFA] Sicklejaw asset cache: kind=animation label=%s package=%s decision=load-once lifetime=strong-ref outcome=%s object=%s length=%.2fs"),
+		Label, *PackagePath,
+		Found ? TEXT("resolved") : (Package ? TEXT("no-sequence") : TEXT("missing-package")),
+		*GetNameSafe(Found), Found ? Found->GetPlayLength() : 0.0f);
+	return Found;
+}
+
+UAnimSequence* APFASicklejaw::FindSequenceInPackages(const TCHAR* const* PackagePaths, int32 NumPackages, const TCHAR* Label)
+{
+	for (int32 i = 0; i < NumPackages; ++i)
+	{
+		if (UAnimSequence* Found = ResolveSharedAnimPackage(PackagePaths[i], Label))
+		{
+			return Found;
+		}
+	}
+	return nullptr;
 }
 
 void APFASicklejaw::StartLocomotionAnim()
@@ -499,16 +559,15 @@ void APFASicklejaw::StartLocomotionAnim()
 		return;
 	}
 
-	const FString OwnerName = GetName();
-	LocomotionIdleAnim = FindSequenceInPackages(SicklejawIdleAnimPackages, UE_ARRAY_COUNT(SicklejawIdleAnimPackages), TEXT("idle"), OwnerName);
-	LocomotionWalkAnim = FindSequenceInPackages(SicklejawWalkAnimPackages, UE_ARRAY_COUNT(SicklejawWalkAnimPackages), TEXT("walk"), OwnerName);
-	LocomotionRunAnim = FindSequenceInPackages(SicklejawRunAnimPackages, UE_ARRAY_COUNT(SicklejawRunAnimPackages), TEXT("run"), OwnerName);
+	LocomotionIdleAnim = FindSequenceInPackages(SicklejawIdleAnimPackages, UE_ARRAY_COUNT(SicklejawIdleAnimPackages), TEXT("idle"));
+	LocomotionWalkAnim = FindSequenceInPackages(SicklejawWalkAnimPackages, UE_ARRAY_COUNT(SicklejawWalkAnimPackages), TEXT("walk"));
+	LocomotionRunAnim = FindSequenceInPackages(SicklejawRunAnimPackages, UE_ARRAY_COUNT(SicklejawRunAnimPackages), TEXT("run"));
 	// w28-1 state clips -- optional by design: each falls back to plain Idle
 	// or Walk if absent, so an incomplete import degrades instead of going
 	// dark (the w24-3 partial-arm lesson, applied to the state layer).
-	LocomotionIdleAlertAnim = FindSequenceInPackages(SicklejawIdleAlertAnimPackages, UE_ARRAY_COUNT(SicklejawIdleAlertAnimPackages), TEXT("idleAlert"), OwnerName);
-	LocomotionIdleAggressiveAnim = FindSequenceInPackages(SicklejawIdleAggressiveAnimPackages, UE_ARRAY_COUNT(SicklejawIdleAggressiveAnimPackages), TEXT("idleAggressive"), OwnerName);
-	LocomotionProwlAnim = FindSequenceInPackages(SicklejawProwlAnimPackages, UE_ARRAY_COUNT(SicklejawProwlAnimPackages), TEXT("prowl"), OwnerName);
+	LocomotionIdleAlertAnim = FindSequenceInPackages(SicklejawIdleAlertAnimPackages, UE_ARRAY_COUNT(SicklejawIdleAlertAnimPackages), TEXT("idleAlert"));
+	LocomotionIdleAggressiveAnim = FindSequenceInPackages(SicklejawIdleAggressiveAnimPackages, UE_ARRAY_COUNT(SicklejawIdleAggressiveAnimPackages), TEXT("idleAggressive"));
+	LocomotionProwlAnim = FindSequenceInPackages(SicklejawProwlAnimPackages, UE_ARRAY_COUNT(SicklejawProwlAnimPackages), TEXT("prowl"));
 	// w35-1: roll this creature's animation phase ONCE. Rolled here rather than
 	// per-apply so the creature keeps its own phase across state changes -- it
 	// reads as an individual with its own rhythm, not as per-frame jitter.
