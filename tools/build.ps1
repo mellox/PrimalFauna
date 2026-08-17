@@ -191,7 +191,11 @@ try {
         Select-String -Pattern 'BUILD SUCCESSFUL|BUILD FAILED|ExitCode=|error C\d+|error LNK|Error:' |
         ForEach-Object { $_.Line }
 
-    if (-not ($uatOut -match 'BUILD SUCCESSFUL')) { Fail 'PackagePlugin did not report BUILD SUCCESSFUL' }
+    if (-not ($uatOut -match 'BUILD SUCCESSFUL')) {
+        Write-Host 'PFABUILD raw UAT failure tail (last 200 lines):' -ForegroundColor Yellow
+        @($uatOut) | Select-Object -Last 200 | ForEach-Object { Write-Host $_ }
+        Fail 'PackagePlugin did not report BUILD SUCCESSFUL'
+    }
 }
 finally {
     # Each cleanup action is ISOLATED. Review W1 reproduced the un-isolated

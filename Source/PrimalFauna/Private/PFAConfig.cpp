@@ -178,7 +178,7 @@ void UPFAConfig::PostInitProperties()
 
     AddBool(TEXT("PackAssist"), true,
         TEXT("Factions: Pack Assist"),
-        TEXT("Same-species pack members share aggro. The pack-behavior system arrives in a later update -- until then this switch has no effect (kept here so saved settings carry forward)."));
+        TEXT("Living idle/default or roaming PrimalFauna packmates from the same nest inherit a member's combat target. Already-active packmates keep their native state. Takes effect within ~10s, no reload."));
 
     RootSection = Root;
 }

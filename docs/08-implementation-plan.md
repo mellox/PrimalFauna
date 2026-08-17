@@ -176,7 +176,7 @@ coexistence smoke · vanilla AGS creature-hostility setting flipped.
 | R5 | AI-pipeline animation quality below bar | Doc 05 §3 ladder; biped-classification trick; purchase fallbacks pre-licensed, pre-priced, user-approved at review gates |
 | R6 | Worm procedural motion reads badly | StockLancer pack fallback ($60, license-clean); director/VFX layers unchanged either way |
 | R7 | HostileScaling compounding on our spawners | Contract S1–S4 + mandatory 2-cycle compounding test (doc 06 §4) |
-| R8 | Injected nests stall on navmesh (spawn never fires) | Spawners are navigation invokers; ground-Z baked at authoring; `ForceSpawnCreatures` + `WaitingForSpawnLocation` logging localize stalls |
+| R8 | Injected nests stall on navmesh (spawn never fires) | Spawners are navigation invokers; ground-Z baked at authoring; read-only `WaitingForSpawnLocation` diagnostics localize stalls. The dev-only `PFA.SpawnNest` command distributes repeated test nests around the player by golden angle so they do not stack identical centers; production spawner mechanics remain vanilla. |
 | R9 | Scope creep (The Wilds syndrome — design forever, ship never) | Phase gates are shippable builds; parking lots in 00 §4 / 01 §6; v1.0 definition fixed below |
 | R10 | Token budget | Packet model tiers (§1); asset track parallelism uses user-time (reviews), not agent fan-outs |
 

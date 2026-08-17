@@ -46,6 +46,12 @@ public:
 	// existing override automatically).
 	virtual void OnPossess(APawn* InPawn) override;
 
+	// Saved creatures can be possessed before APFASubsystem finishes its
+	// post-mount BehaviorTree discovery. OnPossess calls this immediately;
+	// the subsystem calls it again after discovery succeeds. Idempotent: an
+	// already-running brain is never restarted.
+	bool EnsureBehaviorTreeStarted(const TCHAR* Trigger);
+
 	// w27-1: per-frame body yaw toward the target (pfa.RotationMode 2, the new
 	// default). Two attempts at using UE's built-in mechanisms both failed
 	// in-game: orient-to-movement only turns while accelerating (and these
@@ -146,6 +152,12 @@ public:
 	static constexpr bool HuntPassiveFaunaDefault = false;
 
 protected:
+	// Doc 02 §4: when one same-spawner creature enters Fight, idle/roaming
+	// packmates inherit its registered target through the same ForceAggro path
+	// used by the dev command. Config-gated by PackAssist.
+	virtual void OnCreatureStateChanged_Implementation(
+		ECreatureState PreviousState, ECreatureState NewState) override;
+
 	// BNE (AI/FGCreatureController.h:387). Base's own doc comment says it
 	// "runs CanBeHostileTowards by default" -- see the class comment above
 	// for why we make that explicit instead of relying on it.

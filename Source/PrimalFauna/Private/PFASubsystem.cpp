@@ -6,6 +6,7 @@
 #include "PFABehaviorBorrower.h"
 #include "PFANestSpawner.h"
 #include "PFACreatureBase.h"
+#include "PFACreatureController.h"
 #include "PFALoot.h"
 #include "Species/PFASicklejaw.h"
 
@@ -26,11 +27,9 @@ namespace
     constexpr int32 HeartbeatEveryNTicks = 6;
     constexpr int32 MaxBTBorrowAttempts = 5;
 
-    // ---- W1.5 test-nest defaults (docs/08 packet: "the first PFA.SpawnNest
-    // ... creates a nest AT THE PLAYER's ground position"). TODO(W2.5): these
-    // become real per-species FPFANestSpec values from the curated region
-    // table; until then PFA.SpawnNest always uses Sicklejaw with these
-    // placeholder counts. ----
+    // ---- W1.5 test-nest defaults. TODO(W2.5): these become real per-species
+    // FPFANestSpec values from the curated region table; until then
+    // PFA.SpawnNest always uses Sicklejaw with these placeholder counts. ----
     constexpr int32 TestNestCreaturesMin = 1;
     constexpr int32 TestNestCreaturesMax = 3;
     constexpr float TestNestSpawnRadiusCm = 1500.0f;
@@ -40,6 +39,25 @@ namespace
     constexpr float TestNestForwardOffsetCm = 4000.0f;
     constexpr int32 TestNestRespawnDaysDefault = 1;
     const FName TestRegionId(TEXT("Test"));
+
+	int32 RecoverBorrowedBehaviorTreeOnExistingControllers(UWorld* World, const TCHAR* Trigger)
+	{
+		int32 StartedOrRunning = 0;
+		int32 Controllers = 0;
+		for (TActorIterator<APFACreatureController> It(World); It; ++It)
+		{
+			if (APFACreatureController* Controller = *It)
+			{
+				++Controllers;
+				StartedOrRunning += Controller->EnsureBehaviorTreeStarted(Trigger) ? 1 : 0;
+			}
+		}
+		UE_LOG(LogPrimalFauna, Display,
+			TEXT("[PFA] BT recovery: trigger=%s controllers=%d startedOrRunning=%d decision=retry-existing outcome=%s"),
+			Trigger, Controllers, StartedOrRunning,
+			StartedOrRunning == Controllers ? TEXT("complete") : TEXT("partial"));
+		return StartedOrRunning;
+	}
 
     // At the 4000 cm horizontal command offset, limiting the downward trace to
     // 4000 cm bounds a hit to sqrt(4000^2 + 4000^2) = 5657 cm from the player,
@@ -77,6 +95,10 @@ void APFASubsystem::BeginPlay()
         BTDiscoveredCount = BorrowResult.DiscoveredCount;
         BTSearchRoot = BorrowResult.SearchRoot;
         BTBorrowAttempts = 1;
+		if (mBorrowedBehaviorTree)
+		{
+			RecoverBorrowedBehaviorTreeOnExistingControllers(GetWorld(), TEXT("BeginPlay-borrow-ready"));
+		}
     }
 
     GetWorldTimerManager().SetTimer(
@@ -143,6 +165,32 @@ void APFASubsystem::RefreshTick()
         bLoggedConfigSnapshot = true;
     }
 
+    // W1.4 review W2: re-attempt the BT borrow if discovery raced a still-
+    // scanning asset registry and saw ZERO assets (null tree with a non-zero
+    // census = heuristic miss, retrying cannot help). This must run before
+    // reconciliation and either AutoTest one-shot so saved/live controllers
+    // can be recovered before their automatic evidence is consumed.
+    if (!mBorrowedBehaviorTree && BTDiscoveredCount == 0 && BTBorrowAttempts < MaxBTBorrowAttempts)
+    {
+        ++BTBorrowAttempts;
+        UE_LOG(LogPrimalFauna, Display, TEXT("[PFA] BT borrow retry %d/%d (previous discovery found 0 assets)"),
+            BTBorrowAttempts, MaxBTBorrowAttempts);
+        const PFABehaviorBorrower::FResult BorrowResult = PFABehaviorBorrower::DiscoverAndBorrow(GetWorld());
+        mBorrowedBehaviorTree = BorrowResult.ChosenTree;
+        BTDiscoveredCount = BorrowResult.DiscoveredCount;
+        BTSearchRoot = BorrowResult.SearchRoot;
+		if (mBorrowedBehaviorTree)
+		{
+			RecoverBorrowedBehaviorTreeOnExistingControllers(GetWorld(), TEXT("RefreshTick-borrow-ready"));
+			if (bRanAutoTestWithCreatures)
+			{
+				bRanAutoTestWithCreatures = false;
+				UE_LOG(LogPrimalFauna, Display,
+					TEXT("[PFA] BT recovery: decision=rearm-live-autotest outcome=late-borrow-ready"));
+			}
+		}
+    }
+
     // Doc 03 §3: adopt/materialize every registry nest, every refresh tick --
     // the SAME path SpawnNestAtPlayer triggers immediately on demand. Runs
     // before the self-test block below so a pfa.AutoTest=1 run's
@@ -176,21 +224,6 @@ void APFASubsystem::RefreshTick()
                 break;
             }
         }
-    }
-
-    // W1.4 review W2: re-attempt the BT borrow if discovery raced a still-
-    // scanning asset registry and saw ZERO assets (null tree with a non-zero
-    // census = heuristic miss, retrying cannot help). Cap keeps a genuinely
-    // empty registry from spamming forever.
-    if (!mBorrowedBehaviorTree && BTDiscoveredCount == 0 && BTBorrowAttempts < MaxBTBorrowAttempts)
-    {
-        ++BTBorrowAttempts;
-        UE_LOG(LogPrimalFauna, Display, TEXT("[PFA] BT borrow retry %d/%d (previous discovery found 0 assets)"),
-            BTBorrowAttempts, MaxBTBorrowAttempts);
-        const PFABehaviorBorrower::FResult BorrowResult = PFABehaviorBorrower::DiscoverAndBorrow(GetWorld());
-        mBorrowedBehaviorTree = BorrowResult.ChosenTree;
-        BTDiscoveredCount = BorrowResult.DiscoveredCount;
-        BTSearchRoot = BorrowResult.SearchRoot;
     }
 
     if (TickCount % HeartbeatEveryNTicks == 0)
@@ -542,6 +575,19 @@ bool APFASubsystem::SpawnNestAtPlayer(FString& OutDetail)
     }
 
     const FVector PlayerLocation = PlayerPawn->GetActorLocation();
+	// Test nests are append-only. Use the next stable index both for identity
+	// and for a golden-angle placement around the player. Repeated SpawnNest
+	// commands from one spot previously stacked every spawner at the same
+	// center. Separating test centers lets runtime testing measure whether that
+	// identical-center contention contributed to native projection waits.
+	int32 NextIdx = 0;
+	for (const FPFANestRecord& Existing : NestRegistry)
+	{
+		if (Existing.RegionId == TestRegionId)
+		{
+			++NextIdx;
+		}
+	}
 	FVector Forward2D = PlayerPawn->GetActorForwardVector();
 	Forward2D.Z = 0.0f;
 	Forward2D = Forward2D.GetSafeNormal();
@@ -549,7 +595,10 @@ bool APFASubsystem::SpawnNestAtPlayer(FString& OutDetail)
 	{
 		Forward2D = FVector::ForwardVector;
 	}
-	const FVector RequestedNestLocation = PlayerLocation + Forward2D * TestNestForwardOffsetCm;
+	constexpr float GoldenAngleDegrees = 137.507764f;
+	const float PlacementAngleDegrees = FMath::Fmod(NextIdx * GoldenAngleDegrees, 360.0f);
+	const FVector PlacementDirection = Forward2D.RotateAngleAxis(PlacementAngleDegrees, FVector::UpVector);
+	const FVector RequestedNestLocation = PlayerLocation + PlacementDirection * TestNestForwardOffsetCm;
 
     // Simple downward line trace (docs/08 W1.5 scope adjustment -- no water
     // check / candidate sampling here, that is W2.1's PFA.DumpCandidates
@@ -568,18 +617,6 @@ bool APFASubsystem::SpawnNestAtPlayer(FString& OutDetail)
             TestNestForwardOffsetCm, GroundTraceUpCm, GroundTraceDownCm, *RequestedNestLocation.ToCompactString());
     }
 
-    // "next free idx" (docs/08 packet): append-only in W1.5 (no deactivation/
-    // removal exists yet), so counting existing "Test"-region records IS the
-    // next free index.
-    int32 NextIdx = 0;
-    for (const FPFANestRecord& Existing : NestRegistry)
-    {
-        if (Existing.RegionId == TestRegionId)
-        {
-            ++NextIdx;
-        }
-    }
-
     FPFANestRecord NewRecord;
     NewRecord.NestId = FName(*FString::Printf(TEXT("%s_%d"), *TestRegionId.ToString(), NextIdx));
     NewRecord.RegionId = TestRegionId;
@@ -594,9 +631,9 @@ bool APFASubsystem::SpawnNestAtPlayer(FString& OutDetail)
     NestRegistry.Add(NewRecord);
 
     UE_LOG(LogPrimalFauna, Display,
-        TEXT("[PFA] PFA.SpawnNest: appended record %s (region=%s) at %s (player=%s offset=%.0fcm groundTrace=%s). Reconciling immediately."),
+        TEXT("[PFA] PFA.SpawnNest: appended record %s (region=%s) at %s (player=%s offset=%.0fcm angle=%.1fdeg groundTrace=%s). Reconciling immediately."),
         *NewRecord.NestId.ToString(), *NewRecord.RegionId.ToString(), *GroundLocation.ToCompactString(),
-		*PlayerLocation.ToCompactString(), TestNestForwardOffsetCm,
+		*PlayerLocation.ToCompactString(), TestNestForwardOffsetCm, PlacementAngleDegrees,
         bHitGround ? TEXT("hit") : TEXT("miss-fallback"));
 
     // Doc 03 §3: ONE code path -- append the record, then run the exact same

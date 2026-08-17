@@ -2,11 +2,13 @@
 #include "PrimalFauna.h"
 #include "PFACheats.h"
 #include "PFACreatureBase.h"
+#include "PFAConfig.h"
 #include "PFASubsystem.h"
 #include "Species/PFASicklejaw.h"
 
 #include "Creature/FGCreature.h"
 #include "Creature/FGCreatureSpawner.h"
+#include "FGHealthComponent.h"
 #include "FGCreatureSubsystem.h"
 #include "FGCharacterPlayer.h"
 #include "PFAFactionConfig.h"
@@ -212,6 +214,19 @@ void APFACreatureController::OnPossess(APawn* InPawn)
 	// below early-returns (a creature with no BT should still be able to
 	// perceive). Self-contained + heavily instrumented; see the method.
 	WireCreaturePerception(PossessedCreature);
+	EnsureBehaviorTreeStarted(TEXT("OnPossess"));
+}
+
+bool APFACreatureController::EnsureBehaviorTreeStarted(const TCHAR* Trigger)
+{
+	AFGCreature* PossessedCreature = GetControlledCreature();
+	if (!PossessedCreature)
+	{
+		UE_LOG(LogPrimalFauna, Warning,
+			TEXT("[PFA] %s: EnsureBehaviorTreeStarted trigger=%s creature=none decision=skip outcome=no-controlled-creature"),
+			*GetName(), Trigger ? Trigger : TEXT("<null>"));
+		return false;
+	}
 
 	UBehaviorTree* BTAsset = PossessedCreature->GetBehaviorTreeAsset();
 	const TCHAR* BTSource = TEXT("instance");
@@ -245,10 +260,10 @@ void APFACreatureController::OnPossess(APawn* InPawn)
 
 	if (!BTAsset)
 	{
-		UE_LOG(LogPrimalFauna, Error,
-			TEXT("[PFA] %s: OnPossess %s -> BT <none> RunBehaviorTree=SKIPPED blackboard=n/a (instance null AND subsystem fallback empty -- check the [PFA] BT borrow/census lines from world load; discovery may have found nothing)."),
-			*GetName(), *PossessedCreature->GetName());
-		return;
+		UE_LOG(LogPrimalFauna, Warning,
+			TEXT("[PFA] %s: EnsureBehaviorTreeStarted trigger=%s creature=%s BT=none decision=defer outcome=borrow-not-ready"),
+			*GetName(), Trigger ? Trigger : TEXT("<null>"), *PossessedCreature->GetName());
+		return false;
 	}
 
 	UBrainComponent* ExistingBrain = GetBrainComponent();
@@ -260,9 +275,9 @@ void APFACreatureController::OnPossess(APawn* InPawn)
 		// clean "already running, no-op" log line is a clearer signal than a
 		// second identical "RunBehaviorTree=true" line for the same creature.
 		UE_LOG(LogPrimalFauna, Display,
-			TEXT("[PFA] %s: OnPossess %s -> BT %s already running (BrainComponent::IsRunning()=true), not restarting."),
-			*GetName(), *PossessedCreature->GetName(), *BTAsset->GetName());
-		return;
+			TEXT("[PFA] %s: EnsureBehaviorTreeStarted trigger=%s creature=%s BT=%s decision=no-op outcome=already-running"),
+			*GetName(), Trigger ? Trigger : TEXT("<null>"), *PossessedCreature->GetName(), *BTAsset->GetName());
+		return true;
 	}
 
 	const bool bStarted = RunBehaviorTree(BTAsset);
@@ -274,8 +289,8 @@ void APFACreatureController::OnPossess(APawn* InPawn)
 		// Success chain -- Display, always on (not diagnostics-gated): this is
 		// the ONE line the W1.6 re-test greps for to confirm the fix landed.
 		UE_LOG(LogPrimalFauna, Display,
-			TEXT("[PFA] %s: OnPossess %s -> BT %s (source=%s) RunBehaviorTree=true blackboard=%s (btBlackboardAsset=%s)"),
-			*GetName(), *PossessedCreature->GetName(), *BTAsset->GetName(), BTSource, BlackboardState, *BTBlackboardAssetName);
+			TEXT("[PFA] %s: EnsureBehaviorTreeStarted trigger=%s creature=%s BT=%s source=%s decision=start outcome=success blackboard=%s btBlackboardAsset=%s"),
+			*GetName(), Trigger ? Trigger : TEXT("<null>"), *PossessedCreature->GetName(), *BTAsset->GetName(), BTSource, BlackboardState, *BTBlackboardAssetName);
 
 		// w45-3 (review D1): FIRST blackboard publish, here and nowhere earlier.
 		// The keys the vanilla BP controller used to write -- the roam band and the
@@ -302,9 +317,111 @@ void APFACreatureController::OnPossess(APawn* InPawn)
 		// engine source directly (AIModule/Private/AIController.cpp:982). The
 		// engine's own LogBehaviorTree channel (UE_VLOG) may carry more detail.
 		UE_LOG(LogPrimalFauna, Error,
-			TEXT("[PFA] %s: OnPossess %s -> BT %s RunBehaviorTree=false blackboard=%s (btBlackboardAsset=%s) -- UseBlackboard() likely failed inside RunBehaviorTree (see LogBehaviorTree above for the engine's own reason)."),
-			*GetName(), *PossessedCreature->GetName(), *BTAsset->GetName(), BlackboardState, *BTBlackboardAssetName);
+			TEXT("[PFA] %s: EnsureBehaviorTreeStarted trigger=%s creature=%s BT=%s decision=start outcome=failed blackboard=%s btBlackboardAsset=%s"),
+			*GetName(), Trigger ? Trigger : TEXT("<null>"), *PossessedCreature->GetName(), *BTAsset->GetName(), BlackboardState, *BTBlackboardAssetName);
 	}
+	return bStarted;
+}
+
+void APFACreatureController::OnCreatureStateChanged_Implementation(
+	ECreatureState PreviousState, ECreatureState NewState)
+{
+	Super::OnCreatureStateChanged_Implementation(PreviousState, NewState);
+	// Read the persisted snapshot directly here: this callback can run before the
+	// subsystem's first periodic config push, and a cached default must never
+	// assist a pack when the saved PackAssist setting is disabled.
+	if (!FPFAConfigStruct::GetActiveConfig(this).PackAssist || PreviousState == ECreatureState::CS_Fight ||
+		NewState != ECreatureState::CS_Fight)
+	{
+		return;
+	}
+
+	AFGCreature* Leader = GetControlledCreature();
+	AFGCreatureSpawner* Spawner = Leader ? Leader->GetSpawner() : nullptr;
+	AActor* Target = GetCurrentTarget();
+	if (!Target)
+	{
+		Target = GetHighestAggroTarget(ETargetVisibilityRequirement::TVR_None, 0.0f);
+	}
+	if (!Leader || !Spawner || !Target)
+	{
+		UE_LOG(LogPrimalFauna, Display,
+			TEXT("[PFA] PackAssist: leader=%s spawner=%s target=%s candidates=0 joined=0 decision=skip outcome=missing-context"),
+			*GetNameSafe(Leader), *GetNameSafe(Spawner), *GetNameSafe(Target));
+		return;
+	}
+	if (!IsInGameThread())
+	{
+		UE_LOG(LogPrimalFauna, Error,
+			TEXT("[PFA] PackAssist: leader=%s spawner=%s target=%s candidates=0 joined=0 decision=skip outcome=not-game-thread"),
+			*Leader->GetName(), *Spawner->GetName(), *Target->GetName());
+		return;
+	}
+
+	// ForceAggro requests an immediate native state transition. That transition
+	// synchronously invokes this callback on the assisted controller, so a large
+	// pack would otherwise recurse once per member and rescan the same spawner at
+	// every depth. One game-thread guard per spawner keeps the whole assist wave a
+	// single bounded O(n) loop while allowing independent spawners to assist.
+	static TSet<FObjectKey> ActivePackAssistSpawners;
+	const FObjectKey SpawnerKey(Spawner);
+	if (ActivePackAssistSpawners.Contains(SpawnerKey))
+	{
+		UE_LOG(LogPrimalFauna, Verbose,
+			TEXT("[PFA] PackAssist: leader=%s spawner=%s target=%s candidates=0 joined=0 decision=skip outcome=reentrant-wave"),
+			*Leader->GetName(), *Spawner->GetName(), *Target->GetName());
+		return;
+	}
+	ActivePackAssistSpawners.Add(SpawnerKey);
+	struct FScopedPackAssistWave
+	{
+		TSet<FObjectKey>& ActiveSpawners;
+		FObjectKey Key;
+		~FScopedPackAssistWave()
+		{
+			ActiveSpawners.Remove(Key);
+		}
+	} ScopedWave{ActivePackAssistSpawners, SpawnerKey};
+
+	int32 Candidates = 0;
+	int32 Accepted = 0;
+	int32 Joined = 0;
+	for (AFGCreature* PackCreature : Spawner->GetCreatures())
+	{
+		if (!PackCreature || PackCreature == Leader || PackCreature->IsActorBeingDestroyed())
+		{
+			continue;
+		}
+		const UFGHealthComponent* Health = PackCreature->GetHealthComponent();
+		if (!Health || Health->IsDead())
+		{
+			continue;
+		}
+		APFACreatureController* PackController = Cast<APFACreatureController>(PackCreature->GetController());
+		if (!PackController)
+		{
+			continue;
+		}
+		const ECreatureState PackState = PackController->GetCurrentCreatureState();
+		if (PackState != ECreatureState::CS_Default && PackState != ECreatureState::CS_Roam)
+		{
+			continue;
+		}
+		++Candidates;
+		const float RequestedAggro = PackCreature->GetAggroFightThreshold() + 1.0f;
+		const bool bAccepted = PackController->ForceAggro(Target, RequestedAggro);
+		Accepted += bAccepted ? 1 : 0;
+		const bool bJoined = bAccepted &&
+			PackController->GetCurrentCreatureState() == ECreatureState::CS_Fight &&
+			PackController->GetCurrentTarget() == Target &&
+			PackController->GetAggroForTarget(Target) >= RequestedAggro;
+		Joined += bJoined ? 1 : 0;
+	}
+
+	UE_LOG(LogPrimalFauna, Display,
+		TEXT("[PFA] PackAssist: leader=%s spawner=%s target=%s candidates=%d accepted=%d joined=%d decision=share-fight-target outcome=%s"),
+		*Leader->GetName(), *Spawner->GetName(), *Target->GetName(), Candidates, Accepted, Joined,
+		Joined == Candidates ? TEXT("complete") : TEXT("partial"));
 }
 
 bool APFACreatureController::PassesAbsoluteNeverRules(const AActor* actor) const
@@ -783,6 +900,103 @@ namespace
 					PFAFactionConfig::HuntVanillaHostiles() ? TEXT("true") : TEXT("false"),
 					PFAFactionConfig::HuntPassiveFauna() ? TEXT("true") : TEXT("false"));
 				return bControllerWired && bDefaultsMatchDoc04;
+			}});
+		return true;
+	}();
+
+	const bool bRegistered_SicklejawBehaviorTreesRunning = []
+	{
+		RegisterPFASelfTest({TEXT("SicklejawBehaviorTreesRunning"),
+			[](UWorld* World, FString& OutDetail) -> bool
+			{
+				int32 Controllers = 0;
+				int32 NoCreature = 0;
+				int32 NoTree = 0;
+				int32 BrainNotRunning = 0;
+				for (TActorIterator<APFACreatureController> It(World); It; ++It)
+				{
+					APFACreatureController* Controller = *It;
+					++Controllers;
+					AFGCreature* Creature = Controller ? Controller->GetControlledCreature() : nullptr;
+					NoCreature += Creature ? 0 : 1;
+					NoTree += (Creature && Creature->GetBehaviorTreeAsset()) ? 0 : 1;
+					const UBrainComponent* Brain = Controller ? Controller->GetBrainComponent() : nullptr;
+					BrainNotRunning += (Brain && Brain->IsRunning()) ? 0 : 1;
+				}
+				OutDetail = FString::Printf(
+					TEXT("controllers=%d noCreature=%d noTree=%d brainNotRunning=%d"),
+					Controllers, NoCreature, NoTree, BrainNotRunning);
+				if (Controllers == 0)
+				{
+					OutDetail = TEXT("NO-COVERAGE: no live PFA controllers; spawn a Sicklejaw and re-run");
+					return false;
+				}
+				return Controllers > 0 && NoCreature == 0 && NoTree == 0 && BrainNotRunning == 0;
+			}});
+		return true;
+	}();
+
+	const bool bRegistered_PackAssistCoverage = []
+	{
+		RegisterPFASelfTest({TEXT("PackAssistCoverage"),
+			[](UWorld* World, FString& OutDetail) -> bool
+			{
+				if (!PFAFactionConfig::PackAssist())
+				{
+					OutDetail = TEXT("NO-COVERAGE: PackAssist is disabled");
+					return true;
+				}
+
+				int32 FightingPackLeaders = 0;
+				int32 ObservedPackmates = 0;
+				int32 EligibleLeftBehind = 0;
+				for (TActorIterator<APFACreatureController> It(World); It; ++It)
+				{
+					APFACreatureController* LeaderController = *It;
+					AFGCreature* Leader = LeaderController ? LeaderController->GetControlledCreature() : nullptr;
+					AFGCreatureSpawner* Spawner = Leader ? Leader->GetSpawner() : nullptr;
+					AActor* Target = LeaderController ? LeaderController->GetCurrentTarget() : nullptr;
+					if (!Leader || !Spawner || !Target ||
+						LeaderController->GetCurrentCreatureState() != ECreatureState::CS_Fight)
+					{
+						continue;
+					}
+
+					int32 ThisPackmates = 0;
+					for (AFGCreature* PackCreature : Spawner->GetCreatures())
+					{
+						if (!PackCreature || PackCreature == Leader || PackCreature->IsActorBeingDestroyed())
+						{
+							continue;
+						}
+						const UFGHealthComponent* Health = PackCreature->GetHealthComponent();
+						APFACreatureController* PackController =
+							Cast<APFACreatureController>(PackCreature->GetController());
+						if (!Health || Health->IsDead() || !PackController)
+						{
+							continue;
+						}
+						++ThisPackmates;
+						const ECreatureState PackState = PackController->GetCurrentCreatureState();
+						EligibleLeftBehind +=
+							(PackState == ECreatureState::CS_Default || PackState == ECreatureState::CS_Roam) ? 1 : 0;
+					}
+					if (ThisPackmates > 0)
+					{
+						++FightingPackLeaders;
+						ObservedPackmates += ThisPackmates;
+					}
+				}
+
+				if (FightingPackLeaders == 0)
+				{
+					OutDetail = TEXT("NO-COVERAGE: no live fighting same-spawner PFA pack exists; aggro one member and re-run");
+					return true;
+				}
+				OutDetail = FString::Printf(
+					TEXT("fightingPackLeaders=%d observedPackmates=%d eligibleLeftBehind=%d"),
+					FightingPackLeaders, ObservedPackmates, EligibleLeftBehind);
+				return EligibleLeftBehind == 0;
 			}});
 		return true;
 	}();

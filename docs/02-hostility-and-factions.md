@@ -67,12 +67,16 @@ Live config changes: the subsystem refresh tick pushes mode changes to live crea
 
 ## 4. Pack behavior (Sicklejaw showcase; config `PackAssist`)
 
-When a pack member enters Fight state (override `OnCreatureStateChanged`, `FGCreatureController.h:333`
-BNE, or bind `mOnCreatureStateChanged` :443), notify same-spawner packmates: for each living
-`FSpawnData::Creature` of the shared `mOwningSpawner`, if idle/roaming, `SetAggroForTarget(target,
-aggro ≥ mAggroFightThreshold)` (:273) so they join. Log one Display line per assist:
-`[PFA] PackAssist: <n> Sicklejaws join vs <target>`. No hooks — all our classes and public/UFUNCTION
-API on packmates' controllers.
+When a pack member enters Fight state, `APFACreatureController::OnCreatureStateChanged_Implementation`
+notifies living same-spawner packmates. Idle/default or roaming PFA controllers receive the leader's
+current (or highest-aggro fallback) target through `ForceAggro`, which first uses the native target
+registration path and then sets aggro just above the packmate's fight threshold. Already alert,
+fighting, investigating, or fleeing packmates are left to the native state machine. One Display line
+records leader, spawner, target, candidate, registration-accepted, and measured joined counts,
+plus decision and outcome. `PFA.SelfTest` reports `PackAssistCoverage` as `NO-COVERAGE` until a
+live same-spawner pack has a fighting member; with coverage it fails if an eligible default/roaming
+packmate was left behind. No hooks — all
+classes are ours and the shared spawner relationship is native.
 
 ## 5. Perception tuning
 

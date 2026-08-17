@@ -21,9 +21,8 @@ namespace PFAFactionConfig
 	bool HuntVanillaHostiles();
 	bool HuntPassiveFauna();
 
-	// Key exists in the tree (doc 04 §1) but its consumer (doc 02 §4 shared
-	// pack aggro) is a later packet -- tooltip says so (ExperimentalFeatures
-	// precedent: honest no-effect keys beat schema churn).
+	// Living idle/default or roaming PFA packmates from the same nest inherit
+	// a member's combat target. Already-active packmates retain native state.
 	bool PackAssist();
 
 	// Sicklejaw balance knob, clamped to doc 04's 0.25..2.0 at push time.

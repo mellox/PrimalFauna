@@ -95,16 +95,21 @@ defaults so the CDO remains the single source of truth.
 
 ## 4. Behavior: borrow the vanilla Behavior Tree, own the actions
 
-**STATUS AFTER DAY-1 IN-GAME RUNS (2026-07-23):** the borrow WORKS with two corrections shipped:
+**STATUS AFTER RUNTIME SAVE/LOAD TESTING (updated 2026-08-16):** the borrow WORKS with three corrections:
 (1) CDO→instance propagation does NOT survive the closed-source spawn path — the controller's
 OnPossess writes the subsystem's GC-rooted tree onto the INSTANCE (`source=subsystem-fallback`,
 W1.7); (2) launching is OUR job — vanilla launches the tree from its BP controller graph
-(`RunBehaviorTree` in OnPossess, W1.6). PROVEN: 7/7 creatures run BT_CreatureBehavior with
-blackboard. **OPEN (W1.8): the tree runs but perception/targeting never evaluates candidates** —
-the BP controller layer evidently also wires the creature's perception settings into the
-controller's perception component (or starts the stimuli listener/state machine). Investigation
-recipe: dump the controller-side perception component on ours vs a live vanilla creature, diff,
-wire the gap. Until then creatures are alive-but-pacifist.
+(`RunBehaviorTree` in OnPossess, W1.6); (3) saved creatures can be possessed before the subsystem's
+post-mount discovery finishes. `EnsureBehaviorTreeStarted` therefore defers honestly when the tree
+is unavailable, and the subsystem retries every existing PFA controller immediately after discovery
+succeeds. The helper is idempotent and never restarts an already-running brain. Automatic tests
+run after the capped discovery retry; a successful late recovery re-arms the live-creature
+one-shot so its corrected evidence is not lost. `PFA.SelfTest` requires at least one live PFA
+controller, then checks every one has a creature, an instance tree, and a running brain; zero
+controllers is an explicit failing `NO-COVERAGE`, not a vacuous PASS.
+The PackAssist self-test is explicitly coverage-aware: it emits `NO-COVERAGE` when no live
+same-spawner pack is fighting and otherwise fails if a living default/roaming PFA packmate remains
+behind after the bounded assist wave.
 
 The gamble that makes creature AI cheap — staged so it degrades gracefully:
 
