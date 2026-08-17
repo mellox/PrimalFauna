@@ -3,6 +3,7 @@
 #include "PrimalFauna.h"
 #include "PFACheats.h"
 #include "PFACreatureController.h"
+#include "Species/PFAAnimInstance.h"
 #include "Actions/PFACreatureActionMelee.h"
 
 #include "FGHealthComponent.h"
@@ -675,8 +676,8 @@ void APFASicklejaw::TickLocomotionAnim()
 		return;
 	}
 
-	// Dead creatures keep their last pose (or the native death handling's
-	// ragdoll) -- stop driving anims and let the timer die with the actor.
+	// Dead creatures keep the authored collapse's final pose -- stop driving
+	// locomotion and let the timer die with the actor.
 	if (UFGHealthComponent* Health = GetHealthComponent())
 	{
 		if (Health->IsDead())
@@ -912,6 +913,15 @@ void APFASicklejaw::Died(AActor* DiedActor)
 	Super::Died(DiedActor);
 
 	USkeletalMeshComponent* MeshComponent = GetMesh();
+	if (MeshComponent)
+	{
+		if (UPFAAnimInstance* AnimInstance = Cast<UPFAAnimInstance>(MeshComponent->GetAnimInstance()))
+		{
+			// Death is a complete pose, including the missing-clip fallback.
+			// Never leave a looping live tail delta driving a corpse.
+			AnimInstance->SetTailMood(nullptr, 0.0f);
+		}
+	}
 	if (!MeshComponent || !DeathAnim)
 	{
 		UE_LOG(LogPrimalFauna, Warning,
@@ -950,7 +960,7 @@ void APFASicklejaw::DoRagdoll_Internal()
 		MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
 	UE_LOG(LogPrimalFauna, Display,
-		TEXT("[PFA] %s: death ragdoll decision=bypass-auto-physics-asset outcome=authored-collapse"),
+		TEXT("[PFA] %s: death ragdoll decision=bypass-auto-physics-asset outcome=native-ragdoll-skipped presentation=deferred-to-Died"),
 		*GetName());
 }
 

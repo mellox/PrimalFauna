@@ -80,9 +80,9 @@ namespace
 						continue;
 					}
 					// Corpses are exempt: the foot-plant keeper deliberately
-					// stops on death and a ragdoll's bounds bear no fixed
-					// relationship to the capsule -- judging them would turn
-					// every post-combat self-test red for the wrong reason.
+					// stops on death and the held authored collapse is not
+					// capsule-relative -- judging it would turn every
+					// post-combat self-test red for the wrong reason.
 					if (const UFGHealthComponent* Health = Creature->GetHealthComponent())
 					{
 						if (Health->IsDead())

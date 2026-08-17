@@ -169,6 +169,12 @@ spawn, retains its interaction trace, ignores Pawn collision, and has navigation
 so multiple remains cannot become a pathing wall. Icons: rendered from the textured model (doc 05 §5) — the render-before-review
 rule [[feedback-render-textured-for-review]] applies to icons too.
 
+Sicklejaw-specific death exception: `APFASicklejaw` still calls `AFGCreature::Died` for native
+loot, cleanup, timers and lifetime, but bypasses `DoRagdoll_Internal` only after death because this
+imported PhysicsAsset intermittently stretches the skeleton. It plays the preloaded non-looping
+authored `Death` collapse, holds its final corpse pose, clears the dead tail additive and disables
+corpse-mesh collision. Live/nonlethal ragdoll calls continue through FactoryGame.
+
 ## 7. Sandwyrm movement (the one custom-movement quarantine)
 
 `UPFAWormMovement : UFGCreatureMovementComponent` (`Creature/FGCreatureMovementComponent.h:14`),
