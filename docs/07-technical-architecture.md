@@ -107,9 +107,11 @@ run after the capped discovery retry; a successful late recovery re-arms the liv
 one-shot so its corrected evidence is not lost. `PFA.SelfTest` requires at least one live PFA
 controller, then checks every one has a creature, an instance tree, and a running brain; zero
 controllers is an explicit failing `NO-COVERAGE`, not a vacuous PASS.
-The PackAssist self-test is explicitly coverage-aware: it emits `NO-COVERAGE` when no live
-same-spawner pack is fighting and otherwise fails if a living default/roaming PFA packmate remains
-behind after the bounded assist wave.
+The PackAssist self-test is explicitly coverage-aware: per world it records only bounded assist
+waves that had eligible candidates, including candidate, accepted, joined, and failed-wave counts.
+It fails with `NO-COVERAGE` until such a wave occurs, then fails if any wave did not bind every
+candidate to the exact assisted target in Fight with sufficient aggro. Already-active packmates are
+not scanned after the fact because native combat may legitimately keep them on another target.
 
 The gamble that makes creature AI cheap — staged so it degrades gracefully:
 
@@ -162,7 +164,9 @@ item-drop pickup(s) for `Desc_<Species>Remains` (+ trophy rolls per doc 01). Ite
 `UFGItemDescriptor` C++ subclasses (stack size/category/mesh/icon on CDO); recipes mirror the
 vanilla remains→protein constructor recipes (census dumps the exact vanilla recipe shape);
 registered via the loot schematic on the world module (`content-and-assets.md` model: schematic is
-the loading anchor). Icons: rendered from the textured model (doc 05 §5) — the render-before-review
+the loading anchor). Each death pickup uses the game's `FindGroundLocationAndRotation` helper before
+spawn, retains its interaction trace, ignores Pawn collision, and has navigation relevance disabled
+so multiple remains cannot become a pathing wall. Icons: rendered from the textured model (doc 05 §5) — the render-before-review
 rule [[feedback-render-textured-for-review]] applies to icons too.
 
 ## 7. Sandwyrm movement (the one custom-movement quarantine)

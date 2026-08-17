@@ -70,12 +70,17 @@ Live config changes: the subsystem refresh tick pushes mode changes to live crea
 When a pack member enters Fight state, `APFACreatureController::OnCreatureStateChanged_Implementation`
 notifies living same-spawner packmates. Idle/default or roaming PFA controllers receive the leader's
 current (or highest-aggro fallback) target through `ForceAggro`, which first uses the native target
-registration path and then sets aggro just above the packmate's fight threshold. Already alert,
+registration path, sets aggro just above the packmate's fight threshold, explicitly binds that actor
+as the native current target and focus, and then requests one immediate state
+update. The aggregate separates native registration/aggro-write acceptance from `joined`, which
+requires Fight state, the exact current target, and the requested aggro readback. Already alert,
 fighting, investigating, or fleeing packmates are left to the native state machine. One Display line
-records leader, spawner, target, candidate, registration-accepted, and measured joined counts,
-plus decision and outcome. `PFA.SelfTest` reports `PackAssistCoverage` as `NO-COVERAGE` until a
-live same-spawner pack has a fighting member; with coverage it fails if an eligible default/roaming
-packmate was left behind. No hooks — all
+records leader, spawner, target, candidate, accepted, and measured joined counts,
+plus decision and outcome. Per world, `PFA.SelfTest` reports `PackAssistCoverage` as a failing
+`NO-COVERAGE` until an assist wave with eligible candidates occurs. It then consumes the immediate
+wave evidence and fails if any candidate did not enter Fight with the exact assisted target and
+sufficient aggro; already-active fighters are deliberately excluded because native combat may keep
+them on another valid target. No hooks — all
 classes are ours and the shared spawner relationship is native.
 
 ## 5. Perception tuning

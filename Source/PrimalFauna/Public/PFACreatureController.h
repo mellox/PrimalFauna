@@ -78,7 +78,10 @@ public:
 	// PFA.AggroNearest Readback=-1.0, no Fight lock, both modes). Uses the
 	// native private GetOrRegisterAggroTarget under the AccessTransformers
 	// Friend grant so every FFGCreatureAggroData field is initialized by the
-	// game's own code. Returns false if registration was refused.
+	// game's own code, then explicitly binds the target through the public
+	// native setter before one state-machine update. Returns true when native
+	// registration + the requested aggro write were accepted; callers measure
+	// Fight state and exact current-target binding as a separate postcondition.
 	bool ForceAggro(AActor* Target, float NewAggro);
 
 	// W2.5: clear ALL per-target state (aggro entries, visibility entries,

@@ -25,6 +25,27 @@
 
 namespace
 {
+	struct FPackAssistWaveEvidence
+	{
+		TWeakObjectPtr<UWorld> World;
+		int32 WavesWithCandidates = 0;
+		int32 Candidates = 0;
+		int32 Accepted = 0;
+		int32 Joined = 0;
+		int32 FailedWaves = 0;
+	};
+
+	FPackAssistWaveEvidence& GetPackAssistWaveEvidence(UWorld* World)
+	{
+		static FPackAssistWaveEvidence Evidence;
+		if (Evidence.World.Get() != World)
+		{
+			Evidence = FPackAssistWaveEvidence{};
+			Evidence.World = World;
+		}
+		return Evidence;
+	}
+
 	// ⚠ TRAP, NAMED SO THE NEXT PERSON DOES NOT COPY IT AGAIN (w48-3, review W2):
 	// THIS CVar MUST BE DECLARED AT FILE SCOPE, NOT INSIDE ITS FUNCTION.
 	//
@@ -417,6 +438,15 @@ void APFACreatureController::OnCreatureStateChanged_Implementation(
 			PackController->GetAggroForTarget(Target) >= RequestedAggro;
 		Joined += bJoined ? 1 : 0;
 	}
+	if (Candidates > 0)
+	{
+		FPackAssistWaveEvidence& Evidence = GetPackAssistWaveEvidence(GetWorld());
+		++Evidence.WavesWithCandidates;
+		Evidence.Candidates += Candidates;
+		Evidence.Accepted += Accepted;
+		Evidence.Joined += Joined;
+		Evidence.FailedWaves += Joined == Candidates ? 0 : 1;
+	}
 
 	UE_LOG(LogPrimalFauna, Display,
 		TEXT("[PFA] PackAssist: leader=%s spawner=%s target=%s candidates=%d accepted=%d joined=%d decision=share-fight-target outcome=%s"),
@@ -597,6 +627,9 @@ bool APFACreatureController::ForceAggro(AActor* Target, float NewAggro)
 {
 	if (!Target)
 	{
+		UE_LOG(LogPrimalFauna, Warning,
+			TEXT("[PFA] %s: ForceAggro target=null requestedAggro=%.1f decision=skip outcome=invalid-target"),
+			*GetName(), NewAggro);
 		return false;
 	}
 	// Native private registration via the Friend grant (AccessTransformers
@@ -609,13 +642,39 @@ bool APFACreatureController::ForceAggro(AActor* Target, float NewAggro)
 			*GetName(), *Target->GetName());
 		return false;
 	}
-	SetAggroForTarget(Target, NewAggro, /*bImmediateStateUpdate=*/true);
+
+	// SetAggroForTarget's immediate update reevaluates state, but it does not
+	// bind mCurrentTarget. Runtime evidence from w57-5 showed assisted
+	// controllers in CS_Fight with player aggro=100 and visibility=true while
+	// GetCurrentTarget() remained null; they followed the pack but never
+	// attacked. Write the registered aggro first, then use the public native
+	// target setter (which also updates native focus), and finally kick
+	// the state machine once with the complete targeting state in place.
+	SetAggroForTarget(Target, NewAggro, /*bImmediateStateUpdate=*/false);
+	const float AppliedAggro = GetAggroForTarget(Target);
+	if (AppliedAggro + KINDA_SMALL_NUMBER < NewAggro)
+	{
+		UE_LOG(LogPrimalFauna, Warning,
+			TEXT("[PFA] %s: ForceAggro target=%s requestedAggro=%.1f readback=%.1f decision=bind-target outcome=aggro-refused"),
+			*GetName(), *Target->GetName(), NewAggro, AppliedAggro);
+		return false;
+	}
+
+	SetCurrentTarget(Target);
+	TriggerStateUpdate(/*bImmediate=*/true);
+	const bool bApplied = GetAggroForTarget(Target) + KINDA_SMALL_NUMBER >= NewAggro &&
+		GetCurrentTarget() == Target &&
+		GetCurrentCreatureState() == ECreatureState::CS_Fight;
 	UE_LOG(LogPrimalFauna, Display,
-		TEXT("[PFA] %s: ForceAggro(%s, %.1f) registered+set; readback=%.1f state=%s currentTarget=%s"),
+		TEXT("[PFA] %s: ForceAggro target=%s requestedAggro=%.1f readback=%.1f state=%s currentTarget=%s decision=bind-target outcome=%s"),
 		*GetName(), *Target->GetName(), NewAggro,
 		GetAggroForTarget(Target),
 		*CreatureStateEnumToString(GetCurrentCreatureState()),
-		GetCurrentTarget() ? *GetCurrentTarget()->GetName() : TEXT("none"));
+		GetCurrentTarget() ? *GetCurrentTarget()->GetName() : TEXT("none"),
+		bApplied ? TEXT("complete") : TEXT("partial"));
+	// Preserve the diagnostic split used by PackAssist: true means the native
+	// registration + aggro write was accepted; the caller separately measures
+	// whether the controller joined Fight with this exact current target.
 	return true;
 }
 
@@ -947,56 +1006,17 @@ namespace
 					return true;
 				}
 
-				int32 FightingPackLeaders = 0;
-				int32 ObservedPackmates = 0;
-				int32 EligibleLeftBehind = 0;
-				for (TActorIterator<APFACreatureController> It(World); It; ++It)
+				const FPackAssistWaveEvidence& Evidence = GetPackAssistWaveEvidence(World);
+				if (Evidence.WavesWithCandidates == 0)
 				{
-					APFACreatureController* LeaderController = *It;
-					AFGCreature* Leader = LeaderController ? LeaderController->GetControlledCreature() : nullptr;
-					AFGCreatureSpawner* Spawner = Leader ? Leader->GetSpawner() : nullptr;
-					AActor* Target = LeaderController ? LeaderController->GetCurrentTarget() : nullptr;
-					if (!Leader || !Spawner || !Target ||
-						LeaderController->GetCurrentCreatureState() != ECreatureState::CS_Fight)
-					{
-						continue;
-					}
-
-					int32 ThisPackmates = 0;
-					for (AFGCreature* PackCreature : Spawner->GetCreatures())
-					{
-						if (!PackCreature || PackCreature == Leader || PackCreature->IsActorBeingDestroyed())
-						{
-							continue;
-						}
-						const UFGHealthComponent* Health = PackCreature->GetHealthComponent();
-						APFACreatureController* PackController =
-							Cast<APFACreatureController>(PackCreature->GetController());
-						if (!Health || Health->IsDead() || !PackController)
-						{
-							continue;
-						}
-						++ThisPackmates;
-						const ECreatureState PackState = PackController->GetCurrentCreatureState();
-						EligibleLeftBehind +=
-							(PackState == ECreatureState::CS_Default || PackState == ECreatureState::CS_Roam) ? 1 : 0;
-					}
-					if (ThisPackmates > 0)
-					{
-						++FightingPackLeaders;
-						ObservedPackmates += ThisPackmates;
-					}
-				}
-
-				if (FightingPackLeaders == 0)
-				{
-					OutDetail = TEXT("NO-COVERAGE: no live fighting same-spawner PFA pack exists; aggro one member and re-run");
-					return true;
+					OutDetail = TEXT("NO-COVERAGE: no PackAssist wave with eligible candidates occurred in this world; aggro one same-nest member and re-run");
+					return false;
 				}
 				OutDetail = FString::Printf(
-					TEXT("fightingPackLeaders=%d observedPackmates=%d eligibleLeftBehind=%d"),
-					FightingPackLeaders, ObservedPackmates, EligibleLeftBehind);
-				return EligibleLeftBehind == 0;
+					TEXT("waves=%d candidates=%d accepted=%d joined=%d failedWaves=%d"),
+					Evidence.WavesWithCandidates, Evidence.Candidates, Evidence.Accepted,
+					Evidence.Joined, Evidence.FailedWaves);
+				return Evidence.FailedWaves == 0 && Evidence.Joined == Evidence.Candidates;
 			}});
 		return true;
 	}();

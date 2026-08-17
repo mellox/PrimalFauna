@@ -327,14 +327,20 @@ namespace
 		// is inline on AFGCreature (FGCreature.h:396).
 		const float Threshold = Nearest->GetAggroFightThreshold();
 		const float NewAggro = Threshold + 10.0f;
-		const bool bForced = Controller->ForceAggro(PlayerPawn, NewAggro);
+		const bool bAccepted = Controller->ForceAggro(PlayerPawn, NewAggro);
+		const float ReadbackAggro = ReadbackAggroFor(Controller, PlayerPawn);
+		const bool bJoined = bAccepted &&
+			Controller->GetCurrentCreatureState() == ECreatureState::CS_Fight &&
+			Controller->GetCurrentTarget() == PlayerPawn &&
+			ReadbackAggro >= NewAggro;
 
 		UE_LOG(LogPrimalFauna, Display,
-			TEXT("[PFA] PFA.AggroNearest: %s (%.0fcm) ForceAggro(%s, %.1f) forced=%s (fightThreshold=%.1f +10). Readback=%.1f state now=%s"),
+			TEXT("[PFA] PFA.AggroNearest: creature=%s distance=%.0fcm target=%s requestedAggro=%.1f fightThreshold=%.1f accepted=%s joined=%s readback=%.1f state=%s currentTarget=%s"),
 			*Nearest->GetName(), DistCm, *PlayerPawn->GetName(), NewAggro,
-			bForced ? TEXT("true") : TEXT("false"), Threshold,
-			ReadbackAggroFor(Controller, PlayerPawn),
-			*CreatureStateEnumToString(Controller->GetCurrentCreatureState()));
+			Threshold, bAccepted ? TEXT("true") : TEXT("false"),
+			bJoined ? TEXT("true") : TEXT("false"), ReadbackAggro,
+			*CreatureStateEnumToString(Controller->GetCurrentCreatureState()),
+			*GetNameSafe(Controller->GetCurrentTarget()));
 	}
 
 	// -------------------------------------------------------------------------

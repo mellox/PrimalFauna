@@ -13,6 +13,7 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "Net/UnrealNetwork.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/PrimitiveComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Curves/CurveFloat.h"
 #include "Engine/HitResult.h"
@@ -622,20 +623,54 @@ void APFACreatureBase::SpawnDeathItem_Implementation()
 	}
 
 	const FInventoryStack LootStack(1, DeathLootDescriptor);
-	const FVector SpawnLocation = GetActorLocation() + FVector(0.0f, 0.0f, 50.0f);
+	const FVector RequestedLocation = GetActorLocation();
+	FVector SpawnLocation = RequestedLocation;
+	FRotator SpawnRotation = GetActorRotation();
+	TArray<AActor*> IgnoredActors;
+	IgnoredActors.Add(this);
+	AFGItemPickup_Spawnable::FindGroundLocationAndRotation(
+		GetWorld(), RequestedLocation, IgnoredActors, SpawnLocation, SpawnRotation);
 	AFGItemPickup_Spawnable* Pickup = AFGItemPickup_Spawnable::CreateItemDrop(
-		GetWorld(), LootStack, SpawnLocation, GetActorRotation());
+		GetWorld(), LootStack, SpawnLocation, SpawnRotation);
 	if (!Pickup)
 	{
 		UE_LOG(LogPrimalFauna, Error,
-			TEXT("[PFA] Loot drop: creature=%s descriptor=%s amount=1 location=%s decision=spawn outcome=FAILED"),
-			*GetName(), *GetNameSafe(DeathLootDescriptor), *SpawnLocation.ToCompactString());
+			TEXT("[PFA] Loot drop: creature=%s descriptor=%s amount=1 requested=%s resolvedLocation=%s decision=spawn outcome=FAILED"),
+			*GetName(), *GetNameSafe(DeathLootDescriptor),
+			*RequestedLocation.ToCompactString(), *SpawnLocation.ToCompactString());
 		return;
+	}
+
+	// Spawnable pickups keep their interaction trace collision, but loot must
+	// never become a navigation or pawn-movement obstacle. In w57-5 the drops
+	// stayed at creature torso height and formed a wall that living packmates
+	// would not path through. Preserve the pickup's native interaction channel;
+	// only remove navigation relevance and explicitly ignore Pawn collisions.
+	TInlineComponentArray<UPrimitiveComponent*> PickupPrimitives;
+	Pickup->GetComponents(PickupPrimitives);
+	int32 PrimitiveRequests = 0;
+	int32 NavigationRelevantAfter = 0;
+	int32 PawnNonIgnoringAfter = 0;
+	for (UPrimitiveComponent* Primitive : PickupPrimitives)
+	{
+		if (!Primitive)
+		{
+			continue;
+		}
+		++PrimitiveRequests;
+		Primitive->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+		Primitive->SetCanEverAffectNavigation(false);
+		NavigationRelevantAfter += Primitive->CanEverAffectNavigation() ? 1 : 0;
+		PawnNonIgnoringAfter += Primitive->GetCollisionResponseToChannel(ECC_Pawn) == ECR_Ignore ? 0 : 1;
 	}
 
 	bDeathLootSpawned = true;
 	UE_LOG(LogPrimalFauna, Display,
-		TEXT("[PFA] Loot drop: creature=%s descriptor=%s amount=1 location=%s decision=spawn outcome=success pickup=%s contentResolved=%s"),
-		*GetName(), *GetNameSafe(DeathLootDescriptor), *SpawnLocation.ToCompactString(),
-		*Pickup->GetName(), PFALoot::IsDeferredContentReady() ? TEXT("yes") : TEXT("no"));
+		TEXT("[PFA] Loot drop: creature=%s descriptor=%s amount=1 requested=%s resolvedLocation=%s deltaZ=%.1f rotation=%s primitives=%d navDisableRequested=%d pawnIgnoreRequested=%d navRelevantAfter=%d pawnNonIgnoringAfter=%d decision=spawn outcome=success pickup=%s contentResolved=%s"),
+		*GetName(), *GetNameSafe(DeathLootDescriptor),
+		*RequestedLocation.ToCompactString(), *SpawnLocation.ToCompactString(),
+		SpawnLocation.Z - RequestedLocation.Z, *SpawnRotation.ToCompactString(),
+		PickupPrimitives.Num(), PrimitiveRequests, PrimitiveRequests,
+		NavigationRelevantAfter, PawnNonIgnoringAfter, *Pickup->GetName(),
+		PFALoot::IsDeferredContentReady() ? TEXT("yes") : TEXT("no"));
 }
