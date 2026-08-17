@@ -660,8 +660,18 @@ bool APFACreatureController::ForceAggro(AActor* Target, float NewAggro)
 		return false;
 	}
 
+	// Give the native state transition the intended target as context, then
+	// re-seat it afterwards if the closed-source update cleared it. w57-8 logs
+	// proved that exact behaviour for every assisted controller: CS_Fight and
+	// full aggro, but currentTarget=none. SetCurrentTarget is the public native
+	// binding/focus path; the second call is change-guarded and makes the
+	// postcondition visible synchronously to PackAssistCoverage.
 	SetCurrentTarget(Target);
 	TriggerStateUpdate(/*bImmediate=*/true);
+	if (GetCurrentCreatureState() == ECreatureState::CS_Fight && GetCurrentTarget() != Target)
+	{
+		SetCurrentTarget(Target);
+	}
 	const bool bApplied = GetAggroForTarget(Target) + KINDA_SMALL_NUMBER >= NewAggro &&
 		GetCurrentTarget() == Target &&
 		GetCurrentCreatureState() == ECreatureState::CS_Fight;

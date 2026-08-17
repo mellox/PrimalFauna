@@ -599,6 +599,14 @@ void APFASicklejaw::PushTailMood(UPFAAnimInstance* AnimInstance)
 	{
 		return;
 	}
+	const UFGHealthComponent* Health = GetHealthComponent();
+	if (Health && Health->IsDead())
+	{
+		// A death pose is a complete pose. Applying the wounded/attack tail delta
+		// after death can deform it, and the locomotion timer has already stopped.
+		AnimInstance->SetTailMood(nullptr, 0.0f);
+		return;
+	}
 
 	const int32 Mode = CVarPFATailMoodLayer.GetValueOnGameThread();
 	if (Mode == 0)

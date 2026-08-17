@@ -158,15 +158,17 @@ void APFASicklejaw::ResolveOneShotClips()
 	}
 	ThreatenAnim = ResolveClip(TEXT("Threaten"));
 	LimpAnim = ResolveClip(TEXT("Limp"));
+	DeathAnim = ResolveClip(TEXT("Death"));
 
 	// Always-on (not diag-gated): "the creature never preens" is otherwise
 	// indistinguishable from "the clips did not resolve", and that ambiguity is
 	// what made the w24 invisible-animation hunt take three sessions.
 	UE_LOG(LogPrimalFauna, Display,
-		TEXT("[PFA] %s: one-shot clips resolved -- idle breaks %d/%d, threaten=%s, limp=%s"),
+		TEXT("[PFA] %s: one-shot clips resolved -- idle breaks %d/%d, threaten=%s, limp=%s, death=%s"),
 		*GetName(), ResolvedBreaks, IdleBreakClips.Num(),
 		ThreatenAnim ? TEXT("ok") : TEXT("absent"),
-		LimpAnim ? TEXT("ok") : TEXT("absent"));
+		LimpAnim ? TEXT("ok") : TEXT("absent"),
+		DeathAnim ? TEXT("ok") : TEXT("absent"));
 }
 
 // w31-2: the additive tail-mood layer's clip. Lives here with the other clip

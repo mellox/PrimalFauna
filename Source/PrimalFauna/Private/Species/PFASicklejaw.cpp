@@ -551,6 +551,13 @@ UAnimSequence* APFASicklejaw::FindSequenceInPackages(const TCHAR* const* Package
 
 void APFASicklejaw::StartLocomotionAnim()
 {
+	// Resolve the authored one-shots even when the locomotion development switch
+	// is off. In particular, death must never fall back to the unsafe imported
+	// PhysicsAsset merely because pfa.LocomotionAnims=0 was used for diagnosis.
+	// Keeping this at BeginPlay/arm time also avoids a synchronous package load
+	// on the death path.
+	ResolveOneShotClips();
+
 	if (CVarPFALocomotionAnims.GetValueOnGameThread() == 0)
 	{
 		UE_LOG(LogPrimalFauna, Display,
@@ -619,10 +626,6 @@ void APFASicklejaw::StartLocomotionAnim()
 		TEXT("[PFA] %s: traits rolled -- speed x%.2f (%.0f cm/s), turn x%.2f, animPhase %.2f, gaitRate x%.2f"),
 		*GetName(), SpeedTrait, AppliedWalkSpeed, TurnTrait, LocomotionPhaseOffset, LocomotionRateTrait);
 
-	// w29-1: the one-shot set (comfort breaks, threat display, limp). Resolved
-	// here so ALL clip loading happens in one place at arm time -- a creature
-	// must never stall mid-tick loading a package the moment it decides to preen.
-	ResolveOneShotClips();
 	// w24-3 (overnight tester finding): the all-or-nothing gate kept the
 	// driver dark when only run was missing -- idle+walk resolved but NOT
 	// EVEN IDLE played. PARTIAL-ARM instead: any resolved sequence arms the
@@ -896,6 +899,59 @@ void APFASicklejaw::TickLocomotionAnim()
 			*GetName(), StateName, SpeedCms,
 			*CreatureStateEnumToString(CreatureState), *Chosen->GetName());
 	}
+}
+
+void APFASicklejaw::Died(AActor* DiedActor)
+{
+	// Stop every custom pose producer before the native death path asks for a
+	// ragdoll. DoRagdoll_Internal below declines physics only for a dead
+	// Sicklejaw; the rest of AFGCreature::Died (loot, timers, controller cleanup)
+	// remains untouched.
+	GetWorldTimerManager().ClearTimer(LocomotionTimerHandle);
+	ClearOneShot(TEXT("death"));
+	Super::Died(DiedActor);
+
+	USkeletalMeshComponent* MeshComponent = GetMesh();
+	if (!MeshComponent || !DeathAnim)
+	{
+		UE_LOG(LogPrimalFauna, Warning,
+			TEXT("[PFA] %s: death presentation decision=hold-last-pose outcome=%s mesh=%s deathClip=%s"),
+			*GetName(), MeshComponent ? TEXT("missing-death-clip") : TEXT("missing-mesh"),
+			*GetNameSafe(MeshComponent), *GetNameSafe(DeathAnim));
+		return;
+	}
+
+	// The corpse is visual only. Native death handles the capsule/lifetime; the
+	// mesh itself must neither block Pawns nor feed navigation while the authored
+	// collapse plays and holds its final frame.
+	MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	ApplyChosenPose(DeathAnim, /*bLoop=*/false);
+	UE_LOG(LogPrimalFauna, Display,
+		TEXT("[PFA] %s: death presentation decision=authored-collapse outcome=playing clip=%s ragdoll=disabled meshCollision=none"),
+		*GetName(), *DeathAnim->GetName());
+}
+
+void APFASicklejaw::DoRagdoll_Internal()
+{
+	const UFGHealthComponent* Health = GetHealthComponent();
+	if (!Health || !Health->IsDead())
+	{
+		Super::DoRagdoll_Internal();
+		return;
+	}
+
+	// FBX import produced an automatic PhysicsAsset for a 56-bone creature rig.
+	// Runtime evidence shows that death simulation sometimes explodes that rig
+	// into long stretched bones. Do not enter physics for a dead Sicklejaw; Died
+	// immediately supplies the authored collapse instead.
+	if (USkeletalMeshComponent* MeshComponent = GetMesh())
+	{
+		MeshComponent->SetSimulatePhysics(false);
+		MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+	UE_LOG(LogPrimalFauna, Display,
+		TEXT("[PFA] %s: death ragdoll decision=bypass-auto-physics-asset outcome=authored-collapse"),
+		*GetName());
 }
 
 // ---- PFA.SpawnTest: the "SicklejawSpawnRoundtrip" stretch item from the

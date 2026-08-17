@@ -54,6 +54,12 @@ protected:
 	// of degrading. Tolerates a missing mesh entirely: a meshless creature
 	// must still function (movement/AI/health are all mesh-independent).
 	virtual void BeginPlay() override;
+	// The auto-generated PhysicsAsset is not safe for this custom non-humanoid
+	// rig: native death ragdoll can pull bones into kilometre-long spikes. Dead
+	// Sicklejaws use the authored collapse clip instead; live ragdolls retain the
+	// FactoryGame implementation.
+	virtual void Died(AActor* DiedActor) override;
+	virtual void DoRagdoll_Internal() override;
 
 private:
 	// Runtime content is shared through a module-lifetime strong-reference
@@ -259,6 +265,8 @@ private:
 	// not acceptable to reintroduce it even transiently.
 	UPROPERTY(Transient)
 	TObjectPtr<UAnimSequence> ActivePoseAnim;
+	UPROPERTY(Transient)
+	TObjectPtr<UAnimSequence> DeathAnim;
 	bool bActivePoseLoops = true;
 
 	// w31-3 (cold review D2): ticks for which the foot-plant keeper stands down
