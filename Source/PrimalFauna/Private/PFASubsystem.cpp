@@ -34,16 +34,18 @@ namespace
     constexpr int32 TestNestCreaturesMin = 1;
     constexpr int32 TestNestCreaturesMax = 3;
     constexpr float TestNestSpawnRadiusCm = 1500.0f;
+    // Keep the command-only nest inside the 60 m Sicklejaw activation band,
+    // but separate its center from the player so the next runtime gate can
+    // compare location projection against the previous under-player tests.
+    constexpr float TestNestForwardOffsetCm = 4000.0f;
     constexpr int32 TestNestRespawnDaysDefault = 1;
     const FName TestRegionId(TEXT("Test"));
 
-    // Ground trace tuning for SpawnNestAtPlayer -- generous range so a player
-    // standing on a tall structure or in a shallow depression still resolves
-    // to real terrain (matches the NodeShuffle TerrainZ trace's +-1000cm
-    // shape, widened slightly since PrimalFauna has no equivalent to
-    // NodeShuffle's own multi-sample fallback).
+    // At the 4000 cm horizontal command offset, limiting the downward trace to
+    // 4000 cm bounds a hit to sqrt(4000^2 + 4000^2) = 5657 cm from the player,
+    // inside Sicklejaw's measured 6000 cm activation distance.
     constexpr float GroundTraceUpCm = 500.0f;
-    constexpr float GroundTraceDownCm = 5000.0f;
+    constexpr float GroundTraceDownCm = 4000.0f;
 }
 
 APFASubsystem::APFASubsystem()
@@ -353,6 +355,8 @@ void APFASubsystem::ReconcileNests()
 
     int32 AdoptedCount = 0;
     int32 MaterializedCount = 0;
+	APlayerController* FirstPlayerController = World->GetFirstPlayerController();
+	APawn* FirstPlayerPawn = FirstPlayerController ? FirstPlayerController->GetPawn() : nullptr;
 
     for (FPFANestRecord& Record : NestRegistry)
     {
@@ -375,6 +379,7 @@ void APFASubsystem::ReconcileNests()
 			(*AdoptedSpawner)->EnsureRuntimeConfigurationAfterAdoption(
 				TSubclassOf<AFGCreature>(ResolvedClass), Record.CreaturesMin, Record.CreaturesMax,
 				Record.SpawnRadius, true, true, Record.RespawnDays);
+			(*AdoptedSpawner)->LogSpawnDecisionDiagnostics(FirstPlayerPawn);
             ++AdoptedCount;
             continue;
         }
@@ -479,6 +484,7 @@ void APFASubsystem::ReconcileNests()
             bPopulated = NewSpawner->PopulateSpawnData();
         }
         const int32 PostPopulateCount = NewSpawner->GetTotalNumCreatures();
+		NewSpawner->LogSpawnDecisionDiagnostics(FirstPlayerPawn);
 
         UE_LOG(LogPrimalFauna, Display,
             TEXT("[PFA] Nest %s: materialized %s at %s, PopulateSpawnData=%s prePopulate=%d postPopulate=%d"),
@@ -536,22 +542,30 @@ bool APFASubsystem::SpawnNestAtPlayer(FString& OutDetail)
     }
 
     const FVector PlayerLocation = PlayerPawn->GetActorLocation();
+	FVector Forward2D = PlayerPawn->GetActorForwardVector();
+	Forward2D.Z = 0.0f;
+	Forward2D = Forward2D.GetSafeNormal();
+	if (Forward2D.IsNearlyZero())
+	{
+		Forward2D = FVector::ForwardVector;
+	}
+	const FVector RequestedNestLocation = PlayerLocation + Forward2D * TestNestForwardOffsetCm;
 
     // Simple downward line trace (docs/08 W1.5 scope adjustment -- no water
     // check / candidate sampling here, that is W2.1's PFA.DumpCandidates
     // authoring workflow, doc 03 §2).
     FHitResult Hit;
     FCollisionQueryParams TraceParams(FName(TEXT("PFANestGroundTrace")), false, PlayerPawn);
-    const FVector TraceStart = PlayerLocation + FVector(0.0f, 0.0f, GroundTraceUpCm);
-    const FVector TraceEnd = PlayerLocation - FVector(0.0f, 0.0f, GroundTraceDownCm);
+    const FVector TraceStart = RequestedNestLocation + FVector(0.0f, 0.0f, GroundTraceUpCm);
+    const FVector TraceEnd = RequestedNestLocation - FVector(0.0f, 0.0f, GroundTraceDownCm);
     const bool bHitGround = World->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_Visibility, TraceParams);
-    const FVector GroundLocation = bHitGround ? Hit.ImpactPoint : PlayerLocation;
+    const FVector GroundLocation = bHitGround ? Hit.ImpactPoint : RequestedNestLocation;
 
     if (!bHitGround)
     {
         UE_LOG(LogPrimalFauna, Warning,
-            TEXT("[PFA] PFA.SpawnNest: ground trace found nothing under the player (range +%.0f/-%.0fcm) -- using ungrounded player location %s."),
-            GroundTraceUpCm, GroundTraceDownCm, *PlayerLocation.ToCompactString());
+            TEXT("[PFA] PFA.SpawnNest: forward ground trace found nothing (offset=%.0fcm range=+%.0f/-%.0fcm) -- using ungrounded requested location %s."),
+            TestNestForwardOffsetCm, GroundTraceUpCm, GroundTraceDownCm, *RequestedNestLocation.ToCompactString());
     }
 
     // "next free idx" (docs/08 packet): append-only in W1.5 (no deactivation/
@@ -580,8 +594,9 @@ bool APFASubsystem::SpawnNestAtPlayer(FString& OutDetail)
     NestRegistry.Add(NewRecord);
 
     UE_LOG(LogPrimalFauna, Display,
-        TEXT("[PFA] PFA.SpawnNest: appended record %s (region=%s) at %s (groundTrace=%s). Reconciling immediately."),
+        TEXT("[PFA] PFA.SpawnNest: appended record %s (region=%s) at %s (player=%s offset=%.0fcm groundTrace=%s). Reconciling immediately."),
         *NewRecord.NestId.ToString(), *NewRecord.RegionId.ToString(), *GroundLocation.ToCompactString(),
+		*PlayerLocation.ToCompactString(), TestNestForwardOffsetCm,
         bHitGround ? TEXT("hit") : TEXT("miss-fallback"));
 
     // Doc 03 §3: ONE code path -- append the record, then run the exact same

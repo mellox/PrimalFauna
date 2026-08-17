@@ -3,6 +3,7 @@
 #include "PrimalFauna.h"
 
 #include "Creature/FGCreature.h"
+#include "GameFramework/Pawn.h"
 
 APFANestSpawner::APFANestSpawner()
 {
@@ -191,4 +192,101 @@ void APFANestSpawner::EnsureRuntimeConfigurationAfterAdoption(TSubclassOf<AFGCre
 			bLegacyRecovery ? TEXT("rehydrate-legacy") : TEXT("verify-snapshot"),
 			bReadyToSpawn ? TEXT("spawn-initiated") : TEXT("native-state-kept"));
 	}
+}
+
+void APFANestSpawner::LogSpawnDecisionDiagnostics(const APawn* PlayerPawn)
+{
+	if (!PFADiag::IsEnabled())
+	{
+		return;
+	}
+
+	int32 WaitingSlots = 0;
+	int32 SpawnableSlots = 0;
+	int32 KilledSlots = 0;
+	float OldestWaitSeconds = 0.0f;
+	const UWorld* World = GetWorld();
+	const float WorldTime = World ? World->GetTimeSeconds() : 0.0f;
+	for (const FSpawnData& Slot : mSpawnData)
+	{
+		if (Slot.WaitingForSpawnLocation)
+		{
+			++WaitingSlots;
+			if (Slot.SpawnLocationWaitTimeStamp >= 0.0f)
+			{
+				OldestWaitSeconds = FMath::Max(OldestWaitSeconds,
+					WorldTime - Slot.SpawnLocationWaitTimeStamp);
+			}
+		}
+		KilledSlots += Slot.WasKilled ? 1 : 0;
+		SpawnableSlots += CanSpawnCreature(Slot) ? 1 : 0;
+	}
+
+	const int32 LiveCreatures = GetCreatures().Num();
+	const int32 UnspawnedCreatures = GetNumUnspawnedCreatures();
+	const bool bActive = IsSpawnerActive();
+	const bool bCorrectTime = IsTimeForCreature();
+	const bool bNearBase = IsNearBase();
+	const float SpawnDistance = GetSpawnDistance();
+	const float SpawnRadius = GetSpawnRadius();
+	const float FirstPlayerDistance = PlayerPawn
+		? FVector::Dist(GetActorLocation(), PlayerPawn->GetActorLocation())
+		: -1.0f;
+	const bool bObservedEligible =
+		!bActive && bCorrectTime && SpawnableSlots > 0 && UnspawnedCreatures > 0;
+
+	const TCHAR* Summary = TEXT("observed-eligible");
+	if (WaitingSlots > 0)
+	{
+		Summary = TEXT("await-location");
+	}
+	else if (LiveCreatures > 0)
+	{
+		Summary = TEXT("creatures-live");
+	}
+	else if (bActive)
+	{
+		Summary = TEXT("spawner-active");
+	}
+	else if (!bCorrectTime)
+	{
+		Summary = TEXT("day-night-blocked");
+	}
+	else if (SpawnableSlots == 0)
+	{
+		Summary = TEXT("no-spawnable-slot");
+	}
+
+	uint32 Signature = GetTypeHash(WaitingSlots);
+	Signature = HashCombine(Signature, GetTypeHash(SpawnableSlots));
+	Signature = HashCombine(Signature, GetTypeHash(LiveCreatures));
+	Signature = HashCombine(Signature, GetTypeHash(UnspawnedCreatures));
+	Signature = HashCombine(Signature, GetTypeHash(KilledSlots));
+	Signature = HashCombine(Signature, GetTypeHash(bActive));
+	Signature = HashCombine(Signature, GetTypeHash(bCorrectTime));
+	Signature = HashCombine(Signature, GetTypeHash(bNearBase));
+	Signature = HashCombine(Signature, GetTypeHash(bObservedEligible));
+	Signature = HashCombine(Signature, GetTypeHash(FMath::RoundToInt(SpawnDistance)));
+	Signature = HashCombine(Signature, GetTypeHash(FMath::RoundToInt(SpawnRadius)));
+	Signature = HashCombine(Signature,
+		GetTypeHash(FMath::RoundToInt(FirstPlayerDistance / 1000.0f)));
+
+	const double NowSeconds = World ? static_cast<double>(World->GetTimeSeconds()) : 0.0;
+	const bool bPeriodicBlockedReport = WaitingSlots > 0 &&
+		(NowSeconds - LastSpawnDiagnosticTimeSeconds) >= 60.0;
+	if (bHasSpawnDiagnosticSignature && Signature == LastSpawnDiagnosticSignature && !bPeriodicBlockedReport)
+	{
+		return;
+	}
+	bHasSpawnDiagnosticSignature = true;
+	LastSpawnDiagnosticSignature = Signature;
+	LastSpawnDiagnosticTimeSeconds = NowSeconds;
+
+	UE_LOG(LogPrimalFauna, Display,
+		TEXT("[PFA] Nest spawn observation: nest=%s active=%s timeAllowed=%s nearBase=%s observedEligible=%s slots=%d live=%d unspawned=%d spawnable=%d waiting=%d killed=%d oldestWait=%.1fs spawnDistance=%.0f firstPlayerDistance=%.0f radius=%.0f summary=%s outcome=observed-only"),
+		*NestId.ToString(), bActive ? TEXT("true") : TEXT("false"),
+		bCorrectTime ? TEXT("true") : TEXT("false"), bNearBase ? TEXT("true") : TEXT("false"),
+		bObservedEligible ? TEXT("true") : TEXT("false"), mSpawnData.Num(), LiveCreatures,
+		UnspawnedCreatures, SpawnableSlots, WaitingSlots, KilledSlots, OldestWaitSeconds,
+		SpawnDistance, FirstPlayerDistance, SpawnRadius, Summary);
 }

@@ -95,6 +95,24 @@ if ($ExpectedMarker -and $ExpectedMarker -ne $Marker) {
 }
 Write-Host "PFABUILD marker=$Marker$(if ($ExpectedMarker) { ' (asserted by -Marker: MATCH)' })"
 
+# A diagnostic must not call AFGCreatureSpawner::IsReadyToSpawn: shipping
+# disassembly shows that nominal query can populate slots, trace nearby bases,
+# and advance native timing. Anchor on the exact function so the check cannot
+# pass vacuously if the diagnostic is renamed or removed.
+$nestSpawnerCpp = Join-Path $Repo 'Source\PrimalFauna\Private\PFANestSpawner.cpp'
+$nestSource = Get-Content -LiteralPath $nestSpawnerCpp -Raw
+$diagAnchor = 'void APFANestSpawner::LogSpawnDecisionDiagnostics'
+$diagStart = $nestSource.IndexOf($diagAnchor)
+if ($diagStart -lt 0) {
+    Fail 'LogSpawnDecisionDiagnostics body not found; mutation gate is vacuous.'
+}
+$diagBody = $nestSource.Substring($diagStart)
+$mutatingNeedle = 'IsReady' + 'ToSpawn('
+if ($diagBody.Contains($mutatingNeedle)) {
+    Fail 'Diagnostics must not call mutating AFGCreatureSpawner::IsReadyToSpawn.'
+}
+Write-Host 'PFABUILD nest diagnostics mutation gate OK'
+
 # --- gate 3: the game must be closed ---------------------------------------
 $game = Get-Process -Name 'FactoryGame*' -ErrorAction SilentlyContinue
 if ($game) { Fail "Satisfactory is running (PID $($game.Id -join ',')) -- it locks the deployed DLL. Close it first." }

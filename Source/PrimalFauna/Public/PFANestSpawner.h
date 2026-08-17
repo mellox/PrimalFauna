@@ -89,6 +89,12 @@ public:
 
 	bool HasRuntimeConfigurationSnapshot() const { return bHasRuntimeConfigSnapshot; }
 
+	// Diagnostics-only, read-only view into inherited spawn state. This must not
+	// call IsReadyToSpawn(): the native function can populate slots, trace for a
+	// nearby base, and advance native timing. Reconcile invokes this only behind
+	// pfa.Diag.
+	void LogSpawnDecisionDiagnostics(const class APawn* PlayerPawn);
+
 private:
 	// Write-once guard for ConfigureNest. Not exposed -- internal bookkeeping
 	// only (doc 06 S2 enforcement), not a general "is this nest ready" query.
@@ -123,6 +129,10 @@ private:
 	// Per-instance, per-load one-shot guard. Reconcile runs every ten seconds;
 	// adoption recovery must not become a second spawn loop.
 	bool bRuntimeAdoptionChecked = false;
+
+	bool bHasSpawnDiagnosticSignature = false;
+	uint32 LastSpawnDiagnosticSignature = 0;
+	double LastSpawnDiagnosticTimeSeconds = -1.0e30;
 
 	void CaptureRuntimeConfigurationSnapshot();
 	void RestoreRuntimeConfigurationSnapshot();

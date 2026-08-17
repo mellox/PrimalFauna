@@ -18,8 +18,8 @@ class UWorld;
 //   PFA.SelfTest          runs every registered self-test (see below)
 //   PFA.DumpCreature       census-dumps the creature the player is looking at
 //   PFA.DumpAllCreatures   per-class census of every live AFGCreature
-//   PFA.SpawnNest          W1.5: spawns a real territory nest at the player's
-//                          ground position (APFASubsystem::SpawnNestAtPlayer)
+//   PFA.SpawnNest          W1.5: spawns a real territory nest on ground ahead
+//                          of the player (APFASubsystem::SpawnNestAtPlayer)
 //   PFA.KillAll            W1.6: kills every live APFACreatureBase via its
 //                          health component, logs per-kill + a summary line
 //   PFA.WormForceEvent     stub -- arrives in W4
