@@ -130,6 +130,172 @@ namespace
 		return true;
 	}();
 
+	// ---- w58-1 CORPSE COVERAGE -------------------------------------------
+	// FeetPlanted exempts corpses on purpose (the foot-plant keeper stops at
+	// death and the held authored collapse is not capsule-relative), and that
+	// exemption is exactly why the w57-10 body-despawn regression had no
+	// spatial assertion covering it. The right answer is a check written FOR
+	// corpses, not a widened exemption, so these two tests judge a corpse by
+	// what a corpse can legitimately be held to:
+	//
+	//   * its mesh must still be attached to its own actor, and
+	//   * a corpse does not travel.
+	//
+	// Both are GROSS-DISPLACEMENT detectors, deliberately loose. They are not
+	// pose-quality judges -- a settled corpse in any pose passes -- so a
+	// failure means the body is somewhere it cannot legitimately be.
+	constexpr float CorpseMeshSeparationToleranceCm = 500.0f;
+	constexpr float CorpseDriftToleranceCm = 1500.0f;
+
+	const bool bRegistered_CorpsePlanted = []
+	{
+		RegisterPFASelfTest({TEXT("CorpsePlanted"),
+			[](UWorld* World, FString& OutDetail) -> bool
+			{
+				if (!World)
+				{
+					OutDetail = TEXT("no world context");
+					return false;
+				}
+
+				int32 Judged = 0;
+				int32 Meshless = 0;
+				int32 WithoutRecordedOrigin = 0;
+				float WorstMeshSeparationCm = 0.0f;
+				FString WorstMeshName = TEXT("none");
+				float WorstDriftCm = 0.0f;
+				FString WorstDriftName = TEXT("none");
+
+				for (TActorIterator<APFACreatureBase> It(World); It; ++It)
+				{
+					APFACreatureBase* Creature = *It;
+					if (!Creature || Creature->IsActorBeingDestroyed())
+					{
+						continue;
+					}
+					const UFGHealthComponent* Health = Creature->GetHealthComponent();
+					if (!Health || !Health->IsDead())
+					{
+						continue;
+					}
+					const USkeletalMeshComponent* MeshComponent = Creature->GetMesh();
+					if (!MeshComponent || !MeshComponent->GetSkinnedAsset())
+					{
+						++Meshless;
+						continue;
+					}
+
+					const FVector ActorLoc = Creature->GetActorLocation();
+					const float MeshSeparationCm =
+						FVector::Dist(MeshComponent->Bounds.Origin, ActorLoc);
+					++Judged;
+					if (MeshSeparationCm > WorstMeshSeparationCm)
+					{
+						WorstMeshSeparationCm = MeshSeparationCm;
+						WorstMeshName = Creature->GetName();
+					}
+
+					// Only corpses that died during THIS session carry an
+					// origin; one loaded from a save legitimately has none and
+					// is counted rather than judged.
+					if (!Creature->HasDeathObservation())
+					{
+						++WithoutRecordedOrigin;
+						continue;
+					}
+					const float DriftCm =
+						FVector::Dist(ActorLoc, Creature->GetRecordedDeathLocationCm());
+					if (DriftCm > WorstDriftCm)
+					{
+						WorstDriftCm = DriftCm;
+						WorstDriftName = Creature->GetName();
+					}
+				}
+
+				if (Judged == 0)
+				{
+					OutDetail = FString::Printf(
+						TEXT("NO-COVERAGE: no meshed corpse present to check (meshless corpses %d) -- kill something and re-run"),
+						Meshless);
+					return true;
+				}
+
+				const bool bPass = WorstMeshSeparationCm <= CorpseMeshSeparationToleranceCm
+					&& WorstDriftCm <= CorpseDriftToleranceCm;
+				const FString DriftField = (Judged - WithoutRecordedOrigin) > 0
+					? FString::Printf(TEXT("worstDrift=%s %.0fcm from where it died (limit %.0fcm)"),
+						*WorstDriftName, WorstDriftCm, CorpseDriftToleranceCm)
+					: FString::Printf(TEXT("worstDrift=UNMEASURED (0 of %d corpses carried a recorded origin)"),
+						Judged);
+				OutDetail = FString::Printf(
+					TEXT("judged=%d meshlessCorpses=%d corpsesWithoutRecordedOrigin=%d ")
+					TEXT("worstMeshSeparation=%s %.0fcm from its own actor (limit %.0fcm) %s"),
+					Judged, Meshless, WithoutRecordedOrigin,
+					*WorstMeshName, WorstMeshSeparationCm, CorpseMeshSeparationToleranceCm,
+					*DriftField);
+				return bPass;
+			}});
+		return true;
+	}();
+
+	// ---- CorpseRagdollFlagClear: the direct regression pin on the w58-1
+	// un-latch. A dead Sicklejaw reading back as ragdolled means the flag was
+	// re-latched after Died, or the un-latch did not run -- which is the exact
+	// state that made AFGCharacterBase::SyncRagdoll drive the corpse mesh from
+	// physics data that does not exist. This test asserts the READ-BACK only;
+	// it does not claim anything about what the mesh is doing.
+	const bool bRegistered_CorpseRagdollFlagClear = []
+	{
+		RegisterPFASelfTest({TEXT("CorpseRagdollFlagClear"),
+			[](UWorld* World, FString& OutDetail) -> bool
+			{
+				if (!World)
+				{
+					OutDetail = TEXT("no world context");
+					return false;
+				}
+
+				int32 Corpses = 0;
+				int32 FlaggedRagdolled = 0;
+				FString FirstFlaggedName = TEXT("none");
+
+				for (TActorIterator<APFACreatureBase> It(World); It; ++It)
+				{
+					APFACreatureBase* Creature = *It;
+					if (!Creature || Creature->IsActorBeingDestroyed())
+					{
+						continue;
+					}
+					const UFGHealthComponent* Health = Creature->GetHealthComponent();
+					if (!Health || !Health->IsDead())
+					{
+						continue;
+					}
+					++Corpses;
+					if (Creature->IsRagdolled())
+					{
+						if (FlaggedRagdolled == 0)
+						{
+							FirstFlaggedName = Creature->GetName();
+						}
+						++FlaggedRagdolled;
+					}
+				}
+
+				if (Corpses == 0)
+				{
+					OutDetail = TEXT("NO-COVERAGE: no corpse present to check -- kill something and re-run");
+					return true;
+				}
+
+				OutDetail = FString::Printf(
+					TEXT("corpses=%d flaggedRagdolled=%d firstFlagged=%s"),
+					Corpses, FlaggedRagdolled, *FirstFlaggedName);
+				return FlaggedRagdolled == 0;
+			}});
+		return true;
+	}();
+
 	// ---- FacingTarget: guards the rotation policy (w26-1). A creature that
 	// holds a target but never turns toward it cannot land a melee hit (the
 	// attack cone is measured off the forward vector), so this is a combat

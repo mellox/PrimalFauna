@@ -3,6 +3,7 @@
 #include "PFAConfig.h"
 #include "PFAFactionConfig.h"
 #include "PFACheats.h"
+#include "PFACorpseCensus.h"
 #include "PFABehaviorBorrower.h"
 #include "PFANestSpawner.h"
 #include "PFACreatureBase.h"
@@ -190,6 +191,15 @@ void APFASubsystem::RefreshTick()
 			}
 		}
     }
+
+    // w58-1 CORPSE CENSUS. Rides this existing 10s heartbeat rather than
+    // adding a timer: the corpse hard cap is 120s, so one corpse is sampled
+    // ~12 times, which is what makes "removed early" separable from "moved
+    // away". Already server-only (BeginPlay returns early for non-authority,
+    // so RefreshTick never fires on clients). The summary line is always on;
+    // the per-corpse detail lines are diagnostics-gated inside RunPass, and
+    // PFA.CorpseCensus forces a full-detail pass on demand.
+    PFACorpseCensus::RunPass(GetWorld(), TEXT("heartbeat"), /*bLogEveryCorpse=*/false);
 
     // Doc 03 §3: adopt/materialize every registry nest, every refresh tick --
     // the SAME path SpawnNestAtPlayer triggers immediately on demand. Runs

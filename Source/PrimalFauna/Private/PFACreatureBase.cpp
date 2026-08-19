@@ -459,6 +459,29 @@ void APFACreatureBase::RescueBuriedSpawn()
 	}
 }
 
+// w58-1: the ONE write path for the corpse-census origin. Called from the
+// species' Died override BEFORE Super::Died, so it captures where the creature
+// died rather than wherever the native death path leaves it. Idempotent so a
+// repeated death callback (the same hazard bDeathLootSpawned guards) cannot
+// re-stamp the origin and silently zero every later drift measurement.
+void APFACreatureBase::RecordDeathObservation()
+{
+	if (bDeathObservationRecorded)
+	{
+		return;
+	}
+	bDeathObservationRecorded = true;
+	RecordedDeathLocationCm = GetActorLocation();
+	const UWorld* World = GetWorld();
+	RecordedDeathWorldTimeSeconds = World ? static_cast<double>(World->GetTimeSeconds()) : -1.0;
+
+	UE_LOG(LogPrimalFauna, Display,
+		TEXT("[PFA] %s: corpse origin recorded deathLoc=(%.0f,%.0f,%.0f) deathWorldSeconds=%.1f"),
+		*GetName(),
+		RecordedDeathLocationCm.X, RecordedDeathLocationCm.Y, RecordedDeathLocationCm.Z,
+		RecordedDeathWorldTimeSeconds);
+}
+
 void APFACreatureBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

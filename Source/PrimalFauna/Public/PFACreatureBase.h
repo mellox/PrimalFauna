@@ -255,4 +255,35 @@ protected:
 	// relied on for idempotence: a repeated callback must not duplicate loot.
 	UPROPERTY(Transient)
 	bool bDeathLootSpawned = false;
+
+public:
+	// --- w58-1 CORPSE OBSERVABILITY (PFACorpseCensus.cpp) --------------------
+	// The w57-10 body-despawn diagnosis could not separate "the corpse is
+	// somewhere else" from "the corpse was removed early", because NOTHING in
+	// this codebase recorded anything about a creature after its death frame.
+	// These four accessors are the whole measurement surface the census needs.
+	//
+	// RecordDeathObservation is called by the species' Died override BEFORE
+	// Super::Died runs, so the recorded location is where the creature died
+	// rather than wherever the native death path may subsequently move it.
+	// Idempotent: a repeated death callback must not re-stamp the origin.
+	void RecordDeathObservation();
+	bool HasDeathObservation() const { return bDeathObservationRecorded; }
+	FVector GetRecordedDeathLocationCm() const { return RecordedDeathLocationCm; }
+	double GetRecordedDeathWorldTimeSeconds() const { return RecordedDeathWorldTimeSeconds; }
+
+	// mMaxDeathStayTime / mDeathRemoveCheckTime are PROTECTED EditDefaultsOnly
+	// floats on AFGCharacterBase (FGCharacterBase.h:472 and :476 -- verified
+	// against the real header, protected section opens at :395). Reachable from
+	// this subclass by inheritance; exposed here so the census can print the
+	// values THIS run is actually using instead of a number baked into a string.
+	float GetCorpseMaxStayTimeSeconds() const { return mMaxDeathStayTime; }
+	float GetCorpseRemoveCheckTimeSeconds() const { return mDeathRemoveCheckTime; }
+
+private:
+	// Plain members, deliberately NOT UPROPERTY: numeric measurement state with
+	// no object references, nothing to garbage-collect, replicate or save.
+	FVector RecordedDeathLocationCm = FVector::ZeroVector;
+	double RecordedDeathWorldTimeSeconds = -1.0;
+	bool bDeathObservationRecorded = false;
 };

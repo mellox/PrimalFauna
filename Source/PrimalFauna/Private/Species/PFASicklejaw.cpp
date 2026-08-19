@@ -88,6 +88,12 @@ namespace
 	constexpr float SicklejawDespawnDistanceCm = 9000.0f;
 	constexpr float SicklejawTerritoryRadiusCm = 3500.0f;          // inert while default mode is Hostile (doc 04 §1); wired for when Territorial is selected
 
+	// w58-1 corpse lifetime. Rationale lives at the assignment site in the
+	// ctor; ONE definition so the census can print the same numbers the CDO
+	// actually applied rather than a figure re-typed into a log string.
+	constexpr float SicklejawCorpseMaxStaySeconds = 120.0f;
+	constexpr float SicklejawCorpseRemoveCheckSeconds = 5.0f;
+
 	const TCHAR* PlaceholderMeshPath = TEXT("/PrimalFauna/Placeholder/SK_PFA_Placeholder.SK_PFA_Placeholder");
 
 	// W2.2: the user-approved rebuild (48-bone tail rig, 42.6k tris, 2048
@@ -278,6 +284,52 @@ APFASicklejaw::APFASicklejaw(const FObjectInitializer& ObjectInitializer)
 
 	// --- Flags (doc 07 §3) ---
 	mIsArachnid = false; // explicit; matches the engine's own zero-init default
+
+	// The inherited values are readable for exactly this instant -- the base
+	// constructor has run and we are about to overwrite them. Print them, because
+	// once overwritten the baseline is unrecoverable and "corpses vanish faster
+	// than they used to" would have nothing to compare against. This is a
+	// MEASUREMENT of what AFGCharacterBase's constructor left, not a claim about
+	// what the engine does with it.
+	const float InheritedMaxDeathStayTime = mMaxDeathStayTime;
+	const float InheritedDeathRemoveCheckTime = mDeathRemoveCheckTime;
+	UE_LOG(LogPrimalFauna, Display,
+		TEXT("[PFA] Sicklejaw CDO corpse lifetime decision=override-inherited ")
+		TEXT("inheritedMaxStaySeconds=%.1f inheritedRemoveCheckSeconds=%.1f ")
+		TEXT("appliedMaxStaySeconds=%.1f appliedRemoveCheckSeconds=%.1f"),
+		InheritedMaxDeathStayTime, InheritedDeathRemoveCheckTime,
+		SicklejawCorpseMaxStaySeconds, SicklejawCorpseRemoveCheckSeconds);
+
+	// --- w58-1 CORPSE LIFETIME, OWNED EXPLICITLY -----------------------------
+	// mMaxDeathStayTime / mDeathRemoveCheckTime (FGCharacterBase.h:472/:476,
+	// protected EditDefaultsOnly) were written NOWHERE in this mod's Source/
+	// before this line -- grep-verified while writing the w57-10 corpse
+	// diagnosis and again here. Vanilla creatures are Blueprint classes and set
+	// them as BP defaults; a C++-only CDO inherits whatever AFGCharacterBase's
+	// own constructor left, which we cannot read (closed source). So the corpse
+	// lifetime of every Sicklejaw was an UNKNOWN inherited number, and "the body
+	// vanished" had no owner to interrogate.
+	//
+	// CHOSEN VALUES AND WHY:
+	//  * 120s hard cap. It is the ceiling that applies even while the corpse is
+	//    in sight, so it has to be long enough for a player to finish the fight,
+	//    walk over, loot the remains and look at the body -- and long enough for
+	//    the 10s corpse-census heartbeat to take ~12 samples of one corpse,
+	//    which is what makes "removed early" distinguishable from "moved away".
+	//  * 5s check period. FGCharacterBase.h:476 says only how often the in-sight
+	//    check runs; what the check does with the answer is closed-source, so this
+	//    value is chosen for sampling resolution, NOT because a 5s out-of-sight
+	//    removal is known to follow from it. If the inherited value logged above is
+	//    LARGER than 5, this change may make out-of-sight corpses disappear sooner
+	//    than w57-10 did -- which is the symptom under investigation. Compare the
+	//    two numbers in the log before keeping 5.
+	// TODO(2026-08-18, PFA corpse lifetime): all four corpse constants in this
+	//    packet are diagnostic-first placeholders. Retune from the runtime numbers
+	//    in _team/primalfauna-corpse-fix-handoff.md §6 before release.
+	// Both are deliberately DIAGNOSTIC-FRIENDLY first; retune after the runtime
+	// test in _team/primalfauna-corpse-fix-handoff.md reports real numbers.
+	mMaxDeathStayTime = SicklejawCorpseMaxStaySeconds;
+	mDeathRemoveCheckTime = SicklejawCorpseRemoveCheckSeconds;
 
 	// --- Attacks (doc 07 §5, doc 08 W1.4): the bite. UPFACreatureActionMelee is
 	// our subclass of UFGCreatureActionMeleeAttack (its tuning fields are
@@ -910,7 +962,46 @@ void APFASicklejaw::Died(AActor* DiedActor)
 	// remains untouched.
 	GetWorldTimerManager().ClearTimer(LocomotionTimerHandle);
 	ClearOneShot(TEXT("death"));
+
+	// w58-1: stamp the corpse origin BEFORE the native death path runs, so the
+	// census measures drift from where the creature died rather than from
+	// wherever Super::Died leaves it. See APFACreatureBase::RecordDeathObservation.
+	RecordDeathObservation();
+
 	Super::Died(DiedActor);
+
+	// --- w58-1 FIX B: un-latch the ragdoll flag -----------------------------
+	// DoRagdoll_Internal below is only the EFFECTOR. Vanilla
+	// AFGCharacterBase::RagdollCharacter(true) -- which the native death path
+	// invokes -- latches mIsRagdolled (FGCharacterBase.h:513, protected, so
+	// writable from here) BEFORE it dispatches to the effector. Overriding the
+	// effector alone therefore left the corpse flagged as ragdolled with zero
+	// physics bodies, and AFGCharacterBase::SyncRagdoll then drove the corpse
+	// mesh's world position every tick from ragdoll data that does not exist
+	// (237,275 "zero mesh bodies ... trying to sync ragdoll" warnings in the
+	// w57-10 session; 0 in the w57-8 control).
+	//
+	// Everything vanilla Died does still runs -- loot, the death-removal timer
+	// setup, controller cleanup. Only the false flag is removed, afterwards.
+	//
+	// The two values below are MEASURED on this run. The premise "the flag is
+	// already true by the time Super::Died returns" comes from a diagnosis, not
+	// from a header we can read, so it is printed rather than assumed: if
+	// ragdollFlagBefore ever reads 0, this fix is landing on a state that was
+	// never latched here and the real latch site is elsewhere.
+	const int32 RagdollFlagBefore = IsRagdolled() ? 1 : 0;
+	mIsRagdolled = false;
+	const int32 RagdollFlagAfter = IsRagdolled() ? 1 : 0;
+	// A direct write to a ReplicatedUsing property does not run OnRep_IsRagdolled
+	// on this machine (and OnRep_IsRagdolled is PRIVATE on AFGCharacterBase,
+	// :386/:388 -- a subclass cannot call it). The property itself still
+	// replicates; ForceNetUpdate just stops a client holding the stale "true"
+	// until the next scheduled update. Multiplayer behaviour is UNVERIFIED
+	// statically -- see the handoff's runtime test list.
+	ForceNetUpdate();
+	UE_LOG(LogPrimalFauna, Display,
+		TEXT("[PFA] %s: death ragdoll flag decision=unlatch-after-native-died ragdollFlagBefore=%d ragdollFlagAfter=%d netUpdateForced=1"),
+		*GetName(), RagdollFlagBefore, RagdollFlagAfter);
 
 	USkeletalMeshComponent* MeshComponent = GetMesh();
 	if (MeshComponent)

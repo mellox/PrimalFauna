@@ -1,4 +1,4 @@
-<#
+﻿<#
 build.ps1 -- the ONE way to build PrimalFauna. Committed wrapper, per
 _team/playbooks/satisfactory-mod.md ("keep this in a committed repo wrapper --
 don't re-create a scratchpad wrapper each session").
@@ -112,6 +112,38 @@ if ($diagBody.Contains($mutatingNeedle)) {
     Fail 'Diagnostics must not call mutating AFGCreatureSpawner::IsReadyToSpawn.'
 }
 Write-Host 'PFABUILD nest diagnostics mutation gate OK'
+
+# --- gate 2b: pin the w58-1 corpse fix. A one-line revert of the un-latch, or a
+# legend that starts printing field-and-value pairs, must fail the BUILD -- the
+# self-tests cannot catch either (they report NO-COVERAGE on a corpse-free world).
+# Needles are concatenated so this script's own text can neither satisfy nor trip
+# the check if it is ever scanned.
+$sicklejawCpp = Join-Path $Repo 'Source\PrimalFauna\Private\Species\PFASicklejaw.cpp'
+$sicklejawSource = Get-Content -LiteralPath $sicklejawCpp -Raw
+$diedAnchor = 'void APFASicklejaw::' + 'Died(AActor* DiedActor)'
+$diedStart = $sicklejawSource.IndexOf($diedAnchor)
+if ($diedStart -lt 0) { Fail 'APFASicklejaw::Died body not found; corpse-fix gate is vacuous.' }
+$diedBody = $sicklejawSource.Substring($diedStart)
+$superDiedIdx = $diedBody.IndexOf('Super::' + 'Died(DiedActor)')
+$unlatchIdx   = $diedBody.IndexOf('mIsRagdolled' + ' = false;')
+if ($superDiedIdx -lt 0) { Fail 'APFASicklejaw::Died no longer calls the native death path.' }
+if ($unlatchIdx -lt 0) {
+    Fail 'w58-1 ragdoll un-latch missing from APFASicklejaw::Died (237k SyncRagdoll warnings return).'
+}
+if ($unlatchIdx -lt $superDiedIdx) {
+    Fail 'w58-1 ragdoll un-latch must run AFTER the native death path, not before it.'
+}
+$censusCpp = Join-Path $Repo 'Source\PrimalFauna\Private\PFACorpseCensus.cpp'
+$censusSource = Get-Content -LiteralPath $censusCpp -Raw
+$legendAnchor = 'CorpseCensus ' + 'legend:'
+$legendStart = $censusSource.IndexOf($legendAnchor)
+if ($legendStart -lt 0) { Fail 'Corpse census legend not found; legend gate is vacuous.' }
+$legendEnd = $censusSource.IndexOf(');', $legendStart)
+$legendText = $censusSource.Substring($legendStart, $legendEnd - $legendStart)
+if ($legendText.Contains([char]61)) {
+    Fail 'Corpse census legend contains an equals sign -- it would collide with the greps the log exists for.'
+}
+Write-Host 'PFABUILD corpse fix gate OK (un-latch pinned after Super::Died; census legend clean)'
 
 # --- gate 3: the game must be closed ---------------------------------------
 $game = Get-Process -Name 'FactoryGame*' -ErrorAction SilentlyContinue
