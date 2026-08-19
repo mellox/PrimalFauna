@@ -215,4 +215,16 @@ private:
     // there happen to be zero adopted/materialized changes that pass (e.g. an
     // empty registry on a fresh save).
     bool bHasReconciledNestsOnce = false;
+
+    // ---- w58-3 nest-drive census bookkeeping (see ReconcileNests) ----
+    // Pass counter for the "[PFA] NestDrive" line; increments once per
+    // ReconcileNests call, so PFA.SpawnNest's immediate reconcile advances it
+    // too and a gap in the sequence is real, not a dropped log line.
+    int32 NestDrivePassCount = 0;
+
+    // Rate limiting for that census line -- same shape as the per-nest
+    // diagnostic's dedup: print on change, on any drive, or once a minute.
+    bool bHasNestDriveCensusSignature = false;
+    uint32 LastNestDriveCensusSignature = 0;
+    double LastNestDriveCensusTimeSeconds = -1.0e30;
 };

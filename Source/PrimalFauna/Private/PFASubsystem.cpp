@@ -28,6 +28,30 @@ namespace
     constexpr int32 HeartbeatEveryNTicks = 6;
     constexpr int32 MaxBTBorrowAttempts = 5;
 
+    // w58-3. Ceiling on how many spawn slots ONE reconcile pass may commit to
+    // the closed-source native spawn-location path, summed across every nest in
+    // the registry. A nest is offered the REMAINING budget and is deferred to
+    // the next pass once it is spent, so the remainder is carried forward by the
+    // heartbeat rather than dropped.
+    //
+    // 32 is a CHOICE, and the log prints the budget it was offered so a runtime
+    // test can challenge it. What was measured (2026-08-18-w58-2): one frame
+    // issued ~765 requests across 17 nests and not one ever returned, while the
+    // only nests that ever got a request through issued 5 each. 32 sits roughly
+    // 24x below the flood and above the largest single-nest request count that
+    // was ever observed to make progress. It is deliberately NOT a hard refusal
+    // for a nest larger than the budget: a nest is driven while ANY budget
+    // remains, so a 60-slot nest is never permanently starved -- it just spends
+    // the pass. That asymmetry is intentional; a strict "must fit" rule would
+    // make a HostileScaling-inflated nest undriveable forever, which is the
+    // worse failure of the two.
+    constexpr int32 NestDriveSlotBudgetPerPass = 32;
+
+    // Cap on the nest ids listed inline in the per-pass census, so one line can
+    // never become unbounded on a map-seeded registry. Any nest omitted is still
+    // individually visible in its own "[PFA] Nest drive" line under pfa.Diag.
+    constexpr int32 NestDriveCensusNameCap = 8;
+
     // ---- W1.5 test-nest defaults. TODO(W2.5): these become real per-species
     // FPFANestSpec values from the curated region table; until then
     // PFA.SpawnNest always uses Sicklejaw with these placeholder counts. ----
@@ -401,10 +425,68 @@ void APFASubsystem::ReconcileNests()
 	APlayerController* FirstPlayerController = World->GetFirstPlayerController();
 	APawn* FirstPlayerPawn = FirstPlayerController ? FirstPlayerController->GetPawn() : nullptr;
 
+	// ---- w58-3 per-pass drive accounting (see NestDriveSlotBudgetPerPass) ----
+	// Every counter below is incremented from a MEASURED TryDriveSpawn result;
+	// none is inferred. Named nests make the distribution recoverable rather
+	// than leaving only a total.
+	++NestDrivePassCount;
+	int32 DriveSlotBudgetLeft = NestDriveSlotBudgetPerPass;
+	int32 DrivenNests = 0;
+	int32 DrivenAfterStallNests = 0;
+	int32 DeferredBudgetNests = 0;
+	int32 SkipCreaturesLiveNests = 0;
+	int32 SkipNoUnspawnedNests = 0;
+	int32 SkipNoPlayerNests = 0;
+	int32 SkipOutOfRangeNests = 0;
+	int32 SkipInFlightNests = 0;
+	int32 SkipCooldownNests = 0;
+	int32 SkipNativeNotReadyNests = 0;
+	int32 EvaluatedNests = 0;
+	int32 DormantNests = 0;
+	int32 UnresolvedClassNests = 0;
+	int32 SlotsCommitted = 0;   // slots this pass committed to the native path
+	int32 WaitingDelta = 0;     // change in outstanding requests; may be negative
+	int32 NewLiveCreatures = 0;
+	TArray<FString> DrivenNestNames;
+	TArray<FString> DeferredNestNames;
+
+	auto AccountDrive = [&](const FName& InNestId, const FPFANestDriveResult& DriveResult)
+	{
+		++EvaluatedNests;
+		DriveSlotBudgetLeft = FMath::Max(0, DriveSlotBudgetLeft - DriveResult.BudgetUsed);
+		SlotsCommitted += DriveResult.BudgetUsed;
+		WaitingDelta += DriveResult.WaitingAfter - DriveResult.WaitingBefore;
+		NewLiveCreatures += DriveResult.NewLive;
+		switch (DriveResult.Decision)
+		{
+		case EPFANestDriveDecision::Driven:               ++DrivenNests; break;
+		case EPFANestDriveDecision::DrivenAfterStall:     ++DrivenAfterStallNests; break;
+		case EPFANestDriveDecision::SkipCreaturesLive:    ++SkipCreaturesLiveNests; break;
+		case EPFANestDriveDecision::SkipNoUnspawned:      ++SkipNoUnspawnedNests; break;
+		case EPFANestDriveDecision::SkipNoPlayer:         ++SkipNoPlayerNests; break;
+		case EPFANestDriveDecision::SkipPlayerOutOfRange: ++SkipOutOfRangeNests; break;
+		case EPFANestDriveDecision::SkipRequestInFlight:  ++SkipInFlightNests; break;
+		case EPFANestDriveDecision::SkipRedriveCooldown:  ++SkipCooldownNests; break;
+		case EPFANestDriveDecision::SkipNativeNotReady:   ++SkipNativeNotReadyNests; break;
+		case EPFANestDriveDecision::DeferPassBudget:      ++DeferredBudgetNests; break;
+		}
+
+		if (DriveResult.bDriven && DrivenNestNames.Num() < NestDriveCensusNameCap)
+		{
+			DrivenNestNames.Add(InNestId.ToString());
+		}
+		else if (DriveResult.Decision == EPFANestDriveDecision::DeferPassBudget &&
+			DeferredNestNames.Num() < NestDriveCensusNameCap)
+		{
+			DeferredNestNames.Add(InNestId.ToString());
+		}
+	};
+
     for (FPFANestRecord& Record : NestRegistry)
     {
         if (Record.bDormant)
         {
+            ++DormantNests;
             continue; // W2.3 wires real dormancy; nothing to reconcile yet.
         }
 
@@ -414,6 +496,7 @@ void APFASubsystem::ReconcileNests()
             UE_LOG(LogPrimalFauna, Error,
                 TEXT("[PFA] Nest %s: cannot reconcile -- SpeciesClass '%s' failed to load."),
                 *Record.NestId.ToString(), *Record.SpeciesClass.ToString());
+            ++UnresolvedClassNests;
             continue;
         }
 
@@ -422,6 +505,8 @@ void APFASubsystem::ReconcileNests()
 			(*AdoptedSpawner)->EnsureRuntimeConfigurationAfterAdoption(
 				TSubclassOf<AFGCreature>(ResolvedClass), Record.CreaturesMin, Record.CreaturesMax,
 				Record.SpawnRadius, true, true, Record.RespawnDays);
+			// w58-3: the spawn half, every pass, gated and budgeted.
+			AccountDrive(Record.NestId, (*AdoptedSpawner)->TryDriveSpawn(DriveSlotBudgetLeft));
 			(*AdoptedSpawner)->LogSpawnDecisionDiagnostics(FirstPlayerPawn);
             ++AdoptedCount;
             continue;
@@ -454,6 +539,11 @@ void APFASubsystem::ReconcileNests()
 				Existing->EnsureRuntimeConfigurationAfterAdoption(
 					TSubclassOf<AFGCreature>(ResolvedClass), Record.CreaturesMin, Record.CreaturesMax,
 					Record.SpawnRadius, true, true, Record.RespawnDays);
+				// w58-3: same gated, budgeted spawn half as the id-adopt branch
+				// above. Both adopt paths must behave identically here -- an
+				// asymmetry would leave name-repaired nests on the old
+				// unconditional force-drive.
+				AccountDrive(Record.NestId, Existing->TryDriveSpawn(DriveSlotBudgetLeft));
                 ++AdoptedCount;
                 bAdoptedByName = true;
                 break;
@@ -543,6 +633,53 @@ void APFASubsystem::ReconcileNests()
     // honest total, not an optimistic one; a SpawnActor failure above shows
     // up here as a genuine shortfall against NestRegistry.Num().
     const int32 LiveCount = AdoptedCount + MaterializedCount;
+
+	// ---- w58-3 once-per-pass drive census -----------------------------------
+	// Deliberately has NO legend line: this project has twice shipped a legend
+	// whose example text collided with the very field it explained. The field
+	// names below are the documentation.
+	//
+	// Always-on (like the "[PFA] Nests:" line above) but rate-limited: printed
+	// when anything was driven, when the category distribution changed, or once
+	// a minute otherwise, so a settled world does not print every ten seconds.
+	// Per-nest distribution is recoverable two ways -- the named lists here, and
+	// the per-nest "[PFA] Nest drive" line under pfa.Diag.
+	{
+		uint32 CensusSignature = GetTypeHash(EvaluatedNests);
+		CensusSignature = HashCombine(CensusSignature, GetTypeHash(DrivenNests));
+		CensusSignature = HashCombine(CensusSignature, GetTypeHash(DrivenAfterStallNests));
+		CensusSignature = HashCombine(CensusSignature, GetTypeHash(DeferredBudgetNests));
+		CensusSignature = HashCombine(CensusSignature, GetTypeHash(SkipCreaturesLiveNests));
+		CensusSignature = HashCombine(CensusSignature, GetTypeHash(SkipNoUnspawnedNests));
+		CensusSignature = HashCombine(CensusSignature, GetTypeHash(SkipNoPlayerNests));
+		CensusSignature = HashCombine(CensusSignature, GetTypeHash(SkipOutOfRangeNests));
+		CensusSignature = HashCombine(CensusSignature, GetTypeHash(SkipInFlightNests));
+		CensusSignature = HashCombine(CensusSignature, GetTypeHash(SkipCooldownNests));
+		CensusSignature = HashCombine(CensusSignature, GetTypeHash(SkipNativeNotReadyNests));
+		CensusSignature = HashCombine(CensusSignature, GetTypeHash(DormantNests));
+		CensusSignature = HashCombine(CensusSignature, GetTypeHash(UnresolvedClassNests));
+
+		const double NowSeconds = static_cast<double>(World->GetTimeSeconds());
+		const bool bAnyDrive = (DrivenNests + DrivenAfterStallNests) > 0;
+		const bool bChanged = !bHasNestDriveCensusSignature || CensusSignature != LastNestDriveCensusSignature;
+		const bool bPeriodic = (NowSeconds - LastNestDriveCensusTimeSeconds) >= 60.0;
+		if (bAnyDrive || bChanged || bPeriodic)
+		{
+			bHasNestDriveCensusSignature = true;
+			LastNestDriveCensusSignature = CensusSignature;
+			LastNestDriveCensusTimeSeconds = NowSeconds;
+
+			UE_LOG(LogPrimalFauna, Display,
+				TEXT("[PFA] NestDrive pass=%d records=%d evaluated=%d dormant=%d unresolvedClass=%d driven=%d drivenAfterStall=%d deferredBudget=%d skipCreaturesLive=%d skipNoUnspawned=%d skipNoPlayer=%d skipOutOfRange=%d skipInFlight=%d skipCooldown=%d skipNativeNotReady=%d slotsCommitted=%d waitingDelta=%d newLiveCreatures=%d budgetCap=%d budgetLeft=%d drivenNests[%s] deferredNests[%s]"),
+				NestDrivePassCount, NestRegistry.Num(), EvaluatedNests, DormantNests, UnresolvedClassNests,
+				DrivenNests, DrivenAfterStallNests,
+				DeferredBudgetNests, SkipCreaturesLiveNests, SkipNoUnspawnedNests, SkipNoPlayerNests,
+				SkipOutOfRangeNests, SkipInFlightNests, SkipCooldownNests, SkipNativeNotReadyNests,
+				SlotsCommitted, WaitingDelta, NewLiveCreatures, NestDriveSlotBudgetPerPass, DriveSlotBudgetLeft,
+				DrivenNestNames.Num() > 0 ? *FString::Join(DrivenNestNames, TEXT(",")) : TEXT("none"),
+				DeferredNestNames.Num() > 0 ? *FString::Join(DeferredNestNames, TEXT(",")) : TEXT("none"));
+		}
+	}
 
     const bool bAnyChangeThisPass = (AdoptedCount > 0 || MaterializedCount > 0);
     if (bAnyChangeThisPass || !bHasReconciledNestsOnce)

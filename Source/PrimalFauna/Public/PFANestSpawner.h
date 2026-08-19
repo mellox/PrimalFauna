@@ -5,6 +5,48 @@
 #include "PFANestSpawner.generated.h"
 
 // ---------------------------------------------------------------------------
+// w58-3 nest-drive decision. Plain C++ (no UENUM/USTRUCT): these are diagnostic
+// / control-flow types only, never reflected, replicated or saved.
+//
+// One value per reason a reconcile pass did or did not call the closed-source
+// AFGCreatureSpawner::SpawnCreatures() on a nest. The string form is printed
+// verbatim as the "decision" field of the "[PFA] Nest drive" line, so the log
+// alone names the predicate that decided the pass.
+// ---------------------------------------------------------------------------
+enum class EPFANestDriveDecision : uint8
+{
+	Driven,                 // fresh drive: no requests were outstanding
+	DrivenAfterStall,       // re-drive: requests were outstanding but stale
+	SkipCreaturesLive,      // this nest already has live creatures
+	SkipNoUnspawned,        // no unspawned slot to fill
+	SkipNoPlayer,           // no player pawn exists to measure distance against
+	SkipPlayerOutOfRange,   // nearest player is beyond GetSpawnDistance()
+	SkipRequestInFlight,    // requests outstanding and still inside the stall window
+	SkipRedriveCooldown,    // re-driven recently; do not re-enter native yet
+	SkipNativeNotReady,     // IsReadyToSpawn() said no
+	DeferPassBudget         // this pass's request budget is spent; retried next pass
+};
+
+// Everything one TryDriveSpawn call measured, returned so the caller can build a
+// per-pass census without re-reading the spawner. Counts are MEASURED on this
+// call; none of them is inferred.
+struct FPFANestDriveResult
+{
+	EPFANestDriveDecision Decision = EPFANestDriveDecision::SkipNoUnspawned;
+	int32 LiveBefore = 0;
+	int32 UnspawnedBefore = 0;
+	int32 WaitingBefore = 0;
+	int32 WaitingAfter = 0;
+	int32 NewLive = 0;                  // live creatures gained across the drive call
+	float OldestWaitSeconds = 0.0f;
+	float NearestPlayerDistance = -1.0f; // -1 means no player pawn was found
+	float SpawnDistance = 0.0f;
+	int32 UnstampedWaiting = 0;
+	int32 BudgetUsed = 0;               // newly-waiting slots + newly-live creatures
+	bool bDriven = false;
+};
+
+// ---------------------------------------------------------------------------
 // APFANestSpawner -- a real AFGCreatureSpawner subclass for PrimalFauna
 // territory nests (docs/03-spawning-and-territories.md §1, docs/06 S1-S4).
 //
@@ -83,9 +125,32 @@ public:
 	// the base PostLoad hook. A pre-fix save has no snapshot, so this rehydrates
 	// only the missing base configuration from the registry while preserving
 	// any saved mSpawnData/kill state and existing effective slot count.
+	//
+	// w58-3: this is the CONFIGURATION half ONLY, and it stays one-shot -- it
+	// owns the S2 write-once contract. It used to end with an UNCONDITIONAL
+	// SpawnCreatures() with no distance test of any kind, which at world load
+	// force-drove every restored nest in a single frame (measured 2026-08-18:
+	// 17 nests, ~765 native spawn-location requests, zero returns, permanent for
+	// the session). The spawn half now lives in TryDriveSpawn below and is
+	// re-evaluated every reconcile pass. build.ps1 pins that separation.
 	void EnsureRuntimeConfigurationAfterAdoption(TSubclassOf<class AFGCreature> InCreatureClass,
 		int32 InMinCreatures, int32 InMaxCreatures, float InSpawnRadius,
 		bool bInCanSpawnDuringDay, bool bInCanSpawnDuringNight, int32 InRespawnTimeIndays);
+
+	// w58-3 SPAWN half -- re-evaluated on EVERY APFASubsystem::ReconcileNests
+	// pass (the existing 10s subsystem heartbeat; no new timer), never one-shot.
+	//
+	// Drives the closed-source SpawnCreatures() only when a player is inside this
+	// spawner's OWN GetSpawnDistance(), no requests are already in flight (or the
+	// oldest has demonstrably stalled), and the caller's per-pass slot budget is
+	// not spent. RemainingSlotBudget <= 0 defers the nest to the next pass rather
+	// than skipping it permanently -- the caller carries the remainder forward by
+	// simply calling again next heartbeat.
+	//
+	// Returns everything it measured; the caller logs the per-pass census.
+	FPFANestDriveResult TryDriveSpawn(int32 RemainingSlotBudget);
+
+	static const TCHAR* DriveDecisionToString(EPFANestDriveDecision Decision);
 
 	bool HasRuntimeConfigurationSnapshot() const { return bHasRuntimeConfigSnapshot; }
 
@@ -126,9 +191,22 @@ private:
 	UPROPERTY(SaveGame)
 	int32 SavedRespawnTimeInDays = -1;
 
-	// Per-instance, per-load one-shot guard. Reconcile runs every ten seconds;
-	// adoption recovery must not become a second spawn loop.
+	// Per-instance, per-load one-shot guard for the CONFIGURATION half only
+	// (w58-3). Reconcile runs every ten seconds; the write-once S2 fields must
+	// not be rewritten on each pass. The SPAWN half deliberately no longer sits
+	// behind this flag -- see TryDriveSpawn.
 	bool bRuntimeAdoptionChecked = false;
+
+	// w58-3 re-drive bookkeeping. World seconds of the last SpawnCreatures()
+	// this instance issued; negative sentinel means "never". Used only to
+	// rate-limit re-entry into the closed-source spawn path.
+	double LastDriveTimeSeconds = -1.0e30;
+
+	// Per-instance log dedup for the "[PFA] Nest drive" line, so an unchanged
+	// decision does not print every ten seconds for the whole session.
+	bool bHasLoggedDriveDecision = false;
+	EPFANestDriveDecision LastLoggedDriveDecision = EPFANestDriveDecision::SkipNoUnspawned;
+	double LastDriveLogTimeSeconds = -1.0e30;
 
 	bool bHasSpawnDiagnosticSignature = false;
 	uint32 LastSpawnDiagnosticSignature = 0;
@@ -136,4 +214,14 @@ private:
 
 	void CaptureRuntimeConfigurationSnapshot();
 	void RestoreRuntimeConfigurationSnapshot();
+
+	// Read-only scan of the inherited mSpawnData array. Must not call any
+	// mutating native query (same rule LogSpawnDecisionDiagnostics documents).
+	void ScanSpawnSlots(int32& OutWaitingSlots, float& OutOldestWaitSeconds,
+		int32& OutUnstampedWaitingSlots) const;
+
+	// Nearest player pawn distance in cm, or -1.0 when no player pawn exists.
+	// Scans every player controller, not just the first, so a dedicated-server
+	// session measures the player who is actually closest.
+	float MeasureNearestPlayerDistance() const;
 };

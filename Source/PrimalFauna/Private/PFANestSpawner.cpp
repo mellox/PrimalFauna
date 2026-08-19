@@ -3,10 +3,56 @@
 #include "PrimalFauna.h"
 
 #include "Creature/FGCreature.h"
+#include "Engine/World.h"
 #include "GameFramework/Pawn.h"
+#include "GameFramework/PlayerController.h"
+
+namespace
+{
+	// w58-3. A slot that has been waiting this long for a native spawn location
+	// is treated as STALLED rather than in flight, which is the only state in
+	// which we will re-enter the closed-source SpawnCreatures() on a nest that
+	// still has outstanding requests. The same value rate-limits how often one
+	// nest may be re-driven.
+	//
+	// This number is a THRESHOLD CHOICE, not a measurement. What was measured
+	// (2026-08-18-w58-2 session): stalled slots' wait times climbed monotonically
+	// past 1000 s with zero observed transitions from waiting to live, across 770
+	// slots. Nothing in that session measured how long a HEALTHY projection takes,
+	// because not one completed -- so 60 s is picked to sit far above any
+	// plausible in-flight latency and far below the observed permanent stall, and
+	// it is the value a runtime test should challenge first.
+	constexpr float PFANestStallSeconds = 60.0f;
+
+	// Minimum world seconds between two SpawnCreatures() calls on ONE nest,
+	// whatever the reason for the second. Deliberately a SEPARATE constant from
+	// the stall window above: "how long before an outstanding request is
+	// presumed dead" and "how often we may re-enter the closed-source path" are
+	// different quantities, and one number serving both means any retune of one
+	// silently retunes the other. Equal by default; change them independently.
+	constexpr float PFANestRedriveCooldownSeconds = 60.0f;
+}
 
 APFANestSpawner::APFANestSpawner()
 {
+}
+
+const TCHAR* APFANestSpawner::DriveDecisionToString(EPFANestDriveDecision Decision)
+{
+	switch (Decision)
+	{
+	case EPFANestDriveDecision::Driven:               return TEXT("driven");
+	case EPFANestDriveDecision::DrivenAfterStall:     return TEXT("driven-after-stall");
+	case EPFANestDriveDecision::SkipCreaturesLive:    return TEXT("skip-creatures-live");
+	case EPFANestDriveDecision::SkipNoUnspawned:      return TEXT("skip-no-unspawned");
+	case EPFANestDriveDecision::SkipNoPlayer:         return TEXT("skip-no-player");
+	case EPFANestDriveDecision::SkipPlayerOutOfRange: return TEXT("skip-player-out-of-range");
+	case EPFANestDriveDecision::SkipRequestInFlight:  return TEXT("skip-request-in-flight");
+	case EPFANestDriveDecision::SkipRedriveCooldown:  return TEXT("skip-redrive-cooldown");
+	case EPFANestDriveDecision::SkipNativeNotReady:   return TEXT("skip-native-not-ready");
+	case EPFANestDriveDecision::DeferPassBudget:      return TEXT("defer-pass-budget");
+	}
+	return TEXT("unknown");
 }
 
 void APFANestSpawner::CaptureRuntimeConfigurationSnapshot()
@@ -173,25 +219,193 @@ void APFANestSpawner::EnsureRuntimeConfigurationAfterAdoption(TSubclassOf<AFGCre
 	RegisterAsNavigationInvoker(true);
 	TryRecoupleCreatureAndSpawner();
 
-	const int32 LiveBeforeSpawn = GetCreatures().Num();
-	const int32 UnspawnedBefore = GetNumUnspawnedCreatures();
-	const bool bReadyToSpawn = LiveBeforeSpawn == 0 && UnspawnedBefore > 0 && IsReadyToSpawn();
-	if (bReadyToSpawn)
-	{
-		SpawnCreatures();
-	}
+	// w58-3: NO SpawnCreatures() here. The spawn half moved to TryDriveSpawn,
+	// which the caller runs on this same pass (and on every later pass) behind a
+	// player-distance gate and a per-pass request budget. What is reported below
+	// is therefore the CONFIGURATION outcome only -- the drive outcome is the
+	// separate "[PFA] Nest drive" line, so neither line can imply the other.
+	const int32 LiveAfterConfig = GetCreatures().Num();
+	const int32 UnspawnedAfterConfig = GetNumUnspawnedCreatures();
 
 	if (PFADiag::IsEnabled())
 	{
 		UE_LOG(LogPrimalFauna, Display,
-			TEXT("[PFA] Nest adoption recovery: nest=%s snapshot=%s class=%s slotsBefore=%d slotsAfter=%d liveBefore=%d unspawnedBefore=%d populatedMissing=%s ready=%s decision=%s outcome=%s"),
+			TEXT("[PFA] Nest adoption recovery: nest=%s snapshot=%s class=%s slotsBefore=%d slotsAfter=%d liveBefore=%d unspawnedBefore=%d populatedMissing=%s decision=%s outcome=config-only"),
 			*NestId.ToString(), bHadSnapshotAtEntry ? TEXT("yes") : TEXT("no"),
-			*GetNameSafe(mCreatureClass.Get()), SlotsBefore, GetTotalNumCreatures(), LiveBeforeSpawn,
-			UnspawnedBefore, bPopulatedMissingSlots ? TEXT("true") : TEXT("false"),
-			bReadyToSpawn ? TEXT("true") : TEXT("false"),
-			bLegacyRecovery ? TEXT("rehydrate-legacy") : TEXT("verify-snapshot"),
-			bReadyToSpawn ? TEXT("spawn-initiated") : TEXT("native-state-kept"));
+			*GetNameSafe(mCreatureClass.Get()), SlotsBefore, GetTotalNumCreatures(), LiveAfterConfig,
+			UnspawnedAfterConfig, bPopulatedMissingSlots ? TEXT("true") : TEXT("false"),
+			bLegacyRecovery ? TEXT("rehydrate-legacy") : TEXT("verify-snapshot"));
 	}
+}
+
+void APFANestSpawner::ScanSpawnSlots(int32& OutWaitingSlots, float& OutOldestWaitSeconds,
+	int32& OutUnstampedWaitingSlots) const
+{
+	OutWaitingSlots = 0;
+	OutOldestWaitSeconds = 0.0f;
+	OutUnstampedWaitingSlots = 0;
+
+	const UWorld* World = GetWorld();
+	const float WorldTime = World ? World->GetTimeSeconds() : 0.0f;
+	for (const FSpawnData& Slot : mSpawnData)
+	{
+		if (Slot.WaitingForSpawnLocation)
+		{
+			++OutWaitingSlots;
+			if (Slot.SpawnLocationWaitTimeStamp >= 0.0f)
+			{
+				OutOldestWaitSeconds = FMath::Max(OutOldestWaitSeconds,
+					WorldTime - Slot.SpawnLocationWaitTimeStamp);
+			}
+			else
+			{
+				// Waiting with no timestamp: its age is UNKNOWN, not zero.
+				// Counted separately so oldestWait=0.0 can never be read as
+				// "this request just started" when it means "never stamped".
+				++OutUnstampedWaitingSlots;
+			}
+		}
+	}
+}
+
+float APFANestSpawner::MeasureNearestPlayerDistance() const
+{
+	const UWorld* World = GetWorld();
+	if (!World)
+	{
+		return -1.0f;
+	}
+
+	const FVector NestLocation = GetActorLocation();
+	float Nearest = -1.0f;
+	for (FConstPlayerControllerIterator It = World->GetPlayerControllerIterator(); It; ++It)
+	{
+		const APlayerController* PC = It->Get();
+		const APawn* Pawn = PC ? PC->GetPawn() : nullptr;
+		if (!Pawn)
+		{
+			continue;
+		}
+		const float Distance = FVector::Dist(NestLocation, Pawn->GetActorLocation());
+		if (Nearest < 0.0f || Distance < Nearest)
+		{
+			Nearest = Distance;
+		}
+	}
+	return Nearest;
+}
+
+FPFANestDriveResult APFANestSpawner::TryDriveSpawn(int32 RemainingSlotBudget)
+{
+	FPFANestDriveResult Result;
+
+	const UWorld* World = GetWorld();
+	const double NowSeconds = World ? static_cast<double>(World->GetTimeSeconds()) : 0.0;
+
+	Result.LiveBefore = GetCreatures().Num();
+	const int32 SlotsBefore = GetTotalNumCreatures();
+	Result.UnspawnedBefore = GetNumUnspawnedCreatures();
+	ScanSpawnSlots(Result.WaitingBefore, Result.OldestWaitSeconds, Result.UnstampedWaiting);
+	Result.WaitingAfter = Result.WaitingBefore;
+	Result.NearestPlayerDistance = MeasureNearestPlayerDistance();
+	Result.SpawnDistance = GetSpawnDistance();
+
+	const bool bStalled = Result.WaitingBefore > 0 &&
+		Result.OldestWaitSeconds >= PFANestStallSeconds;
+	const bool bRedriveCoolingDown =
+		(NowSeconds - LastDriveTimeSeconds) < static_cast<double>(PFANestRedriveCooldownSeconds);
+
+	// Ordered so the CHEAP, NON-MUTATING predicates run first and the mutating
+	// native query runs last: IsReadyToSpawn() can populate slots, trace for a
+	// nearby base and advance native timing (see build.ps1's diagnostics gate),
+	// so a nest we were never going to drive must not pay it.
+	if (Result.LiveBefore != 0)
+	{
+		// Preserves the pre-w58-3 skip that kept a save-restored nest's native
+		// state untouched (the "liveBefore != 0 => do not spawn" half of the old
+		// bReadyToSpawn predicate).
+		Result.Decision = EPFANestDriveDecision::SkipCreaturesLive;
+	}
+	else if (Result.UnspawnedBefore <= 0)
+	{
+		Result.Decision = EPFANestDriveDecision::SkipNoUnspawned;
+	}
+	else if (Result.NearestPlayerDistance < 0.0f)
+	{
+		Result.Decision = EPFANestDriveDecision::SkipNoPlayer;
+	}
+	else if (Result.NearestPlayerDistance > Result.SpawnDistance)
+	{
+		// THE FIX. The pre-w58-3 path had no distance test at all, so a world
+		// load drove every restored nest at once with the player kilometres away.
+		Result.Decision = EPFANestDriveDecision::SkipPlayerOutOfRange;
+	}
+	else if (Result.WaitingBefore > 0 && !bStalled)
+	{
+		Result.Decision = EPFANestDriveDecision::SkipRequestInFlight;
+	}
+	else if (bRedriveCoolingDown)
+	{
+		// Unconditional. LastDriveTimeSeconds is written on EVERY drive, so
+		// reading it only when requests are outstanding left the fresh-drive
+		// side ungoverned: a nest whose drive produced neither a waiting slot
+		// nor a creature would be re-driven every heartbeat, forever, charging
+		// nothing against the pass budget.
+		Result.Decision = EPFANestDriveDecision::SkipRedriveCooldown;
+	}
+	else if (RemainingSlotBudget <= 0)
+	{
+		// Not a refusal: the caller retries this nest on the next pass, which is
+		// how the per-pass remainder is carried forward.
+		Result.Decision = EPFANestDriveDecision::DeferPassBudget;
+	}
+	else if (!IsReadyToSpawn())
+	{
+		Result.Decision = EPFANestDriveDecision::SkipNativeNotReady;
+	}
+	else
+	{
+		Result.Decision = bStalled
+			? EPFANestDriveDecision::DrivenAfterStall
+			: EPFANestDriveDecision::Driven;
+		Result.bDriven = true;
+		LastDriveTimeSeconds = NowSeconds;
+
+		SpawnCreatures();
+
+		float OldestWaitAfter = 0.0f;
+		ScanSpawnSlots(Result.WaitingAfter, OldestWaitAfter, Result.UnstampedWaiting);
+		Result.NewLive = FMath::Max(0, GetCreatures().Num() - Result.LiveBefore);
+		// Slots this pass COMMITTED to the closed-source spawn-location path.
+		// NOT a delta: on a re-drive of a stalled nest the previously-waiting
+		// slots are re-issued and the delta is zero, which would make the
+		// per-pass cap vacuous in exactly the case it exists to bound. Charge
+		// every slot left outstanding after the call, plus any that resolved
+		// into a live creature during it.
+		Result.BudgetUsed = Result.WaitingAfter + Result.NewLive;
+	}
+
+	const bool bDecisionChanged =
+		!bHasLoggedDriveDecision || LastLoggedDriveDecision != Result.Decision;
+	const bool bPeriodicReport = (NowSeconds - LastDriveLogTimeSeconds) >= 60.0;
+	if (PFADiag::IsEnabled() && (Result.bDriven || bDecisionChanged || bPeriodicReport))
+	{
+		bHasLoggedDriveDecision = true;
+		LastLoggedDriveDecision = Result.Decision;
+		LastDriveLogTimeSeconds = NowSeconds;
+
+		UE_LOG(LogPrimalFauna, Display,
+			TEXT("[PFA] Nest drive: nest=%s decision=%s slotsBefore=%d slotsAfter=%d live=%d unspawned=%d waitingBefore=%d waitingAfter=%d oldestWait=%.1fs waitingUnstamped=%d newLive=%d budgetUsed=%d budgetOffered=%d nearestPlayer=%.0f spawnDistance=%.0f stallWindow=%.0fs cooldown=%.0fs"),
+			*NestId.ToString(), DriveDecisionToString(Result.Decision), SlotsBefore,
+			GetTotalNumCreatures(), Result.LiveBefore,
+			Result.UnspawnedBefore, Result.WaitingBefore, Result.WaitingAfter,
+			Result.OldestWaitSeconds, Result.UnstampedWaiting, Result.NewLive, Result.BudgetUsed,
+			RemainingSlotBudget,
+			Result.NearestPlayerDistance, Result.SpawnDistance, PFANestStallSeconds,
+			PFANestRedriveCooldownSeconds);
+	}
+
+	return Result;
 }
 
 void APFANestSpawner::LogSpawnDecisionDiagnostics(const APawn* PlayerPawn)

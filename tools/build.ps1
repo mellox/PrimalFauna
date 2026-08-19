@@ -113,6 +113,92 @@ if ($diagBody.Contains($mutatingNeedle)) {
 }
 Write-Host 'PFABUILD nest diagnostics mutation gate OK'
 
+# --- gate 2a2: pin the w58-3 nest force-drive fix -----------------------------
+# Three separate one-line reverts would each restore the load-time spawn-request
+# flood (17 nests, ~765 native requests in one frame, zero returns, measured
+# 2026-08-18). None is reachable by the self-tests: they report NO-COVERAGE on a
+# world with no nests, and the flood needs a loaded save with many nests plus a
+# spawn multiplier to reproduce at all.
+#
+# Every needle is built by CONCATENATION so this script's own text -- including
+# these comments and the failure messages -- can neither satisfy nor trip a check
+# if the script is ever itself scanned.
+#
+# Bodies are BOUNDED at the next member definition. The gate above deliberately
+# reads to end-of-file; these do not, because a later function legitimately calls
+# the very symbol they forbid.
+function Get-PfaMemberBody {
+    param([string]$Source, [string]$Anchor, [string]$NextDefinitionMarker)
+    $start = $Source.IndexOf($Anchor)
+    if ($start -lt 0) { return $null }
+    $after = $start + $Anchor.Length
+    $end = $Source.IndexOf($NextDefinitionMarker, $after)
+    if ($end -lt 0) { $end = $Source.Length }
+    return $Source.Substring($start, $end - $start)
+}
+
+$memberMarker = "`nvoid APFANestSpawner" + '::'
+$ensureAnchor = 'void APFANestSpawner::' + 'EnsureRuntimeConfigurationAfterAdoption'
+$ensureBody = Get-PfaMemberBody -Source $nestSource -Anchor $ensureAnchor -NextDefinitionMarker $memberMarker
+if (-not $ensureBody) { Fail 'EnsureRuntimeConfigurationAfterAdoption body not found; w58-3 force-drive gate is vacuous.' }
+$spawnNeedle = 'SpawnCreatures' + '();'
+if ($ensureBody.Contains($spawnNeedle)) {
+    Fail ('w58-3: EnsureRuntimeConfigurationAfterAdoption must NOT call the native spawn path. ' +
+          'That unconditional call had no player-distance test and force-drove every restored nest at world load.')
+}
+
+# Bounded by the NEXT member definition, which is LogSpawnDecisionDiagnostics.
+# Without that bound the body would run to end-of-file and every positive check
+# below could be satisfied by a different function's text.
+$driveAnchor = 'FPFANestDriveResult APFANestSpawner::' + 'TryDriveSpawn'
+$driveBody = Get-PfaMemberBody -Source $nestSource -Anchor $driveAnchor -NextDefinitionMarker $memberMarker
+if (-not $driveBody) { Fail 'TryDriveSpawn body not found; w58-3 distance/budget gates are vacuous.' }
+if (-not $driveBody.Contains($spawnNeedle)) {
+    Fail 'w58-3: TryDriveSpawn no longer drives the native spawn path -- nests would never activate.'
+}
+$rangeNeedle = 'EPFANestDriveDecision::' + 'SkipPlayerOutOfRange'
+if (-not $driveBody.Contains($rangeNeedle)) {
+    Fail 'w58-3: TryDriveSpawn lost its player-distance gate -- the load-time spawn-request flood returns.'
+}
+$spawnDistanceNeedle = 'GetSpawnDistance' + '()'
+if (-not $driveBody.Contains($spawnDistanceNeedle)) {
+    Fail ("w58-3: TryDriveSpawn must gate on the spawner's OWN " + $spawnDistanceNeedle + ', not an invented constant.')
+}
+$budgetNeedle = 'RemainingSlotBudget' + ' <= 0'
+if (-not $driveBody.Contains($budgetNeedle)) {
+    Fail 'w58-3: TryDriveSpawn lost its per-pass request budget check.'
+}
+
+# The re-drive is what makes a gated nest recoverable instead of dead-until-reload,
+# so the spawn half must NOT be behind the one-shot configuration guard.
+$subsystemCpp = Join-Path $Repo 'Source\PrimalFauna\Private\PFASubsystem.cpp'
+$subsystemSource = Get-Content -LiteralPath $subsystemCpp -Raw
+$reconcileAnchor = 'void APFASubsystem::' + 'ReconcileNests'
+$reconcileBody = Get-PfaMemberBody -Source $subsystemSource -Anchor $reconcileAnchor `
+                                   -NextDefinitionMarker ("`nbool APFASubsystem" + '::')
+if (-not $reconcileBody) { Fail 'ReconcileNests body not found; w58-3 re-drive gate is vacuous.' }
+$redriveNeedle = 'TryDriveSpawn' + '('
+if (-not $reconcileBody.Contains($redriveNeedle)) {
+    Fail 'w58-3: ReconcileNests no longer re-drives nests each pass -- a stalled nest would stay dead until reload.'
+}
+# ANCHORED ON THE INITIALISATION SITE, not on a bare token. A bare-token pin here
+# was measured (2026-08-18) to pass against a mutant that hard-coded the running
+# budget to 100000, because the SAME token still appeared in the census log call
+# a few lines later -- the sibling-occurrence hole. Pin the assignment itself.
+$budgetConstNeedle = 'DriveSlotBudgetLeft = ' + 'NestDriveSlotBudgetPerPass;'
+if (-not $reconcileBody.Contains($budgetConstNeedle)) {
+    Fail ('w58-3: the per-pass slot budget in ReconcileNests is no longer initialised from ' +
+          'NestDriveSlotBudget' + 'PerPass -- one pass could re-create the request flood.')
+}
+# Both adopt branches must drive. An asymmetry here is this workspace's most
+# repeated defect class: a rule applied to one side of a relationship only.
+$driveCallCount = ([regex]::Matches($reconcileBody, [regex]::Escape($redriveNeedle))).Count
+if ($driveCallCount -lt 2) {
+    Fail ("w58-3: only $driveCallCount of the 2 adopt branches in ReconcileNests drives the spawner " +
+          '(id-adopt and adopt-by-name must behave identically).')
+}
+Write-Host 'PFABUILD w58-3 nest drive gate OK (force-drive removed; distance + budget + re-drive pinned on both adopt branches)'
+
 # --- gate 2b: pin the w58-1 corpse fix. A one-line revert of the un-latch, or a
 # legend that starts printing field-and-value pairs, must fail the BUILD -- the
 # self-tests cannot catch either (they report NO-COVERAGE on a corpse-free world).
@@ -259,6 +345,36 @@ if (-not (Test-Path $DeployDll)) { Fail "deployed DLL missing at $DeployDll" }
 $hit = Select-String -Path $DeployDll -Pattern $Marker -Encoding unicode -ErrorAction SilentlyContinue
 if (-not $hit) { Fail "marker $Marker NOT found in the deployed DLL -- the game would load an older build" }
 Write-Host "PFABUILD MARKER_${Marker}=True in $(Split-Path $DeployDll -Leaf)"
+
+# --- gate 4a2: the deployed DLL must have been LINKED BY THIS BUILD ----------
+# A source file restored from a backup can carry an mtime OLDER than its own
+# .obj. UBT then judges the object up to date and SKIPS the relink; the build
+# reports BUILD SUCCESSFUL, the marker still matches (the marker text was not
+# what changed), every content gate passes, and a DLL compiled from stale source
+# deploys. Measured 2026-08-18 during the w58-3 packet: a mutated DLL reached
+# the live game directory this way.
+#
+# mtime cannot express this -- the incident IS an mtime going backwards -- so
+# key the gate on source CONTENT instead. Rule: if the source text changed since
+# the last recorded build, the DLL must have been written during this build.
+$srcFiles = Get-ChildItem (Join-Path $Repo 'Source') -Recurse -File -Include *.cpp,*.h |
+            Sort-Object FullName
+$srcConcat = ($srcFiles | ForEach-Object {
+    $_.FullName.Substring($Repo.Length) + ':' + (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash
+}) -join "`n"
+$srcHash = (Get-FileHash -InputStream ([System.IO.MemoryStream]::new(
+    [System.Text.Encoding]::UTF8.GetBytes($srcConcat))) -Algorithm SHA256).Hash
+$srcStampFile = Join-Path $Repo 'tools\.build-source-hash'
+$prevSrcHash = if (Test-Path $srcStampFile) { (Get-Content -LiteralPath $srcStampFile -Raw).Trim() } else { '' }
+$dllWritten = (Get-Item $DeployDll).LastWriteTime
+if ($srcHash -ne $prevSrcHash -and $dllWritten -lt $BuildStart) {
+    Fail ("STALE RELINK: source text changed since the last recorded build, but the deployed DLL was " +
+          "written $dllWritten, BEFORE this build started $BuildStart. UBT skipped the relink -- the " +
+          "game would load code compiled from DIFFERENT source than the tree you just built. " +
+          "Touch every changed source file to now (Get-ChildItem ... | ForEach-Object { `$_.LastWriteTime = Get-Date }) and rebuild.")
+}
+Set-Content -LiteralPath $srcStampFile -Value $srcHash -NoNewline
+Write-Host ("PFABUILD DLL freshness OK (source hash {0}, DLL written {1})" -f $srcHash.Substring(0,8), $dllWritten)
 
 # --- gate 4c: CONTENT freshness. The marker proves the CODE is fresh and says
 # nothing about assets. A clip that failed to import, or a cook that skipped
