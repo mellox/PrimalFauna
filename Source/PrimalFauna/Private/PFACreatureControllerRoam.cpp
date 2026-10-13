@@ -46,6 +46,9 @@
 #include "PFACreatureController.h"
 #include "PrimalFauna.h"
 #include "PFACheats.h"
+// w58-7 (r2 review F6): the shared liveness predicate. Mechanical addition named
+// by the review -- this TU did not previously include the contract header.
+#include "PFAEngagementCensus.h"
 
 #include "Creature/FGCreature.h"
 
@@ -104,15 +107,28 @@ namespace
 	// instruction for this telemetry is "discard kind=PURSUIT legs", so the analyst
 	// would have discarded exactly the roam samples this packet exists to produce.
 	// Plain loop rather than Algo::CountIf: one fewer header, same code.
+	//
+	// w58-7 (r2 review F6): and entries whose target is still FIGHTABLE. w58-5
+	// taught three sites that a dead entry is not interest (the drop, the decay
+	// veto, PackAssist); this fourth one still counted a corpse holding full
+	// aggro, so every roam leg for the corpse's whole 120s lifetime was stamped
+	// PURSUIT -- and the standing instruction for this telemetry is to discard
+	// PURSUIT legs, so the control arm's samples were being thrown away.
 	int32 CountLiveAggroEntries(const TArray<FFGCreatureAggroData>& AggroTargets)
 	{
 		int32 LiveEntries = 0;
 		for (const FFGCreatureAggroData& AggroData : AggroTargets)
 		{
-			if (AggroData.Aggro > KINDA_SMALL_NUMBER)
+			if (AggroData.Aggro <= KINDA_SMALL_NUMBER)
 			{
-				++LiveEntries;
+				continue;
 			}
+			if (!AggroData.Target ||
+				PFAEngagement::IsConfirmedNotFightable(PFAEngagement::GradeTargetLiveness(AggroData.Target)))
+			{
+				continue;
+			}
+			++LiveEntries;
 		}
 		return LiveEntries;
 	}

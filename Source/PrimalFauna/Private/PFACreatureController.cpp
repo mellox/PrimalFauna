@@ -3,6 +3,9 @@
 #include "PFACheats.h"
 #include "PFACreatureBase.h"
 #include "PFAConfig.h"
+// w58-5 (review M4): PackAssist grades its shared TARGET with the same one
+// liveness predicate the drop path and the census use.
+#include "PFAEngagementCensus.h"
 #include "PFASubsystem.h"
 #include "Species/PFASicklejaw.h"
 
@@ -371,6 +374,18 @@ void APFACreatureController::OnCreatureStateChanged_Implementation(
 			*GetNameSafe(Leader), *GetNameSafe(Spawner), *GetNameSafe(Target));
 		return;
 	}
+	// w58-5 (review M4): SYMMETRY. The candidate loop below grades the packmate's
+	// own health; nothing ever graded the TARGET. Sharing a corpse installs a
+	// fightThreshold+1 aggro entry in every roaming packmate, which the dead-target
+	// drop then has to unwind one controller at a time.
+	if (PFAEngagement::IsConfirmedNotFightable(PFAEngagement::GradeTargetLiveness(Target)))
+	{
+		UE_LOG(LogPrimalFauna, Display,
+			TEXT("[PFA] PackAssist: leader=%s spawner=%s target=%s candidates=0 joined=0 decision=skip outcome=target-graded-not-fightable targetLiveness=%s"),
+			*Leader->GetName(), *Spawner->GetName(), *Target->GetName(),
+			PFAEngagement::LivenessToken(PFAEngagement::GradeTargetLiveness(Target)));
+		return;
+	}
 	if (!IsInGameThread())
 	{
 		UE_LOG(LogPrimalFauna, Error,
@@ -697,6 +712,13 @@ void APFACreatureController::ResetTargetingState(const TCHAR* Reason)
 	mVisibleTargets.Reset();
 	SetCurrentTarget(nullptr);
 	TriggerStateUpdate(/*bImmediate=*/true);
+	// w58-5 (review M6): a reset is a REAL unbinding, so the engagement hold clock
+	// restarts here. Without this, a creature that disengages, roams for a minute
+	// and re-aggros the same player reports a heldSecs spanning the whole gap --
+	// the flicker tolerance was meant to absorb sub-second nulls, not disengages.
+	mEngagementObservation.HeldTarget = nullptr;
+	mEngagementObservation.HeldTargetSinceSeconds = -1.0;
+	mEngagementObservation.PerformStartCountAtHoldStart = mEngagementObservation.PerformStartCount;
 	// Always-on: a state wipe is a behavioral event the log must explain.
 	UE_LOG(LogPrimalFauna, Display,
 		TEXT("[PFA] %s: ResetTargetingState (%s): cleared %d aggro + %d visibility entries; currentTarget=none."),

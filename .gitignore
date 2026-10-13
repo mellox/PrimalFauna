@@ -6,3 +6,6 @@ art/**/*.fbm/
 __pycache__/
 *.pyc
 *.blend1
+
+# build.ps1 gate 4a2 stale-relink stamp -- machine-local build state, never source
+tools/.build-source-hash

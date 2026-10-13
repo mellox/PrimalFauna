@@ -42,7 +42,14 @@ struct FPFANestDriveResult
 	float NearestPlayerDistance = -1.0f; // -1 means no player pawn was found
 	float SpawnDistance = 0.0f;
 	int32 UnstampedWaiting = 0;
-	int32 BudgetUsed = 0;               // newly-waiting slots + newly-live creatures
+	// w58-5 comment correction: this is NOT a delta. R1 (w58-3) made it
+	// WaitingAfter + NewLive deliberately -- the TOTAL slots still outstanding
+	// after the call, plus any that resolved into a live creature during it --
+	// because on a re-drive of a stalled nest the previously-waiting slots are
+	// re-issued and a delta would be zero, making the per-pass cap vacuous in
+	// exactly the case it exists to bound. The old text here said "newly-waiting
+	// slots", which that change made false.
+	int32 BudgetUsed = 0;               // waiting slots outstanding after the call + creatures gained by it
 	bool bDriven = false;
 };
 

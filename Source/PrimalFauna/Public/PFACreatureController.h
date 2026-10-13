@@ -24,6 +24,49 @@
 //   "runs CanBeHostileTowards by default" behavior (doc 07 §1: own every
 //   class we change, don't assume binary defaults).
 // ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// w58-5 ENGAGEMENT OBSERVATION. Everything the engagement census needs about
+// what the melee action actually DID, recorded by the action itself at the
+// moment it ran.
+//
+// Why recorded rather than queried: the census must not CALL engine action
+// code to find out whether the action could fire. This project already paid
+// for that lesson at the nest seam -- AFGCreatureSpawner::IsReadyToSpawn reads
+// as a nominal query and populates slots and advances native timing. A
+// diagnostic that mutates the thing it measures is worse than no diagnostic.
+//
+// Every timestamp is world-seconds and every consumer prints its AGE, so a
+// sample taken minutes ago can never read as a fresh measurement.
+// ---------------------------------------------------------------------------
+struct FPFAEngagementObservation
+{
+	// --- sampled inside UPFACreatureActionMelee::CanPerformAction ---------
+	bool bHasCanPerformSample = false;
+	bool bLastCanPerform = false;
+	float LastSampledAttackRangeCm = -1.0f;
+	float LastSampledMinRangeCm = -1.0f;
+	// Sampled from UFGAction::GetRemainingCooldown() (FORCEINLINE header
+	// getter) AT THE SAMPLE, not now. The name carries "AtSample" because the
+	// value is only true as of LastCanPerformSampleTimeSeconds.
+	float LastSampledCooldownRemainSeconds = -1.0f;
+	int32 LastSampledActionState = -1;
+	double LastCanPerformSampleTimeSeconds = -1.0;
+
+	// --- recorded inside UPFACreatureActionMelee::PerformAction ----------
+	double LastPerformStartTimeSeconds = -1.0;
+	int32 PerformStartCount = 0;
+
+	// --- target-hold tracking, updated on the 0.25s beat -----------------
+	// FLICKER-TOLERANT BY CONSTRUCTION: the native current target flickers
+	// null 1-2x/second during a live engagement (w26-3, session 18), so a null
+	// reading NEVER re-stamps the hold. Only a change to a DIFFERENT non-null
+	// actor starts a new hold. Without that, heldSecs would reset twice a
+	// second and could never report the 46-50s holds this field exists for.
+	TWeakObjectPtr<AActor> HeldTarget;
+	double HeldTargetSinceSeconds = -1.0;
+	int32 PerformStartCountAtHoldStart = 0;
+};
+
 UCLASS()
 class PRIMALFAUNA_API APFACreatureController : public AFGCreatureController
 {
@@ -93,6 +136,30 @@ public:
 	// transitions). mAggroTargets/mVisibleTargets are protected
 	// (FGCreatureController.h:479/486) -- plain subclass access.
 	void ResetTargetingState(const TCHAR* Reason);
+
+	// --- w58-5 DEAD-TARGET RETENTION ------------------------------------------
+	// Runs on its OWN 0.25s beat, immediately before TickAggroRangeDecay: if the
+	// current target grades Dead or Destroyed, drop it and reset targeting.
+	//
+	// WHY ITS OWN BEAT AND ITS OWN KILL-SWITCH rather than a block inside
+	// TickAggroRangeDecay (which is where the diagnosis proposed it): that
+	// function returns early on `pfa.AggroDecayAtRange 0`, on a missing
+	// visibility curve, on a zero reduction rate, and on an EMPTY aggro array --
+	// all of them BEFORE its 0.25s accumulator. A dead target held with no aggro
+	// entries left is exactly one of the shapes this exists to catch, so folding
+	// the check in behind those returns would have made it unreachable in part of
+	// its own domain, and would have tied it to an unrelated A/B switch.
+	// Kill-switch: pfa.DropDeadTargets.
+	void TickDeadTargetDrop(float DeltaSeconds);
+
+	// --- w58-5 ENGAGEMENT OBSERVATION (see FPFAEngagementObservation) ----------
+	// Written by UPFACreatureActionMelee, read by PFAEngagementCensus. Both are
+	// cheap unconditional recorders -- NOT diag-gated, because a diagnostic that
+	// only records while someone is watching is the w44-1 defect wearing a hat.
+	void NoteMeleeCanPerformSample(bool bCanPerform, float AttackRangeCm, float MinRangeCm,
+		float CooldownRemainSeconds, int32 ActionState);
+	void NoteMeleePerformActionStarted();
+	const FPFAEngagementObservation& GetEngagementObservation() const { return mEngagementObservation; }
 
 	// --- w48-2 STATE KICK -----------------------------------------------------
 	// PROVEN IN GAME (w48-1 session, 2026-07-26): after a successful disengage --
@@ -259,6 +326,26 @@ private:
 	// flicker would have satisfied it. It is also deliberately the front half of the
 	// dwell-based stale-target timeout that is the likely follow-up fix.
 	int32 mStaleZeroConsecutiveBeats = 0;
+
+	// --- w58-5 dead-target drop state -----------------------------------------
+	// Separate accumulator from mRangeDecayAccumulator on purpose: sharing one
+	// would couple the drop's cadence to the decay's early returns (see
+	// TickDeadTargetDrop's comment).
+	float mDeadTargetDropAccumulator = 0.0f;
+	// Set while the current target has already been reported as confirmed-dead
+	// for this engagement, so a drop that the native machine refuses cannot
+	// produce a line every 0.25s. Cleared as soon as the target changes or
+	// grades alive again.
+	TWeakObjectPtr<AActor> mLastDeadTargetReported;
+	// w58-5 (review M7): consecutive 0.25s beats on which the SAME actor has been
+	// found dead and still bound. The latch above throttles the LOG; this throttles
+	// the ACTION, so a drop the native machine refuses cannot fire the always-on
+	// ResetTargetingState + state-kick lines eight times a second.
+	int32 mDeadTargetDropAttempts = 0;
+
+	// w58-5: what the melee action measured, when it measured it. Public read
+	// accessor above; written only by NoteMelee* .
+	FPFAEngagementObservation mEngagementObservation;
 
 	// --- w46-1 ROAM-LEG TELEMETRY (PFACreatureControllerRoam.cpp) --------------
 	// The roam band reaches the blackboard as [600..2500]cm and the VANILLA BT picks
