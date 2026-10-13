@@ -31,6 +31,34 @@ struct PRIMALFAUNA_API FPFAConfigStruct
     UPROPERTY(BlueprintReadWrite)
     bool EnableDiagnostics{false};
 
+    // World population controls count territories, never creatures per pack.
+    UPROPERTY(BlueprintReadWrite)
+    bool EnableWorldPopulation{true};
+    UPROPERTY(BlueprintReadWrite)
+    int32 PacksPerBiomeMin{2};
+    UPROPERTY(BlueprintReadWrite)
+    int32 PacksPerBiomeMax{4};
+    UPROPERTY(BlueprintReadWrite)
+    bool ScaleLargeBiomes{true};
+    UPROPERTY(BlueprintReadWrite)
+    FString BiomePackOverrides;
+    UPROPERTY(BlueprintReadWrite)
+    bool GuardResourceSites{true};
+    UPROPERTY(BlueprintReadWrite)
+    float ResourceGuardChance{0.2f};
+    UPROPERTY(BlueprintReadWrite)
+    int32 GuardPacksPerBiome{1};
+    UPROPERTY(BlueprintReadWrite)
+    float WanderingPackFraction{0.33f};
+    UPROPERTY(BlueprintReadWrite)
+    float WanderingRadiusMeters{150.0f};
+    UPROPERTY(BlueprintReadWrite)
+    float WanderRetargetSeconds{90.0f};
+    UPROPERTY(BlueprintReadWrite)
+    float PackSpacingMeters{600.0f};
+    UPROPERTY(BlueprintReadWrite)
+    int32 TerritoryLayoutRevision{0};
+
     // --- W2.3: Sicklejaw section (flat keys; doc 04 §1 per-species table) ---
 
     // 0 = Passive, 1 = Territorial, 2 = Hostile (doc 02 §3).

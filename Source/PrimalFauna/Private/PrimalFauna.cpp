@@ -2,17 +2,16 @@
 
 DEFINE_LOG_CATEGORY(LogPrimalFauna);
 
+void PFAInstallPopulationSpawnGuards();
+
 void FPrimalFaunaModule::StartupModule()
 {
     // Marker is a MONOTONIC BUILD ID, not a packet label (W2.2 review catch:
     // numbering by packet decremented it below the committed w23-1 and would
     // have made log forensics non-unique).
-	UE_LOG(LogPrimalFauna, Display, TEXT("===== PrimalFauna BUILD 2026-08-18-w58-8 LOADED ====="));
+	UE_LOG(LogPrimalFauna, Display, TEXT("===== PrimalFauna BUILD 2026-09-28-w60-1 LOADED ====="));
 
-    // Deliberately no SUBSCRIBE_METHOD / SUBSCRIBE_UOBJECT_METHOD hooks here.
-    // PrimalFauna's entire gameplay surface lives in our own subclasses of
-    // the creature framework, so there is nothing vanilla to hook in v1.
-    // See docs/07-technical-architecture.md §1.
+    PFAInstallPopulationSpawnGuards();
 }
 
 IMPLEMENT_GAME_MODULE(FPrimalFaunaModule, PrimalFauna);

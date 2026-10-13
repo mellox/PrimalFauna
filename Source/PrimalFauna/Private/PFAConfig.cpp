@@ -4,6 +4,7 @@
 #include "Configuration/Properties/ConfigPropertyBool.h"
 #include "Configuration/Properties/ConfigPropertyFloat.h"
 #include "Configuration/Properties/ConfigPropertyInteger.h"
+#include "Configuration/Properties/ConfigPropertyString.h"
 #include "Configuration/Properties/WidgetExtension/CP_Float.h"
 #include "Configuration/Properties/WidgetExtension/CP_Integer.h"
 #include "Configuration/Properties/WidgetExtension/CP_Section.h"
@@ -34,7 +35,7 @@ UPFAConfig::UPFAConfig()
 {
     ConfigId = FConfigId{"PrimalFauna", ""};
     DisplayName = FText::FromString(TEXT("Primal Fauna"));
-    Description = FText::FromString(TEXT("Original creature roster for Satisfactory. Works with HostileScaling automatically; no dependency either way. More setting sections (per-species, Factions, Sandwyrm) arrive as those systems ship."));
+    Description = FText::FromString(TEXT("Sicklejaw creatures, factions and configurable world territories for Satisfactory. HostileScaling controls creatures per pack and respawn scaling independently."));
 }
 
 void UPFAConfig::PostInitProperties()
@@ -124,15 +125,15 @@ void UPFAConfig::PostInitProperties()
 
     AddBool(TEXT("Enabled"), true,
         TEXT("Enabled"),
-        TEXT("Master switch. Off = no nests injected, existing Primal Fauna creatures despawned on next refresh, worm events suppressed. Safe to toggle mid-save. Takes effect within ~10s, no reload."));
+        TEXT("Master switch. Stops new world packs. Existing world packs retire when players are away and combat has ended; cleared-pack records remain saved. Developer test nests are separate."));
 
     AddFloat(TEXT("NestDensity"), 1.0f, 0.25f, 3.0f,
         TEXT("Nest Density"),
-        TEXT("Scales how many territory nests materialize. Does NOT change per-spawner creature counts -- that is Hostile Scaling's setting. 1.0 = default. Takes effect within ~10s, no reload."));
+        TEXT("Multiplies the pack budget in EACH biome, including biome overrides and guards. 1 = normal; 0.5 = half; 2 = double. Placement safety and spacing can leave budgets unfilled. HostileScaling controls creatures per pack and respawn speed."));
 
     AddBool(TEXT("EnableExperimentalFeatures"), false,
         TEXT("Enable Experimental Features"),
-        TEXT("Reserved for early, unproven features. No experimental features are implemented yet in this build, so this switch currently has no effect."));
+        TEXT("Reserved for future experimental features; none currently use this switch. Sicklejaw world population is controlled by World Population below."));
 
     AddBool(TEXT("EnableDiagnostics"), false,
         TEXT("Enable Diagnostics"),
@@ -159,6 +160,40 @@ void UPFAConfig::PostInitProperties()
         }
         Root->SectionProperties.Add(Key, Prop);
     };
+
+    AddBool(TEXT("EnableWorldPopulation"), true, TEXT("Population: World Population"),
+        TEXT("Distributes saved Sicklejaw packs throughout native map biomes when Primal Fauna is enabled. Existing packs retire safely when disabled; re-enabling preserves kill/respawn history."));
+    AddInteger(TEXT("PacksPerBiomeMin"), 2, 0, 16, TEXT("Population: Minimum Packs per Biome"),
+        TEXT("Lower end of the seeded pack-budget roll for EACH biome, before Nest Density. Guards use this same budget. Changes preserve existing pack identities."));
+    AddInteger(TEXT("PacksPerBiomeMax"), 4, 0, 16, TEXT("Population: Maximum Packs per Biome"),
+        TEXT("Upper end of the pack-budget roll for EACH biome, before Nest Density. Values are sorted if minimum exceeds maximum. Safety and available ground may reduce actual population."));
+    AddBool(TEXT("ScaleLargeBiomes"), true, TEXT("Population: More Packs in Large Biomes"),
+        TEXT("Allows up to twice the base budget in large native map areas. Explicit biome overrides replace this size adjustment. Final safety cap: 32 packs per biome."));
+    UClass* StringClass = LoadClass<UConfigPropertyString>(nullptr,
+        TEXT("/SML/Interface/UI/Menu/Mods/ConfigProperties/BP_ConfigPropertyString.BP_ConfigPropertyString_C"));
+    if (!StringClass) { StringClass = UConfigPropertyString::StaticClass(); }
+    UConfigPropertyString* Overrides = NewObject<UConfigPropertyString>(Root, StringClass, TEXT("BiomePackOverrides"));
+    Overrides->Value = Overrides->DefaultValue = TEXT("");
+    Overrides->DisplayName = FText::FromString(TEXT("Population: Biome Pack Overrides"));
+    Overrides->Tooltip = FText::FromString(TEXT("Optional semicolon-separated biome=count entries. Use exact biome keys printed in [PFA] Population biome log lines, for example KeyFromLog=5;AnotherKey=0. Overrides are before Nest Density. 0 disables that biome. Invalid entries are logged and ignored."));
+    Overrides->bRequiresWorldReload = false;
+    Root->SectionProperties.Add(TEXT("BiomePackOverrides"), Overrides);
+    AddBool(TEXT("GuardResourceSites"), true, TEXT("Population: Guard Resource Sites"),
+        TEXT("Guards ordinary resource nodes, including oil, within the biome pack budget. Nearby nodes form one site. Supports settled NodeShuffle nodes. Occupied sites and factories are protected. Wells and pickup deposits are excluded; unfilled guard slots stay reserved."));
+    AddFloat(TEXT("ResourceGuardChance"), 0.2f, 0.0f, 1.0f, TEXT("Population: Resource Site Guard Chance"),
+        TEXT("Seeded chance for each eligible resource site: 0.2 means 20 percent. The per-biome guard cap and total pack budget still apply. Changing this never resets killed creatures."));
+    AddInteger(TEXT("GuardPacksPerBiome"), 1, 0, 16, TEXT("Population: Guard Pack Cap per Biome"),
+        TEXT("Maximum guard packs inside each biome's TOTAL budget. Never adds extra packs on top. A site with several nearby nodes receives at most one guard pack."));
+    AddFloat(TEXT("WanderingPackFraction"), 0.33f, 0.0f, 1.0f, TEXT("Population: Wandering Share"),
+        TEXT("Fraction of wilderness packs that patrol shared waypoints using native navigation. 0 = ordinary nest roaming. Guards stay near their resources. Combat always takes priority."));
+    AddFloat(TEXT("WanderingRadiusMeters"), 150.0f, 25.0f, 200.0f, TEXT("Population: Patrol Radius (meters)"),
+        TEXT("Maximum patrol distance from a wilderness territory. Waypoints and complete paths must remain in the same biome, away from starter areas and factories. Does not teleport creatures or move spawn origins."));
+    AddFloat(TEXT("WanderRetargetSeconds"), 90.0f, 30.0f, 300.0f, TEXT("Population: Patrol Waypoint Interval (seconds)"),
+        TEXT("How often an idle wandering pack may choose another shared waypoint. Native behavior controls movement and pauses; engaged packs keep combat behavior."));
+    AddFloat(TEXT("PackSpacingMeters"), 600.0f, 300.0f, 1200.0f, TEXT("Population: Minimum Territory Spacing (meters)"),
+        TEXT("Separates Sicklejaw territory centers, including guards. Vanilla hostile territories may overlap. Lower spacing can fit more packs. Existing nearby packs retire safely after increases."));
+    AddInteger(TEXT("TerritoryLayoutRevision"), 0, 0, 1000000, TEXT("Population: Wilderness Layout Revision"),
+        TEXT("Change this number deliberately to reshuffle wilderness territories in this save. Normal save/load keeps positions. Changes wait for safe retirement and preserve native kill/respawn records. NodeShuffle rerolls affect guards independently."));
 
     AddInteger(TEXT("SicklejawAggression"), 2, 0, 2,
         TEXT("Sicklejaw: Aggression"),

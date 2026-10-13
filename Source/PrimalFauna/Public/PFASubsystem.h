@@ -43,14 +43,22 @@ struct FPFANestRecord
     UPROPERTY(SaveGame)
     int32 RespawnDays = 1;
 
-    // Doc 03 §3 step 3 deactivation flag. Nothing in W1.5 ever sets this true
-    // -- StopSpawning()/DestroyCreatures()-driven deactivation is a later
-    // packet (W2.3 wires config per the doc08 packet note). The field exists
-    // now purely so the registry's SAVE FORMAT doesn't need to change shape
-    // later (doc 07 §10's mPlanVersion bump is for region-TABLE shape changes,
-    // not this).
+    // Dormant world slots retain their native actor and kill records. Population
+    // reconciliation stops future spawning and retires creatures only when safe.
     UPROPERTY(SaveGame)
     bool bDormant = false;
+
+    // World slots have stable ids across config changes and both kinds of reroll.
+    // Test-region records from older saves keep their original lifecycle.
+    UPROPERTY(SaveGame) bool bWorldPopulation = false;
+    UPROPERTY(SaveGame) int32 PopulationSlot = 0;
+    UPROPERTY(SaveGame) int32 CandidateAttempt = 0;
+    UPROPERTY(SaveGame) int32 LayoutRevision = -1;
+    UPROPERTY(SaveGame) bool bHasPlacement = false;
+    UPROPERTY(SaveGame) bool bResourceGuard = false;
+    UPROPERTY(SaveGame) FString ResourceSiteId;
+    UPROPERTY(SaveGame) FVector ResourceSiteLocation = FVector::ZeroVector;
+    UPROPERTY(SaveGame) bool bMaterializedEver = false;
 };
 
 // Server-side subsystem for the Primal Fauna mod. W0.1 shipped the skeleton
@@ -121,7 +129,7 @@ public:
 
     // Read-only registry consistency check for the NestRegistryConsistent
     // self-test (PFASubsystem.cpp): every record should resolve to either a
-    // live matching APFANestSpawner or the (currently always-false) dormant
+    // live matching APFANestSpawner or the dormant
     // flag, and every live APFANestSpawner found in the world should match
     // some record. Never mutates; safe to call at any tick, including before
     // the first reconcile has ever run (0 records is a trivial PASS).
@@ -208,6 +216,25 @@ private:
     // existing). HasAuthority()-guarded even though both call sites already
     // are, for the same "no-op safety belt" reason PFA_RunSelfTests documents.
     void ReconcileNests();
+    void RefreshWorldPopulation();
+    void LogPopulationDecision(const FPFANestRecord& Record, class APFANestSpawner* Spawner, const TCHAR* Reason);
+    TMap<FName, FString> PopulationLastDecisions;
+    bool IsPopulationProtected(const FVector& Point, float ExtraRadius = 0.0f) const;
+    FName PopulationBiomeAt(const FVector& Point) const;
+    bool ValidatePopulationGround(const FVector& Requested, FVector& OutGround) const;
+    void RefreshPopulationPatrol(class APFANestSpawner* Spawner, const FPFANestRecord& Record,
+        const struct FPFAConfigStruct& Config);
+
+    UPROPERTY(SaveGame) int32 PopulationSeed = 0;
+    UPROPERTY(SaveGame) TArray<FVector> PopulationStarterLocations;
+    UPROPERTY(Transient) TObjectPtr<class UFGMapAreaTexture> PopulationMap = nullptr;
+    TMap<FName, TArray<FVector>> PopulationBiomeCells;
+    TArray<FBox> PopulationFactoryBounds;
+    TArray<FVector> PopulationPlayerLocations;
+    FString LastPopulationConfigWarning;
+    FString LastPopulationState;
+    bool bPopulationMapReady = false;
+    int32 PopulationMapCursor = 0;
 
     // Set after ReconcileNests() has run at least once, so the
     // "[PFA] Nests: ..." census line logs unconditionally that first time

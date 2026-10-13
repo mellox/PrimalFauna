@@ -88,6 +88,8 @@ public:
 	// and RunBehaviorTree's internal UseBlackboard() call reaches that
 	// existing override automatically).
 	virtual void OnPossess(APawn* InPawn) override;
+    virtual FPathFollowingRequestResult MoveTo(const FAIMoveRequest& MoveRequest,
+        FNavPathSharedPtr* OutPath = nullptr) override;
 
 	// Saved creatures can be possessed before APFASubsystem finishes its
 	// post-mount BehaviorTree discovery. OnPossess calls this immediately;
