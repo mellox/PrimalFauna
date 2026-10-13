@@ -231,6 +231,345 @@ if ($legendText.Contains([char]61)) {
 }
 Write-Host 'PFABUILD corpse fix gate OK (un-latch pinned after Super::Died; census legend clean)'
 
+# --- gate 2c: pin the w58-5 dead-target retention fix -------------------------
+# THIS GATE LOADS EVERY FILE THE w58-5 PACKET TOUCHED. A green mutation suite
+# says nothing about a file it never reads: on 2026-08-11 a one-line revert of a
+# shipped fix passed 15/15 because the lint never opened that file. Extending the
+# lint to LOAD and PIN a new file is part of the fix, not a follow-up.
+#
+# Every pin is ANCHORED ON ITS ENCLOSING FUNCTION, never on a bare trailing
+# fragment: a bare fragment is satisfiable by a SIBLING occurrence, which is how
+# two w58-3 mutants "passed" against the wrong site until they were re-anchored.
+#
+# Every needle is built by CONCATENATION so this script's own text -- comments
+# and failure messages included -- can neither satisfy nor trip a check.
+$perceptionCpp = Join-Path $Repo 'Source\PrimalFauna\Private\PFACreatureControllerPerception.cpp'
+$perceptionSource = Get-Content -LiteralPath $perceptionCpp -Raw
+$controllerMemberMarker = "`nvoid APFACreatureController" + '::'
+
+# --- A, half 1: the drop itself. Anchored on TickDeadTargetDrop's own body.
+$dropAnchor = 'void APFACreatureController::' + 'TickDeadTargetDrop'
+$dropBody = Get-PfaMemberBody -Source $perceptionSource -Anchor $dropAnchor `
+                              -NextDefinitionMarker $controllerMemberMarker
+if (-not $dropBody) { Fail 'w58-5: TickDeadTargetDrop body not found; the dead-target drop gate is vacuous.' }
+$notFightableNeedle = 'IsConfirmed' + 'NotFightable('
+if (-not $dropBody.Contains($notFightableNeedle)) {
+    Fail 'w58-5: TickDeadTargetDrop no longer grades its target liveness -- a corpse would be held forever again.'
+}
+# w58-6: the bare needle above is now satisfiable by the H1 remaining-live-entry
+# loop, which grades OTHER entries. Pin the CURRENT-target grade on its own site
+# (the only one that passes the graded value as `Liveness`), so removing the test
+# this whole path exists for cannot be masked by a sibling occurrence.
+$currentTargetGradeNeedle = 'IsConfirmed' + 'NotFightable(Liveness)'
+if (-not $dropBody.Contains($currentTargetGradeNeedle)) {
+    Fail ('w58-5: TickDeadTargetDrop no longer grades the CURRENT target -- the remaining-live-entry ' +
+          'loop grades other entries and cannot stand in for it.')
+}
+$diedResetNeedle = 'ResetTargetingState(TEXT("' + 'target died"))'
+if (-not $dropBody.Contains($diedResetNeedle)) {
+    Fail 'w58-5: TickDeadTargetDrop no longer clears targeting when the target grades dead.'
+}
+# w58-7 (r2 review F1 / R-F1): the selective branch must BIND the next target
+# EXPLICITLY, and must keep the change-guarded RE-SEAT that ForceAggro was forced
+# to add -- w57-5/w57-8 measured that TriggerStateUpdate does not bind
+# mCurrentTarget. Deleting either call returns this path to relying on native
+# re-selection, the mechanism this repository has already measured as absent.
+# This is the pin for the review's new mutant (M-d).
+$bindNeedle = 'SetCurrent' + 'Target(NextTarget);'
+$bindCount = ([regex]::Matches($dropBody, [regex]::Escape($bindNeedle))).Count
+if ($bindCount -lt 2) {
+    Fail ("w58-7 F1: the dead-target release binds the next target $bindCount time(s) -- it must set it " +
+          'and then re-seat it under a change guard, or the creature is left in the fight state with no ' +
+          'target bound, which is the symptom this whole packet exists to remove.')
+}
+$readbackNeedle = 'bound' + 'Readback=%s'
+if (-not $dropBody.Contains($readbackNeedle)) {
+    Fail ('w58-7 F1: the dead-target release no longer prints the bind readback -- the postcondition ' +
+          'this fix turns on would go back to being asserted instead of measured.')
+}
+# w58-8 (r3 review F-9): two holes the round-3 gate left open in this same body.
+$deadZeroNeedle = 'ModifyAggroFor' + 'Target(CurrentTarget,'
+if (-not $dropBody.Contains($deadZeroNeedle)) {
+    Fail ('w58-8 F-2: the dead-target release no longer zeroes the dead entry''s own aggro -- the ' +
+          'corpse would stay a native re-selection candidate while the release line still reports success.')
+}
+$reseatGuardNeedle = 'GetCurrentTarget() != ' + 'NextTarget'
+if (-not $dropBody.Contains($reseatGuardNeedle)) {
+    Fail ('w58-7 F1: the second bind is no longer change-guarded -- an unconditional double-set ' +
+          'satisfies the occurrence count while proving nothing about the postcondition.')
+}
+$roamKickNeedle = 'ForceRoamAfter' + 'Disengage('
+if (-not $dropBody.Contains($roamKickNeedle)) {
+    Fail ('w58-5: TickDeadTargetDrop does not kick the state machine after the reset. ' +
+          'w48-1 measured that a reset alone leaves the native machine parked in CS_Alert.')
+}
+# w58-6 (review H1): the reset above is a TOTAL wipe, so it may only run when
+# nothing LIVE is left on the ledger. Without this the creature that kills one
+# target forgets every other one it was fighting.
+$liveKeepNeedle = 'LiveAggroEntries' + 'Remaining > 0'
+if (-not $dropBody.Contains($liveKeepNeedle)) {
+    Fail ('w58-5 H1: TickDeadTargetDrop resets targeting without checking for remaining LIVE aggro ' +
+          'entries -- a creature that kills one target would forget every other live one.')
+}
+$liveKeepIdx  = $dropBody.IndexOf($liveKeepNeedle)
+$diedResetIdx = $dropBody.IndexOf($diedResetNeedle)
+$guardReturnIdx = $dropBody.IndexOf('return;', $liveKeepIdx)
+if ($guardReturnIdx -lt 0 -or $guardReturnIdx -gt $diedResetIdx) {
+    Fail ('w58-6 H1: the remaining-live-entry branch in TickDeadTargetDrop does not return before ' +
+          'the total wipe -- both branches would run and the fight would be forgotten anyway.')
+}
+# w58-6 (review H2): the kill-switch is the A/B control for this whole fix. It
+# must gate the BEHAVIOUR only -- if it returns before the hold is stamped, the
+# control arm reports heldSecs of minus one and can never report a stall.
+$killSwitchNeedle = 'CVarPFADropDead' + 'Targets.GetValueOnGameThread() == 0'
+$holdStampNeedle  = 'mEngagementObservation.HeldTarget' + 'SinceSeconds = NowSeconds;'
+# w58-7 (r2 review, generalisable countermeasure): an ordering pin expressed as a
+# comparison of two IndexOf results must be preceded by a Contains pin on BOTH
+# needles -- a needle that is GONE returns minus one and silently turns the
+# assertion into a tautology. This one is the kill-switch side; the review's R-F4
+# below is the hold-stamp side.
+if (-not $dropBody.Contains($killSwitchNeedle)) {
+    Fail ('w58-5 H2: TickDeadTargetDrop no longer reads its kill-switch -- the A/B control that says ' +
+          'whether this path is doing the work would be gone, and the ordering check below would ' +
+          'pass vacuously against a minus-one index.')
+}
+if (-not $dropBody.Contains($holdStampNeedle)) {
+    Fail ('w58-6 H2: TickDeadTargetDrop no longer stamps the engagement hold -- the ordering check ' +
+          'below would pass vacuously against a minus-one index, and the A/B control arm would ' +
+          'have no instrument at all.')
+}
+if ($dropBody.IndexOf($killSwitchNeedle) -lt $dropBody.IndexOf($holdStampNeedle)) {
+    Fail ('w58-5 H2: the drop kill-switch returns before the engagement hold is stamped -- ' +
+          'the A/B control arm would report heldSecs of minus one and could never report a stall.')
+}
+
+# --- A, half 2: THE PACK-WIDE VETO. Fixing only the self-drop leaves a corpse
+# vetoing every other pack member's disengage, which is the half that produced
+# the reported symptom. Anchored inside TickAggroRangeDecay so a sibling
+# occurrence in the drop function above cannot satisfy it.
+$decayAnchor = 'void APFACreatureController::' + 'TickAggroRangeDecay'
+$decayBody = Get-PfaMemberBody -Source $perceptionSource -Anchor $decayAnchor `
+                               -NextDefinitionMarker $controllerMemberMarker
+if (-not $decayBody) { Fail 'w58-5: TickAggroRangeDecay body not found; the veto-liveness gate is vacuous.' }
+if (-not $decayBody.Contains($notFightableNeedle)) {
+    Fail ('w58-5: TickAggroRangeDecay lost its per-entry liveness test -- a dead aggro entry would set ' +
+          'bAnyAggroRemains again and veto the disengage for every other pack member.')
+}
+$deadTallyNeedle = '++Dead' + 'AggroEntries;'
+if (-not $decayBody.Contains($deadTallyNeedle)) {
+    Fail 'w58-5: TickAggroRangeDecay no longer tallies dead aggro entries -- the stale-target line goes blind again.'
+}
+# The liveness test must come BEFORE the veto sites, or a dead entry reaches
+# NoteAggroRemains through the not-draining branch and vetoes anyway.
+# The lambda is DECLARED as an assignment (no parenthesis after the name), so the
+# first occurrence of the name followed by an open parenthesis is the first CALL.
+$livenessIdx = $decayBody.IndexOf($notFightableNeedle)
+$firstVetoIdx = $decayBody.IndexOf('NoteAggro' + 'Remains(')
+if ($firstVetoIdx -lt 0) { Fail 'w58-5: no NoteAggroRemains call found in TickAggroRangeDecay; the veto-order gate is vacuous.' }
+if ($livenessIdx -gt $firstVetoIdx) {
+    Fail 'w58-5: the liveness test runs AFTER a veto site in TickAggroRangeDecay -- a dead entry can still veto.'
+}
+
+# --- the drop must actually be CALLED, and before the decay beat.
+$tickAnchor = 'void APFACreatureController::' + 'Tick(float DeltaTime)'
+$tickBody = Get-PfaMemberBody -Source $perceptionSource -Anchor $tickAnchor `
+                              -NextDefinitionMarker $controllerMemberMarker
+if (-not $tickBody) { Fail 'w58-5: APFACreatureController::Tick body not found; the drop-call gate is vacuous.' }
+$dropCallNeedle = 'TickDead' + 'TargetDrop(DeltaTime);'
+$decayCallNeedle = 'TickAggro' + 'RangeDecay(DeltaTime);'
+if (-not $tickBody.Contains($dropCallNeedle)) {
+    Fail 'w58-5: APFACreatureController::Tick no longer calls the dead-target drop -- the whole fix is dead code.'
+}
+# w58-7 (r2 review, generalisable countermeasure): the second needle of this
+# ordering comparison, pinned by Contains so the comparison can never degrade
+# into a tautology against a minus-one index.
+if (-not $tickBody.Contains($decayCallNeedle)) {
+    Fail 'w58-5: APFACreatureController::Tick no longer calls the range decay -- the ordering check below would be vacuous.'
+}
+if ($tickBody.IndexOf($dropCallNeedle) -gt $tickBody.IndexOf($decayCallNeedle)) {
+    Fail 'w58-5: the dead-target drop must run BEFORE the range decay in Tick.'
+}
+# w58-8 (r3 review F-9c): the dead-OBSERVER guard was never pinned anywhere. It
+# moved out of a small function into Tick in w58-7, where anyone inserting code
+# above it silently un-guards a corpse -- so it now needs both a presence pin and
+# an ordering pin, and the ordering comparison is preceded by Contains pins on
+# BOTH needles ($dropCallNeedle is pinned above).
+$observerGuardNeedle = 'SelfHealth->' + 'IsDead()'
+if (-not $tickBody.Contains($observerGuardNeedle)) {
+    Fail ('w58-7 F7: APFACreatureController::Tick no longer refuses to run on a DEAD creature -- a ' +
+          'corpse that keeps its controller would resume decay, roam telemetry and the give-up disengage.')
+}
+$guardIdx = $tickBody.IndexOf($observerGuardNeedle)
+if ($guardIdx -lt 0 -or $guardIdx -gt $tickBody.IndexOf($dropCallNeedle)) {
+    Fail ('w58-7 F7: the dead-observer guard no longer precedes the drop call in Tick -- work would ' +
+          'run on a corpse before the guard could stop it.')
+}
+
+# --- B: the liveness predicate must never grade an unmeasurable actor as dead.
+# That is the OPPOSITE failure this change could introduce -- creatures dropping
+# live targets they simply could not ask about.
+$engagementCpp = Join-Path $Repo 'Source\PrimalFauna\Private\PFAEngagementCensus.cpp'
+if (-not (Test-Path $engagementCpp)) { Fail 'w58-5: PFAEngagementCensus.cpp is missing.' }
+$engagementSource = Get-Content -LiteralPath $engagementCpp -Raw
+$unmeasurableToken = 'NoHealth' + 'Component'
+$fightableAnchor = 'bool IsConfirmed' + 'NotFightable(ETargetLiveness Liveness)'
+$fightableBody = Get-PfaMemberBody -Source $engagementSource -Anchor $fightableAnchor `
+                                   -NextDefinitionMarker ("`n`tfloat Get" + 'StallSeconds')
+if (-not $fightableBody) { Fail 'w58-5: IsConfirmedNotFightable body not found; the over-eager-drop gate is vacuous.' }
+if ($fightableBody.Contains($unmeasurableToken)) {
+    Fail ('w58-5: IsConfirmedNotFightable treats an unmeasurable actor as not fightable. ' +
+          'Cannot-measure must never read as dead, or creatures drop live targets.')
+}
+
+# --- B: the assertion must be able to FAIL during ordinary play, not only when
+# somebody types the self-test command. A test that cannot fire is exactly how
+# this bug survived a previous fix.
+$runPassAnchor = 'void RunPass(UWorld* World, const TCHAR* Trigger, bool bLogEveryCreature)'
+$runPassBody = Get-PfaMemberBody -Source $engagementSource -Anchor $runPassAnchor `
+                                 -NextDefinitionMarker ("`n`tbool Evaluate" + 'EngagementLiveness')
+if (-not $runPassBody) { Fail 'w58-5: engagement RunPass body not found; the always-on FAIL gate is vacuous.' }
+# w58-6 (review H3): TWO names, pinned separately. Merging the stall count back
+# into the FAIL line makes a FAIL mean "either a real retention defect or a
+# creature that is simply chasing you", i.e. nothing.
+$failLineNeedle  = 'EngagementLiveness: ' + 'FAIL deadTargetsHeld='
+$stallLineNeedle = 'EngagementStall: ' + 'OBSERVED stalled='
+if (-not $runPassBody.Contains($failLineNeedle)) {
+    Fail 'w58-5 H3: the dead-target assertion lost its always-on FAIL line.'
+}
+if (-not $runPassBody.Contains($stallLineNeedle)) {
+    Fail ('w58-5 H3: the stall count is no longer reported under its own name -- merging it back ' +
+          'into the FAIL line trains the reader to ignore a real defect.')
+}
+$targetAliveNeedle = 'target' + 'Alive='
+if (-not $engagementSource.Contains($targetAliveNeedle)) {
+    Fail 'w58-5: the engagement line lost its target-liveness field, which is the field this whole packet exists to add.'
+}
+# Same legend discipline as the corpse census: prose only, no equals sign, so a
+# field grep can never match the legend that explains it.
+$engLegendAnchor = 'Engagement ' + 'legend:'
+$engLegendStart = $engagementSource.IndexOf($engLegendAnchor)
+if ($engLegendStart -lt 0) { Fail 'w58-5: engagement legend not found; legend gate is vacuous.' }
+$engLegendEnd = $engagementSource.IndexOf(');', $engLegendStart)
+$engLegendText = $engagementSource.Substring($engLegendStart, $engLegendEnd - $engLegendStart)
+if ($engLegendText.Contains([char]61)) {
+    Fail 'w58-5: the engagement legend contains an equals sign -- it would collide with the greps the log exists for.'
+}
+
+# --- B: the recorders must be OUTSIDE the diagnostics gate. Recording that only
+# happens while someone is watching is the w44-1 defect, and it would make the
+# self-test silently vacuous in every ordinary session.
+$meleeCpp = Join-Path $Repo 'Source\PrimalFauna\Private\Actions\PFACreatureActionMelee.cpp'
+$meleeSource = Get-Content -LiteralPath $meleeCpp -Raw
+$diagGateNeedle = 'PFADiag::' + 'IsEnabled()'
+$canPerformAnchor = 'bool UPFACreatureActionMelee::' + 'CanPerformAction_Implementation'
+$canPerformBody = Get-PfaMemberBody -Source $meleeSource -Anchor $canPerformAnchor `
+                                    -NextDefinitionMarker ("`nvoid UPFACreatureActionMelee" + '::')
+if (-not $canPerformBody) { Fail 'w58-5: CanPerformAction_Implementation body not found; the recorder gate is vacuous.' }
+$sampleNeedle = 'NoteMeleeCan' + 'PerformSample('
+if (-not $canPerformBody.Contains($sampleNeedle)) {
+    Fail 'w58-5: CanPerformAction no longer records its sample -- the engagement line loses range, cooldown and verdict.'
+}
+if ($canPerformBody.IndexOf($sampleNeedle) -gt $canPerformBody.IndexOf($diagGateNeedle)) {
+    Fail 'w58-5: the CanPerformAction recorder sits inside the diagnostics gate -- it would only record while someone is watching.'
+}
+$performAnchor = 'void UPFACreatureActionMelee::' + 'PerformAction_Implementation'
+$performBody = Get-PfaMemberBody -Source $meleeSource -Anchor $performAnchor `
+                                 -NextDefinitionMarker ("`nvoid UPFACreatureActionMelee::" + 'OnBiteImpact')
+if (-not $performBody) { Fail 'w58-5: PerformAction_Implementation body not found; the perform-count gate is vacuous.' }
+$performNeedle = 'NoteMeleePerform' + 'ActionStarted('
+if (-not $performBody.Contains($performNeedle)) {
+    Fail 'w58-5: PerformAction no longer records an action start -- the stall assertion could never pass or fail honestly.'
+}
+if ($performBody.IndexOf($performNeedle) -gt $performBody.IndexOf($diagGateNeedle)) {
+    Fail 'w58-5: the PerformAction recorder sits inside the diagnostics gate -- the stall test would fire falsely with diagnostics off.'
+}
+
+# --- w58-6: TWO FILES THE w58-5 GATE NEVER LOADED. The cold review named both:
+# a green mutation suite says nothing about a file it never opens, and the M4/M6
+# fixes land in PFACreatureController.cpp while the liveness CONTRACT itself is
+# declared in PFAEngagementCensus.h. Both pins are anchored on their enclosing
+# function (or, in the header, on the declaration site), never on a bare
+# fragment a sibling could satisfy.
+$controllerCpp = Join-Path $Repo 'Source\PrimalFauna\Private\PFACreatureController.cpp'
+if (-not (Test-Path $controllerCpp)) { Fail 'w58-6: PFACreatureController.cpp is missing.' }
+$controllerSource = Get-Content -LiteralPath $controllerCpp -Raw
+
+# M4: PackAssist must grade the TARGET it shares, not only the packmates.
+# Bounded by the NEXT definition, which is `bool APFACreatureController::...`.
+$packAnchor = 'void APFACreatureController::' + 'OnCreatureStateChanged_Implementation'
+$packBody = Get-PfaMemberBody -Source $controllerSource -Anchor $packAnchor `
+                              -NextDefinitionMarker ("`nbool APFACreatureController" + '::')
+if (-not $packBody) { Fail 'w58-6: OnCreatureStateChanged_Implementation body not found; the PackAssist target gate is vacuous.' }
+if (-not $packBody.Contains($notFightableNeedle)) {
+    Fail ('w58-6 M4: PackAssist shares a target it never grades for liveness -- one state transition ' +
+          'would ForceAggro the whole pack onto a corpse.')
+}
+$packSkipNeedle = 'outcome=target-graded-' + 'not-fightable'
+if (-not $packBody.Contains($packSkipNeedle)) {
+    Fail 'w58-6 M4: the PackAssist liveness skip no longer names its outcome -- the log could not show which branch ran.'
+}
+
+# M6: a real unbinding restarts the engagement hold clock, or heldSecs spans a
+# disengage and a minute of roaming and gets quoted forward as a measured hold.
+$resetAnchor = 'void APFACreatureController::' + 'ResetTargetingState'
+$resetBody = Get-PfaMemberBody -Source $controllerSource -Anchor $resetAnchor `
+                               -NextDefinitionMarker ("`nvoid APFACreatureController" + '::')
+if (-not $resetBody) { Fail 'w58-6: ResetTargetingState body not found; the hold-restart gate is vacuous.' }
+$holdRestartNeedle = 'mEngagementObservation.HeldTarget' + 'SinceSeconds = -1.0;'
+if (-not $resetBody.Contains($holdRestartNeedle)) {
+    Fail ('w58-6 M6: ResetTargetingState no longer restarts the engagement hold clock -- a re-aggro ' +
+          'after a genuine disengage would report a hold spanning the whole gap.')
+}
+
+# The header carries the CONTRACT the two .cpp gates above both depend on.
+$engagementHeader = Join-Path $Repo 'Source\PrimalFauna\Public\PFAEngagementCensus.h'
+if (-not (Test-Path $engagementHeader)) { Fail 'w58-6: PFAEngagementCensus.h is missing.' }
+$engagementHeaderSource = Get-Content -LiteralPath $engagementHeader -Raw
+$gradeDeclNeedle = 'ETargetLiveness Grade' + 'TargetLiveness(const AActor* Target);'
+if (-not $engagementHeaderSource.Contains($gradeDeclNeedle)) {
+    Fail ('w58-6: PFAEngagementCensus.h no longer declares the shared liveness predicate -- a predicate ' +
+          'defined per call site is a predicate that will diverge.')
+}
+$unknownGradeNeedle = 'NoHealth' + 'Component,'
+if (-not $engagementHeaderSource.Contains($unknownGradeNeedle)) {
+    Fail ('w58-6: the liveness enum lost its cannot-measure grade -- collapsing it into dead or alive ' +
+          'is how creatures start dropping live targets they simply could not ask about.')
+}
+$notFightableDeclNeedle = 'bool IsConfirmed' + 'NotFightable(ETargetLiveness Liveness);'
+if (-not $engagementHeaderSource.Contains($notFightableDeclNeedle)) {
+    Fail 'w58-6: PFAEngagementCensus.h no longer declares the shared not-fightable test.'
+}
+
+# --- w58-7 (r2 review F6): THE FOURTH AGGRO-CLASSIFICATION SITE, in a file this
+# gate never loaded. A green mutation suite says nothing about a file it never
+# opens. This is the pin for the review's new mutant (M-c).
+$roamCpp = Join-Path $Repo 'Source\PrimalFauna\Private\PFACreatureControllerRoam.cpp'
+if (-not (Test-Path $roamCpp)) { Fail 'w58-7: PFACreatureControllerRoam.cpp is missing.' }
+$roamSource = Get-Content -LiteralPath $roamCpp -Raw
+$countAnchor = 'int32 CountLive' + 'AggroEntries(const TArray<FFGCreatureAggroData>& AggroTargets)'
+$countBody = Get-PfaMemberBody -Source $roamSource -Anchor $countAnchor `
+                               -NextDefinitionMarker ("`nvoid APFACreatureController" + '::')
+if (-not $countBody) { Fail 'w58-7: CountLiveAggroEntries body not found; the roam-telemetry liveness gate is vacuous.' }
+if (-not $countBody.Contains($notFightableNeedle)) {
+    Fail ('w58-7 F6: CountLiveAggroEntries is named Live and grades no liveness -- a corpse holding full ' +
+          'aggro would stamp every roam leg as a pursuit for the whole corpse lifetime, and the standing ' +
+          'analysis instruction for this telemetry discards pursuit legs.')
+}
+
+# --- the census must actually RIDE the 10s heartbeat.
+$refreshAnchor = 'void APFASubsystem::' + 'RefreshTick'
+# Bounded by the NEXT definition, which is `bool APFASubsystem::Ensure...` -- NOT
+# by the next `void`, which is 200 lines further on and would let a sibling
+# function's text satisfy this pin.
+$refreshBody = Get-PfaMemberBody -Source $subsystemSource -Anchor $refreshAnchor `
+                                 -NextDefinitionMarker ("`nbool APFASubsystem" + '::')
+if (-not $refreshBody) { Fail 'w58-5: APFASubsystem::RefreshTick body not found; the heartbeat gate is vacuous.' }
+$censusCallNeedle = 'PFAEngagement::' + 'RunPass('
+if (-not $refreshBody.Contains($censusCallNeedle)) {
+    Fail 'w58-5: the engagement census is no longer driven from the 10s heartbeat -- it would only run on demand.'
+}
+Write-Host 'PFABUILD w58-5 dead-target gate OK (drop + pack-veto liveness + ungated recorders + always-on FAIL + clean legend)'
+
 # --- gate 3: the game must be closed ---------------------------------------
 $game = Get-Process -Name 'FactoryGame*' -ErrorAction SilentlyContinue
 if ($game) { Fail "Satisfactory is running (PID $($game.Id -join ',')) -- it locks the deployed DLL. Close it first." }
