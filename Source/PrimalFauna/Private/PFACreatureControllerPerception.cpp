@@ -62,6 +62,7 @@
 // ===========================================================================
 
 #include "PFACreatureController.h"
+#include "Creature/FGCreatureSpawner.h"
 #include "PrimalFauna.h"
 #include "PFACheats.h"
 // w47-1: the heartbeat reads the speed-trait watch's state off our own creature.

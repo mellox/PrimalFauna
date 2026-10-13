@@ -84,8 +84,6 @@ namespace
 	constexpr float SicklejawRoamWaitMinSec = 4.0f;
 	constexpr float SicklejawRoamWaitMaxSec = 14.0f;
 
-	constexpr float SicklejawSpawnDistanceCm = 6000.0f;
-	constexpr float SicklejawDespawnDistanceCm = 9000.0f;
 	constexpr float SicklejawTerritoryRadiusCm = 3500.0f;          // inert while default mode is Hostile (doc 04 §1); wired for when Territorial is selected
 
 	// w58-1 corpse lifetime. Rationale lives at the assignment site in the
@@ -267,9 +265,10 @@ APFASicklejaw::APFASicklejaw(const FObjectInitializer& ObjectInitializer)
 	mAggroGainRate = SicklejawAggroGainRate;
 	mAggroReductionRate = SicklejawAggroReductionRate;
 
-	// --- Spawn/despawn (doc 07 §3, FGCreature.h:691-695 -- private, routed
-	// through APFACreatureBase's Friend-granted setter) ---
-	SetSpawnDespawnDistance(SicklejawSpawnDistanceCm, SicklejawDespawnDistanceCm);
+	// Inherit AFGEnemy/AFGCreature spawn and despawn distances. The installed
+	// native constructor supplies 100m/120m (2026-09-28 evidence); do not copy
+	// those values here or override native distance/eligibility/aggro handling.
+	// Individual vanilla Blueprint species may author different distances.
 
 	// w32-1 (user, in game): creatures stood rooted until aggroed. Roam distance
 	// defaults to (0,0) on a C++-only CDO, so the roam behaviour was picking a
@@ -352,6 +351,15 @@ APFASicklejaw::APFASicklejaw(const FObjectInitializer& ObjectInitializer)
 void APFASicklejaw::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (PFADiag::IsEnabled())
+	{
+		const AFGEnemy* NativeDefaults = GetDefault<AFGEnemy>();
+		UE_LOG(LogPrimalFauna, Display,
+			TEXT("[PFA] %s: native distance observation spawn=%.1f despawn=%.1f referenceClass=%s referenceSpawn=%.1f referenceDespawn=%.1f persistent=%d outcome=observed-only"),
+			*GetName(), GetSpawnDistance(), GetDespawnDistance(), *NativeDefaults->GetClass()->GetPathName(),
+			NativeDefaults->GetSpawnDistance(), NativeDefaults->GetDespawnDistance(), IsPersistent());
+	}
 
 	USkeletalMeshComponent* MeshComponent = GetMesh();
 	if (!MeshComponent)
@@ -1114,17 +1122,18 @@ namespace
 			AsPFACreature->ClearNativeOrphanTimer();
 		}
 
-		// W1.3 review add-on: assert the Friend-granted private writes took
-		// hold on a REAL spawned instance (spawn/despawn distances are set in
-		// the ctor, so this exercises the write mechanism on every run).
+		// Compare a real instance with the native hostile base, not a second
+		// copy of PFA-authored constants. This measures inheritance only;
+		// actual native spawn/despawn eligibility requires normal gameplay.
+		const AFGEnemy* NativeDefaults = GetDefault<AFGEnemy>();
 		const bool bDistancesMatch =
-			FMath::IsNearlyEqual(SpawnedCreature->GetSpawnDistance(), SicklejawSpawnDistanceCm) &&
-			FMath::IsNearlyEqual(SpawnedCreature->GetDespawnDistance(), SicklejawDespawnDistanceCm);
+			FMath::IsNearlyEqual(SpawnedCreature->GetSpawnDistance(), NativeDefaults->GetSpawnDistance()) &&
+			FMath::IsNearlyEqual(SpawnedCreature->GetDespawnDistance(), NativeDefaults->GetDespawnDistance());
 		UE_LOG(LogPrimalFauna, Display,
-			TEXT("[PFA] PFA.SpawnTest: distance write check spawn=%.1f (expected %.1f) despawn=%.1f (expected %.1f) -> %s"),
-			SpawnedCreature->GetSpawnDistance(), SicklejawSpawnDistanceCm,
-			SpawnedCreature->GetDespawnDistance(), SicklejawDespawnDistanceCm,
-			bDistancesMatch ? TEXT("OK") : TEXT("MISMATCH"));
+			TEXT("[PFA] PFA.SpawnTest: native distance parity spawn=%.1f referenceSpawn=%.1f despawn=%.1f referenceDespawn=%.1f outcome=%s"),
+			SpawnedCreature->GetSpawnDistance(), NativeDefaults->GetSpawnDistance(),
+			SpawnedCreature->GetDespawnDistance(), NativeDefaults->GetDespawnDistance(),
+			bDistancesMatch ? TEXT("match") : TEXT("mismatch"));
 
 		// W1.6 softening (docs/08 packet, Phase-1 gate Section B item 10): the
 		// gate's OWN evidence showed this "FAIL" firing twice, always
@@ -1194,11 +1203,16 @@ namespace
 				const float MaxHealth = Health ? Health->GetMaxHealth() : -1.0f;
 				const bool bControllerOk = Cdo->AIControllerClass == APFACreatureController::StaticClass();
 
-				OutDetail = FString::Printf(TEXT("MaxHealth=%.1f AIControllerClass=%s AggressionMode=%d"),
+				const AFGEnemy* NativeDefaults = GetDefault<AFGEnemy>();
+				const bool bNativeDistances =
+					FMath::IsNearlyEqual(Cdo->GetSpawnDistance(), NativeDefaults->GetSpawnDistance()) &&
+					FMath::IsNearlyEqual(Cdo->GetDespawnDistance(), NativeDefaults->GetDespawnDistance());
+				OutDetail = FString::Printf(TEXT("MaxHealth=%.1f AIControllerClass=%s AggressionMode=%d spawn=%.1f despawn=%.1f referenceSpawn=%.1f referenceDespawn=%.1f nativeDistanceParity=%d"),
 					MaxHealth,
 					Cdo->AIControllerClass ? *Cdo->AIControllerClass->GetName() : TEXT("none"),
-					static_cast<int32>(Cdo->GetAggressionMode()));
-				return Health && MaxHealth > 0.0f && bControllerOk;
+					static_cast<int32>(Cdo->GetAggressionMode()), Cdo->GetSpawnDistance(), Cdo->GetDespawnDistance(),
+					NativeDefaults->GetSpawnDistance(), NativeDefaults->GetDespawnDistance(), bNativeDistances);
+				return Health && MaxHealth > 0.0f && bControllerOk && bNativeDistances;
 			}});
 		return true;
 	}();

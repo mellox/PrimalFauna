@@ -1,6 +1,7 @@
 #include "PFACheats.h"
 #include "PrimalFauna.h"
 #include "PFAConfig.h"
+#include "PFAPopulationPolicy.h"
 #include "PFASubsystem.h"
 #include "PFACreatureBase.h"
 
@@ -523,8 +524,10 @@ namespace
 			[](UWorld* World, FString& OutDetail) -> bool
 			{
 				const FPFAConfigStruct Config = FPFAConfigStruct::GetActiveConfig(World);
-				OutDetail = FString::Printf(TEXT("Enabled=%s NestDensity=%.2f ExperimentalFeatures=%s Diagnostics=%s SicklejawAggression=%d SicklejawDmgMult=%.2f HuntVanillaHostiles=%s HuntPassiveFauna=%s PackAssist=%s"),
+				OutDetail = FString::Printf(TEXT("Enabled=%s WorldPopulation=%s PopulationEffective=%s NestDensity=%.2f ExperimentalFeatures=%s Diagnostics=%s SicklejawAggression=%d SicklejawDmgMult=%.2f HuntVanillaHostiles=%s HuntPassiveFauna=%s PackAssist=%s"),
 					Config.Enabled ? TEXT("true") : TEXT("false"),
+					Config.EnableWorldPopulation ? TEXT("true") : TEXT("false"),
+					PFAPopulationPolicy::IsEnabled(Config) ? TEXT("true") : TEXT("false"),
 					Config.NestDensity,
 					Config.EnableExperimentalFeatures ? TEXT("true") : TEXT("false"),
 					Config.EnableDiagnostics ? TEXT("true") : TEXT("false"),

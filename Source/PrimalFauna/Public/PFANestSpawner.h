@@ -83,6 +83,23 @@ class PRIMALFAUNA_API APFANestSpawner : public AFGCreatureSpawner
 public:
 	APFANestSpawner();
 
+    // Native spawn entry points are fenced by hooks scoped strictly to managed nests.
+    // Fail closed before the first reconciliation after load, regardless of HS timing.
+    UPROPERTY(SaveGame) bool bPopulationManaged = false;
+    bool bPopulationAllowed = false;
+    bool bPopulationWandering = false;
+    bool bHasPatrolGoal = false;
+    FVector PopulationPatrolGoal = FVector::ZeroVector;
+    double NextPatrolTime = 0.0;
+    bool CanPopulationSpawn() const { return !bPopulationManaged || bPopulationAllowed; }
+    // Transient depth covers native calls and their synchronous delegate reentry.
+    int32 PopulationNativeCallDepth = 0;
+    bool QuiescePopulationSpawning(const TCHAR* Reason);
+    bool HasPopulationSpawnRequests() const;
+    bool IsPopulationEngaged() const;
+    bool CanRelocatePopulation() const;
+    bool CanRetirePopulation() const;
+
 	// AFGCreatureSpawner's spawn-data/kill records are SaveGame, but the
 	// runtime authoring fields they depend on are not. Capture their exact
 	// authored values once and restore them before the base PostLoad handler
@@ -162,7 +179,7 @@ public:
 	bool HasRuntimeConfigurationSnapshot() const { return bHasRuntimeConfigSnapshot; }
 
 	// Diagnostics-only, read-only view into inherited spawn state. This must not
-	// call IsReadyToSpawn(): the native function can populate slots, trace for a
+	// probe CanSpawnCreature or call IsReadyToSpawn(): the latter can populate slots, trace for a
 	// nearby base, and advance native timing. Reconcile invokes this only behind
 	// pfa.Diag.
 	void LogSpawnDecisionDiagnostics(const class APawn* PlayerPawn);

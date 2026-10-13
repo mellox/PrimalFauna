@@ -20,6 +20,7 @@ public class PrimalFauna : ModuleRules
             // IWYU discipline since we #include its headers directly. AIModule
             // also provides UBehaviorTree (W1.4 borrowed-BT, PFABehaviorBorrower).
             "AIModule",
+            "NavigationSystem",
             // W1.4: PFABehaviorBorrower queries IAssetRegistry to discover a
             // vanilla UBehaviorTree at world load (no hostile-BT path was ever
             // censused). Runtime module, present in cooked/Shipping builds.

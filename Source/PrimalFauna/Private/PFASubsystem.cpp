@@ -239,6 +239,7 @@ void APFASubsystem::RefreshTick()
     // the SAME path SpawnNestAtPlayer triggers immediately on demand. Runs
     // before the self-test block below so a pfa.AutoTest=1 run's
     // NestRegistryConsistent test sees an already-reconciled state this tick.
+    RefreshWorldPopulation();
     ReconcileNests();
 
     // pfa.AutoTest=1 auto-runs the self-test registry once, on the first
@@ -497,7 +498,7 @@ void APFASubsystem::ReconcileNests()
         if (Record.bDormant)
         {
             ++DormantNests;
-            continue; // W2.3 wires real dormancy; nothing to reconcile yet.
+            continue; // Population reconciliation already fenced/retired this slot safely.
         }
 
         UClass* ResolvedClass = Record.SpeciesClass.TryLoadClass<AFGCreature>();
@@ -564,6 +565,14 @@ void APFASubsystem::ReconcileNests()
             continue;
         }
 
+        // A previously materialized world slot without its actor has lost native
+        // kill history. Fail closed instead of silently creating a fresh pack.
+        // Deferred candidates have no actor by design and are not errors.
+        if (Record.bWorldPopulation && (!Record.bHasPlacement || Record.bMaterializedEver))
+        {
+            continue;
+        }
+
         // Deferred spawn (bDeferConstruction) so ConfigureNest can set every
         // protected/public field BEFORE FinishSpawning() runs BeginPlay -- see
         // PFANestSpawner.h's ConfigureNest comment for why this ordering
@@ -611,7 +620,10 @@ void APFASubsystem::ReconcileNests()
             /*bInCanSpawnDuringDay=*/ true, /*bInCanSpawnDuringNight=*/ true, // TODO(W2.5/W3.2): per-species day/night from FPFANestSpec -- Duskstalker's night gating (doc 03 intro) needs this wired to real data
             Record.RespawnDays);
 
+        NewSpawner->bPopulationManaged = Record.bWorldPopulation;
+        NewSpawner->bPopulationAllowed = false; // nav proof comes on the next population pass
         NewSpawner->FinishSpawning(SpawnTransform);
+        if (Record.bWorldPopulation) { Record.bMaterializedEver = true; }
 
         NewSpawner->RegisterAsNavigationInvoker(true);
 
@@ -823,44 +835,28 @@ bool APFASubsystem::CheckNestRegistryConsistency(FString& OutDetail) const
         return true;
     }
 
+    TMap<FName, int32> LiveCounts;
+    for (TActorIterator<APFANestSpawner> It(World); It; ++It) { ++LiveCounts.FindOrAdd(It->NestId); }
     TSet<FName> RegistryIds;
-    int32 DormantCount = 0;
+    int32 DormantCount = 0, MissingCount = 0, DuplicateCount = 0;
     for (const FPFANestRecord& Record : NestRegistry)
     {
+        if (RegistryIds.Contains(Record.NestId)) { ++DuplicateCount; }
         RegistryIds.Add(Record.NestId);
-        if (Record.bDormant)
-        {
-            ++DormantCount;
-        }
+        const int32 Matches = LiveCounts.FindRef(Record.NestId);
+        if (Matches > 1) { ++DuplicateCount; }
+        if (Record.bDormant) { ++DormantCount; }
+        // Dormant slots may keep a native actor to retain exact kill history.
+        if (!Record.bDormant && Matches == 0) { ++MissingCount; }
     }
-
-    int32 LiveMatchedCount = 0;
-    int32 LiveUnmatchedCount = 0;
-    for (TActorIterator<APFANestSpawner> It(World); It; ++It)
+    int32 OrphanCount = 0;
+    for (const TPair<FName, int32>& Pair : LiveCounts)
     {
-        APFANestSpawner* Spawner = *It;
-        if (!Spawner)
-        {
-            continue;
-        }
-        if (RegistryIds.Contains(Spawner->NestId))
-        {
-            ++LiveMatchedCount;
-        }
-        else
-        {
-            ++LiveUnmatchedCount;
-        }
+        if (!RegistryIds.Contains(Pair.Key)) { OrphanCount += Pair.Value; }
     }
-
-    // docs/08 packet spec: "records count == live+dormant match, every live
-    // APFANestSpawner has a matching record".
-    const bool bAllRecordsAccounted = (Records == LiveMatchedCount + DormantCount);
-    const bool bNoOrphanSpawners = (LiveUnmatchedCount == 0);
-
-    OutDetail = FString::Printf(TEXT("records=%d live=%d dormant=%d unmatchedLiveSpawners=%d"),
-        Records, LiveMatchedCount, DormantCount, LiveUnmatchedCount);
-    return bAllRecordsAccounted && bNoOrphanSpawners;
+    OutDetail = FString::Printf(TEXT("records=%d liveIds=%d dormant=%d missingActive=%d duplicateIds=%d orphanActors=%d"),
+        Records, LiveCounts.Num(), DormantCount, MissingCount, DuplicateCount, OrphanCount);
+    return MissingCount == 0 && DuplicateCount == 0 && OrphanCount == 0;
 }
 
 // ---- Self-test: registry consistency (idiom from PFACheats.cpp). Read-only

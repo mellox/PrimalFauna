@@ -416,7 +416,6 @@ void APFANestSpawner::LogSpawnDecisionDiagnostics(const APawn* PlayerPawn)
 	}
 
 	int32 WaitingSlots = 0;
-	int32 SpawnableSlots = 0;
 	int32 KilledSlots = 0;
 	float OldestWaitSeconds = 0.0f;
 	const UWorld* World = GetWorld();
@@ -433,7 +432,6 @@ void APFANestSpawner::LogSpawnDecisionDiagnostics(const APawn* PlayerPawn)
 			}
 		}
 		KilledSlots += Slot.WasKilled ? 1 : 0;
-		SpawnableSlots += CanSpawnCreature(Slot) ? 1 : 0;
 	}
 
 	const int32 LiveCreatures = GetCreatures().Num();
@@ -443,13 +441,17 @@ void APFANestSpawner::LogSpawnDecisionDiagnostics(const APawn* PlayerPawn)
 	const bool bNearBase = IsNearBase();
 	const float SpawnDistance = GetSpawnDistance();
 	const float SpawnRadius = GetSpawnRadius();
+	const AFGCreature* CreatureDefaults = mCreatureClass ? mCreatureClass->GetDefaultObject<AFGCreature>() : nullptr;
+	const float CreatureDefaultSpawn = CreatureDefaults ? CreatureDefaults->GetSpawnDistance() : -1.0f;
+	const float CreatureDefaultDespawn = CreatureDefaults ? CreatureDefaults->GetDespawnDistance() : -1.0f;
+	const float SpawnOverride = GetSpawnDistanceOverride();
+	const float DespawnOverride = GetDespawnDistanceOverride();
 	const float FirstPlayerDistance = PlayerPawn
 		? FVector::Dist(GetActorLocation(), PlayerPawn->GetActorLocation())
 		: -1.0f;
-	const bool bObservedEligible =
-		!bActive && bCorrectTime && SpawnableSlots > 0 && UnspawnedCreatures > 0;
-
-	const TCHAR* Summary = TEXT("observed-eligible");
+	// Native readiness belongs to the drive path. A diagnostic observes state
+	// without probing slot eligibility or claiming a spawn will be accepted.
+	const TCHAR* Summary = TEXT("native-readiness-unqueried");
 	if (WaitingSlots > 0)
 	{
 		Summary = TEXT("await-location");
@@ -466,22 +468,24 @@ void APFANestSpawner::LogSpawnDecisionDiagnostics(const APawn* PlayerPawn)
 	{
 		Summary = TEXT("day-night-blocked");
 	}
-	else if (SpawnableSlots == 0)
+	else if (UnspawnedCreatures == 0)
 	{
-		Summary = TEXT("no-spawnable-slot");
+		Summary = TEXT("no-unspawned-slot");
 	}
 
 	uint32 Signature = GetTypeHash(WaitingSlots);
-	Signature = HashCombine(Signature, GetTypeHash(SpawnableSlots));
 	Signature = HashCombine(Signature, GetTypeHash(LiveCreatures));
 	Signature = HashCombine(Signature, GetTypeHash(UnspawnedCreatures));
 	Signature = HashCombine(Signature, GetTypeHash(KilledSlots));
 	Signature = HashCombine(Signature, GetTypeHash(bActive));
 	Signature = HashCombine(Signature, GetTypeHash(bCorrectTime));
 	Signature = HashCombine(Signature, GetTypeHash(bNearBase));
-	Signature = HashCombine(Signature, GetTypeHash(bObservedEligible));
 	Signature = HashCombine(Signature, GetTypeHash(FMath::RoundToInt(SpawnDistance)));
 	Signature = HashCombine(Signature, GetTypeHash(FMath::RoundToInt(SpawnRadius)));
+	Signature = HashCombine(Signature, GetTypeHash(CreatureDefaultSpawn));
+	Signature = HashCombine(Signature, GetTypeHash(CreatureDefaultDespawn));
+	Signature = HashCombine(Signature, GetTypeHash(SpawnOverride));
+	Signature = HashCombine(Signature, GetTypeHash(DespawnOverride));
 	Signature = HashCombine(Signature,
 		GetTypeHash(FMath::RoundToInt(FirstPlayerDistance / 1000.0f)));
 
@@ -497,10 +501,10 @@ void APFANestSpawner::LogSpawnDecisionDiagnostics(const APawn* PlayerPawn)
 	LastSpawnDiagnosticTimeSeconds = NowSeconds;
 
 	UE_LOG(LogPrimalFauna, Display,
-		TEXT("[PFA] Nest spawn observation: nest=%s active=%s timeAllowed=%s nearBase=%s observedEligible=%s slots=%d live=%d unspawned=%d spawnable=%d waiting=%d killed=%d oldestWait=%.1fs spawnDistance=%.0f firstPlayerDistance=%.0f radius=%.0f summary=%s outcome=observed-only"),
+		TEXT("[PFA] Nest spawn observation: nest=%s active=%s timeAllowed=%s nearBase=%s nativeReadiness=unqueried slots=%d live=%d unspawned=%d waiting=%d killed=%d oldestWait=%.1fs spawnDistance=%.0f firstPlayerDistance=%.0f radius=%.0f creatureDefaultSpawn=%.0f creatureDefaultDespawn=%.0f spawnOverride=%.0f despawnOverride=%.0f summary=%s outcome=observed-only"),
 		*NestId.ToString(), bActive ? TEXT("true") : TEXT("false"),
 		bCorrectTime ? TEXT("true") : TEXT("false"), bNearBase ? TEXT("true") : TEXT("false"),
-		bObservedEligible ? TEXT("true") : TEXT("false"), mSpawnData.Num(), LiveCreatures,
-		UnspawnedCreatures, SpawnableSlots, WaitingSlots, KilledSlots, OldestWaitSeconds,
-		SpawnDistance, FirstPlayerDistance, SpawnRadius, Summary);
+		mSpawnData.Num(), LiveCreatures,
+		UnspawnedCreatures, WaitingSlots, KilledSlots, OldestWaitSeconds,
+		SpawnDistance, FirstPlayerDistance, SpawnRadius, CreatureDefaultSpawn, CreatureDefaultDespawn, SpawnOverride, DespawnOverride, Summary);
 }
