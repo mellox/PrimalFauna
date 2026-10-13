@@ -5,7 +5,7 @@
 	"SemVersion": "0.1.0",
 	"GameVersion": ">=491125",
 	"FriendlyName": "Primal Fauna",
-	"Description": "Adds an original creature roster (territorial predators and a burrowing worm event) to Satisfactory. Works with HostileScaling automatically; no dependency either way. Early development build -- scaffold only, no creatures yet.",
+	"Description": "Adds original hostile creatures to Satisfactory. Current build: the Sicklejaw pack predator with authored animations, nests, loot and a world-population layer (on by default, toggle EnableWorldPopulation); further creatures are design-only. Works alongside HostileScaling with no dependency either way. Early development, not yet released on ficsit.app.",
 	"Category": "Modding",
 	"CreatedBy": "mello",
 	"CreatedByURL": "",
