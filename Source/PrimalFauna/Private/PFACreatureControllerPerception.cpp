@@ -66,8 +66,14 @@
 #include "PFACheats.h"
 // w47-1: the heartbeat reads the speed-trait watch's state off our own creature.
 #include "PFACreatureBase.h"
+// w58-5: ONE liveness predicate, shared by the drop path and the census.
+#include "PFAEngagementCensus.h"
 
 #include "Creature/FGCreature.h"
+// w58-5 (review M5): the self-liveness guard in TickDeadTargetDrop calls
+// UFGHealthComponent::IsDead, so the pointer's forward declaration on
+// AFGCharacterBase's getter is not enough here (same reason as CurveFloat below).
+#include "FGHealthComponent.h"
 
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
@@ -232,6 +238,245 @@ void APFACreatureController::WireCreaturePerception(AFGCreature* PossessedCreatu
 	}
 }
 
+void APFACreatureController::NoteMeleeCanPerformSample(bool bCanPerform, float AttackRangeCm,
+	float MinRangeCm, float CooldownRemainSeconds, int32 ActionState)
+{
+	mEngagementObservation.bHasCanPerformSample = true;
+	mEngagementObservation.bLastCanPerform = bCanPerform;
+	mEngagementObservation.LastSampledAttackRangeCm = AttackRangeCm;
+	mEngagementObservation.LastSampledMinRangeCm = MinRangeCm;
+	mEngagementObservation.LastSampledCooldownRemainSeconds = CooldownRemainSeconds;
+	mEngagementObservation.LastSampledActionState = ActionState;
+	mEngagementObservation.LastCanPerformSampleTimeSeconds =
+		GetWorld() ? static_cast<double>(GetWorld()->GetTimeSeconds()) : -1.0;
+}
+
+void APFACreatureController::NoteMeleePerformActionStarted()
+{
+	++mEngagementObservation.PerformStartCount;
+	mEngagementObservation.LastPerformStartTimeSeconds =
+		GetWorld() ? static_cast<double>(GetWorld()->GetTimeSeconds()) : -1.0;
+}
+
+// ---------------------------------------------------------------------------
+// w58-5 FIX A -- DROP A DEAD TARGET. See the header for why this owns its own
+// beat and kill-switch instead of living inside TickAggroRangeDecay.
+//
+// The defect this closes, measured 2026-08-18: nothing in this mod tested the
+// liveness of the thing it was fighting. A fresh corpse sits 0-3m away, so it
+// is never in the decay region, never reaches the give-up distance (4500cm for
+// 8s), and the aggression-mode reset never fires in normal play -- all three
+// clearing paths miss it. Two hogs were held 50s and 46s past the last hit the
+// pack could land on them.
+// ---------------------------------------------------------------------------
+void APFACreatureController::TickDeadTargetDrop(float DeltaSeconds)
+{
+	// Kill-switch, same pattern as pfa.AggroDecayAtRange: 0 restores the exact
+	// pre-w58-5 behaviour, which is the A/B that says whether this path is the
+	// one doing the work.
+	static TAutoConsoleVariable<int32> CVarPFADropDeadTargets(
+		TEXT("pfa.DropDeadTargets"), 1,
+		TEXT("1 = a creature releases its current target as soon as that target's health component reports dead (or the actor is gone): it binds the strongest live target it still holds aggro for, or, if it holds none, clears targeting and returns to roaming. 0 = pre-w58-5 behaviour: the target is only cleared when the corpse ACTOR is destroyed or something outranks it."),
+		ECVF_Default);
+
+	constexpr float DropInterval = 0.25f;
+	mDeadTargetDropAccumulator += DeltaSeconds;
+	if (mDeadTargetDropAccumulator < DropInterval)
+	{
+		return;
+	}
+	mDeadTargetDropAccumulator = 0.0f;
+
+	AActor* CurrentTarget = GetCurrentTarget();
+
+	// --- engagement hold tracking, updated on this same beat ------------------
+	// A NULL reading never re-stamps: the native current target flickers null
+	// 1-2x/second during a live engagement (w26-3), and a hold clock that
+	// restarts on a flicker can never measure a 46s hold.
+	if (CurrentTarget)
+	{
+		const double NowSeconds = GetWorld() ? static_cast<double>(GetWorld()->GetTimeSeconds()) : 0.0;
+		if (mEngagementObservation.HeldTarget.Get() != CurrentTarget)
+		{
+			mEngagementObservation.HeldTarget = CurrentTarget;
+			mEngagementObservation.HeldTargetSinceSeconds = NowSeconds;
+			mEngagementObservation.PerformStartCountAtHoldStart = mEngagementObservation.PerformStartCount;
+		}
+	}
+
+	// w58-5 (review H2): the kill-switch gates the BEHAVIOUR ONLY. It used to sit
+	// above the hold tracking, so `pfa.DropDeadTargets 0` -- the A/B control this
+	// fix is measured against -- also stopped HeldTarget/HeldTargetSinceSeconds
+	// from ever being written, which made heldSecs print -1 and made `stalled`
+	// structurally unable to be 1 in the control arm. A control that switches off
+	// the instrument cannot measure anything.
+	if (CVarPFADropDeadTargets.GetValueOnGameThread() == 0)
+	{
+		return;
+	}
+
+	if (!CurrentTarget)
+	{
+		mLastDeadTargetReported = nullptr;
+		mDeadTargetDropAttempts = 0;
+		return;
+	}
+
+	const PFAEngagement::ETargetLiveness Liveness = PFAEngagement::GradeTargetLiveness(CurrentTarget);
+	if (!PFAEngagement::IsConfirmedNotFightable(Liveness))
+	{
+		// Includes NoHealthComponent, which is deliberately NOT a drop: "cannot
+		// measure" must never read as "dead", or this fix becomes a creature
+		// that abandons live targets it simply could not ask about.
+		mLastDeadTargetReported = nullptr;
+		mDeadTargetDropAttempts = 0;
+		return;
+	}
+
+	// Report ONCE per target, then act. If ResetTargetingState does not stick
+	// (the native machine re-seats the same corpse), the latch keeps this to one
+	// line instead of four per second, and the next beat still retries the drop.
+	const bool bSameTargetAsLastBeat = (mLastDeadTargetReported.Get() == CurrentTarget);
+	mLastDeadTargetReported = CurrentTarget;
+	mDeadTargetDropAttempts = bSameTargetAsLastBeat ? (mDeadTargetDropAttempts + 1) : 1;
+	const bool bAlreadyReported = bSameTargetAsLastBeat;
+
+	// A drop that did not stick means the native machine re-seated the same actor.
+	// Retrying at 4Hz makes ResetTargetingState and the state kick -- both ALWAYS-ON
+	// log lines -- fire eight times a second while the one line naming the cause is
+	// latched off. Back off to 1Hz and say so once.
+	if (bAlreadyReported && (mDeadTargetDropAttempts % 4) != 0)
+	{
+		return;
+	}
+	if (mDeadTargetDropAttempts == 4)
+	{
+		UE_LOG(LogPrimalFauna, Warning,
+			TEXT("[PFA] %s: DEAD TARGET DROP DID NOT STICK -- target=%s still grades %s and is still this controller's current target after %d attempts at 0.25s. Measured: this beat re-read the same actor as the current target; which release branch ran on the previous beats, and what re-bound it, were not tested here. Retries now run at 1Hz."),
+			*GetName(), *CurrentTarget->GetName(),
+			PFAEngagement::LivenessToken(Liveness), mDeadTargetDropAttempts);
+	}
+
+	const APawn* SelfPawn = GetPawn();
+	const float TargetDistCm = SelfPawn
+		? FVector::Dist(SelfPawn->GetActorLocation(), CurrentTarget->GetActorLocation())
+		: -1.0f;
+	const float TargetAggro = GetAggroForTarget(CurrentTarget);
+	const double NowSeconds = GetWorld() ? static_cast<double>(GetWorld()->GetTimeSeconds()) : 0.0;
+	const double HeldSince = mEngagementObservation.HeldTargetSinceSeconds;
+	const float HeldSeconds = (HeldSince >= 0.0) ? static_cast<float>(NowSeconds - HeldSince) : -1.0f;
+
+	if (!bAlreadyReported)
+	{
+		// ALWAYS-ON. A creature dropping its target is a behavioural event, and
+		// this is the line that says the corpse-retention path executed at all.
+		// It states the GRADE it measured and the numbers it read this beat. It
+		// does not state why the target died or why it was still held -- neither
+		// was tested here.
+		UE_LOG(LogPrimalFauna, Display,
+			TEXT("[PFA] %s: DEAD TARGET DROPPED -- target=%s liveness=%s targetDistCm=%.0f aggro=%.1f heldSecs=%.1f aggroEntries=%d state=%s. Grade measured from the target's own health component this beat; heldSecs is time since this controller first bound THIS actor."),
+			*GetName(), *CurrentTarget->GetName(),
+			PFAEngagement::LivenessToken(Liveness),
+			TargetDistCm, TargetAggro, HeldSeconds,
+			GetAggroTargets().Num(),
+			*CreatureStateEnumToString(GetCurrentCreatureState()));
+	}
+
+	// w58-5 (review H1): DROP THE CORPSE, NOT THE FIGHT.
+	// ResetTargetingState is a TOTAL wipe -- NullifyAllAggro + mAggroTargets.Reset()
+	// + mVisibleTargets.Reset(). Calling it because the CURRENT target died also
+	// discards every LIVE entry this creature holds, so a Sicklejaw that kills one
+	// hog forgets the player and the rest of the hog pack. Every other aggro-driven
+	// reset site in this file is gated on `!bAnyAggroRemains` for exactly that
+	// reason; this one was not.
+	//
+	// So: count what is still worth fighting, using the SAME predicate, and
+	// remember the strongest one so this code can BIND it rather than hope.
+	int32 LiveAggroEntriesRemaining = 0;
+	AActor* NextTarget = nullptr;
+	float NextTargetAggro = 0.0f;
+	for (const FFGCreatureAggroData& AggroData : GetAggroTargets())
+	{
+		AActor* Entry = AggroData.Target;
+		if (!Entry || Entry == CurrentTarget)
+		{
+			continue;
+		}
+		if (PFAEngagement::IsConfirmedNotFightable(PFAEngagement::GradeTargetLiveness(Entry)))
+		{
+			continue;
+		}
+		if (AggroData.Aggro > KINDA_SMALL_NUMBER)
+		{
+			++LiveAggroEntriesRemaining;
+			if (AggroData.Aggro > NextTargetAggro)
+			{
+				NextTargetAggro = AggroData.Aggro;
+				NextTarget = Entry;
+			}
+		}
+	}
+
+	if (LiveAggroEntriesRemaining > 0 && NextTarget)
+	{
+		// w58-7 (r2 review F1): DO NOT RELY ON NATIVE RE-SELECTION. This class
+		// already measured the opposite: ForceAggro (PFACreatureController.cpp
+		// :661-689) records that SetAggroForTarget + TriggerStateUpdate leave
+		// mCurrentTarget null -- w57-5 and w57-8 logs showed controllers in
+		// CS_Fight at full aggro with currentTarget=none, following the pack and
+		// never attacking. That is the same symptom this whole packet exists to
+		// remove, so this path binds the next target the same way ForceAggro had
+		// to: write the aggro, set the target, kick once, then re-seat if the
+		// closed-source update cleared it -- and PRINT THE READBACK, so the log
+		// says which of the two happened instead of asserting one.
+		if (TargetAggro > KINDA_SMALL_NUMBER)
+		{
+			ModifyAggroForTarget(CurrentTarget, -TargetAggro, /*bImmediateStateUpdate=*/false);
+		}
+		SetCurrentTarget(NextTarget);
+		TriggerStateUpdate(/*bImmediate=*/true);
+		// w58-8 (r3 review F-8): read BETWEEN the kick and the re-seat. boundReadback
+		// alone is sampled AFTER the re-seat, so it cannot say whether the native
+		// update kept our binding or whether the re-seat put it back -- which is the
+		// open question this build exists to answer. This is a read only.
+		AActor* PostKickTarget = GetCurrentTarget();
+		if (GetCurrentTarget() != NextTarget)
+		{
+			SetCurrentTarget(NextTarget);
+		}
+		AActor* BoundTarget = GetCurrentTarget();
+		mRangeDecayLoggedTargets.Remove(FObjectKey(CurrentTarget));
+		// The hold clock is measuring a binding that no longer exists, so restart
+		// it here exactly as ResetTargetingState does on a real unbinding.
+		mEngagementObservation.HeldTarget = BoundTarget;
+		mEngagementObservation.HeldTargetSinceSeconds = (GetWorld() && BoundTarget)
+			? static_cast<double>(GetWorld()->GetTimeSeconds()) : -1.0;
+		mEngagementObservation.PerformStartCountAtHoldStart = mEngagementObservation.PerformStartCount;
+		if (!bAlreadyReported)
+		{
+			UE_LOG(LogPrimalFauna, Display,
+				TEXT("[PFA] %s: dead target released -- target=%s liveness=%s liveAggroEntriesRemaining=%d nextTarget=%s nextTargetAggro=%.1f postKickTarget=%s boundReadback=%s deadAggroAfter=%.1f state=%s. The next target was set explicitly, then the state machine was kicked; postKickTarget is what GetCurrentTarget returned immediately after that kick and boundReadback is what it returned after the change-guarded re-seat. deadAggroAfter is this beat's readback of the dead entry's own aggro. No targeting reset and no roam kick were issued."),
+				*GetName(), *CurrentTarget->GetName(),
+				PFAEngagement::LivenessToken(Liveness), LiveAggroEntriesRemaining,
+				*GetNameSafe(NextTarget), NextTargetAggro,
+				*GetNameSafe(PostKickTarget), *GetNameSafe(BoundTarget),
+				GetAggroForTarget(CurrentTarget),
+				*CreatureStateEnumToString(GetCurrentCreatureState()));
+		}
+		return;
+	}
+
+	// Nothing live is left: the full two-step, exactly as the decay disengage does
+	// it. w48-1 measured that ResetTargetingState alone leaves the native machine
+	// parked in CS_Alert indefinitely.
+	mRangeDecayLoggedTargets.Reset();
+	bLoggedStaleZeroAggroTarget = false;
+	bLoggedStaleZeroLongHold = false;
+	mStaleZeroConsecutiveBeats = 0;
+	ResetTargetingState(TEXT("target died"));
+	ForceRoamAfterDisengage(TEXT("target died"));
+}
+
 void APFACreatureController::TickAggroRangeDecay(float DeltaSeconds)
 {
 	// w45-2 -- DE-ESCALATION THAT DOES NOT DEPEND ON AN UNKNOWN.
@@ -350,15 +595,42 @@ void APFACreatureController::TickAggroRangeDecay(float DeltaSeconds)
 	//    aggressors (a recent aggressor sitting at zero is the second blind shape).
 	int32 NullTargetEntries = 0;
 	int32 ZeroAggroExemptEntries = 0;
-	// w47-1 (review F1): WHY a disengage was vetoed. The w46-1 veto widened from
-	// "some target is still above the fight threshold" to "some target holds any
-	// aggro at all", which makes disengaging strictly HARDER than w45-3 -- a hog at
-	// 5 aggro 12m away can now veto the reset for a player who drained to zero at
-	// 35m, reproducing the exact "stood where it lost interest" symptom this path
-	// exists to fix. The behaviour is kept (forgetting the nearby hog would be
-	// worse); what changes is that it can no longer happen SILENTLY, which
-	// previously had to be inferred from the ABSENCE of a ResetTargetingState line
-	// while the stale-target line was suppressed too (it requires !bDisengageEvent).
+	// w58-5: entries whose target graded Dead or Destroyed this beat. These are
+	// skipped entirely -- not drained, not vetoing -- and reported. The count is
+	// what makes "a corpse was in the ledger" visible instead of inferable.
+	int32 DeadAggroEntries = 0;
+	// The strongest aggro any dead entry was holding when it stopped counting, so
+	// the size of the veto that has just been removed is measurable rather than
+	// assumed. -1 means no dead entry was seen this beat.
+	float DeadEntryTopAggro = -1.0f;
+	const AActor* DeadEntryTopTarget = nullptr;
+	// w58-5 (was: an accepted trade-off; it was the bug) -- WHY a disengage was
+	// vetoed. The w46-1 veto widened from "some target is still above the fight
+	// threshold" to "some target holds any aggro at all", which makes disengaging
+	// strictly HARDER than w45-3: a hog at 5 aggro 12m away vetoes the reset for a
+	// player who drained to zero at 35m.
+	//
+	// The w47-1 comment that stood here called that an accepted trade-off --
+	// "the behaviour is kept (forgetting the nearby hog would be worse); what
+	// changes is that it can no longer happen SILENTLY" -- and filed the residual
+	// hole as a diagnostic. THAT WAS FALSE FOR ONE CASE AND IT WAS THE CASE THAT
+	// MATTERED. When the nearby vetoer is a CORPSE, keeping it is not "forgetting
+	// would be worse": there is nothing left to forget, and the corpse pinned the
+	// whole pack. Measured 2026-08-18: two hogs held 46s and 50s past the last hit.
+	//
+	// SO THE VETO NOW HAS A LIVENESS TEST (the only change to its semantics):
+	//   * a LIVE entry vetoes exactly as before -- every w45-3 / w46-1 / w47-2 /
+	//     w48-1 / w48-2 rule below is untouched for live targets;
+	//   * an entry whose target grades Dead or Destroyed vetoes NOTHING, is not
+	//     drained, and is counted instead (DeadAggroEntries).
+	// The grade comes from PFAEngagement::GradeTargetLiveness -- the SAME
+	// predicate TickDeadTargetDrop uses, so the drop side and the veto side can
+	// never disagree about what "dead" means.
+	//
+	// NoHealthComponent is NOT dead: an actor we cannot ask keeps its full veto.
+	// This change can only ever REMOVE a veto held by a provably-unfightable
+	// actor; it can never remove one held by a live target, which is what bounds
+	// the opposite failure (creatures disengaging too eagerly).
 	const AActor* VetoTarget = nullptr;
 	float VetoAggro = 0.0f;
 	float VetoDistanceCm = -1.0f;
@@ -394,6 +666,26 @@ void APFACreatureController::TickAggroRangeDecay(float DeltaSeconds)
 		if (!AggroTarget)
 		{
 			++NullTargetEntries;
+			continue;
+		}
+
+		// w58-5: LIVENESS FIRST, before distance, region, aggressor or aggro is
+		// even looked at. A confirmed-dead entry takes no part in this beat: it
+		// is not drained (there is nothing to pursue), it does not manufacture a
+		// disengage event, and above all it does not veto anyone. Placing the
+		// test at the TOP is what makes that true on every branch below rather
+		// than on the ones someone remembered to patch.
+		const PFAEngagement::ETargetLiveness EntryLiveness =
+			PFAEngagement::GradeTargetLiveness(AggroTarget);
+		if (PFAEngagement::IsConfirmedNotFightable(EntryLiveness))
+		{
+			++DeadAggroEntries;
+			if (AggroData.Aggro > DeadEntryTopAggro)
+			{
+				DeadEntryTopAggro = AggroData.Aggro;
+				DeadEntryTopTarget = AggroTarget;
+			}
+			mRangeDecayLoggedTargets.Remove(FObjectKey(AggroTarget));
 			continue;
 		}
 
@@ -654,10 +946,12 @@ void APFACreatureController::TickAggroRangeDecay(float DeltaSeconds)
 		// the hardening clause, which is where it actually belongs.)
 		const bool bSelfVeto = (VetoTarget != nullptr) && (VetoTarget == DisengageTarget);
 		UE_LOG(LogPrimalFauna, Display,
-			TEXT("[PFA] %s: range-decay DISENGAGE VETOED -- a target %s but %s still holds %.1f aggro (dist=%.0f, inDecayRegion=%d); not resetting.%s The veto is deliberate (forgetting a nearby creature would be worse), but if the creature now stands still, THIS is why."),
+			TEXT("[PFA] %s: range-decay DISENGAGE VETOED -- a target %s but %s still holds %.1f aggro (dist=%.0f, inDecayRegion=%d) deadEntriesSkipped=%d deadEntryTopAggro=%.1f deadEntryTop=%s; not resetting.%s The vetoer graded live this beat. If the creature now stands still, THIS is the entry holding it."),
 			*GetName(), DisengageReason,
 			VetoTarget ? *VetoTarget->GetName() : TEXT("<an entry we could not name>"),
 			VetoAggro, VetoDistanceCm, bVetoInDecayRegion ? 1 : 0,
+			DeadAggroEntries, DeadEntryTopAggro,
+			DeadEntryTopTarget ? *DeadEntryTopTarget->GetName() : TEXT("none"),
 			bSelfVeto
 				? TEXT(" <-- the vetoer IS the target that just crossed/drained: this is a SELF-VETO and almost certainly a bug (a target being abandoned must not count as remaining interest).")
 				: TEXT(""));
@@ -702,9 +996,23 @@ void APFACreatureController::TickAggroRangeDecay(float DeltaSeconds)
 	// aggressor sitting at zero. Both are now tallied, the null case joins the
 	// trigger, and every tally plus the entry count and state is printed, so ONE
 	// line distinguishes all four shapes.
+	//
+	// w58-5 -- AND IT WAS STILL BLIND TO THE CASE IT WAS WRITTEN FOR, MEASURED:
+	// this line fired ZERO times in the 97,332-line session where three creatures
+	// stood in a field holding corpses. F4 covered the target-DESTROYED shape
+	// (Target == nullptr) and missed the target-DEAD-BUT-PRESENT shape entirely --
+	// a corpse actor lives for its full removal timer, so its entry is non-null,
+	// out of the decay region, and holding full aggro. That set bAnyAggroRemains,
+	// and this trigger requires !bAnyAggroRemains, so the corpse suppressed the
+	// only line that could have named it. Two changes close it: dead entries no
+	// longer set bAnyAggroRemains (see the liveness test at the top of the loop),
+	// and DeadAggroEntries joins the trigger set and the printed tallies. The
+	// fifth shape now has a name in the same line as the other four.
 	const AActor* StaleTarget = GetCurrentTarget();
 	const bool bStaleZeroTargetHeld =
-		(!bDisengageEvent && !bAnyAggroRemains && (StaleZeroInRegion + NullTargetEntries) > 0 && StaleTarget != nullptr);
+		(!bDisengageEvent && !bAnyAggroRemains
+			&& (StaleZeroInRegion + NullTargetEntries + DeadAggroEntries) > 0
+			&& StaleTarget != nullptr);
 	if (!bStaleZeroTargetHeld)
 	{
 		// Cleared on ANY beat that does not meet the condition, not only on live
@@ -748,12 +1056,14 @@ void APFACreatureController::TickAggroRangeDecay(float DeltaSeconds)
 	{
 		bLoggedStaleZeroAggroTarget = true;
 		UE_LOG(LogPrimalFauna, Display,
-			TEXT("[PFA] %s: STALE TARGET (held %.2fs) -- currentTarget=%s state=%s, nothing holds aggro. entries=%d of which staleZeroInRegion=%d nullTarget(target destroyed/GCd)=%d zeroAggroExempt(in-curve-range or recent aggressor)=%d. This mechanism never saw the drop, so it has no disengage event to fire on; the creature may stand where it lost interest. nullTarget>0 means it most likely KILLED what it was fighting. Fix if this correlates with a motionless creature: a dwell-based stale-target timeout (this debounce is its front half)."),
+			TEXT("[PFA] %s: STALE TARGET (held %.2fs) -- currentTarget=%s currentTargetLiveness=%s state=%s, nothing live holds aggro. entries=%d of which staleZeroInRegion=%d nullTarget=%d zeroAggroExempt=%d deadEntries=%d. Legend, in prose so it cannot collide with the fields above: nullTarget counts entries whose target actor is gone; deadEntries counts entries whose target is present and whose health component reports dead; zeroAggroExempt counts zero-aggro entries inside the visibility curve or belonging to a recent aggressor; staleZeroInRegion counts zero-aggro entries in the decay region. This mechanism observed no transition, so it has no disengage event to fire on."),
 			*GetName(),
 			StaleHeldSeconds,
 			*StaleTarget->GetName(),
+			PFAEngagement::LivenessToken(PFAEngagement::GradeTargetLiveness(StaleTarget)),
 			*CreatureStateEnumToString(GetCurrentCreatureState()),
-			Snapshot.Num(), StaleZeroInRegion, NullTargetEntries, ZeroAggroExemptEntries);
+			Snapshot.Num(), StaleZeroInRegion, NullTargetEntries, ZeroAggroExemptEntries,
+			DeadAggroEntries);
 	}
 
 	// The long-hold sample. Same episode, same latch discipline -- one line, and
@@ -762,18 +1072,45 @@ void APFACreatureController::TickAggroRangeDecay(float DeltaSeconds)
 	{
 		bLoggedStaleZeroLongHold = true;
 		UE_LOG(LogPrimalFauna, Display,
-			TEXT("[PFA] %s: STALE TARGET STILL HELD (%.2fs continuous) -- currentTarget=%s state=%s, still nothing holding aggro. entries=%d staleZeroInRegion=%d nullTarget=%d zeroAggroExempt=%d. THIS is the number to size a dwell-based stale-target timeout from: the creature has held a dead target this long without disengaging on its own."),
+			TEXT("[PFA] %s: STALE TARGET STILL HELD (%.2fs continuous) -- currentTarget=%s currentTargetLiveness=%s state=%s, still nothing live holding aggro. entries=%d staleZeroInRegion=%d nullTarget=%d zeroAggroExempt=%d deadEntries=%d. This is the measured continuous hold; it is a duration, not a cause."),
 			*GetName(),
 			StaleHeldSeconds,
 			*StaleTarget->GetName(),
+			PFAEngagement::LivenessToken(PFAEngagement::GradeTargetLiveness(StaleTarget)),
 			*CreatureStateEnumToString(GetCurrentCreatureState()),
-			Snapshot.Num(), StaleZeroInRegion, NullTargetEntries, ZeroAggroExemptEntries);
+			Snapshot.Num(), StaleZeroInRegion, NullTargetEntries, ZeroAggroExemptEntries,
+			DeadAggroEntries);
 	}
 }
 
 void APFACreatureController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	// w58-7 (r2 review F7): SYMMETRY. w58-5 (review M5) stopped a DEAD creature's
+	// controller from resetting targeting and kicking its own state machine -- but
+	// only in the drop. TickAggroRangeDecay, called one line below, reaches
+	// ResetTargetingState and ForceRoamAfterDisengage on its own disengage path,
+	// and c9a567f deliberately clears mIsRagdolled, so nothing downstream would
+	// suppress a roam move issued from a corpse. Whether the controller survives
+	// death at all is engine-internal (AFGCreature::Died is closed), so this is a
+	// guard covering both answers, not an assumption about either.
+	if (const AFGCreature* SelfCreature = Cast<AFGCreature>(GetPawn()))
+	{
+		const UFGHealthComponent* SelfHealth = SelfCreature->GetHealthComponent();
+		if (SelfHealth && SelfHealth->IsDead())
+		{
+			return;
+		}
+	}
+
+	// w58-5: BEFORE the range decay, so the decay never runs a beat against a
+	// ledger the drop is about to change. w58-7: the drop no longer necessarily
+	// empties that ledger -- the selective branch keeps every live entry and only
+	// the full-reset branch reaches the decay's `GetAggroTargets().Num() == 0`
+	// early-out. The ordering still matters; the "no double work" claim does not
+	// hold on the selective branch and is removed rather than restated.
+	TickDeadTargetDrop(DeltaTime);
 
 	TickAggroRangeDecay(DeltaTime);
 
@@ -813,7 +1150,19 @@ void APFACreatureController::Tick(float DeltaTime)
 	AActor* Target = GetCurrentTarget();
 	if (!Target)
 	{
-		Target = LastValidFocusTarget.Get();
+		// w58-7 (r2 review F3): the fallback exists to ride out the 1-2Hz current-
+		// target flicker (w26-3). It must not resurrect a CORPSE: a dead fallback
+		// sits 0-3m away, so the give-up distance is never exceeded and this
+		// disengage can never fire again. Graded with the same predicate the drop
+		// uses, so the two sides of "this target is finished" cannot diverge.
+		AActor* FocusFallback = LastValidFocusTarget.Get();
+		if (FocusFallback &&
+			PFAEngagement::IsConfirmedNotFightable(PFAEngagement::GradeTargetLiveness(FocusFallback)))
+		{
+			LastValidFocusTarget = nullptr;
+			FocusFallback = nullptr;
+		}
+		Target = FocusFallback;
 	}
 
 	// ---- w40-1 DISENGAGE: lose interest in a target that has walked away. ----
@@ -983,7 +1332,8 @@ void APFACreatureController::TickFocusSync()
 		LastValidFocusTarget = Target;
 		LastValidFocusTimeSeconds = Now;
 	}
-	else if (LastValidFocusTarget.IsValid() && (Now - LastValidFocusTimeSeconds) < FocusGraceSeconds)
+	else if (LastValidFocusTarget.IsValid() && (Now - LastValidFocusTimeSeconds) < FocusGraceSeconds &&
+		!PFAEngagement::IsConfirmedNotFightable(PFAEngagement::GradeTargetLiveness(LastValidFocusTarget.Get())))
 	{
 		Target = LastValidFocusTarget.Get();
 	}

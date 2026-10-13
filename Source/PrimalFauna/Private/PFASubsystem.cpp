@@ -4,6 +4,7 @@
 #include "PFAFactionConfig.h"
 #include "PFACheats.h"
 #include "PFACorpseCensus.h"
+#include "PFAEngagementCensus.h"
 #include "PFABehaviorBorrower.h"
 #include "PFANestSpawner.h"
 #include "PFACreatureBase.h"
@@ -224,6 +225,15 @@ void APFASubsystem::RefreshTick()
     // the per-corpse detail lines are diagnostics-gated inside RunPass, and
     // PFA.CorpseCensus forces a full-detail pass on demand.
     PFACorpseCensus::RunPass(GetWorld(), TEXT("heartbeat"), /*bLogEveryCorpse=*/false);
+
+    // w58-5 ENGAGEMENT CENSUS + the engagement-liveness assertion. Rides the
+    // SAME 10s heartbeat, immediately after the corpse census, so one log slice
+    // carries both halves of the dead-target story: which corpses exist, and
+    // which creatures are still holding one. The summary line and any FAIL are
+    // always on; per-creature detail is diagnostics-gated inside RunPass, except
+    // for rows that failed, which always print. PFA.EngagementCensus forces a
+    // full-detail pass on demand.
+    PFAEngagement::RunPass(GetWorld(), TEXT("heartbeat"), /*bLogEveryCreature=*/false);
 
     // Doc 03 §3: adopt/materialize every registry nest, every refresh tick --
     // the SAME path SpawnNestAtPlayer triggers immediately on demand. Runs

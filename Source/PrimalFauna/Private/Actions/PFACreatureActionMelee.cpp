@@ -2,6 +2,7 @@
 #include "PrimalFauna.h"
 #include "PFACheats.h"
 #include "Species/PFASicklejaw.h"
+#include "PFACreatureController.h"        // w58-5 engagement observation recorders
 
 #include "Creature/FGCreature.h"          // FCreatureAction, ECreatureState, GetCreatureActionsSetup
 #include "Creature/FGCreatureAction.h"    // FCreatureActionTargetParams, ECreatureActionTargetSelectionType
@@ -190,12 +191,39 @@ bool UPFACreatureActionMelee::ScoreAction_Implementation(float& score) const
 bool UPFACreatureActionMelee::CanPerformAction_Implementation() const
 {
 	const bool bCan = Super::CanPerformAction_Implementation();
+
+	// ---- w58-5: RECORD THE SAMPLE, UNCONDITIONALLY ---------------------------
+	// The 2026-08-18 diagnosis found this override's bare boolean could not tell
+	// "out of attack range" from "in range and not firing", and that NOTHING
+	// anywhere recorded the numbers that separate them. Hand the ranges, the
+	// remaining cooldown and the action state to the controller so the 10s
+	// engagement census can print them WITHOUT calling back into engine action
+	// code (the AFGCreatureSpawner::IsReadyToSpawn lesson: a nominal query that
+	// mutates). All four are FORCEINLINE header reads -- no import surface.
+	//
+	// NOT diag-gated: recording that only happens while someone is watching is
+	// the w44-1 defect. Only the LOG line below is gated.
+	if (APFACreatureController* PFAController = Cast<APFACreatureController>(mCreatureController.Get()))
+	{
+		PFAController->NoteMeleeCanPerformSample(bCan, mAttackRange, mMinRange,
+			GetRemainingCooldown(), static_cast<int32>(GetActionState().GetValue()));
+	}
+
 	if (PFADiag::IsEnabled())
 	{
+		// w58-5: the distance and the two range gates on the SAME line as the
+		// verdict. A bare boolean here is what forced 97k lines of hand
+		// differencing; distance next to the gate it failed is the whole answer.
+		const AActor* SampleTarget = GetCurrentTarget();
+		const AFGCreature* SampleCreature = mCreature.Get();
+		const float SampleDistCm = (SampleTarget && SampleCreature)
+			? SampleCreature->GetDistanceTo(SampleTarget) : -1.0f;
 		UE_LOG(LogPrimalFauna, Display,
-			TEXT("[PFA] Sicklejaw action=Melee CanPerformAction=%s target=%s pawn=%s"),
+			TEXT("[PFA] Sicklejaw action=Melee CanPerformAction=%s target=%s targetDistCm=%.0f attackRangeCm=%.0f minRangeCm=%.0f cooldownRemainSec=%.2f actionState=%d pawn=%s"),
 			bCan ? TEXT("true") : TEXT("false"),
-			GetCurrentTarget() ? *GetCurrentTarget()->GetName() : TEXT("none"),
+			SampleTarget ? *SampleTarget->GetName() : TEXT("none"),
+			SampleDistCm, mAttackRange, mMinRange,
+			GetRemainingCooldown(), static_cast<int32>(GetActionState().GetValue()),
 			GetPawn() ? *GetPawn()->GetName() : TEXT("none"));
 	}
 	return bCan;
@@ -203,6 +231,16 @@ bool UPFACreatureActionMelee::CanPerformAction_Implementation() const
 
 void UPFACreatureActionMelee::PerformAction_Implementation()
 {
+	// w58-5: the count and timestamp the engagement self-test is built on. A
+	// creature in CS_Fight on an unchanged target that never reaches this line is
+	// exactly the stall the 2026-08-18 diagnosis measured at 46-50s. Recorded
+	// BEFORE Super and before the diag gate: an ungated record is the only kind
+	// that can fail a test in a session nobody is watching.
+	if (APFACreatureController* PFAController = Cast<APFACreatureController>(mCreatureController.Get()))
+	{
+		PFAController->NoteMeleePerformActionStarted();
+	}
+
 	if (PFADiag::IsEnabled())
 	{
 		UE_LOG(LogPrimalFauna, Display,
