@@ -16,7 +16,7 @@ re-derives every fact from the FBX itself rather than trusting an export
 report.
 
 USAGE (exit code 0 = pass, 1 = fail; every finding printed as PFARIG ...):
-    "C:\Blender\Blender 5.2\blender.exe" --background --factory-startup ^
+    "C:\Blender\blender-5.3.0-beta\blender.exe" --background --factory-startup ^
       --python "C:/Claude/Projects/PrimalFauna/tools/validate_rig_fbx.py" ^
       -- "C:/path/to/SK_Creature.fbx" [--manifest "C:/path/out/rig_manifest.json"]
 

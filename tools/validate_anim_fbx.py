@@ -26,7 +26,7 @@ WHAT IT MEASURES (a gait cycle is a physical object, so it is checkable):
   6. SANITY            no NaN / no absurd bone excursions
 
 USAGE (exit 0 = pass, 1 = reject; findings printed as PFAANIM ...):
-    "C:\Blender\Blender 5.2\blender.exe" --background --factory-startup ^
+    "C:\Blender\blender-5.3.0-beta\blender.exe" --background --factory-startup ^
       --python "C:/Claude/Projects/PrimalFauna/tools/validate_anim_fbx.py" ^
       -- "C:/path/A_Creature_Walk.fbx" [--expect-speed-cms 400] [--report out.json]
 
