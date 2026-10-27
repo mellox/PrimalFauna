@@ -142,34 +142,55 @@ materialize step only.
 - Config species-disable despawns via the nest (§3.3), not by iterating creatures — one owner.
 - `Aggression` changes retarget live creatures (doc 02 §3) but never despawn them.
 
-## 7. Sandwyrm event system (its own phase — no nests)
+## 7. Sandwyrm event system (proposed global singleton — no pack allocation)
 
-One `APFAWormDirector` per worm region (Dune Desert v1; Rocky Desert optional), state machine
-driven from the subsystem tick, ALL state SaveGame:
+**2026-10-14 requirement:** one saved roaming individual across desert biomes. The detailed
+model is being authored; worm gameplay/director is not implemented. The earlier one-director/
+one-actor-per-region design is superseded. One authoritative director record belongs to the
+subsystem; region membership is routing/target context, never an independent spawn budget.
+Provisional art targets are 180 m body / 30 m shaft / 38 m external mouth-lobe span (36–40 m) / 26 m clear bore (doc 01 §4), pending
+real miner-envelope and deformation measurements; editor placeholder dimensions are rejected.
+
+Proposed behavior states, independent of whether a world actor is currently materialized:
 
 ```
-DORMANT (cooldown/respawn wait, config RespawnDays after a kill)
-  → STALKING  patrol point wanders region; disturbance scoring (doc 02 §6) accumulates per actor cluster
+DORMANT (death/respawn policy to be decided; retain individual identity)
+  → STALKING  underground or partially exposed route through eligible desert terrain
   → TELEGRAPH target locked: rumble audio at distance → moving dust-trail VFX + decal toward target
-              (5–10 s, speed readable); abort → STALKING if target leaves region
-  → EMERGE    at target point: radial damage (players + config-gated buildings) + physics launch
-              + eruption VFX/audio; the worm ACTOR surfaces (§7a) — attackable window 8–15 s
+              (timing to test); abort → STALKING if the target/route becomes invalid
+  → ATTACK    emerge beneath a miner OR arch down onto it; player/creature swallow variants
+              actual engulf volume, damage/consumption timing, attackable body and sand effects
   → SUBMERGE  burrow VFX, cooldown scoring reset → STALKING (or DORMANT if killed)
 ```
 
-**§7a — one persistent worm actor per region** (not spawned per event): `APFASandwyrm` is an
-`AFGCreature` subclass (identity/health/damage standard — locked, doc 01 §4) with
-`SetIsPersistent(true)` (`FGCreature.h:477` — exempts it from the despawn budget; verify) and
-orphan-timer cleared (`ClearKillOrphanTimer()` :438) since it has no spawner. Between events it
-sits buried (collision off, hidden, invulnerable-by-position — NOT god-mode: being unreachable is
-the protection; health persists so a wounded worm stays wounded across events — deliberate design).
-Movement is a custom movement component in custom mode driven kinematically by the director
-(doc 07 §7); it never touches navmesh. Direct spawn path if ever needed:
-`AFGCreatureSubsystem::BeginSpawningCreature(class, transform)` (`FGCreatureSubsystem.h:162`).
+**§7a — durable identity is not permanent actor residency.** Save the unique identity, route/biome,
+position, random state, health, death/respawn timing, phase, event serial and drop entitlement.
+On load, adopt the matching live actor before considering materialization. If an actor has been
+unloaded, re-materialize the same individual/state only through the reviewed native-compatible
+route. Never replace unloading with a fresh healthy worm, duplicate a live body, or replay a
+completed swallow/drop. Revalidate targets and incomplete transactions after reload.
+
+Native spawn/despawn, streaming, orphan cleanup and actor persistence need a deliberate worm
+policy. `SetIsPersistent(true)` is a candidate mechanism, **not a settled requirement**. Header
+presence is insufficient for shipping APIs; `ClearKillOrphanTimer` has a recorded export trap
+(doc 07 §1), so the earlier mandatory call is withdrawn. Native creature creation/eligibility
+and save integration must be verified, not bypassed by an untracked actor spawn.
+
+Distance/streaming decisions must consider the **whole body and its swept attack extent**, every
+nearby player, visible segments, combat and active transactions. A center can be far away while
+the mouth or tail is beside a player. Do not impose the native hostile-base 100 m/120 m distances
+as a worm policy without that review, or globally change them. Retain native rules wherever
+compatible with the verified worm policy; ordinary Sicklejaw spawn/despawn behavior is unchanged.
+Compare actor residency and safe re-materialization alternatives with measured runtime evidence.
+
+Custom movement/pose design (doc 07 §7) must support the complete body through terrain rather
+than turning a permanently hidden patrol point into unrelated eruption actors. Safe transitions
+between desert areas, attack cancellation and save/load behavior remain implementation gates.
 
 **Worm testability rule (diagnostics-first):** every state transition logs at Display with score
 snapshot: `[PFA] Wyrm: STALKING->TELEGRAPH target=<actor> score=… dist=…`. A dev console command
-`PFA.WormForceEvent` triggers a hunt at the player for testing without waiting on scores.
+`PFA.WormForceEvent` is currently a stub; the proposed implementation should select testable
+attack variants without waiting for disturbance scores and log the same individual/event IDs.
 
 ## 8. Multiplayer
 

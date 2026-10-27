@@ -27,7 +27,7 @@ mods speak "vanilla creature." HostileScaling's mechanism below was read from it
 |---|---|---|
 | C1 | Every creature derives `AFGCreature` (via `AFGEnemy`), **including the Sandwyrm** | doc 01 §4 locked; doc 07 §2 |
 | C2 | Standard `UFGHealthComponent`; base health authored **on the CDO** (`SetMaxHealth` in ctor). **Never multiply instance health at runtime** — HostileScaling's CDO-based reconcile would fight it, and SaveGame health would compound. Stat variants (future "Alphas") = separate classes with their own CDO values. | doc 07 §3 |
-| C3 | All outgoing damage flows through the standard pipeline with **`DamageCauser` = the creature (or its projectile) and `Instigator` = its controller** — native `UFGCreatureAction*` attacks do this; the worm's radial damage sets both explicitly. Otherwise HostileScaling's damage multiplier silently skips us. | doc 07 §5, §7 |
+| C3 | All outgoing damage flows through the standard pipeline with **`DamageCauser` = the creature (or its projectile) and `Instigator` = its controller** — native `UFGCreatureAction*` attacks do this; proposed worm attacks must set both and verify native/HostileScaling handling. Worm gameplay is not implemented; radial damage alone does not satisfy swallowing. | doc 07 §5, §7 |
 | C4 | Our per-species `DamageMultiplier` (config) applies when **defining** attack damage on our action objects — a different layer than HostileScaling's entry-point multiply. Expected in-game math: `final = anchor × PFA.DamageMultiplier × HS.DamageMultiplier`. | doc 04 §1 |
 | C5 | Config Passive mode is implemented via the instance's `mIsPassiveCreature` — so HostileScaling *correctly stops scaling* a creature the user made passive, same as doggos. | doc 02 §3 |
 | C6 | Creature-vs-creature damage is **not** scaled by HostileScaling (its target gate is players/buildings) — our infighting balance is ours alone. Documented so nobody "fixes" it. | doc 02 §2 |
@@ -72,7 +72,8 @@ session (the same trap class as [[sml-gotchas]] §6).
 - **Arachnophobia mode:** our species set `mIsArachnid = false`; spawner
   `mCreatureClassArachnidOverride` untouched. QA item only.
 - **Dedicated server:** all logic server-side; package includes server targets (multi-target
-  `package_release.ps1`). Worm telegraph replication is the one client-visual risk (doc 03 §8).
+  `package_release.ps1`). Proposed worm telegraphs, full-body motion/mouth pose, residency and
+  consumption presentation all need host/client verification (doc 03 §8); none is runtime-proven.
 - **Game updates:** re-verify the header cites in docs 02/03/07 (the skill's update guide);
   the contract itself is update-resilient — if HostileScaling's generic mechanism breaks against
   us, it broke against vanilla creatures too.

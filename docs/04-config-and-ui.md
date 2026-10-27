@@ -14,7 +14,7 @@ world-reload flags, `DefaultValue` mirrors) apply verbatim.
 ### Section: General
 | Key | Type | Default | Meaning |
 |---|---|---|---|
-| `Enabled` | Bool | true | Master switch. Off = no nests injected, existing PrimalFauna creatures despawned on next refresh, worm events suppressed. Must be safe to toggle mid-save both ways. |
+| `Enabled` | Bool | true | Master switch. Off = no nests injected and existing ground-species creatures despawned on next refresh. Proposed worm behavior is disabled through the same safe transaction/residency policy as `Sandwyrm.Enabled`: stop new hunts, settle or cancel active transactions, preserve saved identity/health/death/drop state, and retire the actor only when that policy permits. Re-enabling must not create another individual. Must be safe to toggle mid-save both ways. |
 | `NestDensity` | Float (0.25–3.0, spinbox) | 1.0 | Scales HOW MANY territory nests materialize (doc 03 §5). Deliberately does NOT touch per-spawner creature counts — that is HostileScaling's lane (doc 06 §3). |
 | `EnableExperimentalFeatures` | Bool | false | Workspace convention flag (see skill SKILL.md). V1 candidate occupant: Duskstalker flashlight-flee rule. If empty at release, description must say so. |
 | `EnableDiagnostics` | Bool | false | Verbose `[PFA]` logging gate (sml-gotchas §3 config-gated-diagnostics pattern: hooks installed unconditionally, bodies gated on a file-static bool pushed from the refresh tick). |
@@ -33,13 +33,23 @@ world-reload flags, `DefaultValue` mirrors) apply verbatim.
 | `HuntPassiveFauna` | Bool | false | Allow targeting passive wildlife (non-tamed). Default off — protects doggos/ambient fauna. Tamed creatures are NEVER targets; hardcoded, not config. |
 | `PackAssist` | Bool | true | Same-species pack members share aggro (doc 02 §4). |
 
-### Section: Sandwyrm (added in its phase; section present-but-minimal before that)
-| Key | Type | Default | Meaning |
+### Section: Sandwyrm (proposed only; not implemented/runtime-verified)
+
+One saved individual across desert biomes; these are candidate controls, not a statement that
+the current config UI contains them. Final defaults and safe mid-event transitions require review.
+Disabling behavior must preserve identity/health/death/drop state and safely settle or cancel
+active transactions; it must not create another worm when re-enabled (doc 03 §7a).
+
+| Candidate key | Type | Default | Proposed meaning |
 |---|---|---|---|
-| `Enabled` | Bool | true | Worm events on/off. |
-| `EventFrequency` | Float (0.25–3.0) | 1.0 | Scales disturbance-score accumulation → time between hunts (doc 03 §7). |
-| `DamageBuildings` | Bool | true | Emergence damages factory buildings in the blast radius (modest, config off = worm never harms structures — mirrors HostileScaling's `ScaleDamageToBuildings` philosophy). |
-| `RespawnDays` | Integer | 7 | In-game days of regional respite after a kill. |
+| `Enabled` | Bool | To decide | Enable the single worm's behavior under the reviewed residency/transaction policy. |
+| `EventFrequency` | Float | To decide | Tune disturbance scoring/encounter pacing after actual movement and target selection work. |
+| `DamageBuildings` | Bool | To decide | Candidate control over structure interactions; must explicitly cover miner swallowing and its contents policy, not only radial damage. |
+| `RespawnDays` | Integer | To decide | Candidate global-individual post-kill respawn policy; no seven-day or per-region respawn is prescribed. |
+
+Tooth shards and spice are alternative requested drop designs. Quantity, selection, item use and
+any recipe/config surface remain undecided; no automatic protein yield or movie-lore mechanic is
+implied. Keep these decisions separate from Sicklejaw settings.
 
 ## 2. Multiplayer semantics (must be logged + tested, not assumed)
 

@@ -51,10 +51,13 @@ orchestrating agent handing packets to lower-cost implementation agents. No sour
 - 3 land species (Sicklejaw pack hunter, Crestback charger, Duskstalker ambusher) live in curated
   territories across at least 4 biomes; respawn/persistence correct; scanner/compass behavior
   decided and consistent.
-- Sandwyrm flagship in the Dune Desert (+ Rocky Desert option): patrol, telegraphed emergence
-  attacks, config-gated building damage. Event-driven, not nest-driven.
+- Sandwyrm requirement (proposed, runtime unverified): one saved roaming individual across
+  desert biomes, underground/partly exposed travel, telegraphs and sand effects, beneath-miner
+  and top-down arch swallowing, player/creature swallowing, and tooth-shard or spice drops.
+  Logical singleton identity must survive any reviewed actor re-materialization (docs 01/03/10).
 - All species scaled by HostileScaling when present (verified in-game both ways).
-- Loot integrated with the vanilla protein/remains economy (doc 01 §5).
+- Ground-species loot integrated with the vanilla protein/remains economy; worm alternative
+  tooth-shard/spice drop policy defined and verified separately (doc 01 §5).
 - Full config tree; verbose logs gated; MP matrix green; release checklist per playbook.
 
 ## 4. Non-goals (v1) — the parking lot
@@ -81,6 +84,7 @@ orchestrating agent handing packets to lower-cost implementation agents. No sour
 | 06 | Integration: the HostileScaling zero-dependency contract, MP, save, coexistence tests |
 | 07 | Technical architecture: classes, subsystems, hooks, diagnostics |
 | 08 | Implementation plan: packets, phases, test checklists, risks |
+| [10](10-creature-authoring-workflow.md) | Reusable creature authoring workflow: concept/model/rig, exact exports, UE import, species lifecycle, swallowing, loot/effects and gameplay evidence |
 
 Workspace law applies throughout: build lock, cold review after every build, differential/parity
 review for path-replacing changes, read `_team/playbooks/satisfactory-mod.md` before building.

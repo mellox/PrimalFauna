@@ -37,6 +37,10 @@ Consequences (verify at every review):
 
 ## 2. Class map
 
+This is a design map, not a census of implemented classes. As of 2026-10-14 the Worm classes
+and director below do not exist; detailed modeling via Claude is active and gameplay is pending.
+The worm director is one global saved record, not one actor/director per region (doc 03 §7).
+
 ```
 Source/PrimalFauna/
 ├─ PrimalFauna.{h,cpp}                 FPrimalFaunaModule — log category, build marker; NO hooks
@@ -46,7 +50,7 @@ Source/PrimalFauna/
 │                                        mSchematics += loot schematic (doc 01 §5)
 ├─ PFASubsystem.{h,cpp}                 APFASubsystem : AModSubsystem, IFGSaveInterface
 │                                        nest registry+injection (doc 03), config push, census,
-│                                        worm director states, refresh tick "RefreshTick" (never `Tick` —
+│                                        proposed global worm record, refresh tick "RefreshTick" (never `Tick` —
 │                                        clang name-hiding hazard, world-modification.md §7)
 ├─ PFANestSpawner.{h,cpp}               APFANestSpawner : AFGCreatureSpawner (NestId/RegionId SaveGame)
 ├─ PFACreatureBase.{h,cpp}              APFACreatureBase : AFGEnemy — shared species base (§3)
@@ -175,17 +179,41 @@ imported PhysicsAsset intermittently stretches the skeleton. It plays the preloa
 authored `Death` collapse, holds its final corpse pose, clears the dead tail additive and disables
 corpse-mesh collision. Live/nonlethal ragdoll calls continue through FactoryGame.
 
-## 7. Sandwyrm movement (the one custom-movement quarantine)
+## 7. Sandwyrm movement and lifetime (proposed, not implemented)
 
-`UPFAWormMovement : UFGCreatureMovementComponent` (`Creature/FGCreatureMovementComponent.h:14`),
-`SetMovementMode(MOVE_Custom)`; `PhysCustom` implements kinematic motion along director-provided
-curves (burrow depth, emergence arc, surface lunge). Override `ShouldRemainVertical()` (:25) →
-false. Navmesh never consulted; the FlyingBabyCrab precedent (plain actor + custom steering,
-`FGFlyingBabyCrab.h:100`) validates off-navmesh movers, but we stay `AFGCreature`-based for the
-HostileScaling contract (doc 01 §4 locked). Spine animation is procedural bone-chain (doc 05 §6) —
-no AnimBP needed for the worm. Emergence radial damage: standard `UGameplayStatics::ApplyRadialDamage`
-with `DamageCauser = worm`, `Instigator = worm controller` → flows through
-`UFGHealthComponent::TakeRadialDamage` (`FGHealthComponent.h:64`) → HostileScaling-compatible.
+The current art targets are **180 m body, 30 m shaft, 38 m external mouth-lobe span (36–40 m) and 26 m clear bore**, provisional until
+real Mk1/2/3 geometry and the exact exported rig pass the fit gates (doc 10). Starter-project
+miner meshes are placeholders; their bounds cannot validate these targets. Required movement
+includes underground/partial travel, eruption, and a top-down arch swallowing a complete miner;
+player/creature engulf and mouth articulation are separate required attack variants.
+
+Candidate movement route: `UPFAWormMovement : UFGCreatureMovementComponent`
+(`Creature/FGCreatureMovementComponent.h:14`), `MOVE_Custom` and `PhysCustom` along a director's
+body path, with `ShouldRemainVertical()` reviewed for full-body rotation. This remains engineering
+to validate, not a proof supplied by the FlyingBabyCrab precedent. A coherent spine/mouth driver
+may combine authored clips and procedural deformation. It must avoid competing pose writers,
+worker-thread UObject access and assuming a single upright capsule encloses an arch.
+
+Before deriving from `APFACreatureBase`, isolate existing Sicklejaw policy: the base currently
+rescues buried spawns, applies Sicklejaw aggression and ground rotation, and the subsystem pushes
+that aggression to all base instances. A worm must opt into its own reviewed policy without
+changing Sicklejaw behavior. Retain native creature/health identity and attributed damage so
+HostileScaling compatibility can be tested. Standard radial damage may serve eruption effects;
+it cannot substitute for timed swallowing and native miner cleanup/inventory semantics.
+
+One saved logical individual may have a materialized native actor or a safely unloaded state.
+Record identity, health, position/route, phase/event serial, death/respawn and loot entitlement;
+adopt loaded actors first and restore the same state on re-materialization (doc 03 §7a). Neither
+`SetIsPersistent(true)` nor a spawnerless orphan-cleanup call is mandated. Select a shipping-exported,
+native-compatible lifecycle after reviewing body extent, streaming, multiplayer relevance,
+aggression and active consumption transactions. The 100 m/120 m hostile-base distances are not an
+approved giant-worm policy; do not inherit them accidentally or change Sicklejaw's native parity.
+
+Verification must exercise a player near mouth/tail while the actor origin is distant, players
+at opposite ends, burial/emergence during streaming, cross-desert travel, attack interruption,
+death and two save/load cycles. Re-materialization must not duplicate an individual, heal it,
+replay a swallowed target or mint loot. Logs must distinguish logical identity, live actor,
+phase and residency decisions; source/build success alone proves none of these runtime behaviors.
 
 ## 8. Scanner / radar / bestiary surface (polish tier)
 
@@ -213,7 +241,8 @@ Per workspace law + the skill's diagnostics-first rules; Verbose per-entity, Dis
 - **Census (Display, every load):** regions/nests/creature counts; per-nest Verbose.
 - **Target policy (Verbose):** every `CanBeHostileTowards` verdict with rule number (doc 02 §2).
 - **Actions (Verbose):** action start/score/hit lines (`[PFA] Sicklejaw action=Melee target=… dmg=…`).
-- **Worm (Display):** every state transition with scores (doc 03 §7).
+- **Worm (proposed, Display):** every state/residency transition with individual/event IDs and
+  scores (doc 03 §7); no implemented director is implied by this logging contract.
 - **Heartbeat:** refresh tick counter every 6th tick (~60 s) — distinguishes "stopped" from "idle"
   (WeaponUpgrades lesson).
 - **Anchor dump (Display, once):** the vanilla-stat census + our derived stats:
@@ -224,10 +253,15 @@ Per workspace law + the skill's diagnostics-first rules; Verbose per-entity, Dis
   `PFA.KillAll`. Console commands are the in-game test accelerators — they exist from the FIRST
   slice build.
 
+`PFA.WormForceEvent` specifically remains a stub as of 2026-10-14; its command registration
+does not establish worm spawn, movement or attack coverage.
+
 ## 10. Save-plan versioning
 
 `APFASubsystem` SaveGame fields: `mNestSeed`, `mPlanVersion` (int, bump when the region table
-changes shape), nest registry map, worm states. On version mismatch: adopt-what-matches, deactivate
+changes shape), nest registry map, and a proposed single worm state record. Worm identity and
+death/drop/transaction state must survive actor retirement and re-materialization; their schema
+and migration are not implemented yet. On version mismatch: adopt-what-matches, deactivate
 orphaned nests (log at Display), materialize new. Mod-removed saves must load vanilla-clean
 (everything we add is our classes + save-interface actors — the game drops unknown classes; test
 item, doc 08).

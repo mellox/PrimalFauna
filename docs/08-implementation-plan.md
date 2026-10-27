@@ -100,15 +100,30 @@ Done when:  compiles in orchestrator build + cold review SHIP + in-game checklis
 - **W3.3** Region expansion to the doc 01 biome sets + anti-grief checks at scale.
 - **W3.4** Radar/scanner surface (doc 07 §8; ⚠ only vanilla-CDO-write packet, experimental-gated).
 
-**W4 — The Wyrm Beneath**
-- **W4.1** `UPFAWormMovement` + director state machine + procedural spine on placeholder segments +
-  `PFA.WormForceEvent`. Persistent-creature exemptions verified (`SetIsPersistent`, orphan timer).
+**W4 — The Wyrm Beneath (proposed; not implemented as of 2026-10-14)**
+
+The current requirement is one saved roaming individual across desert biomes. Detailed modeling
+via Claude is active, not ready for import. Art targets are provisionally 180 m body / approximately
+30 m shaft / 38 m external mouth-lobe span (36–40 m range) / 26 m clear bore. The wider head replaces
+the earlier 30 m outer-collar cap; real Mk1/2/3 miner-envelope fit remains unverified. Editor placeholder bounds are
+rejected. These packets are acceptance work, not a statement that the listed systems exist.
+
+- **W4.1** Custom movement/spine/mouth + one global director record + `PFA.WormForceEvent` variants.
+  Select and verify a native-compatible actor lifecycle separately from durable individual
+  identity. Review whole-body/swept-attack extents, all players and active transactions before
+  retirement/re-materialization. Do not prescribe permanent residency, small-creature distance
+  defaults, or an unverified orphan-timer call; preserve Sicklejaw native rules (03 §7a, 07 §7).
 - **W4.2** Telegraph chain: rumble → dust trail (Niagara ribbon + decal) → eruption flipbook VFX +
   audio; MP-replicated visuals.
-- **W4.3** Emergence radial damage (causer/instigator per C3) + surface window + kill/respawn/
-  trophy + config gates.
-- **W4.4** Worm final assets (doc 05 §7) + review gate (StockLancer fallback decision if needed).
-- **W4.5** Full-region balance: disturbance scoring tuning session in a real desert factory save.
+- **W4.3** Beneath-miner and top-down arch swallowing; player/creature swallowing; attributed
+  damage/death and native miner cleanup; cancellation and exactly-once inventory/drop semantics.
+  Tooth-shard/spice distribution, consumption/refund and death/respawn policies must be explicit.
+- **W4.4** Requested concept set, detailed model/rig, all movement/mouth poses, sand effects and
+  loot assets; real miner-fit and approved-source/exact-export gates (doc 10). Do not replace
+  required whole-miner motion with a radial-damage-only or placeholder-art completion claim.
+- **W4.5** Desert travel/target tuning with one individual; residency and two save/load cycles;
+  compatibility/host-client and Sicklejaw regression checks. Use a preserved test save for miner
+  consumption, with contents, connections and resource occupancy verified.
 
 **W5 — Apex (release)**
 - **W5.1** Balance playthrough vs HostileScaling at tier 3/6/9 (anchors tuning only).
@@ -150,7 +165,13 @@ coexistence smoke · vanilla AGS creature-hostility setting flipped.
 6. Per-instance `mIsPassiveCreature` cleanly de-aggros + HostileScaling skips (02 §7.3) — Phase 2.
 7. `Super::CanBeHostileTowards` honors per-player passive mode for our species (02 §7.4) — Phase 2.
 8. Spawner near-base suppression behaves (`mCachedIsNearBase`) (03 §1) — Phase 2.
-9. Worm persistent-creature exemptions hold (03 §7a) — Phase 4.
+9. Worm's reviewed native-compatible residency policy preserves one saved identity and at most
+   one live body across streaming, desert travel and two save/load cycles; health, completed
+   consumption and loot entitlements survive re-materialization. Test players near either end
+   while origin is distant and at opposite ends, burial/emergence, attack interruption and death.
+   Permanent-persistence/orphan exemptions are alternatives to evaluate, not assumed requirements
+   (03 §7a). Real miner bounds, exact exported rig fit, both miner attacks, player/creature swallow,
+   native cleanup, loot/effects and host/client outcomes remain required — Phase 4.
 10. Radar tower lists our fauna via spawners (07 §8) — Phase 3.
 
 ## 5. Packet-family inputs (load ONLY these + doc 07)
@@ -174,7 +195,7 @@ coexistence smoke · vanilla AGS creature-hostility setting flipped.
 | R3 | Dynamic spawner persistence broken (MobSpawners' manta/crab bugs are evidence this CAN bite) | Doc 03 §4 fallback: transient spawners + own SaveGame registry; registry designed for the swap |
 | R4 | Native creature-vs-creature gate vetoes infighting | Doc 02 §7.1 fallbacks (global toggle / direct aggro), instrumented from first build |
 | R5 | AI-pipeline animation quality below bar | Doc 05 §3 ladder; biped-classification trick; purchase fallbacks pre-licensed, pre-priced, user-approved at review gates |
-| R6 | Worm procedural motion reads badly | StockLancer pack fallback ($60, license-clean); director/VFX layers unchanged either way |
+| R6 | Worm motion/export fails visual or clearance review | Iterate the exact detailed source/export against doc 05 §7 and doc 10 gates; third-party alternatives require separate review and do not waive full movement/rig requirements |
 | R7 | HostileScaling compounding on our spawners | Contract S1–S4 + mandatory 2-cycle compounding test (doc 06 §4) |
 | R8 | Injected nests stall on navmesh (spawn never fires) | Spawners are navigation invokers; ground-Z baked at authoring; read-only `WaitingForSpawnLocation` diagnostics localize stalls. The dev-only `PFA.SpawnNest` command distributes repeated test nests around the player by golden angle so they do not stack identical centers; production spawner mechanics remain vanilla. |
 | R9 | Scope creep (The Wilds syndrome — design forever, ship never) | Phase gates are shippable builds; parking lots in 00 §4 / 01 §6; v1.0 definition fixed below |
@@ -182,6 +203,7 @@ coexistence smoke · vanilla AGS creature-hostility setting flipped.
 
 ## 7. Definition of v1.0
 
-Doc 00 §3 verbatim: 3 land species in curated multi-biome territories + Sandwyrm events in the
-Dune Desert; HostileScaling matrix green both ways; loot in the protein economy; full config;
+Release-plan summary, with worm scope updated by W4 above: 3 land species in curated multi-biome
+territories + one saved Sandwyrm roaming across desert biomes; HostileScaling matrix green both
+ways; ground-species loot in the protein economy and the worm drop policy explicitly defined; full config;
 verbose logs gated; MP matrix green; release checklist done. Publishing only when the user asks.

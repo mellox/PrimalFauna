@@ -31,7 +31,18 @@ anything, and each one has silently broken a build on this machine before:
      .pak/.ucas: IoStore hashes asset names, so a string search there reads
      False even for clips that demonstrably work in game.)
 
-Usage:  pwsh -File tools\build.ps1  [-SkipSync] [-SkipImportCheck] [-Marker <expected>]
+Usage:  pwsh -File tools\build.ps1  [-SkipSync] [-SkipImportCheck] [-Marker <expected>] [-BuildEditor]
+
+  * -BuildEditor ALSO compiles the FactoryEditor target (every mod's
+    UnrealEditor-<Mod>.dll) before PackagePlugin. PackagePlugin runs with
+    -nocompileeditor, and its cook LOADS whatever UnrealEditor-PrimalFauna.dll
+    already sits in the Mods tree: the w59-1..w59-3 cook logs all print the
+    w58-8 marker while shipping w59 code (_team\PFA-population-w59-3\
+    build-1-Log.txt:4699). Pass it whenever anything the editor or cook executes
+    or serializes changed: StartupModule, CDO/constructor defaults, any
+    UCLASS/USTRUCT/UPROPERTY. It builds the SHARED FactoryEditor target, so it
+    recompiles every enabled mod's editor module from its Mods-tree copy; another
+    mod's broken source fails this build too.
 
   * `pwsh`, NOT `powershell`. This script uses `?:` and `??` (see the
     cold-review-gate block near the end), which PowerShell 5.1 cannot even
@@ -63,7 +74,9 @@ param(
     [switch]$SkipImportCheck,
     # Optional ASSERTION of the expected build id (see the usage note above).
     # Never used to WRITE the marker.
-    [string]$Marker
+    [string]$Marker,
+    # Compile the FactoryEditor target first (see the usage note above).
+    [switch]$BuildEditor
 )
 
 $ErrorActionPreference = 'Stop'
@@ -638,6 +651,61 @@ try {
     $env:PSExecutionPolicyPreference = 'Bypass'
     Write-Host 'PFABUILD child PowerShell execution policy=Bypass for Wwise pre-build step'
 
+    # --- gate 2b: access-transformer grants in the shared UHT headers ---------
+    # A UHT run with any AT mod's .uplugin set aside regenerates the shared
+    # FactoryGame headers without that mod's grants; on 2026-10-17 that left
+    # PrimalFauna's AFGCreature/AFGCreatureController friends out of the Steam
+    # headers and the next build died with C2248 in untouched files. Pre gates
+    # refuse such a compile; post gates name any grant a compile stripped.
+    # WU set-aside (gate 2) is the committed workaround for the UHT 'Unused
+    # friend' error; it strips WU's 8 grants from every target -- kept by user
+    # decision 2026-10-24 (WU not installed in the game).
+    . 'C:\Claude\Projects\_team\tools\at_grants_gate.ps1'
+
+    if ($BuildEditor) {
+        $atEditorSnap = New-AtGrantsSnapshotPath -Mod 'PrimalFauna-editor'
+        if ((Invoke-AtGrantsGate -Phase Pre -Mod PrimalFauna -Targets UnrealEditor -Snapshot $atEditorSnap `
+                -AllowUndiscoverable WeaponUpgrades) -ne 0) {
+            Fail 'AT grant pre-gate refused the FactoryEditor build (AT- lines above)'
+        }
+        Write-Host 'PFABUILD running FactoryEditor Win64 Development (editor DLLs the cook loads)...'
+        & (Join-Path (Split-Path $RunUAT -Parent) 'Build.bat') FactoryEditor Win64 Development `
+            -project="$UProject" -installed -waitmutex 2>&1 |
+            Tee-Object -Variable editorOut |
+            Select-String -Pattern 'Result: |error C\d+|error LNK|Total execution time' |
+            ForEach-Object { $_.Line }
+        $editorCode = $LASTEXITCODE
+        $atEditorPost = Invoke-AtGrantsGate -Phase Post -Mod PrimalFauna -Targets UnrealEditor -Snapshot $atEditorSnap
+        if ($editorCode -ne 0) {
+            Write-Host 'PFABUILD raw FactoryEditor failure tail (last 80 lines):' -ForegroundColor Yellow
+            @($editorOut) | Select-Object -Last 80 | ForEach-Object { Write-Host $_ }
+            Fail "FactoryEditor build failed (exit $editorCode)"
+        }
+        $editorDll = Join-Path $ModsPlugin 'Binaries\Win64\UnrealEditor-PrimalFauna.dll'
+        if (-not (Select-String -Path $editorDll -Pattern $Marker -Encoding unicode -Quiet)) {
+            Fail "marker $Marker NOT found in $editorDll after the FactoryEditor build"
+        }
+        Write-Host "PFABUILD EDITOR_MARKER_${Marker}=True in UnrealEditor-PrimalFauna.dll"
+        if ($atEditorPost -ne 0) { Fail 'AT grant post-gate: the FactoryEditor build left AT grants missing (AT- lines above)' }
+    }
+
+    if (-not $BuildEditor) {
+        $staleEditorDll = Join-Path $ModsPlugin 'Binaries\Win64\UnrealEditor-PrimalFauna.dll'
+        $editorHasMarker = (Test-Path $staleEditorDll) -and
+            (Select-String -Path $staleEditorDll -Pattern $Marker -Encoding unicode -Quiet)
+        if (-not $editorHasMarker) {
+            Write-Warning ("PFABUILD UnrealEditor-PrimalFauna.dll does not contain marker $Marker -- the cook will load " +
+                           "older editor code. Re-run with -BuildEditor if StartupModule, defaults or reflected types changed.")
+        }
+    }
+
+    # PackagePlugin without -server compiles FactoryGameSteam only.
+    $atSnap = New-AtGrantsSnapshotPath -Mod PrimalFauna
+    if ((Invoke-AtGrantsGate -Phase Pre -Mod PrimalFauna -Targets FactoryGameSteam -Snapshot $atSnap `
+            -AllowUndiscoverable WeaponUpgrades) -ne 0) {
+        Fail 'AT grant pre-gate refused PackagePlugin (AT- lines above)'
+    }
+
     Write-Host 'PFABUILD running PackagePlugin...'
     & $RunUAT -ScriptsForProject="$UProject" PackagePlugin `
         -project="$UProject" `
@@ -647,12 +715,15 @@ try {
         Tee-Object -Variable uatOut |
         Select-String -Pattern 'BUILD SUCCESSFUL|BUILD FAILED|ExitCode=|error C\d+|error LNK|Error:' |
         ForEach-Object { $_.Line }
+    $atPost = Invoke-AtGrantsGate -Phase Post -Mod PrimalFauna -Targets FactoryGameSteam -Snapshot $atSnap
 
     if (-not ($uatOut -match 'BUILD SUCCESSFUL')) {
         Write-Host 'PFABUILD raw UAT failure tail (last 200 lines):' -ForegroundColor Yellow
         @($uatOut) | Select-Object -Last 200 | ForEach-Object { Write-Host $_ }
         Fail 'PackagePlugin did not report BUILD SUCCESSFUL'
     }
+    # A post-gate failure does not stop the deploy checks below (the DLL is
+    # already deployed); it turns the final exit into a failure instead.
 }
 finally {
     # Each cleanup action is ISOLATED. Review W1 reproduced the un-isolated
@@ -900,5 +971,9 @@ if ($lastReviewed) {
     Write-Host "PFABUILD !! COLD REVIEW GATE NOT INITIALISED -- create _team\PFA-LAST-REVIEWED.txt with the last reviewed sha." -ForegroundColor Yellow
 }
 
+if ($atPost -ne 0) {
+    Write-Host 'PFABUILD FAIL: AT grant post-gate -- PackagePlugin left AT grants missing in the shared UHT headers (AT- lines above); the build itself succeeded' -ForegroundColor Red
+    exit 1
+}
 Write-Host 'PFABUILD OK' -ForegroundColor Green
 exit 0

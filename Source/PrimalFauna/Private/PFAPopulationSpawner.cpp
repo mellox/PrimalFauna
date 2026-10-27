@@ -13,6 +13,20 @@
 
 void PFAInstallPopulationSpawnGuards()
 {
+#if WITH_EDITOR
+    // Editor builds link SML's FactoryGame header stubs, not the game's code:
+    // SatisfactoryModLoader Source/FactoryGame/Private/Creature/FGCreatureSpawner.cpp:60-63
+    // is `{ return bool(); }` / `{ }`. funchook refuses a body that short and SML
+    // treats that as Fatal (NativeHookManager.cpp:61), so installing these hooks
+    // killed the headless editor in StartupModule (measured 2026-10-24: "funchook
+    // failed: Too short instructions"). PackagePlugin's cook loads this same
+    // editor DLL. The Steam Shipping game hooked all three real bodies
+    // (FactoryGame.log, CL-513885, w60-1, 2026-10-19); EGS/Server not measured. The stubs never
+    // spawn, so there is nothing to guard here. Binary hooks need this guard;
+    // additive registrations do not (see PFACheats.cpp console commands).
+    UE_LOG(LogPrimalFauna, Display,
+        TEXT("[PFA] Population spawn guards: hooksSubscribed=0/3 skipReason=WITH_EDITOR"));
+#else
     // These three are NONVIRTUAL in the verified FGCreatureSpawner.h. Hooks
     // short-circuit only our explicitly managed nests, preserving every vanilla
     // path and HostileScaling's count/respawn ownership. SpawnSingleCreature also
@@ -22,7 +36,7 @@ void PFAInstallPopulationSpawnGuards()
     // conditional branch that this SML/funchook build relocates incorrectly
     // (w59-2 crash dump, 2026-09-26). It only queries slot eligibility; fencing
     // the actual spawn entry points below preserves the population restrictions.
-    SUBSCRIBE_METHOD(AFGCreatureSpawner::IsReadyToSpawn, [](auto& Scope, AFGCreatureSpawner* Self)
+    const FDelegateHandle ReadyHook = SUBSCRIBE_METHOD(AFGCreatureSpawner::IsReadyToSpawn, [](auto& Scope, AFGCreatureSpawner* Self)
     {
         APFANestSpawner* Nest = Cast<APFANestSpawner>(Self);
         if (Nest && !Nest->CanPopulationSpawn()) { Scope.Override(false); }
@@ -32,7 +46,7 @@ void PFAInstallPopulationSpawnGuards()
             Scope(Self);
         }
     });
-    SUBSCRIBE_METHOD(AFGCreatureSpawner::SpawnCreatures, [](auto& Scope, AFGCreatureSpawner* Self)
+    const FDelegateHandle SpawnAllHook = SUBSCRIBE_METHOD(AFGCreatureSpawner::SpawnCreatures, [](auto& Scope, AFGCreatureSpawner* Self)
     {
         APFANestSpawner* Nest = Cast<APFANestSpawner>(Self);
         if (Nest && !Nest->CanPopulationSpawn()) { Scope.Cancel(); }
@@ -42,7 +56,7 @@ void PFAInstallPopulationSpawnGuards()
             Scope(Self);
         }
     });
-    SUBSCRIBE_METHOD(AFGCreatureSpawner::SpawnSingleCreature, [](auto& Scope, AFGCreatureSpawner* Self)
+    const FDelegateHandle SpawnOneHook = SUBSCRIBE_METHOD(AFGCreatureSpawner::SpawnSingleCreature, [](auto& Scope, AFGCreatureSpawner* Self)
     {
         APFANestSpawner* Nest = Cast<APFANestSpawner>(Self);
         if (Nest && !Nest->CanPopulationSpawn()) { Scope.Cancel(); }
@@ -52,6 +66,15 @@ void PFAInstallPopulationSpawnGuards()
             Scope(Self);
         }
     });
+    // Reaching this line means SML returned from all three SUBSCRIBE_METHOD calls
+    // (funchook failures are UE_LOG Fatal inside SML). It is NOT proof of three new
+    // detours: SML's "Hook already installed" path returns without Fatal, and the
+    // handle below is valid whenever a handler was added. Detour evidence is SML's
+    // own LogNativeHookManager "Successfully hooked function" lines.
+    const int32 Subscribed = int32(ReadyHook.IsValid()) + int32(SpawnAllHook.IsValid()) + int32(SpawnOneHook.IsValid());
+    UE_LOG(LogPrimalFauna, Display,
+        TEXT("[PFA] Population spawn guards: hooksSubscribed=%d/3 skipReason=none"), Subscribed);
+#endif
 }
 
 bool APFANestSpawner::QuiescePopulationSpawning(const TCHAR* Reason)

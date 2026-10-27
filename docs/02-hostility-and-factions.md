@@ -93,17 +93,26 @@ sight config's lighting affinity only if the sense config exposes it — otherwi
 activity gated by time instead; the flashlight-flee flavor rule is EXPERIMENTAL-flag material,
 cut-eligible). Aggro pacing via the creature's native `mAggroGainRate`/curves (`FGCreature.h:595-619`).
 
-## 6. Sandwyrm targeting — disturbance, not perception
+## 6. Sandwyrm targeting — proposed disturbance scoring
 
-The worm doesn't use controller perception at range (it's underground; sight is meaningless).
-`APFAWormDirector` (per-region manager inside our subsystem, doc 03 §7) scores **disturbance** in
-the region: players sprinting/driving (weight high), operating buildings (weight per building,
-capped), explosions (spike). Highest-scoring cluster wins; the emergence point is the target's
-predicted position. Config `EventFrequency` scales score accumulation. During the surface window
-the worm's controller uses the normal table (§2) with a huge `ImmediateVisibilityRadius` — everyone
-near it is a valid target. Building damage on emergence is radial damage with
-`DamageCauser = worm actor` and `InstigatedBy = worm controller` so both the vanilla pipeline and
-HostileScaling's damage hook classify it correctly (doc 06 §2), gated by config `DamageBuildings`.
+The worm gameplay/director is not implemented. Proposed `APFAWormDirector` is one authoritative
+manager for **one saved roaming individual across desert biomes** (doc 03 §7), not a manager that
+creates a separate worm in each region. Regions contribute target/routing context to that one
+individual. Its logical identity survives any reviewed actor retirement and re-materialization.
+
+The existing disturbance proposal scores sprinting/driving players, operating buildings (capped
+weight) and explosions. Highest-scoring eligible cluster selects a target; scoring and predicted
+emergence position require validation against the actual body route, terrain and attack envelope.
+`EventFrequency` remains a proposed tuning input. Do not treat underground long-range targeting
+as ordinary line-of-sight perception or treat every actor near a surfaced body as automatically
+eligible. Review native hostility/config gates and target validity for the required miner,
+player and creature swallow variants without altering other species' target rules.
+
+Attribute outgoing damage to the worm actor and its controller for native/HostileScaling
+compatibility (doc 06 §2), then verify actual handling in game. Radial damage may accompany
+eruption; it does not implement swallowing or establish safe miner cleanup/inventory semantics.
+Full-body proximity and active attacks also constrain residency decisions (doc 03 §7a), separate
+from target scoring and aggression.
 
 ## 7. Statically unverifiable items (differential-review carryover → in-game checklist)
 

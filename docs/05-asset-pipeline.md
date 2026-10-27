@@ -130,23 +130,42 @@ Verified 2026-07-11 (fab.com/eula + Epic Content EULA):
   `ReflectionMap` textures plus `Have_ReflMap=true`; it must not use `MM_FactoryBaked` (that route
   inherited factory paint/custom-data and PowerPole reflection defaults on a plain pickup).
 
-## 7. Sandwyrm assets — procedural by design
+## 7. Sandwyrm assets — current proposed authoring contract
 
-- **Mesh:** segmented body authored/cleaned in Blender (Tripo-generate a hero head + one body
-  segment + tail tip; array/vary segments in Blender). Budget ≤80k tris total (it's the flagship).
-- **Skeleton:** simple spine chain (~20–30 bones head→tail), authored by bpy SCRIPT (deterministic,
-  no rigging tool needed — serpentine rigs are trivial chains).
-- **Animation: NONE imported.** The spine is driven procedurally in C++ (undulation sine train +
-  emergence arc + lunge curves via `UPFAWormMovement`, doc 07 §7) — the same procedural-transform
-  playbook that already ships in LaserRifle [[laserrifle-procedural-hold]]. Morph/jaw: one jaw bone,
-  code-driven. This makes the worm the LEAST animation-risky creature despite being the biggest.
-- **Fallback (pre-approved path, needs purchase sign-off):** StockLancer worm pack (§3 rung 4) if
-  procedural motion reads badly in the review gate.
-- **VFX:** eruption/dust from the free CC0 JangaFX VDB library baked to **flipbooks** (Niagara
-  SubUV — the game-modding default; never runtime VDB), dust-trail = Niagara ribbon + ground decal,
-  optional VectorayGen swirl field for the eruption vortex. Screen shake + rumble audio reuse
-  base-game Wwise events ([[sf-mod-wwise-sound]]: `PostAkEventAtLocation`, reuse existing event
-  paths — explosion/quake family; AkAudio module + Wwise plugin refs in `.uplugin`).
+Detailed modeling via Claude is active as of 2026-10-14. Generated geometry and scripts are WIP,
+not an approved model; acceptance requires independent reimport and rendered deformation review
+of the exact export (doc 10). Worm gameplay, effects and loot are not implemented/runtime-proven.
+
+- **Concepts and scale:** front/back/left/right straight open-mouth views plus every requested
+  emergence/travel/swallow scenario and alternative loot design. Current **provisional** targets:
+  180 m body, approximately 30 m shaft, 38 m external mouth-lobe span (36–40 m range),
+  26 m clear bore. The wider head supersedes the earlier 30 m outer-collar cap; see
+  `art/sandworm/design/art-specification.md`. Real Mk1/2/3 envelope and curved-throat clearance
+  gates remain open; local editor miner placeholders cannot establish fit.
+- **Mesh budget:** target **≤120k triangles at LOD0**, with a coherent detailed segmented surface,
+  functional inner mouth/throat and tooth geometry. Budget compliance alone does not prove quality
+  or usable clearance; review the mesh, materials, silhouette and all required deformations.
+- **Rig budget:** target **≤128 deform bones**, including **48–64 spine joints** and independent
+  radial lip, teeth and throat control. Exact counts remain subject to measured deformation and
+  export acceptance. A trivial chain or one jaw bone is not a substitute for the required motion.
+- **Animation delivery:** baked exports of required poses/movements and mouth articulation, on
+  the exact approved rig. Procedural runtime control may complement them after review; it does
+  not waive baked/reimport/render evidence. Test underground/partial travel, eruption, top-down
+  arch, both whole-miner swallows, player/creature engulf and death. Record clip rates, event
+  timing, path/clearance and bend limits; no current C++ animation capability is implied.
+- **Source identity:** record concept/source/script/texture/export hashes; independently reimport
+  the exact export and render it before accepting. Carry that identity through UE import and cook.
+  A model created successfully or a source-scene render is not evidence that its export is correct.
+- **Loot:** tooth shards **or** spice are alternative requested designs, with concepts, model,
+  material and item icons. Distribution/use are unresolved; do not invent lore, required protein
+  conversion, fixed quantities or a worm-core drop.
+- **VFX/audio:** author bounded sand eruption and travel effects following actual surface/body
+  intersections, with submerge/death behavior and client-visible telegraphs. Flipbooks/ribbons
+  and existing Wwise events are candidate techniques; asset provenance, availability, performance,
+  replication and visual quality must be verified. No effect is accepted solely from this plan.
+- **Fallbacks:** older third-party pack suggestions are background options only. They do not
+  replace the requested detailed model/rig or authorize a purchase; any alternative must still
+  satisfy the full creature contract and exact-export review.
 
 ## 8. GPU & credit discipline
 

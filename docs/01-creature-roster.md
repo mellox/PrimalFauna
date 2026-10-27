@@ -71,22 +71,33 @@ flora/stinger markings). No feathers, no Earth-documentary realism. Full prompt 
   regions.
 - **Loot:** `Desc_DuskstalkerRemains` (protein) + occasional `Desc_DuskstalkerFang` trophy.
 
-## 4. Sandwyrm — the flagship (event creature, own phase)
+## 4. Sandwyrm — the flagship (one roaming individual; proposed)
 
-- **Fantasy:** the Dune homage. The Dune Desert stops being the boring flat biome: heavy machinery
-  and sustained noise there now has a cost. You learn to read the sand.
-- **Silhouette:** segmented armored worm, 25–40 m emerged length, tri-petal jaw, dust-glow between
-  segments. (Procedural bone-chain rig — doc 05 §6; this is deliberately NOT a navmesh creature.)
-- **Behavior (event-driven, doc 03 §7):** invisible "patrol" point moves under the sand within the
-  worm region → telegraph chain when a target is selected: distant rumble (audio) → moving dust
-  trail + ground decal approaching (5–10 s of readable dread) → emergence eruption at the target
-  point (radial damage + physics launch + huge dust VFX) → brief surface lunge window (attackable!)
-  → re-submerge, cooldown. Targets are scored by *disturbance*: players sprinting/vehicles driving/
-  buildings operating in the region (doc 02 §6).
-- **It is killable** during surface windows (HP anchored ≈ 8–10× Alpha Hog; HostileScaling applies).
-  Killing it grants a long regional respite (multi-day respawn) + a unique trophy + heavy protein
-  yield. Not killing it is fine: emergence damage vs buildings is config-gated (default ON at modest
-  damage; "worm ignores buildings" toggle for pacifist factories, doc 04).
+- **Status (2026-10-14):** detailed modeling via Claude is active; the model is not ready and
+  gameplay is not implemented. This section supersedes the earlier per-region, 25–40 m design.
+- **Fantasy and population:** Dune-inspired segmented sand predator; **one saved roaming
+  individual across desert biomes**, not one per region, one per player, or a fresh worm per event.
+  Regional scoring can select its next target without creating additional individuals.
+- **Provisional art targets:** **180 m body length, approximately 30 m shaft diameter,
+  38 m external mouth-lobe span (36–40 m range), 26 m clear bore**. The wider head supersedes
+  the earlier 30 m outer-collar cap; current proportions live in `art/sandworm/design/art-specification.md`.
+  These are not measured miner-fit acceptance. Tooth intrusion, mouth poses and curved throat
+  clearance must be measured against real Mk1/2/3 miners. Local editor miner geometry proved to
+  be placeholders and is rejected for sizing (doc 10 §1). The collar is not the open passage.
+- **Required motion and attacks (doc 03 §7):** underground and partially exposed travel; visible
+  emergence; eruption beneath a miner to swallow it whole; an arching attack descending onto a
+  miner from above; player and creature swallowing; articulated spine and mouth; sand eruption
+  and travel effects. Disturbance scoring and rumble/dust telegraphs are proposed selection and
+  readability mechanisms. Timing, collision, attackable windows and scoring require testing.
+- **Death and loot:** killable through standard health/damage; tooth shards or spice are the
+  requested drop candidates, with concept art and usable item assets. Their distribution,
+  quantities and economy use, health anchors and post-kill respawn policy remain design decisions.
+  Miner consumption requires an explicit contents/refund policy and native cleanup verification;
+  modest radial building damage alone does not satisfy swallowing a whole miner.
+- **Lifetime:** saved identity/health/death/drop state is separate from a materialized actor.
+  Streaming may require safe retirement and re-materialization of that same individual. Do not
+  assume permanent actor residency or reuse a small creature's center-distance thresholds for a
+  180 m body; review the full body extent, attacks and player visibility (doc 03 §7a).
 - **Constraint (locked):** despite custom movement, the Sandwyrm **must remain an
   `AFGCreature`-family actor with a standard `UFGHealthComponent` and CDO-authored stats** so
   HostileScaling scales it exactly like everything else (doc 06 §2). Movement/mesh/attack are
@@ -94,15 +105,18 @@ flora/stinger markings). No feathers, no Earth-documentary realism. Full prompt 
 
 ## 5. Loot & economy integration
 
-- Every species drops a `Desc_<Species>Remains` item (FGItemDescriptor, `Cat_Other`-style category,
+- Ground-species default: a `Desc_<Species>Remains` item (FGItemDescriptor, `Cat_Other`-style category,
   conveyor mesh = simple retint of our creature-part mesh or a vanilla remains mesh via
   ReuseGameFiles) + a recipe `Recipe_Protein<Species>` mirroring the vanilla
   hog/stinger-remains → Alien Protein constructor recipes (1 remains → 1 protein; read the vanilla
   recipe's exact shape in W1.2 and mirror it).
 - Rationale: plugs into DNA capsules/sink/consumables with ZERO new economy design, and keeps
-  "kill new creature" exactly as rewarding as vanilla hunting. Trophies (crest plates, fang, worm
-  core) are pure AWESOME-sink flavor items (sink points via the world module's
+  "kill new creature" exactly as rewarding as vanilla hunting. Trophies (crest plates, fang)
+  are proposed AWESOME-sink flavor items (sink points via the world module's
   `mResourceSinkItemPointsTable`).
+- Sandwyrm exception: tooth-shard/spice drops in §4 supersede the old mandatory worm-core and
+  heavy-protein proposal. Reuse the item/pickup pipeline, but do not invent a final recipe or
+  sink value before the drop design is settled.
 - Registration: loot recipes ride a single hidden-cheap schematic (or direct recipe registration in
   the world module) — decided in W1.2 per the content-registration model (schematic is the loading
   anchor; see skill `content-and-assets.md`).

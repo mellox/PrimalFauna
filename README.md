@@ -83,6 +83,7 @@ prints a NOTE and skips that check. Asset import and inspection scripts live bes
 | [06 — Integration & compat](docs/06-integration-and-compat.md) | The HostileScaling zero-dependency contract and verification matrix |
 | [07 — Technical architecture](docs/07-technical-architecture.md) | Class map, borrowed-BT strategy, diagnostics contract |
 | [08 — Implementation plan](docs/08-implementation-plan.md) | Packets, phases, in-game test checklists, risk register |
+| [10 — Creature authoring workflow](docs/10-creature-authoring-workflow.md) | Repeatable concept-to-gameplay process, morphology-specific validation, exact-export identity and acceptance evidence |
 | [CENSUS](docs/CENSUS.md) · [ASSET-LEDGER](docs/ASSET-LEDGER.md) · [BT-FALLBACK-RECIPE](docs/BT-FALLBACK-RECIPE.md) | Live vanilla creature data, asset provenance, behaviour-tree fallback |
 
 The docs are the design contract and were written before implementation; where this README and
